@@ -1,0 +1,21 @@
+{
+  "name": "mtg-drafter",
+  "version": "0.1.0",
+  "description": "MtG multi-player draft server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Mtg",
+    "Magic",
+    "Magic the Gathering",
+    "cube",
+    "draft",
+    "card",
+    "game",
+    "multi-player"
+  ],
+  "author": "bathtaters",
+  "license": "ISC"
+}
