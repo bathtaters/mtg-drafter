@@ -1,0 +1,15 @@
+extends layout
+
+block header 
+  link(rel='stylesheet' href='/stylesheets/base.css')
+  link(rel='stylesheet' href='/stylesheets/cards.css')
+
+include ./card.pug
+
+block content
+  - var keys = Object.keys(cardData)
+  h1= cardData.name
+  +displayCard(cardData, false)
+  div.jsonContiainer
+  each key in keys
+    p(style='white-space: break-spaces;') #{key}: !{html[key]}

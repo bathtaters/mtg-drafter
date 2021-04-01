@@ -1,0 +1,21 @@
+extends layout
+
+block header
+    link(rel='stylesheet', href='/stylesheets/cards.css')
+
+block scripts
+    script(src='/javascripts/draft-listeners.js')
+
+include ./card.pug
+
+block content
+    - var cardsInPack = cardsInfo
+    form(action='/card', method='post')
+        input#pickButton(type='submit' name='button' value='Pick Card' disabled=true)
+        input#selectedDraftId(type='hidden' name='draftId' value='')
+        div#packContainer()
+            each card in cardsInPack
+                +displayCard(card, true)
+
+
+

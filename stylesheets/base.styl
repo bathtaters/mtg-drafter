@@ -1,0 +1,118 @@
+//* --- Site-wide colors --- *//
+bodyBgd = rgb(30, 39, 39)
+focusOutline = #b8860b9f
+scrollbarThumb = #404040A0
+invisible = alpha(bodyBgd, 0)
+
+//* --- Site-wide mix-ins --- *//
+
+/* --- Scrollbar --- */
+
+thinSize = 7px
+thinScrollbar()
+    // FireFox
+    scrollbar-width: thin
+
+    // Chrome, Edge, and Safari
+    &::-webkit-scrollbar
+        width: thinSize
+        height: thinSize
+        overflow: visible
+
+scrollbarColor(thumb = scrollbarThumb, bgd = invisible)
+  thumb ?= scrollbarColor
+  bgd ?= alpha(bodyBgd, 0)
+
+  // FireFox
+  scrollbar-color: thumb bgd
+
+  // Chrome, Edge, and Safari
+  &::-webkit-scrollbar-track
+    background: bgd
+    
+  &::-webkit-scrollbar-thumb
+    //background-color: thumb
+    border: solid thinSize thumb
+    border-radius: 4px
+
+*
+  scrollbarColor()
+
+
+
+
+// --- Site-wide styles --- //
+
+body
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif
+  background: bodyBgd
+  color: antiquewhite
+  font-family: sans-serif
+  
+a:hover
+  color: #00B7FF
+
+hr
+  margin: 0.2rem 2%
+  border: solid 0.05rem #111515
+
+.evenSpacedH 
+  display: flex
+  justify-content: space-evenly
+
+h1
+    display: block
+    margin: 0
+    font-size: 2.5rem
+    font-family: sans-serif
+    font-style: oblique
+    font-weight: bolder
+    text-shadow: 0.1rem 0.1rem 0.2rem #00000045
+    opacity: 85%
+
+h2
+    display: block
+    font-size: 2rem
+    font-family: sans-serif
+    font-style: oblique
+    font-weight: lighter
+    text-shadow: 0.1rem 0.1rem 0.2rem #00000045
+    opacity: 80%
+
+h3
+    display: block
+    font-size: 1.5rem
+    font-family: sans-serif
+    font-weight: normal
+    text-shadow: 0.12rem 0.12rem 0.1rem #01070ec4
+    opacity: 85%
+
+.button
+    border-radius: 0.4rem
+    background-color: #888
+    outline: none
+    border: solid 0.25rem #00000000
+    box-shadow: 0.2rem 0.2rem 0.3rem #111
+
+    
+
+    &:enabled
+        &:hover
+            background-color: #777
+
+        &:active
+            background-color: #777
+            box-shadow: 0.08rem 0.08rem 0.1rem black
+            transform: translateY(0.06rem)
+        
+        &:focus
+          border: solid 0.25rem focusOutline
+            
+    
+    &:disabled
+        box-shadow: none
+        cursor: not-allowed
+        transform: translateY(0.1rem)
+
+
+

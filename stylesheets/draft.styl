@@ -1,0 +1,198 @@
+@require 'base'
+@require 'cards'
+
+/* ----- Constants ----- */
+cardHover = #b8860b9f
+cardLocked = #7cfc00f0
+boardHover = #777
+activePlayer = green 
+oppoPlayer = red 
+transitionDur = 0.2s
+
+
+/* ----- Header layout ----- */
+
+#header
+    display: block
+    padding: 0.5rem
+
+#headContainer
+    display: grid
+    grid-template-areas: 'title ticker' 'player tools'
+    grid-template-rows: auto auto
+    grid-template-columns: auto 1fr
+    margin: 0 1rem
+
+.playerContainer
+    display: grid
+    grid-template: "name pick" "name held" / auto auto
+    padding: 0.2em 0.4em
+    margin: 0 0.2em
+    &.otherPlayer
+        flex-shrink: 0
+
+.headerCell
+    padding: 0.3rem
+    display: flex
+
+.tickerContainer
+    display: flex
+    flex-direction: column
+    align-items: center
+
+#playerTicker
+    display: flex
+    justify-content: flex-start
+    align-items: center
+
+#titleBox
+    display: flex
+    flex-direction: column
+    align-items: flex-end
+    margin-right: .3rem
+
+#draftTitle
+    white-space: nowrap
+    padding: 0.3rem
+
+#playerBox
+    margin: 0 auto
+
+.activePlayer.playerContainer
+    margin-left: auto
+
+.playerName
+    padding: 0 0.4em
+    grid-area: name
+    align-self: center
+    max-width: 12em
+
+.playerPick
+.playerPacks
+    padding: 0.07em
+
+
+
+/* ----- Packs layout ----- */
+
+.groupContainer 
+    display: flex
+    flex-direction: row
+    flex-wrap: wrap
+    align-items: flex-start
+    justify-content: flex-start
+    min-height: 1.4rem
+
+
+/* ----- Text ----- */
+
+h2
+    padding: 3rem
+    text-align: center
+    white-space: nowrap
+
+h3
+    padding: 1.5rem 1rem 0
+    margin: 0.3rem
+    text-align: left
+    white-space: nowrap
+
+#roundLabel
+    margin: 0
+    line-height: 0em
+    font-weight: lighter
+    font-size: 0.9rem
+
+.playerContainer
+    font-family: sans-serif
+    white-space: nowrap
+    
+.otherPlayer.playerContainer
+    font-size: 1.3rem
+    opacity: 75%
+    &.disconnected
+        color: #999 !important
+        font-weight: lighter !important
+        font-style: italic !important
+
+.activePlayer.playerContainer
+    font-size: 1.6rem
+
+.playerPick
+    font-size: 0.7em
+    font-weight: lighter
+
+.playerPacks
+    font-size: 0.6em
+    font-weight: lighter
+
+.playerName
+    font-size: 1em
+    font-weight: normal
+
+#passingText
+    padding: 0 0.5em 0.7em
+    font-family: sans-serif
+    color: #A99
+    font-weight: lighter
+    font-size: 0.8rem
+
+
+
+/* --- Box borders --- */
+
+
+card-outline(clr)
+    box-shadow: 0 0 0.1rem 0.3rem clr
+    border-radius: card-border-curve
+    outline: none
+
+player-outline(outlineColor)
+    border: solid 0.01em outlineColor
+    border-radius: 0.4em
+
+
+.cardContainer
+    transition-duration: transitionDur
+
+.cardContainer.pack:not(.selected):focus
+.cardContainer.pack:not(.selected):hover
+    card-outline(cardHover)
+
+.cardContainer:not(.pack):focus
+.cardContainer:not(.pack):hover
+    card-outline(boardHover)
+
+.cardContainer.pack.selected
+    card-outline(cardLocked)
+    
+
+.playerContainer.active
+    player-outline(activePlayer)
+
+.playerContainer.opponent
+    player-outline(oppoPlayer)
+
+
+/* ----- Button ----- */
+
+#pickForm
+    display: flex
+    justify-content: center
+    margin: 0.6rem 0
+
+.button
+    transition-duration: transitionDur
+    font-size: 1.5rem
+    padding: 0.5% 5%
+    &:focus
+        border-color: cardHover !important
+
+
+
+/* --- Scrollbar --- */
+
+#tickerCell
+    overflow-x: auto
+    scrollbarColor()
+    thinScrollbar()

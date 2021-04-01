@@ -1,0 +1,41 @@
+//- Player box (Need player data + draftStatus as 'status')
+
+mixin playerBox(player,active)
+    -var playerType = active ? 'activePlayer' : 'otherPlayer'
+    -var playerCls = 'playerContainer ' + playerType
+    -var pickText = 'Pick ' + player.pickNum
+    -var holdingText = 'Holding ' + player.packsHeld
+    if active
+        - pickText = 'Pack ' + roundNum + ' | Pick ' + player.pickNum
+        - holdingText = 'Holding packs: ' + player.packsHeld
+    else 
+        if draftStatus.isIn(status)
+            if player.isActive
+                - playerCls += ' active'
+            if player.isOpponent
+                - playerCls += ' opponent'
+        if !player.isConnected
+            - playerCls += ' disconnected'
+    
+    div(class=playerCls)
+        div.playerName(class=playerType)= player.name
+        if draftStatus.isIn(status)
+            div.playerPick(class=playerType)= pickText 
+            div.playerPacks(class=playerType)= holdingText
+
+
+//- Draft info header
+
+div#headContainer
+    div#titleBox.headerCell
+        h1#draftTitle= draftName
+        p#roundLabel Round #{roundNum} of #{totalRounds}
+    div#tickerCell.headerCell
+        div.tickerContainer
+            div#passingText= passing || ''
+            div#playerTicker
+                each player in playerList
+                    +playerBox(player,false)
+                
+    div#playerBox.headerCell
+        +playerBox(activePlayer,true)
