@@ -3,6 +3,7 @@ Session object of a draft
 
 settings should be an object with:
 
+    name = draftName
     playerCount = number (default: 8)
 
     for Cube:
@@ -74,7 +75,7 @@ packCardSchema.set('toObject', {getters: true, versionKey: false, useProjection:
 packCardSchema.virtual('draftId').get(function(){ return this._id; });
 
 draftSchema.virtual('sessionId').get( function(){
-    return basic.sessionId.url(this._id); // sessionId for URL
+    return basic.sessionId.url(this._id);
 });
 
 draftSchema.virtual('direction').get( function(){

@@ -9,7 +9,7 @@ mixin playerBox(player,active)
         - pickText = 'Pack ' + roundNum + ' | Pick ' + player.pickNum
         - holdingText = 'Holding packs: ' + player.packsHeld
     else 
-        if draftStatus.isIn(status)
+        if draftStatus.isIn(status) || status == draftStatus.post
             if player.isActive
                 - playerCls += ' active'
             if player.isOpponent
@@ -29,7 +29,8 @@ mixin playerBox(player,active)
 div#headContainer
     div#titleBox.headerCell
         h1#draftTitle= draftName
-        p#roundLabel Round #{roundNum} of #{totalRounds}
+        if draftStatus.isIn(status)
+            p#roundLabel Pack #{roundNum} of #{totalRounds}
     div#tickerCell.headerCell
         div.tickerContainer
             div#passingText= passing || ''

@@ -9,7 +9,7 @@ const mtgDb = require('../config/db');
 
 // Setup a New Draft using a settings object
 async function makeNewDraft(settings) {
-    console.log(JSON.stringify(settings));
+    //console.log(JSON.stringify(settings));
     let newDraft = { players: [] };
 
     if ('name' in settings) newDraft.name = settings.name;
@@ -17,7 +17,7 @@ async function makeNewDraft(settings) {
     while (newDraft.players.length < settings.playerCount) {
         newDraft.players.push({});
     }
-    if (newDraft.players == []) {
+    if (newDraft.players.length == 0) {
         console.error('New session has no players!');
         return;
     }
@@ -27,8 +27,8 @@ async function makeNewDraft(settings) {
         newDraft.packs = await cubePacks(
             settings.cubeData,
             newDraft.players.length,
-            settings.packSize,
-            settings.packCount
+            settings.packCount,
+            settings.packSize
         );
     } else {
         newDraft.name = settings.packLayout.join(',') + ' Draft';
@@ -151,6 +151,7 @@ async function playerPickCard(draftId, toSideBoard=false) {
 
 // Remove card from pack
 async function draftPullCard(pack, draftId) {
+    if (!pack) return;
     const pickIndex = pack.findIndex( card => card._id == draftId );
     if (pickIndex == -1) return;
     pack[pickIndex].picked = 1;

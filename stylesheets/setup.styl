@@ -1,0 +1,100 @@
+@require 'base'
+@require 'mana'
+
+#setupHeader
+    margin: 1rem
+
+#setupForm 
+    display: flex
+    flex-direction: column
+    align-items: center
+
+#setupTitle
+    font-size: 2rem
+    margin: 1rem
+
+#colorPipsFoot
+#colorPipsHead
+    padding: 1rem
+
+#colorPipsFoot
+    width: 100%
+
+#draftTypeContainer
+    display: flex
+    justify-content: center
+    padding: 1rem
+
+#cubeType
+#boosterType
+    font-size: 1rem
+    border-radius: 0
+
+
+#allSettings
+    font-size: 1rem
+    display: flex
+    flex-direction: column
+    align-items: center
+
+.settingsForm
+    margin-top: 1rem
+    padding: 0.5rem
+
+    display: flex
+    flex-direction: column
+    align-items: center
+
+#cubeForm
+    display: grid
+    grid-template-areas: "packCount cubeFile" "packSize cubeFile"
+    column-gap: 0.5rem
+    row-gap: 0.5rem
+
+#cubeFileForm
+    grid-area: cubeFile
+    background: dimgray
+    margin: 0.5rem
+
+    display: flex
+    flex-direction: column
+    justify-content: space-between
+    align-items: center
+
+    padding: 1rem
+    width: 21rem
+    height: 12rem
+
+#packSizeForm
+    grid-area: packSize
+
+#packCountForm
+    grid-area: packCount
+
+#packSizeForm
+#packCountForm
+    padding: 1rem
+    align-self: center
+    justify-self: right
+
+#cubeFilePicker
+    align-self: flex-start
+
+#addBooster
+#removeBooster
+    margin: 0.3rem
+
+.settingsLabel
+    margin: 0.3rem
+
+.settingsPicker
+    margin: 0.3rem
+    padding: 0.3rem
+
+.button.pressed
+    background-color: #777
+    box-shadow: 0.08rem 0.08rem 0.1rem black
+    transform: translateY(0.06rem)
+
+.settingsForm.hideForm
+    display: none !important
