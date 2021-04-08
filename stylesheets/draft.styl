@@ -2,11 +2,22 @@
 @require 'cards'
 
 /* ----- Constants ----- */
-cardHover = #b8860b9f
-cardLocked = #7cfc00f0
-boardHover = #777
-activePlayer = green 
-oppoPlayer = red 
+
+// Old scheme
+// cardHover = #b8860b9f
+// cardLocked = #7cfc00f0
+activePlayer = #90C534 
+oppoPlayer = #3CBEFA
+// arrowColor = #3c4646
+
+// New scheme
+cardHover = #BFE0EE
+cardLocked = #75B7D1
+// activePlayer = #8DB979
+// oppoPlayer = #EA8571
+arrowColor = hrColor
+
+boardHover = focusOutline
 transitionDur = 0.2s
 
 
@@ -23,9 +34,13 @@ transitionDur = 0.2s
     grid-template-columns: auto 1fr
     margin: 0 1rem
 
+#playerBox > .playerContainer
+    margin: 0
+    padding: .2em 0
+
 .playerContainer
     display: grid
-    grid-template: "name pick" "name held" / auto auto
+    grid-template: 'name pick' 'name held' / auto 1fr
     padding: 0.2em 0.4em
     margin: 0 0.2em
     &.otherPlayer
@@ -35,37 +50,48 @@ transitionDur = 0.2s
     padding: 0.3rem
     display: flex
 
-.tickerContainer
-    display: flex
+.headerCell#titleBox
     flex-direction: column
-    align-items: center
+    justify-content: center
+
+.headerCell#tickerBox
+    overflow: auto
+    justify-content: flex-end
 
 #playerTicker
     display: flex
-    justify-content: flex-start
+    justify-content: flex-end
     align-items: center
 
 #titleBox
-    display: flex
-    flex-direction: column
-    align-items: flex-end
-    margin-right: .3rem
+    grid-area: title
+    align-items: flex-start
+
+#tickerBox
+    position: relative
+    grid-area: ticker
+
+#passingText
+    margin-top: .3rem
+
+#playerBox
+    grid-area: player
+
+#roundLabel
+    margin-block: 0
+    margin-inline-start: 0.6rem
 
 #draftTitle
     white-space: nowrap
     padding: 0.3rem
 
-#playerBox
-    margin: 0 auto
-
-.activePlayer.playerContainer
-    margin-left: auto
 
 .playerName
     padding: 0 0.4em
     grid-area: name
     align-self: center
     max-width: 12em
+    overflow: hidden
 
 .playerPick
 .playerPacks
@@ -75,12 +101,15 @@ transitionDur = 0.2s
 
 /* ----- Packs layout ----- */
 
+#pickButton
+    margin: 2rem
+
 .groupContainer 
     display: flex
     flex-direction: row
     flex-wrap: wrap
-    align-items: flex-start
-    justify-content: flex-start
+    align-items: center
+    justify-content: center
     min-height: 1.4rem
 
 
@@ -88,20 +117,24 @@ transitionDur = 0.2s
 
 h2
     padding: 3rem
+    padding-top: 0
     text-align: center
     white-space: nowrap
 
 h3
-    padding: 1.5rem 1rem 0
+    padding: 0 1rem
     margin: 0.3rem
     text-align: left
     white-space: nowrap
 
 #roundLabel
-    margin: 0
-    line-height: 0em
+    line-height: 0.5em
     font-weight: lighter
     font-size: 0.9rem
+    text-shadow: 0.1em 0.1em 0.2em #0000008c
+
+#playerBox > .playerContainer > .playerName
+    color: activePlayer
 
 .playerContainer
     font-family: sans-serif
@@ -130,13 +163,6 @@ h3
     font-size: 1em
     font-weight: normal
 
-#passingText
-    padding: 0 0.5em 0.7em
-    font-family: sans-serif
-    color: #A99
-    font-weight: lighter
-    font-size: 0.8rem
-
 
 
 /* --- Box borders --- */
@@ -148,8 +174,7 @@ card-outline(clr)
     outline: none
 
 player-outline(outlineColor)
-    border: solid 0.01em outlineColor
-    border-radius: 0.4em
+    
 
 
 .cardContainer
@@ -165,26 +190,123 @@ player-outline(outlineColor)
 
 .cardContainer.pack.selected
     card-outline(cardLocked)
-    
+
+.playerContainer
+    border: solid .1em invisible
 
 .playerContainer.active
-    player-outline(activePlayer)
+    border-color: activePlayer
+    border-radius: 0.4em
 
 .playerContainer.opponent
-    player-outline(oppoPlayer)
+    border-color: oppoPlayer
+    border-radius: 0.4em
 
 
-/* ----- Button ----- */
+
+/* ----- Tools ----- */
+
+#toolBox
+    flex-direction: row
+    justify-content: flex-end
+    align-items: center
+
+    overflow: visible
+
+img.svgColorize
+    width: 1.5rem
+
+#landTool
+    display: grid
+    grid-template-areas: \
+        "emptyT main-label side-label" \
+        "w m-w s-w" "u m-u s-u" "b m-b s-B" \
+        "r m-r s-r" "g m-g s-g" "emptyB button button"
+        // "emptyL pip-w pip-u pip-b pip-r pip-g emptyR" \
+        // "main-label main-w main-u main-b main-r main-g button" \
+        // "side-label side-w side-u side-b side-r side-g button"
+    // grid-auto-flow: column
+    justify-items: center
+    align-items: baseline
+    grid-row-gap: 0.3rem
+    grid-column-gap: @grid-row-gap
+
+    //display: none
+    // height: 0
+    padding: 1rem 0.5rem
+    position: absolute
+    right: -15%
+    top: 3rem
+
+    color: alpha(bodyText,75%)
+    background: alpha(hrColor,75%)
+    box-shadow: 0.2rem 0.2rem 0.3rem #111
+    border-radius: 0.7em
+    z-index: 100
+    overflow: hidden
+    // transitionDur
+    visibility: hidden
+    opacity: 0
+    transition: opacity transitionDur
+
+#landBox:hover #landTool
+    // display: grid
+    visibility: visible
+    opacity: 1
+
+.playerTool
+.hostTool
+    padding: .3rem
+    height: 2.5rem
+
+#hostDivider
+    height: 2.5rem
+    width: 0.1rem
+    margin: 0 0.7rem
+    background: hrColor
+
+.mainLabel
+.sideLabel
+    font-size: 0.8rem
+    font-weight: bold
+
+.landPip
+    margin: 0.2em
+    font-size: 0.9rem
+
+.mainLands
+.sideLands
+    width: 3rem
+
+#autoLands
+    grid-area: button
+    align-self: center
+    font-size: 1rem
+    margin: 0.2rem
+
+.toolButton
+    padding: 0 0.5rem
+    height: 2.5rem
+
+#landButton
+    font-size: 1rem
+    white-space: nowrap
+
+
+
+/* ----- Pick Button ----- */
 
 #pickForm
     display: flex
     justify-content: center
     margin: 0.6rem 0
 
+#pickButton
+    padding: 0.5% 5%
+
 .button
     transition-duration: transitionDur
     font-size: 1.5rem
-    padding: 0.5% 5%
     &:focus
         border-color: cardHover !important
 
@@ -192,7 +314,107 @@ player-outline(outlineColor)
 
 /* --- Scrollbar --- */
 
-#tickerCell
+.tickerContainer
     overflow-x: auto
+    padding: 1.2rem 0
     scrollbarColor()
     thinScrollbar()
+
+#playerTicker
+    min-width: max-content
+
+
+
+/* --- Arrow --- */
+
+borderDirection = {left: 'right', right: 'left'}
+triangle(direction, size, shapeColor)
+    width: 0
+    height: 0
+    border: size solid invisible
+    border-top-color: shapeColor
+    border-{borderDirection[direction]}-color: shapeColor
+
+
+arrowSize = 0.7rem
+.arrowWrapper
+    position: absolute
+    top: 0
+    left: 20%
+    width: 60%
+    height: 100%
+    display: flex
+    justify-content: center
+    align-items: flex-start
+    z-index: -1
+
+.arrowLine
+    width: 100%
+    height: 0.5rem
+    background-color: arrowColor
+    order: 2
+
+.rightArrow > .arrowLine
+    margin-left: arrowSize
+
+.rightArrow > .arrowPoint
+    triangle right arrowSize arrowColor
+    order: 3
+
+.leftArrow > .arrowLine
+    margin-right: arrowSize
+
+.leftArrow > .arrowPoint
+    triangle left arrowSize arrowColor
+    order: 1
+
+
+
+/* --- Tooltips --- */
+
+.playerTool
+.hostTool
+    position: relative
+
+.playerTool .tooltip
+.hostTool .tooltip
+    visibility: hidden
+    font-size: .7rem
+    background-color: alpha(hrColor, 75%)
+    color: alpha(bodyText,75%)
+    text-align: center
+    border-radius: 0.4rem
+    padding: 0.3em
+    position: absolute
+    left: 50%
+    top: 110%
+    width: 9em
+    margin-left: -5em
+    z-index: 9
+    overflow-wrap: anywhere
+
+.playerTool .tooltip::after
+.hostTool .tooltip::after
+    content: ""
+    position: absolute
+    bottom: 100%
+    left: 50%
+    margin-left: -0.45em
+    border-width: 0.6em
+    border-style: solid
+    border-color: transparent transparent alpha(hrColor, 75%) transparent
+
+.playerTool .tooltip
+.hostTool .tooltip
+// .playerTool .tooltip::after
+// .hostTool .tooltip::after
+    opacity: 0
+    transition: opacity 1s
+
+.playerTool:hover .tooltip
+.hostTool:hover .tooltip
+    visibility: visible
+    opacity: 1
+
+#draftUrl
+    display: none

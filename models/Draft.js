@@ -40,7 +40,11 @@ const playerSchema = new mtgDb.Schema({
     pick: { type: Number, default: -1 },
     cards: {
         main: [ packCardSchema ],
-        side: [ packCardSchema ]
+        side: [ packCardSchema ],
+        basicLands: {
+            main: [ String ],
+            side: [ String ]
+        }
     }
 });
 
@@ -48,6 +52,7 @@ const playerSchema = new mtgDb.Schema({
 const draftSchema = new mtgDb.Schema({
     name: { type: String, default: 'Draft' },
     hostId: { type: Schema.Types.ObjectId, ref: 'Draft.players' },
+    url: String,
     players: [ playerSchema ],
     packs: [ [ [ packCardSchema ] ] ],
     round: { type: Number, default: -1 },
@@ -79,6 +84,7 @@ draftSchema.virtual('sessionId').get( function(){
 });
 
 draftSchema.virtual('direction').get( function(){
+    const round = this.round
     return (this.round % 2) ? 1 : -1;
 });
 
@@ -114,7 +120,7 @@ playerSchema.virtual('nextPlayer').get( function(){
 
 playerSchema.virtual('opponent').get( function(){
     const f = Math.floor(this.parent().players.length / 2);
-    if (!f || this.position > 2 * f) return;
+    if (!f || this.position >= 2 * f) return;
     return this.parent().players[(this.position + f) % (2 * f)];
 })
 
@@ -179,10 +185,12 @@ playerSchema.methods.pushCard = function(card, toBoard='') {
     this.cards[board].unshift(card);
 }
 
-playerSchema.methods.pullCard = function(cardIndex, fromBoard='') {
+playerSchema.methods.pullCard = function(card, fromBoard='') {
     const board = fromBoard || 'main';
     this.parent().markModified('players.'+this.position+'.cards.'+board);
-    this.cards[board].splice(cardIndex, 1);
+    const cardIndex = this.cards[board].indexOf(card);
+    if (cardIndex > -1) this.cards[board].splice(cardIndex, 1);
+    else console.error('Cannot find card to pull: '+card._id);
 }
 
 
@@ -195,6 +203,8 @@ playerSchema.methods.passPack = draftOps.passPack;
 playerSchema.methods.pickCard = draftOps.pickCard;
 draftSchema.methods.pullCard = draftOps.pullCard;
 playerSchema.methods.swapBoard = draftOps.swapBoard;
+playerSchema.methods.getLandData = draftOps.dbToForm;
+playerSchema.methods.setLandData = draftOps.formToDb;
 
 
 const Draft = model('Draft', draftSchema, 'sessions');

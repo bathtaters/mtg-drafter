@@ -1,10 +1,16 @@
 //- Player box (Need player data + draftStatus as 'status')
 
+mixin arrow(isRight)
+    div.arrowWrapper(class = isRight ? 'rightArrow' : 'leftArrow')
+        div.arrowLine
+        div.arrowPoint
+
 mixin playerBox(player,active)
     -var playerType = active ? 'activePlayer' : 'otherPlayer'
     -var playerCls = 'playerContainer ' + playerType
     -var pickText = 'Pick ' + player.pickNum
     -var holdingText = 'Holding ' + player.packsHeld
+    -var nameId = ''
     if active
         - pickText = 'Pack ' + roundNum + ' | Pick ' + player.pickNum
         - holdingText = 'Holding packs: ' + player.packsHeld
@@ -12,16 +18,36 @@ mixin playerBox(player,active)
         if draftStatus.isIn(status) || status == draftStatus.post
             if player.isActive
                 - playerCls += ' active'
+                - nameId = 'tickerActiveName'
             if player.isOpponent
                 - playerCls += ' opponent'
+                - nameId += 'tickerOpponentName'
         if !player.isConnected
             - playerCls += ' disconnected'
     
     div(class=playerCls)
-        div.playerName(class=playerType)= player.name
+        if active
+            div.playerName#renameBox(class=playerType, role='textbox', contenteditable=true, onkeypress="return (this.innerText.length <= 22)")= player.name
+        else 
+            div.playerName(class=playerType, id=nameId)= player.name
         if draftStatus.isIn(status)
             div.playerPick(class=playerType)= pickText 
             div.playerPacks(class=playerType)= holdingText
+
+mixin landDropdown()
+    form#landTool
+        .blank 
+        div.mainLabel Main
+        div.sideLabel Side
+        each color in ['w','u','b','r','g']
+            i.landPip.ms.ms-cost.ms-shadow(class = 'ms-'+color)
+            - var name = 'main-'+color
+            - var value = landData[name] || '0'
+            input.mainLands(type="number" id=name name=name min=0 value=value)
+            - name = 'side-'+color
+            - value = landData[name] || '0'
+            input.mainLands(type="number" id=name name=name min=0 value=value)
+        button.button#autoLands(type='button' disabled=true) Auto
 
 
 //- Draft info header
@@ -31,12 +57,41 @@ div#headContainer
         h1#draftTitle= draftName
         if draftStatus.isIn(status)
             p#roundLabel Pack #{roundNum} of #{totalRounds}
-    div#tickerCell.headerCell
+
+    div#tickerBox.headerCell
         div.tickerContainer
-            div#passingText= passing || ''
             div#playerTicker
                 each player in playerList
                     +playerBox(player,false)
+        if draftStatus.isIn(status)
+            +arrow(passRight)
                 
     div#playerBox.headerCell
         +playerBox(activePlayer,true)
+    
+    div#toolBox.headerCell
+        if isHost
+            div#copyBox.hostTool
+                button.button.toolButton#linkButton(type='button' disabled=false)
+                    img.svgColorize#linkIcon(src='/images/link.svg')
+                span#copyTip.tooltip
+                    span#copyMsg= 'Copy URL '
+                    span#draftUrl= draftUrl
+            //- if draftStatus.isIn(status)
+            if false
+                - var pauseTipText = status == draftStatus.run ? 'Pause draft' : 'Start draft'
+                div#pauseBox.hostTool
+                    button.button.toolButton#pauseButton(type='button' disabled=false)
+                        if status == draftStatus.run
+                            img.svgColorize#pauseIcon(src='/images/pause.svg')
+                        else if status == draftStatus.pause
+                            img.svgColorize#playIcon(src='/images/play.svg')
+                    span#pauseTip.tooltip= pauseTipText
+            div#hostDivider
+        div#landBox.playerTool
+            button.button.toolButton#landButton(type='button') Lands
+            +landDropdown()
+        div#downloadBox.playerTool
+            button.button.toolButton#dlButton(type='button' disabled=false)
+                img.svgColorize#dlIcon(src='/images/download.svg')
+            span#downloadTip.tooltip Download text file

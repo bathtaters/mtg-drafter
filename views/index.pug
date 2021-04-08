@@ -4,10 +4,7 @@ mixin numberList(name, text, def, max, min = 0)
   - var n = min
   div(id=name+'Form')
     label.settingsLabel(for=name)= text
-    select.settingsPicker(id=name, type="text", name=name)
-      while n < max
-        option(value=n selected=(n == def))= n
-        - n += 1
+    input(type="number" id=name name=name min=min max=max value=def)
 
 mixin colorPips(containerId)
   div.evenSpacedH(id=containerId)
@@ -29,27 +26,36 @@ block content
   form#setupForm(action='/', method='post')
     div#setupHeader
       +colorPips('colorPipsHead')
-      button#setupTitle.button(type='submit', name='start', disabled) Start a New Draft
+      button#setupTitle.button.settingsButton(type='submit', name='start', disabled='true') Start New Draft
       +colorPips('colorPipsHead')
 
       //- Select draft type
       div#draftTypeContainer
-        input#cubeType.button(type='button', value='Cube')
-        input#boosterType.button(type='button', value='Boosters')
+        input#cubeType.button.settingsButton(type='button', value='Cube')
+        input#boosterType.button.settingsButton(type='button', value='Boosters')
         input#draftType(type='hidden' name='draftType' value='')
 
     div#allSettings
+      input#draftName(type='text', name='draftName', value='New Draft')
       +numberList('playerCount', 'Players', 8, 12, 2)
 
       //- Cube Settings
       div#cubeForm.settingsForm.hideForm
-        +numberList('packCount', 'Packs per Round', 3, 10, 1)
-        +numberList('packSize', 'Card per Pack', 15, 20, 1)
+        div#cubeOptionsForm
+          +numberList('packCount', 'Packs per Round', 3, 10, 1)
+          +numberList('packSize', 'Card per Pack', 15, 20, 1)
         div#cubeFileForm
-          div
           label#cubeFileText(for='cubeFile') Upload Text File
-          input#cubeFilePicker(type='file' name='cubeFile' accept='text/txt, text/csv')
-        i Sorry, cube drafting is still under development.
+          input#cubeFileData(type='hidden' name='cubeData' value='')
+          div#cubeFileBox
+            div#uploadWaiting.loading.hideForm Loading&#8230;
+            div 
+            div#cubeFileContent
+              div#uploadResultContainer.hideForm
+                span#uploadResultHeader Successfully uploaded # cards
+                span#uploadResultBody
+              span#dragDropText Drag and drop
+            input#cubeFilePicker(type='file' name='cubeFile' accept='text/plain, text/csv')
         
       //- Booster Settings
       div#boosterForm.settingsForm.hideForm

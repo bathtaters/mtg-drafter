@@ -11,7 +11,6 @@ mixin cardGroup(name, cardList)
 
 mixin pickedCards(cards)
     div#pickedCards
-        hr#cardDivider
         +cardGroup('main',cards.main)
         hr#cardDivider
         +cardGroup('side',cards.side)
@@ -24,8 +23,8 @@ block content
     case status
         when draftStatus.pre
             h2#preMsg Waiting for everyone to join...
+            hr#cardDivider
         when draftStatus.post
-            h2#postMsg Draft complete.
             +pickedCards(cards)
         when draftStatus.pause
         when draftStatus.run
@@ -37,6 +36,7 @@ block content
             else
                 div#cardContainer
                     h2#waitingMsg Waiting for the next pack...
+            hr#cardDivider
             +pickedCards(cards)
         default
             h2#error There's been a server error, you can wait and try refreshing.

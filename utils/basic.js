@@ -24,6 +24,14 @@ function maxIndex(arr) {
 }
 
 
+// Convert text stream to array of lines
+const splitLines = (buffer) => {
+    if (!(buffer instanceof Buffer)) {
+        console.error('Failed to read non-Buffer object as Buffer.')
+        return buffer;
+    }
+    return buffer.toString().split(/(?:\r\n|\r|\n)/g);
+}
 
 
 // Modulo w/ non-negative result
@@ -108,6 +116,14 @@ const sessionId = {
     htob: (hex) => Buffer.from(hex, 'hex').toString('base64')
 }
 
+const dataCompress = {
+    objToB64: obj =>
+        Buffer.from(JSON.stringify(obj)).toString('base64'),
+    b64ToObj: b64 =>
+        JSON.parse(Buffer.from(b64,'base64').toString())
+}
+
+
 // Replate Brace code (used in db) w/ CSS styles (For mana.css)
 function mtgSymbolReplace(text, shadow=false) {
     const tag = [
@@ -142,6 +158,7 @@ const log = {
 module.exports = {
     sessionId: sessionId,
     random: random,
+    splitLines: splitLines,
     shuffleArray: shuffleArray,
     swapArr: swapArr,
     mod: modulo,
@@ -152,6 +169,7 @@ module.exports = {
     filterObject: filterObject,
     maxIndex: maxIndex,
     mtgSymbolReplace: mtgSymbolReplace,
+    dataCompress: dataCompress,
     log: log
 }
 

@@ -1,10 +1,18 @@
+// Logging settings
+var clientDebugLogging = true;
+function log(msg, err=false) {
+    if (err) { console.error(msg,err); }
+    else if (clientDebugLogging) { console.log(msg); }
+}
+
+// Add listeners
 function addListenerAllBrswrs(elem, listener, func, useCapture=false) {
     if (elem.addEventListener) {
         elem.addEventListener(listener,func,useCapture);
     } else if(elem.attachEvent) {
         elem.attachEvent("on"+listener,func);
     }
-    //console.log('added '+listener+' listener to '+(elem.id||elem.tagName||'no-id'));
+    //log('added '+listener+' listener to '+(elem.id||elem.tagName||'no-id'));
 }
 function addWindowListenerAllBrswrs(listener, func, useCapture=false) {
     if (window.addEventListener) {
@@ -17,10 +25,159 @@ function addWindowListenerAllBrswrs(listener, func, useCapture=false) {
     } else {
        document.addEventListener(listener, func, useCapture);
     }
-    //console.log('added '+listener+' listener to window');
+    //log('added '+listener+' listener to window');
 }
+
+// Stop click fallthrough
 function stopPropagationAllBrswrs(event) {
     if (!event) event = window.event;
     if (event.stopPropagation) event.stopPropagation();
     else event.cancelBubble = true;
 }
+function preventDefaults(event) {
+    event.preventDefault()
+    stopPropagationAllBrswrs(event)
+}
+
+// Copy Text
+function fallbackCopyTextToClipboard(text) {
+    var textArea = document.createElement("textarea");
+    textArea.value = text;
+
+    // Avoid scrolling to bottom
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        log('Fallback: Copying text command was ' + msg);
+    } catch (err) {
+        log('Fallback: Oops, unable to copy', err);
+    }
+
+    document.body.removeChild(textArea);
+}
+function copyTextToClipboard(text) {
+    if (!navigator.clipboard) {
+        fallbackCopyTextToClipboard(text);
+        return;
+    }
+    navigator.clipboard.writeText(text).then(function() {
+        log('"'+text+'" copied to clipboard.');
+    }, function(err) {
+        log('Could not copy text: '+text, err);
+    });
+}
+
+
+
+// Fetch requests
+function postData(action, data = null, url = '../action') {
+    log('PostData: '+url+'/'+action);
+    return fetch(url + '/' + action, {
+        method: data ? 'POST' : 'GET',
+        //cache: 'no-cache', // Forces to not use cache
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: data ? JSON.stringify(data) : undefined
+    }).then( function(response){
+        if (response.ok) { return response; }
+        else {
+            log('Fetch request failed: '+url+'/'+action+' '+JSON.stringify(data), 'FETCH API ERR');
+        }
+        return;
+    }); 
+}
+
+function postFormData(action, formData, url = '../action') {
+    var jsonFormData = Object.fromEntries(formData.entries());
+    return postData(action, jsonFormData, url);
+}
+
+function updateServer(action, data = null, url = '../action') {
+    return postData(action,data,url)
+        .then( function(res){return res.json();} )
+        .catch( error => log('Fetch error',error) );
+}
+
+function poll(action, interval=2000) {
+    function executePoll(resolve, reject) {
+      return updateServer(action).then( function(result){
+        if (result.refresh) {
+            return resolve(result);
+        } else {
+            setTimeout(executePoll, interval, resolve, reject);
+        }
+      });
+    }
+    return new Promise(executePoll);
+}
+
+function uploadFile(fileForm, url='./action/upload') {
+    return fetch(url, {
+        method: 'POST',
+        body: fileForm
+    }).then( response => response.json() )
+    .catch( error => log('Upload error',error) );
+}
+
+function downloadFile(data = null, contentType = 'text/plain', url = '../action') {
+
+    function filenameFromHeader(header) {
+        var contentDispostion = header.split(';');
+        var cdLen = contentDispostion.length;
+        
+        // Find extended filename
+        var fileNameToken = `filename*=UTF-8''`;
+        for (var i=0; i<cdLen; i++) {
+            if (contentDispostion[i].trim().indexOf(fileNameToken) === 0) {
+                return decodeURIComponent(contentDispostion[i].trim().replace(fileNameToken, ''));
+            }
+        }
+
+        // Find simple filename
+        fileNameToken = 'filename=';
+        for (var i=0; i<cdLen; i++) {
+            if (contentDispostion[i].trim().indexOf(fileNameToken) === 0) {
+                return contentDispostion[i].trim().replace(fileNameToken, '').replace(/"/g,'');
+            }
+        }
+
+        // Use default name
+        return 'DraftDeck_'+(new Date().toISOString())+'.txt';
+    }
+
+    log('Retrieving deck file.')
+    return postData('download',data,url)
+        .then( function(res){ 
+            return Promise.all([
+                res.blob(),
+                Promise.resolve(filenameFromHeader(res.headers.get('content-disposition')))
+            ]);
+        }).then( function(data){
+            // It is necessary to create a new blob object with mime-type explicitly set for all browsers except Chrome, but it works for Chrome too.
+            var newBlob = new Blob([data[0]], { type: contentType });
+
+            // MS Edge and IE don't allow using a blob object directly as link href, instead it is necessary to use msSaveOrOpenBlob
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(newBlob,data[1]);
+            } else {
+                // For other browsers: create a link pointing to the ObjectURL containing the blob.
+                var objUrl = window.URL.createObjectURL(newBlob);
+
+                var link = document.createElement('a');
+                link.href = objUrl;
+                link.download = data[1];
+                link.click();
+
+                // For Firefox it is necessary to delay revoking the ObjectURL.
+                setTimeout(() => { window.URL.revokeObjectURL(objUrl); }, 250);
+            }
+        });
+  }

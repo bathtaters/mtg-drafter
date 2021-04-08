@@ -1,5 +1,8 @@
 // Definitions/Strings
 
+// Default Draft Name
+module.exports.defaultDraftName = 'New Draft'
+
 // Basic lands
 module.exports.basicLands = ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'];
 

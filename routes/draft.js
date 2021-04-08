@@ -21,7 +21,8 @@ router.get('/:sessionId?', async function(req, res, next) {
   //return res.send('Loaded session: '+session.sessionId+', '+(player.cookieId == req.cookies.playerId ? 'existing ':'new ')+'player: '+player.name+' <'+player.cookieId+'>.');
 
   // Build object to send to Pug
-  const renderData = await populatePack.draftOnly(session,player);
+  const renderData = await populatePack.draftOnly(session,player)
+    .then(data => {data.title = 'MtG Drafter – '+data.draftName; return data; });
   return res.render('draft', renderData);
 
 });

@@ -73,10 +73,13 @@ const draftPopulate = async (draft,player) => {
         user._id == player._id
       )
     ),
+    isHost: draft.hostId.toString() == player._id.toString(),
     totalRounds: draft.packs.length,
-    passing: draftStatus.isIn(draft.status) ? directionText[String(draft.direction)] : 0,
-    groupTitles: groupTitles
-};}
+    passRight: draft.direction == -1,
+    groupTitles: groupTitles,
+    draftUrl: draft.url,
+    landData: player.getLandData()
+  };}
 
 
 module.exports = {

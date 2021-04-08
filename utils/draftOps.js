@@ -3,7 +3,7 @@
 const cubePacks = require('./cubePacks');
 const boosterPacks = require('./boosterPacks');
 const basic = require('./basic');
-const { draftStatus } = require('../config/definitions');
+const { draftStatus, cardColors } = require('../config/definitions');
 const mtgDb = require('../config/db');
 
 
@@ -23,7 +23,7 @@ async function makeNewDraft(settings) {
     }
 
     if ('cubeData' in settings) {
-        newDraft.name = 'Cube Draft';
+        newDraft.name = settings.name || 'Cube Draft';
         newDraft.packs = await cubePacks(
             settings.cubeData,
             newDraft.players.length,
@@ -31,13 +31,14 @@ async function makeNewDraft(settings) {
             settings.packSize
         );
     } else {
-        newDraft.name = settings.packLayout.join(',') + ' Draft';
+        newDraft.name = settings.name || settings.packLayout.join(',') + ' Draft';
         newDraft.packs = await boosterPacks(
             settings.packLayout,
             newDraft.players.length
         );
     }
 
+    if (!newDraft.packs || !newDraft.packs.length) return;
     newDraft = new this(newDraft);
 
     newDraft.hostId = await newDraft.addPlayer().then(p => p._id);
@@ -160,26 +161,72 @@ async function draftPullCard(pack, draftId) {
 
 
 // Move card from mainBoard to sideBoard
-async function playerSwapBoard(draftId) {
+async function playerSwapBoard(draftId, fromSide=null) {
     // Determine where card is
     let board = ['main','side'];
-    let cardIndex = this.cards.main.findIndex( card => card._id == draftId );
-    if (cardIndex == -1) {
-        board.reverse();
-        cardIndex = this.cards.side.findIndex( card => card._id == draftId );
+    let card;
+    if (!fromSide) {
+        card = this.cards.main.find( card => card._id == draftId );
     }
-    if (cardIndex == -1) {
+    if (fromSide || (fromSide == null && !card)) {
+        board.reverse();
+        card = this.cards.side.find( card => card._id == draftId );
+    }
+
+    if (!card) {
         console.error(draftId+' card was not found to swap for player: '+this._id);
-        return 'No card found';
+        return 0;
     }
 
     // Move card
-    await this.pushCard(this.cards[board[0]][cardIndex], board[1]);
-    await this.pullCard(this.cards[board[0]][cardIndex], board[0]);
+
+    await this.pushCard(card, board[1]);
+    await this.pullCard(card, board[0]);
     await this.parent().save();
-    return 0;
+    return board[1];
 }
 
+// Convert to/from basic land form data
+async function playerFormToDb(v) {
+    const playerPath = 'players.'+this.position+'.cards.';
+    for (const key in v) {
+        // Get boardName from ID
+        let boardName;
+        if (/^main/.test(key)) boardName = 'main';
+        else if (/^side/.test(key)) boardName = 'side';
+        else {
+            console.log('Invalid formData board: '+key+' : '+v[key]);
+            continue;
+        }
+
+        // Get index to update
+        const board = this.cards.basicLands[boardName]
+        const colorIndex = cardColors.indexOf(key.substr(key.length - 1).toUpperCase());
+        if (colorIndex == -1) console.log('Invalid formData color: '+key+' : '+v[key]);
+        else if (board[colorIndex] != v[key]) {
+            // Is markModified necessary here?
+            board[colorIndex] = v[key];
+            this.parent().markModified(playerPath+'basicLands.'+boardName+'.'+colorIndex);
+            this.parent().markModified(playerPath+'basicLands.'+boardName);
+        }
+        // else console.log('This color already matches');
+    }
+    await this.parent().save();
+}
+function playerDbToForm() {
+    // Pull all lands from database and convert to objects
+    const addLands = (landData,board) => {
+        const lands = this.cards.basicLands[board]
+        for(let i=0, e=lands.length; i < e; i++) {
+            landData[board+'-'+cardColors[i].toLowerCase()] = lands[i] || '0';
+        }
+    }
+
+    let landData = {}
+    addLands(landData, 'main');
+    addLands(landData, 'side');
+    return landData;
+}
 
 
 
@@ -192,5 +239,7 @@ module.exports = {
     passPack: playerPassPack,
     pickCard: playerPickCard,
     pullCard: draftPullCard,
-    swapBoard: playerSwapBoard
+    swapBoard: playerSwapBoard,
+    formToDb: playerFormToDb,
+    dbToForm: playerDbToForm
 }

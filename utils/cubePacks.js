@@ -23,9 +23,9 @@ function generateCubePacks(cubeList, packsPerRound, packCount, packSize) {
     let cubePool = [...cubeList];
 
     // Check size
-    if ( packSize * packCount > cubePool.length ) {
+    if ( packSize * packCount * packsPerRound > cubePool.length ) {
         console.error("Cube is too small to fill packs: cube has " + 
-        cubePool.length + " cards but needs " + (packSize * packCount) + "cards." );
+        cubePool.length + " cards but needs " + (packSize * packCount * packsPerRound) + "cards." );
         return [];
     }
 
