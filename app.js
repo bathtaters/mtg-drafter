@@ -60,7 +60,7 @@ app.use(cookieParser());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(stylus.middleware(stylusOptions));
-//app.use(minify());
+app.use(minify());
 app.use(express.static(path.join(__dirname, 'public', 'icon')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload(uploadOptions));
