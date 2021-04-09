@@ -1,8 +1,7 @@
 // MtG Specific utilities
 const basic = require("./basic");
 const { cardColors } = require("../config/definitions");
-const { moduleExpression } = require("@babel/types");
-const Card = require("../models/card");
+const Card = require("../models/Card");
 
 // RNG w/ weights
 const weightKey = 'weight' // key to use, must be in all objects in array

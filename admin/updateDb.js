@@ -5,7 +5,7 @@ const https = require('https');
 const JSONStream = require('JSONStream');
 const Set = require('../models/Set');
 const Meta = require('../models/Meta');
-const Card = require('../models/card');
+const Card = require('../models/Card');
 const { basicLands } = require('../config/definitions');
 
 // Download links

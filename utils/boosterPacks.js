@@ -1,5 +1,5 @@
 // Setup for a booster draft
-const Card = require("../models/card");
+const Card = require("../models/Card");
 const Set = require("../models/Set");
 const basic = require("./basic");
 const { getWeightedRandom, balanceColors } = require("./shared");
