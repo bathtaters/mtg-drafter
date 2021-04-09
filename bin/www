@@ -4,37 +4,57 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('mtg-drafter:server');
-var http = require('http');
+const app = require('../app');
+const debug = require('debug')('mtg-drafter:server');
+const http = require('http');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
+/**
+ * HTTPS Certificates
+ */
+
+const credentials = {
+  key: fs.readFileSync(path.join(__dirname,'../','admin','key.pem')),
+  cert: fs.readFileSync(path.join(__dirname,'../','admin','cert.pem'))
+};
+
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT) || 8080;
 app.set('port', port);
+const tlsPort = normalizePort(process.env.TLSPORT || process.env.PORT) || 8443;
+app.set('sshPort', tlsPort);
 
 /**
- * Create HTTP server.
+ * Create servers.
  */
 
-var server = http.createServer(app);
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+httpServer.listen(port);
+httpServer.on('error', onError);
+httpServer.on('listening', httpListening);
+
+httpsServer.listen(tlsPort);
+httpsServer.on('error', onError);
+httpsServer.on('listening', httpsListening);
 
 /**
  * Normalize a port into a number, string, or false.
  */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+  const port = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe
@@ -58,7 +78,7 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === 'string'
+  const bind = typeof port === 'string'
     ? 'Pipe ' + port
     : 'Port ' + port;
 
@@ -81,9 +101,17 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
+function httpListening() {
+  const addr = httpServer.address();
+  const bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+
+function httpsListening() {
+  const addr = httpsServer.address();
+  const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
