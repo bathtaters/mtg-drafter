@@ -2,15 +2,20 @@ var express = require('express');
 var router = express.Router();
 
 const Set = require('../models/Set');
-const fileOps = require('../admin/fileOps'); // TEMPORARY
 const Draft = require('../models/Draft');
 const basic = require('../utils/basic');
 const { defaultDraftName } = require('../config/definitions');
+const { limits, draftSetupRules, validate } = require('../utils/validator');
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
   const setList = await Set.getSetList()
-  return res.render('index', { title: 'MtG Drafter – New Draft', defaultName: defaultDraftName, sets: setList });
+  return res.render('index', {
+    title: 'MtG Drafter',
+    defaultName: defaultDraftName,
+    sets: setList,
+    limits: limits
+  });
 
   /*cubeData.getCardList(testCards)
     .then( data => console.log(data))
@@ -18,9 +23,9 @@ router.get('/', async function(req, res, next) {
   */
 });
 
-router.post('/', async function(req, res, next) {
+router.post('/', draftSetupRules(), validate, async function(req, res, next) {
   
-  // Get settings from user
+  // Booster settings
   let draftSettings;
   if(req.body.draftType == 'boosterType') {
     // Booster settings
@@ -28,13 +33,27 @@ router.post('/', async function(req, res, next) {
       playerCount: +req.body.playerCount,
       packLayout: Array.isArray(req.body.setCode) ? req.body.setCode : [req.body.setCode]
     };
+
+  // Cube settings
   } else if (req.body.draftType == 'cubeType') {
+
+    // Check cubeData (Eventually add to normalize methods)
+    if (!req.body.cubeData) {
+      console.error('Cube data is empty.');
+      return res.send('No cube or an empty cube was uploaded for the cube draft.');
+    }
+    const cubeData = basic.dataCompress.b64ToObj(req.body.cubeData);
+    if (!Array.isArray(cubeData) || !cubeData.length) {
+      console.error('Cube data is invalid format.');
+      return res.send('The cube list is invalid, please check the file.');
+    }
+
     // Cube settings
     draftSettings = {
       playerCount: +req.body.playerCount,
       packCount: +req.body.packCount,
       packSize: +req.body.packSize,
-      cubeData: basic.dataCompress.b64ToObj(req.body.cubeData)
+      cubeData: cubeData
     };
   } else {
     // Error on input

@@ -1,5 +1,7 @@
+const { cardColors } = require("../config/definitions");
 const Draft = require("../models/Draft");
 const basic = require("./basic");
+const validator = require("./validator");
 
 // Quick log builders
 function logReq(req,res,next) {
@@ -7,12 +9,31 @@ function logReq(req,res,next) {
     if (basic.notEmpty(req.params)) str += '; Parameters'+JSON.stringify(req.params);
     if (basic.notEmpty(req.cookies)) str += '; Cookies'+JSON.stringify(req.cookies);
     if (basic.notEmpty(req.body)) {
-      const body = 'cubeData' in req.body ? Object.assign({}, req.body, {cubeData: '...'}) : req.body;
+      const body = 'cubeData' in req.body && req.body.cubeData ? Object.assign({}, req.body, {cubeData: '...'}) : req.body;
       str += '; Posted'+JSON.stringify(body);
     }
     if (basic.notEmpty(req.files)) str += '; Files'+JSON.stringify(Object.keys(req.files));
     if (req.ip) str += '; From' + req.ip;
     console.log(str); next();
+}
+
+// Create landCounts object from form values
+function getLandCounts(req, res, next) {
+  let landCounts = [];
+  for (const boardName of ['main','side']) {
+    for (let color of cardColors) {
+      if (color.length != 1) continue;
+      
+      // Create object from post data
+      const bodyKey = boardName + '-' + color.toLowerCase();
+      landCounts.push({_id: bodyKey, count: req.body[bodyKey] || 0});
+      
+      if (req.body[bodyKey] === undefined) console.log('Missing landCount for: '+bodyKey);
+      else delete req.body[bodyKey];
+    }
+  }
+  req.body.landCount = landCounts;
+  next();
 }
 
 // Import Session/Player from database and add to header
@@ -61,11 +82,14 @@ async function getDraftObjects(req, res, next) {
   req.body.player = player;
   if (!returning) { res.cookie('playerId', player.cookieId); }
   
-  return next();
+  next();
 }
+const validatedDraftObjects = validator.cookieRules().concat(validator.validate, getDraftObjects);
+
 
 
 module.exports = {
     logReq: logReq,
-    draftObjs: getDraftObjects
+    landCounts: getLandCounts,
+    draftObjs: validatedDraftObjects
 }

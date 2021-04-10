@@ -19,7 +19,7 @@ const { Schema, model, Model } = require('mongoose');
 const mtgDb = require('../config/db');
 const basic = require('../utils/basic');
 const draftOps = require('../utils/draftOps');
-const { draftStatus } = require('../config/definitions');
+const { draftStatus, cardColors } = require('../config/definitions');
 
 // PackCard Model:
 const packCardSchema = new mtgDb.Schema({
@@ -27,6 +27,13 @@ const packCardSchema = new mtgDb.Schema({
     foil: { type: Boolean, default: false },
     picked: { type: Number, default: 0 }
 });
+
+// Basic Land Model:
+const landSchema = new mtgDb.Schema({
+    _id: String,
+    count: { type: Number, default: 0 }
+});
+//const defaultLands = cardColors.filter(c => c.length == 1).reduce( c => {return {key: c};});
 
 // Player Model:
 const playerSchema = new mtgDb.Schema({
@@ -41,10 +48,7 @@ const playerSchema = new mtgDb.Schema({
     cards: {
         main: [ packCardSchema ],
         side: [ packCardSchema ],
-        basicLands: {
-            main: [ String ],
-            side: [ String ]
-        }
+        basicLands: [ landSchema ],
     }
 });
 
@@ -203,8 +207,8 @@ playerSchema.methods.passPack = draftOps.passPack;
 playerSchema.methods.pickCard = draftOps.pickCard;
 draftSchema.methods.pullCard = draftOps.pullCard;
 playerSchema.methods.swapBoard = draftOps.swapBoard;
-playerSchema.methods.getLandData = draftOps.dbToForm;
-playerSchema.methods.setLandData = draftOps.formToDb;
+playerSchema.methods.getLandData = draftOps.getLands;
+playerSchema.methods.setLandData = draftOps.setLands;
 
 
 const Draft = model('Draft', draftSchema, 'sessions');

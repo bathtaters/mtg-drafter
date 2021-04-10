@@ -101,14 +101,15 @@ const sessionId = {
     // encode mongo.ObjectID as URL
     url: bytes =>
         bytes.toString('base64')
-            .replace(/=/g,'')
+            .replace(/=+$/,'')
             .replace(/\+/g,'-')
             .replace(/\//g,'_'),
     // decode mongo.ObjectID from URL
     objId: url => 
         sessionId.btoh(url
-            .replace(/-/g,'+')
-            .replace(/_/g,'/')
+            // should detect base64url
+            // .replace(/-/g,'+')
+            // .replace(/_/g,'/')
         ),
     
     // hex <=> base64 converter
@@ -118,9 +119,12 @@ const sessionId = {
 
 const dataCompress = {
     objToB64: obj =>
-        Buffer.from(JSON.stringify(obj)).toString('base64'),
+        Buffer.from(JSON.stringify(obj)).toString('base64')
+            .replace(/=+$/,'')
+            .replace(/\+/g,'-')
+            .replace(/\//g,'_'),
     b64ToObj: b64 =>
-        JSON.parse(Buffer.from(b64,'base64').toString())
+        JSON.parse(Buffer.from(b64,'base64').toString()) // should detect base64url
 }
 
 

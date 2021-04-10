@@ -2,9 +2,10 @@
 
 var express = require('express');
 var router = express.Router();
-const fileOps = require('../admin/fileOps');
+const fileOps = require('../utils/fileOps');
 const { draftStatus } = require('../config/definitions');
 const basic = require('../utils/basic');
+const { draftRules, validate } = require('../utils/validator');
 
 const reply = (res, data={}) => {
   res.setHeader('Content-Type', 'application/json');
@@ -24,7 +25,7 @@ router.post('/upload', async function(req, res, next) {
 });
 
 // Swap cards to/from Sideboard
-router.post('/swap', async function(req, res, next) {
+router.post('/swap', draftRules.swap(), validate, async function(req, res, next) {
   if (!req.body.player || !('draftId' in req.body)) return reply(res);
 
   const moveTo = await req.body.player.swapBoard(req.body.draftId, req.body.fromSide);
@@ -32,13 +33,15 @@ router.post('/swap', async function(req, res, next) {
 });
 
 // Rename player
-router.post('/rename', async function(req, res, next) {
+router.post('/rename', draftRules.rename(), validate, async function(req, res, next) {
   if (!req.body.player || !('name' in req.body)) return reply(res);
   
   const newName = req.body.name.replace(/(\r?\n)+/g,' ').substring(0,22);
   if (newName.trim()) {
     req.body.player.name = newName;
     await req.body.session.save();
+  } else if (!req.body.player.name.trim()) {
+    req.body.player.name = 'Player '+req.body.player.position;
   }
   return reply(res, {name: req.body.player.name});
 
@@ -59,15 +62,10 @@ router.get('/download', async function(req, res, next) {
 });
 
 // Set basic land count
-router.post('/lands', async function(req, res, next) {
-  if (!req.body.player) return reply(res);
+router.post('/lands', draftRules.lands(), validate, async function(req, res, next) {
+  if (!req.body.player || !req.body.landCount) return reply(res);
 
-  let landData = {}
-  for (const key in req.body) {
-    if (/(main|side)-\w/.test(key)) landData[key] = req.body[key];
-  }
-  
-  await req.body.player.setLandData(landData);
+  await req.body.player.setLandData(req.body.landCount);
   return reply(res, req.body.player.getLandData());
 });
 

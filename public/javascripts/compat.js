@@ -1,8 +1,8 @@
 // Logging settings
-var clientDebugLogging = true;
+var mtgDrafterLogging = false;
 function log(msg, err=false) {
     if (err) { console.error(msg,err); }
-    else if (clientDebugLogging) { console.log(msg); }
+    else if (mtgDrafterLogging) { console.debug(msg); }
 }
 
 // Add listeners

@@ -11,6 +11,7 @@ const draftFields = ['draftId', 'foil', 'picked'];
 // Combine draft data w/ card data
 async function populateCard(cardUuid, draftCard) {
   let newCard = await Card.findById(cardUuid, packProjections);
+  if (!newCard) return;
   newCard = newCard.toObject();
   const draftObj = draftCard.toObject();
   
@@ -26,6 +27,10 @@ async function populatePack(packArray) {
   for (let i=0, end=packArray.length; i < end; i++) {
 
     let newCard = await populateCard(packArray[i].uuid, packArray[i]);
+    if (!newCard) {
+      console.error('Card: '+packArray[i].uuid+' was not found!')
+      continue;
+    }
     
     // Populate reverse face in front face 'related' field
     if (newCard.side == 'a') {

@@ -1,10 +1,9 @@
 extends layout
 
-mixin numberList(name, text, def, max, min = 0)
-  - var n = min
+mixin numberList(name, text, def, limits)
   div(id=name+'Form')
     label.settingsLabel(for=name)= text
-    input(type="number" id=name name=name min=min max=max value=def)
+    input(type="number" id=name name=name min=(limits.min || 0) max=limits.max value=def)
 
 mixin colorPips(containerId)
   div.evenSpacedH(id=containerId)
@@ -36,14 +35,14 @@ block content
         input#draftType(type='hidden' name='draftType' value='')
 
     div#allSettings
-      input#draftName(type='text', name='draftName', value='New Draft')
-      +numberList('playerCount', 'Players', 8, 12, 2)
+      input#draftName(type='text', name='draftName', value='New Draft' onkeypress="return (this.innerText.length < "+limits.draftName.max+")")
+      +numberList('playerCount', 'Players', 8, limits.playerCount)
 
       //- Cube Settings
       div#cubeForm.settingsForm.hideForm
         div#cubeOptionsForm
-          +numberList('packCount', 'Packs per Round', 3, 10, 1)
-          +numberList('packSize', 'Card per Pack', 15, 20, 1)
+          +numberList('packCount', 'Packs per Player', 3, limits.packCount)
+          +numberList('packSize', 'Card per Pack', 15, limits.packSize)
         div#cubeFileForm
           label#cubeFileText(for='cubeFile') Upload Text File
           input#cubeFileData(type='hidden' name='cubeData' value='')
@@ -68,4 +67,3 @@ block content
             option(value=set.code)=set.name
 
       //- +colorPips('colorPipsFoot')
-

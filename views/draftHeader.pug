@@ -27,7 +27,7 @@ mixin playerBox(player,active)
     
     div(class=playerCls)
         if active
-            div.playerName#renameBox(class=playerType, role='textbox', contenteditable=true, onkeypress="return (this.innerText.length <= 22)")= player.name
+            div.playerName#renameBox(class=playerType, role='textbox', contenteditable=true, onkeypress="return (this.innerText.length < "+limits.playerName.max+")")= player.name
         else 
             div.playerName(class=playerType, id=nameId)= player.name
         if draftStatus.isIn(status)
@@ -43,10 +43,10 @@ mixin landDropdown()
             i.landPip.ms.ms-cost.ms-shadow(class = 'ms-'+color)
             - var name = 'main-'+color
             - var value = landData[name] || '0'
-            input.mainLands(type="number" id=name name=name min=0 value=value)
+            input.mainLands(type="number" id=name name=name min=0 max=limits.landCounts.max value=value)
             - name = 'side-'+color
             - value = landData[name] || '0'
-            input.mainLands(type="number" id=name name=name min=0 value=value)
+            input.mainLands(type="number" id=name name=name min=0 max=limits.landCounts.max value=value)
         button.button#autoLands(type='button' disabled=true) Auto
 
 

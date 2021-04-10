@@ -39,7 +39,8 @@ function clickType(e) {
     var upButton  =  document.getElementById("cubeType");
     var downButton = document.getElementById("boosterType");
     
-    // Flip if "cube" was chosen
+    // Flip button if "cube" was chosen
+    var disableButton = !elem.id;
     if (elem.id == "cubeType") {
         var temp = hideForm;
         hideForm = showForm;
@@ -47,21 +48,23 @@ function clickType(e) {
         temp = upButton;
         upButton = downButton;
         downButton = temp;
+        disableButton = !document.getElementById("cubeFileData").value;
     } else if (elem.id != "boosterType") {
+        disableButton = false;
         return;
     }
-
     saveType.value = elem.id;
+    
+    // Set state of title button
     var bigButton = document.getElementById("setupTitle");
-    if (elem.id && bigButton.getAttribute("disabled")) {
+    var isDisabled = bigButton.getAttribute("disabled");
+    if (!disableButton && isDisabled) {
         bigButton.removeAttribute("disabled");
-    }
-    if (!saveType.value) {
+    } if (disableButton && !isDisabled) {
         bigButton.setAttribute("disabled", true);
     }
 
     // Set new values
-    
     hideForm.classList.add("hideForm");
     showForm.classList.remove("hideForm");
     upButton.classList.remove("pressed");
@@ -70,28 +73,27 @@ function clickType(e) {
 
 // Booster pack drop-downs
 function addBoosterList(e) {
+    var maxBoosters = 10;
     e && e.preventDefault();
     log("add booster pack");
-    // Get list to clone (If less than 2 (base elements) + 10 (max boosters) - 1)
+    // Get list to clone (If less than )
     var setList = document.getElementById("setPicker").cloneNode(true);
-    if (document.getElementById("boosterForm").childNodes.length < 2 + 10 - 1) {
+    // if length < 2 (base elements) - 1 (0-index) + (max boosters)
+    if (document.getElementById("boosterForm").childNodes.length < maxBoosters + 1) {
         document.getElementById("boosterForm").appendChild(setList);
     }
 }
 function removeBoosterList(e) {
+    var minBoosters = 1;
     e && e.preventDefault();
     log("remove booster pack");
-    // Get all lists
     var pickers = document.getElementById("boosterForm").childNodes;
-    if (pickers.length > 2) { // 2 == base elements
+    if (pickers.length > minBoosters + 1) { // 1 = 2 (base elements) - 1 (0-index)
         document.getElementById("boosterForm").removeChild(pickers[pickers.length - 1]);
     }
 }
 
 // HANDLERS
-  
-
-  
 function handleDrop(e) {
     let dt = e.dataTransfer
     let files = dt.files
@@ -105,19 +107,21 @@ function chooseUpload(e) {
     var elem = this || e.target || e.srcElemnt;
     var fileForm = new FormData();
     fileForm.append("cubeFile", elem.files[0]);
+
+    log('file chosen');
     uploadCube(fileForm);
 }
 function dropUpload(e) {
     // var elem = this || e.target || e.srcElemnt;
     var files = e.dataTransfer.files;
-
-    console.log(Object.keys(files[0]));
     var fileForm = new FormData();
     fileForm.append("cubeFile", files[0]);
 
+    log('dropped file');
     uploadCube(fileForm);
 }
 function uploadCube(fileForm) {
+    // Start loading screen
     var dragDrop = document.getElementById("dragDropText");
     var loading = document.getElementById("uploadWaiting");
     var readout = document.getElementById("uploadResultContainer");
@@ -127,36 +131,53 @@ function uploadCube(fileForm) {
     loading.classList.remove("hideForm");
 
     return uploadFile(fileForm).then(function(result){
+        // Capture upload text box
         var resultHead = document.getElementById("uploadResultHeader");
         var resultBody = document.getElementById("uploadResultBody");
         resultBody.innerText = "";
 
+        // Success
         if (result.hasOwnProperty("cardData") && result.hasOwnProperty("cardCount")) {
             resultHead.innerText = "Successfully uploaded "+result.cardCount+" cards";
             document.getElementById("cubeFileData").value = result.cardData;
+
+            // Enable big button
+            var bigButton = document.getElementById("setupTitle");
+            if (bigButton.getAttribute("disabled")) {
+                bigButton.removeAttribute("disabled");
+            }
+            log('file saved');
+        
+        // Error
         } else {
             resultHead.innerText =  "File is empty or incorrect format";
             resultBody.innerText = "Please refresh and try another file.\nPreferred format is one card name per line and no additional data.";
+            log('file not saved');
         }
 
+        // Add missing cards to text box
         if (result.hasOwnProperty("missing") && result.missing.length) {
             resultBody.innerText = "Unable to find "+result.missing.length+" cards:\n" + result.missing.join('\n');
         }
 
+        // Send error message to client console
         if (result.hasOwnProperty("error")) {
-            console.error("Error uploading file: "+result.error);
+            log("Error uploading file: "+result.error,'ERROR FROM SERVER');
         }
 
+        // Clear loading screen
         dragDrop.classList.add("hideForm");
         loading.classList.add("hideForm");
         readout.classList.remove("hideForm");
+        
     }).catch( function(err){
         resultHead.innerText =  "Error encountered during upload";
         resultBody.innerText = "Please refesh and try again.";
+        // Clear loading screen
         dragDrop.classList.add("hideForm");
         loading.classList.add("hideForm");
         readout.classList.remove("hideForm");
-        return console.error('Upload failed',err);
+        return log('Upload failed',err);
     });
 }
 addWindowListenerAllBrswrs("load", initListeners, false);

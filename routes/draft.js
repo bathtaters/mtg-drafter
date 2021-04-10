@@ -2,6 +2,7 @@ var express = require('express');
 const { draftStatus } = require('../config/definitions');
 const basic = require('../utils/basic');
 const populatePack = require('../utils/populatePacks');
+const { limits, draftRules, validate } = require('../utils/validator');
 var router = express.Router();
 
 
@@ -22,20 +23,20 @@ router.get('/:sessionId?', async function(req, res, next) {
 
   // Build object to send to Pug
   const renderData = await populatePack.draftOnly(session,player)
-    .then(data => {data.title = 'MtG Drafter – '+data.draftName; return data; });
+    .then(data => {data.title = 'MtG Drafter – '+data.draftName; data.limits = limits; return data; });
   return res.render('draft', renderData);
 
 });
 
 /* POST draft action */
-router.post('/:sessionId?', async function(req, res, next) {
+router.post('/:sessionId?', draftRules.pick(), validate, async function(req, res, next) {
 
   if (req.body.button == "Pick Card" && req.body.draftId) {
     req.body.player.pickCard(req.body.draftId);
   } else {
     console.error('Other POSTS not set')
   }
-  basic.log.all(req.body.session);
+  //basic.log.all(req.body.session);
   return res.redirect(req.originalUrl); // refresh page as GET
   }
 );

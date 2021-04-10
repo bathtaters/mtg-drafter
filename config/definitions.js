@@ -11,10 +11,12 @@ module.exports.cardColors = ['W','U','B','R','G','non-mono'];
 
 // Order of booster pack cards (Not-included will be at start)
 module.exports.boosterSortOrder = [
+    'sta','lesson', // ?? strixhaven
     'dfc', 'therosGods', 'contraption', 'conspiracy', 'legendary', 'special',
     'mythicPartner1', 'nondraftRareMythic',
 
     'pcRare', 'modaldfcRareMythic', 'dfcRareMythic', 'legendaryRareMythic',
+    'nonlessonRareMythic',
     'planeswalkerRareMythic','rareMythic', 'sfcRareMythic', 'nonlegendaryRareMythic',
     'nonplaneswalkerRareMythic', 'nonconspiracyRareMythic', 'rarePartner1',
     'rarePartner2', 'rarePartner3', 'rarePartner4', 'rarePartner5', 'rare',
@@ -26,7 +28,7 @@ module.exports.boosterSortOrder = [
     'uncommonPartner2', 'uncommonPartner3', 'uncommonPartner4', 'uncommonPartner5',
     
     'dfcCommonUncommon',
-    'pcCsCommon', 'pcCommon',
+    'pcCsCommon', 'pcCommon', 'nonlessonCommon',
     'sfcCommon', 'nonconspiracyCommon', 'nondraftCommon',
     'nongainlandCommon', 'nonlandCommon', 'nonBasictypeCommon', 'common',
     

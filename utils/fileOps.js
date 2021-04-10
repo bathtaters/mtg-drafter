@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 const Card = require('../models/Card');
-const { basicLands } = require('../config/definitions');
-const basic = require('../utils/basic');
+const { basicLands, cardColors } = require('../config/definitions');
+const basic = require('./basic');
 
 // Reading/Writing UUID shared functions
 const qtyRegEx = new RegExp(/^\s*(\d)+\s+(.*)\s*$/)
@@ -18,10 +18,14 @@ const lineToCards = async (line, missing) => {
     //console.log('    looking up: '+JSON.stringify(line));
 
     // Lookup card
-    const cardId = await Card.findOne({ $or: [
-        { 'name': trimmed },
-        { 'faceName': trimmed }
-    ] },'_id').then( card => card ? card._id : 0)
+    trimmed = new RegExp('^'+trimmed+'$', 'i');
+    const cardId = await Card.findOne({
+        $or: [
+            { 'name': { $regex: trimmed } },
+            { 'faceName': { $regex: trimmed } }
+        ],
+        'gathererImg': { $exists: true }
+    },'_id').then( card => card ? card._id : 0)
     if (cardId) {
         for (let i=0; i < qty; i++) { found.push(cardId) }
     }
@@ -30,8 +34,11 @@ const lineToCards = async (line, missing) => {
 };
 const basicTextLine = uuid => Card.findById(uuid, '_id name faceName').then( card =>
     card ? '1 '+card.printedName+'\n' : console.error(uuid+' not found!'));
-const basicLandText = (array, i) => 
-    array[i] && array[i] != '0' ? array[i]+' '+basicLands[i]+'\n' : '';
+const basicLandText = (array, board, i) => {
+    const id = board+'-'+cardColors[i].toLowerCase();
+    const land = array.find( elem => elem._id == id);
+    return land && 'count' in land && land.count > 0 ? land.count+' '+basicLands[i]+'\n' : ''
+}
 
 
 
@@ -47,13 +54,22 @@ async function importText(file) {
 }
 
 async function exportText(cards) {
+    // Main board
     let deckText = '';
     for (const card of cards.main) { deckText += await basicTextLine(card.uuid); }
-    for (let i=0; i < 5; i++) { deckText += basicLandText(cards.basicLands.main, i); }
+    for (let i=0; i < 5; i++) { deckText += basicLandText(cards.basicLands, 'main', i); }
 
-    deckText += '\nSideboard\n';
-    for (const card of cards.side) { deckText += await basicTextLine(card.uuid); }
-    for (let i=0; i < 5; i++) { deckText += basicLandText(cards.basicLands.side, i); }
+    // Sideboard Lands
+    let sideLands = '';
+    for (let i=0; i < 5; i++) { sideLands += basicLandText(cards.basicLands, 'side', i); }
+
+    // Sideboard
+    if (cards.side.length || sideLands) {
+        deckText += '\nSideboard\n';
+        for (const card of cards.side) { deckText += await basicTextLine(card.uuid); }
+        deckText += sideLands
+    }
+    
     return deckText;
 }
 
@@ -85,7 +101,7 @@ async function importCube(filepath, missing=0) {
 async function exportDeck(cards, filepath) {
     const addCard = (uuid, writer) => basicTextLine(uuid).then(line => line && writer.write(line));
     const addLand = (array, i, writer) => {
-        const line = basicLandText(array,i); line && writer.write(line);
+        const line = basicLandText(array,i); line && writer.write(line); // THIS CHANGED!!!
     }
     const writer = fs.createWriteStream(filepath);
 
@@ -102,8 +118,8 @@ async function exportDeck(cards, filepath) {
 
 
 module.exports = {
-    importFile: importCube,
-    exportFile: exportDeck,
+    // importFile: importCube,
+    // exportFile: exportDeck,
     import: importText,
     export: exportText
 }

@@ -2,9 +2,9 @@ const Draft = require('../models/Draft');
 const { random, sessionId } = require('../utils/basic');
 const updateDb = require('./updateDb');
 const mon = require('../config/db');
-const fileOps = require('./fileOps');
+const fileOps = require('../utils/fileOps');
 
-//updateDb(1, 1, 1, 0);
+// updateDb(1, 1, 1, 1, 0);
 
 async function tester() {
     await Draft.deleteMany({});
@@ -55,7 +55,7 @@ async function tester() {
 }
 
 
-tester();  
+// tester();  
 
 
 

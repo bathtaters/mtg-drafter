@@ -186,6 +186,20 @@ async function playerSwapBoard(draftId, fromSide=null) {
     return board[1];
 }
 
+
+
+function playerSetLands(newLands) {
+    this.cards.basicLands = newLands;
+    this.parent().markModified('players.'+this.position+'.cards.basicLands');
+    return this.parent().save();
+}
+
+function playerGetLands() {
+    let lands = {};
+    this.cards.basicLands.forEach( land => lands[land._id] = land.count );
+    return lands;
+}
+
 // Convert to/from basic land form data
 async function playerFormToDb(v) {
     const playerPath = 'players.'+this.position+'.cards.';
@@ -240,6 +254,6 @@ module.exports = {
     pickCard: playerPickCard,
     pullCard: draftPullCard,
     swapBoard: playerSwapBoard,
-    formToDb: playerFormToDb,
-    dbToForm: playerDbToForm
+    getLands: playerGetLands,
+    setLands: playerSetLands
 }

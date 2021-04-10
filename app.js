@@ -1,5 +1,5 @@
 // uncomment to execute test on server start
-//require('./admin/test');
+// require('./admin/test');
 
 // builtins
 const path = require('path');
@@ -66,6 +66,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload(uploadOptions));
 app.use(express.json());
 app.use(myMw.logReq);
+app.use('/action/lands',myMw.landCounts);
 app.use('/draft/:sessionId?',myMw.draftObjs);
 app.use('/action',myMw.draftObjs);
 
