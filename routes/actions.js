@@ -57,7 +57,7 @@ router.get('/download', async function(req, res, next) {
     'Content-Type': 'text/plain',
     'Content-Disposition':'attachment; filename="'+filename+'"'
   });
-  console.log(req.body.player._id+' downloaded deck list.');
+  console.log(req.body.player.cookieId+' downloaded deck list.');
   return res.send(deckText);
 });
 

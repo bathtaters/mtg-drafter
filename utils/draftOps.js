@@ -54,10 +54,10 @@ async function draftAddPlayer(returningCookie='') {
     if (returningCookie) playerData = this.findPlayerByCookie(returningCookie);
     if (!playerData) {
         if (returningCookie)
-            console.log('Returning player not found '+returningCookie+' in '+this._id);
+            console.log('Returning player not found '+returningCookie+' in '+this.sessionId);
         playerData = this.nextOpenPlayer;
     }
-    if (!playerData) return console.error('No open slots in '+this._id);
+    if (!playerData) return console.error('No open slots in '+this.sessionId);
 
     // Connect player
     console.log('Player: '+playerData.name+' <'+playerData.cookieId+'> was connected.');

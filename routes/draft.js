@@ -18,7 +18,7 @@ router.get('/:sessionId?', async function(req, res, next) {
   if (session.status == draftStatus.pre && !session.nextOpenPlayer)
     session.startDraft();
 
-  console.log('Loaded session: '+session._id+', '+(player.cookieId == req.cookies.playerId ? 'existing ':'new ')+'player: '+player.name+' <'+player._id+'>.');
+  console.log('Loaded session: '+session.sessionId+', '+(player.cookieId == req.cookies.playerId ? 'existing ':'new ')+'player: '+player.name+' <'+player.cookieId+'>.');
   //return res.send('Loaded session: '+session.sessionId+', '+(player.cookieId == req.cookies.playerId ? 'existing ':'new ')+'player: '+player.name+' <'+player.cookieId+'>.');
 
   // Build object to send to Pug
