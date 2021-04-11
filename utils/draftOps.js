@@ -60,6 +60,7 @@ async function draftAddPlayer(returningCookie='') {
     if (!playerData) return console.error('No open slots in '+this._id);
 
     // Connect player
+    console.log('Player: '+playerData.name+' <'+playerData.cookieId+'> was connected.');
     playerData.connected = true;
     await this.save();
     return playerData;

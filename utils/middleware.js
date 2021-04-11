@@ -67,8 +67,10 @@ async function getDraftObjects(req, res, next) {
 
   // Add sessionData to request (& update cookie)
   req.body.session = session;
-  if (req.cookies.sessionId != session.sessionId)
+  if (req.cookies.sessionId != session.sessionId) {
     res.cookie('sessionId', session.sessionId);
+    res.clearCookie('playerId');
+  }
 
   // Find player or assign to new spot
   const player = await session.addPlayer(req.cookies.playerId);
