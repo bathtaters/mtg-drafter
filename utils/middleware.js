@@ -41,6 +41,7 @@ const draftPathRe = /draft\/([\w_-]{16})(?:$|\/)/;
 async function getDraftObjects(req, res, next) {
 
   // URL is called from outside a session
+  console.log(req.originalUrl + ': '+(req.originalUrl == '/action/upload'))
   if (req.originalUrl == '/action/upload') return next();
   
   // Get session Id from URL or cookies

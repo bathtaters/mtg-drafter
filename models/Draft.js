@@ -82,7 +82,7 @@ packCardSchema.set('toObject', {getters: true, versionKey: false, useProjection:
 
 // Draft virtual getters
 
-packCardSchema.virtual('draftId').get(function(){ return this._id; });
+packCardSchema.virtual('draftId').get( function(){ return this._id; } );
 
 draftSchema.virtual('sessionId').get( function(){
     return basic.sessionId.url(this._id);

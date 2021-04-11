@@ -49,8 +49,7 @@ const draftRules = {
   //   body('cubeFile'),
   // ];},
   pick: () => [
-    body('draftId').isLength(limits.draftId).isHexadecimal(),
-    body('button').isAscii().stripLow(false).escape()
+    body('draftId').optional().isLength(limits.draftId).isHexadecimal()
   ],
   swap: () => [
     body('draftId').isLength(limits.draftId).isHexadecimal(),

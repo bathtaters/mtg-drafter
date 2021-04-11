@@ -63,13 +63,14 @@ router.post('/', draftSetupRules(), validate, async function(req, res, next) {
   draftSettings.name = req.body.draftName == defaultDraftName ? '' : req.body.draftName;
 
   // Setup draft, set cookies and load draft page
-  const nextDraft = await Draft.newDraft(draftSettings);
-  if (!nextDraft) return res.send('Error starting draft, ensure your cube has enough cards.')
-  nextDraft.url = req.protocol+'://'+req.get('host')+'/draft/'+nextDraft.sessionId;
-  await nextDraft.save();
-  res.cookie('sessionId', nextDraft.sessionId);
-  res.cookie('playerId', basic.sessionId.url(nextDraft.hostId));
-  return res.redirect(307, '/draft');
+  const newDraft = await Draft.newDraft(draftSettings);
+  if (!newDraft) return res.send('Error starting draft, ensure your cube has enough cards.')
+  const sessionId = newDraft.sessionId;
+  newDraft.url = req.protocol+'://'+req.get('host')+'/draft/'+sessionId;
+  await newDraft.save();
+  res.cookie('sessionId', sessionId);
+  res.cookie('playerId', basic.sessionId.url(newDraft.hostId));
+  return res.redirect('/draft/'+sessionId);
 });
 
 
