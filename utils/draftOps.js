@@ -187,7 +187,6 @@ async function playerSwapBoard(draftId, fromSide=null) {
 }
 
 
-
 function playerSetLands(newLands) {
     this.cards.basicLands = newLands;
     this.parent().markModified('players.'+this.position+'.cards.basicLands');

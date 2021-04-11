@@ -66,7 +66,15 @@ router.post('/lands', draftRules.lands(), validate, async function(req, res, nex
   if (!req.body.player || !req.body.landCount) return reply(res);
 
   await req.body.player.setLandData(req.body.landCount);
-  return reply(res, req.body.player.getLandData());
+  return reply(res, {lands: req.body.player.getLandData()});
+});
+
+router.get('/autoLands', async function(req, res, next) {
+  if (!req.body.player) return reply(res);
+
+  await req.body.player.setAutoLands(req.body.landCount);
+  console.log(req.body.player.getLandData());
+  return reply(res, {lands: req.body.player.getLandData()});
 });
 
 // Poll for full room / available packs

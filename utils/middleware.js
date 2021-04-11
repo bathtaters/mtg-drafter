@@ -13,7 +13,7 @@ function logReq(req,res,next) {
       str += '; Posted'+JSON.stringify(body);
     }
     if (basic.notEmpty(req.files)) str += '; Files'+JSON.stringify(Object.keys(req.files));
-    if (req.ip) str += '; From' + req.ip;
+    if (req.ip) str += '; IP' + (req.headers['x-forwarded-for'] || req.connection.remoteAddress);
     console.log(str); next();
 }
 

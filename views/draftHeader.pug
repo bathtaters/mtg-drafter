@@ -47,7 +47,9 @@ mixin landDropdown()
             - name = 'side-'+color
             - value = landData[name] || '0'
             input.mainLands(type="number" id=name name=name min=0 max=limits.landCounts.max value=value)
-        button.button#autoLands(type='button' disabled=true) Auto
+        div#landButtons
+            button.button#autoLands(type='button' disabled=true) Auto
+            button.button#resetLands(type='button') Reset
 
 
 //- Draft info header

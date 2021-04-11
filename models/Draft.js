@@ -20,6 +20,7 @@ const mtgDb = require('../config/db');
 const basic = require('../utils/basic');
 const draftOps = require('../utils/draftOps');
 const { draftStatus, cardColors } = require('../config/definitions');
+const getAutoLands = require('../utils/autoLands');
 
 // PackCard Model:
 const packCardSchema = new mtgDb.Schema({
@@ -209,6 +210,7 @@ draftSchema.methods.pullCard = draftOps.pullCard;
 playerSchema.methods.swapBoard = draftOps.swapBoard;
 playerSchema.methods.getLandData = draftOps.getLands;
 playerSchema.methods.setLandData = draftOps.setLands;
+playerSchema.methods.setAutoLands = getAutoLands;
 
 
 const Draft = model('Draft', draftSchema, 'sessions');

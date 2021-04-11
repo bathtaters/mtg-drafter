@@ -30,6 +30,10 @@ function initListeners() {
     // Download decklist
     addListenerAllBrswrs(document.getElementById("dlButton"),"click",downloadTextFile);
 
+    // Land ops
+    addListenerAllBrswrs(document.getElementById("resetLands"),"click",resetLandCounts);
+    addListenerAllBrswrs(document.getElementById("autoLands"),"click",setAutoLandCounts);
+
     // Add lands
     var landTool = document.getElementById("landBox");
     addListenerAllBrswrs(landTool,"mouseleave",updateLands);
@@ -48,7 +52,6 @@ function initListeners() {
         });
     }
 }
-
 
 
 // Listeners for clicking cards
@@ -155,10 +158,42 @@ function downloadTextFile(e) {
         .catch(function(err){log('Error downloading deck',err);});
 }
 
+
+function resetLandCounts(e) {
+    var landBoxes = document.getElementsByClassName('mainLands');
+    var count = landBoxes.length;
+    for (var i = 0; i < count; i++) {
+        landBoxes[i].value = 0
+    }
+    updateLands(e);
+    log('reset basic land counts')
+}
+
+function setAutoLandCounts(e) {
+    updateLands(e);
+    updateServer('autoLands').then(result => {
+        console.log(result);
+        //setLandsTo(result.lands);
+    });
+}
+
+function setLandsTo(landObj) {
+    var landBoxes = document.getElementsByClassName('mainLands');
+    var count = landBoxes.length;
+    for (var i = 0; i < count; i++) {
+        var nextLand = landObj[landBoxes[i].id];
+        if (nextLand !== undefined) { landBoxes[i].value = nextLands; }
+        console.log(landBoxes[i].id+' = '+landBoxes[i].value);
+    }
+}
+
+
 function updateLands(e) {
     var landData = new FormData(document.getElementById('landTool'));
     log('Updated basic land count');
-    return postFormData('lands',landData);
+    return postFormData('lands',landData).then( result => {
+        // CONFIRM THESE ARE ALREADY DISPLAYED
+    });
     
 }
 

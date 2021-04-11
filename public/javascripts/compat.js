@@ -97,7 +97,7 @@ function postData(action, data = null, url = '../action') {
 
 function postFormData(action, formData, url = '../action') {
     var jsonFormData = Object.fromEntries(formData.entries());
-    return postData(action, jsonFormData, url);
+    return updateServer(action, jsonFormData, url);
 }
 
 function updateServer(action, data = null, url = '../action') {
