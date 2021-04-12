@@ -62,12 +62,16 @@ async function getAutoLands(deckSize = 0) {
     // Build new land object to overwrite
     let newLands = {};
     const costs = await getMainDeckCost(this.cards.main);
+
     Object.keys(costs).forEach( c => {
 
         if (c.length != 1) return; // Skip 'other'
         
-        // Mainboard land algorithm
-        newLands['main-'+c.toLowerCase()] = Math.round(landCount * costs[c] / costs.sum);
+        // Mainboard land algorithm (Valid for 0+)
+        // console.log(' >> '+c+': '+landCount+' * '+costs[c]+' / '+costs.sum+' = '+Math.round(landCount * costs[c] / costs.sum));
+        newLands['main-'+c.toLowerCase()] = costs.sum ? 
+            Math.round(landCount * costs[c] / costs.sum) :
+            Math.round(landCount / 5);
 
         // Sideboard fixed amount
         newLands['side-'+c.toLowerCase()] = sideboardLands;

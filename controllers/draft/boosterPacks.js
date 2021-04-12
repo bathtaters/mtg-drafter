@@ -1,9 +1,9 @@
 // Setup for a booster draft
-const Set = require("../../models/Set");
-const { swapArr } = require("../shared/basicUtils");
-const { getWeightedRandom, balanceColors } = require("./shared");
-const { boosterSortOrder } = require("../../config/definitions");
-const { shuffle } = require("../shared/random");
+const Set = require('../../models/Set');
+const { swapArr } = require('../shared/basicUtils');
+const { getWeightedRandom, balanceColors } = require('./packOps');
+const { boosterSortOrder } = require('../../config/definitions');
+const { shuffle } = require('../shared/random');
 
 
 

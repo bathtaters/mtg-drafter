@@ -1,7 +1,7 @@
 // MtG Specific utilities
-const { maxIndex } = require("../shared/basicUtils");
-const { cardColors } = require("../../config/definitions");
-const Card = require("../../models/Card");
+const { maxIndex } = require('../shared/basicUtils');
+const { cardColors } = require('../../config/definitions');
+const Card = require('../../models/Card');
 const random = require('../shared/random');
 
 // RNG w/ weights
@@ -105,7 +105,7 @@ async function balanceColors(pack, pool, totalWeight=0) {
         pack[replIndex] = newCard;
         colorCount[i]++; colorCount[replColorI]--;
 
-        console.log('ColorBalance: '+cardColors[i]+' card swapped with '+cardColors[replColorI]+' card.');
+        // console.log('ColorBalance: '+cardColors[i]+' card swapped with '+cardColors[replColorI]+' card.');
     }
 
     //console.log('colors: '+cardColors+'\ncounts: '+colorCount);
