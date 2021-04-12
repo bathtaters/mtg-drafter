@@ -2,7 +2,7 @@
 
 const { Schema, model } = require('mongoose');
 const mtgDb = require('../config/db');
-const basic = require('../utils/basic');
+const { objToArray } = require('../controllers/shared/basicUtils');
 
 // Booster pack layout Model:
 const layoutSchema = new mtgDb.Schema({
@@ -84,11 +84,11 @@ setSchema.virtual('booster').set(function(v) {
 });
 
 sheetSchema.path('cards').set(function(v) {
-    return basic.objToArray(v,'card','weight');
+    return objToArray(v,'card','weight');
 });
 
 layoutSchema.path('contents').set(function(v) {
-    return basic.objToArray(v,'sheetName','count');
+    return objToArray(v,'sheetName','count');
 });
 
 const Set = model('Set', setSchema);

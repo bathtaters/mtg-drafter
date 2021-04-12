@@ -1,6 +1,7 @@
 // Create all listeners
 
 function initListeners() {
+    
     // De-select listeners for clicking on the document body
     var body = document.body || document.getElementsByTagName("BODY")[0];
     addListenerAllBrswrs(body,"click",deselectCard);
@@ -17,6 +18,12 @@ function initListeners() {
         addListenerAllBrswrs(cards[i],"click",clickCard);
         addListenerAllBrswrs(cards[i],"dblclick",dblClickCard);
     }
+
+    // Show/Hide main/side boards
+    var mainboard = document.getElementById("mainHeader");
+    var sideboard = document.getElementById("sideHeader");
+    if (mainboard) { addListenerAllBrswrs(mainboard,"click",clickHideGroup); }
+    if (sideboard) { addListenerAllBrswrs(sideboard,"click",clickHideGroup); }
 
     // Copy link button (Host only)
     var copyLink = document.getElementById("linkButton");
@@ -38,23 +45,49 @@ function initListeners() {
     var landTool = document.getElementById("landBox");
     addListenerAllBrswrs(landTool,"mouseleave",updateLands);
     addListenerAllBrswrs(landTool,"click",stopPropagationAllBrswrs);
-
+    
     // Poll when waiting
     if (document.getElementById('preMsg')) {
+        log('watching for draft to be ready');
         poll('isReady').then( function(_){
             log('draft is ready');
             location.reload();
         });
     } else if (document.getElementById('waitingMsg')) {
+        log('watching for pack to be ready');
         poll('packReady').then( function(_){
             log('pack is ready');
             location.reload();
         });
     }
+
+    log('listeners started');
 }
 
 
 // Listeners for clicking cards
+
+function clickHideGroup(e) {
+    stopPropagationAllBrswrs(e);
+    var elem = this || e.target || e.srcElemnt;
+    log("show/hide "+elem.id);
+
+    var prefix;
+    if (elem.id == "mainHeader") { prefix = "main"; }
+    else if (elem.id == "sideHeader") { prefix = "side"; }
+
+    if (prefix) {
+        var container = document.getElementById(prefix+"Container");
+        var hideText = document.getElementById(prefix+"Hider");
+        if (container.classList.contains("hiddenGroup")) {
+            container.classList.remove("hiddenGroup");
+            hideText.innerText = "–"; // en-dash
+        } else {
+            container.classList.add("hiddenGroup");
+            hideText.innerText = "+";
+        }
+    }
+}
 
 function clickCard(e) {
     stopPropagationAllBrswrs(e);
@@ -170,10 +203,9 @@ function resetLandCounts(e) {
 }
 
 function setAutoLandCounts(e) {
-    updateLands(e);
     updateServer('autoLands').then(result => {
-        console.log(result);
-        //setLandsTo(result.lands);
+        log('auto-set lands');
+        setLandsTo(result.lands);
     });
 }
 
@@ -182,18 +214,16 @@ function setLandsTo(landObj) {
     var count = landBoxes.length;
     for (var i = 0; i < count; i++) {
         var nextLand = landObj[landBoxes[i].id];
-        if (nextLand !== undefined) { landBoxes[i].value = nextLands; }
-        console.log(landBoxes[i].id+' = '+landBoxes[i].value);
+        if (nextLand !== undefined) { landBoxes[i].value = nextLand; }
     }
+    updateLands(0);
 }
 
 
 function updateLands(e) {
     var landData = new FormData(document.getElementById('landTool'));
     log('Updated basic land count');
-    return postFormData('lands',landData).then( result => {
-        // CONFIRM THESE ARE ALREADY DISPLAYED
-    });
+    return postFormData('lands',landData);
     
 }
 

@@ -1,12 +1,13 @@
-// uncomment to execute test on server start
+// uncomment to execute test.js on server start
 // require('./admin/test');
 
-// builtins
+
+// main imports
+const express = require('express');
 const path = require('path');
 const createError = require('http-errors');
 
-// main APIs
-const express = require('express');
+// middleware
 const fileUpload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -14,18 +15,18 @@ const stylus = require('stylus');
 const nib = require('nib');
 const compression = require('compression');
 const minify = require('express-minify');
-
+const myMw = require('./controllers/shared/middleware');
 
 // page routers
-const indexRouter = require('./routes/index');
-const draftRouter = require('./routes/draft');
-const actionRouter = require('./routes/actions');
-// const cardRouter = require('./routes/cardInfo');
-// const packRouter = require('./routes/pack');
-const myMw = require('./utils/middleware');
+const indexRouter = require('./routes/main/index');
+const draftRouter = require('./routes/main/draft');
+const actionRouter = require('./routes/main/actions');
+// const cardRouter = require('./routes/admin/cardInfo');
 
 
-// stylesheet compile settings
+
+
+// Settings
 const stylusOptions = {
   debug: true,
   src: path.join(__dirname, 'stylesheets'),
@@ -38,13 +39,18 @@ const stylusOptions = {
       .import('nib')
 };
 const uploadOptions = {
-  //uriDecodeFileNames: true,
+  uriDecodeFileNames: true,
   // debug: true,
   safeFileNames: true,
   fileSize: 1 * 1024 * 1024, // 1 MB file limit
   limitHandler: (req,res,next) =>
     res.send(JSON.stringify({error: 'File exceeds 1 MB'}))
 }
+const viewDirs = [
+  path.join(__dirname, 'views', 'admin'),
+  path.join(__dirname, 'views', 'draft'),
+  path.join(__dirname, 'views', 'generic')
+];
 
 
 // --- Build out Server ---
@@ -57,7 +63,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', viewDirs);
 app.set('view engine', 'pug');
 app.use(stylus.middleware(stylusOptions));
 app.use(minify());
@@ -79,12 +85,9 @@ app.use('/action', actionRouter);
 // app.use('/pack', packRouter);
 
 // export modules to Pug
-const { mtgSymbolReplace } = require('./utils/basic');
-const populatePack = require('./utils/populatePacks');
-const { draftStatus } = require('./config/definitions');
-app.locals.symbFix = mtgSymbolReplace;
-app.locals.popCards = populatePack;
-app.locals.draftStatus = draftStatus;
+app.locals.symbFix = require('./controllers/shared/htmlParser').mtgSymbolReplace;
+app.locals.popCards = require('./controllers/shared/populatePacks');
+app.locals.draftStatus = require('./config/definitions').draftStatus;
 
 
 // catch 404 and forward to error handler

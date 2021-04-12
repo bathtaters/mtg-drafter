@@ -3,26 +3,30 @@ function initListeners() {
     // Select draft type listeners
     addListenerAllBrswrs(document.getElementById("cubeType"),"click",clickType);
     addListenerAllBrswrs(document.getElementById("boosterType"),"click",clickType);
+    
     // Add booster pack list
     addListenerAllBrswrs(document.getElementById("addBooster"),"click",addBoosterList)
     addListenerAllBrswrs(document.getElementById("removeBooster"),"click",removeBoosterList)
     // Pre-add 2
     for (var i=0; i<2; i++) { addBoosterList(0); }
+
     // Listen for cube upload
-    addListenerAllBrswrs(document.getElementById("cubeFilePicker"),"change", chooseUpload);
+    var cubePicker = document.getElementById("cubeFilePicker");
+    addListenerAllBrswrs(cubePicker,"change", chooseUpload);
+    addListenerAllBrswrs(cubePicker,"click", clearUpload);
 
     // Setup drag & drop
     var dropArea = document.getElementById("cubeFileBox");
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach( function(eventName){
+    ["dragenter", "dragover", "dragleave", "drop"].forEach( function(eventName){
         addListenerAllBrswrs(dropArea, eventName, preventDefaults, false);
     });
-    ['dragenter', 'dragover'].forEach( function(eventName){
-        addListenerAllBrswrs(dropArea, eventName, function(e) { dropArea.classList.add("dragHighlight"); }, false);
+    ["dragenter", "dragover"].forEach( function(eventName){
+        addListenerAllBrswrs(dropArea, eventName, function(e){dropArea.classList.add("dragHighlight");}, false);
     });
-    ['dragleave', 'drop'].forEach( function(eventName){
-        addListenerAllBrswrs(dropArea, eventName, function(e) { dropArea.classList.remove("dragHighlight"); }, false);
+    ["dragleave", "drop"].forEach( function(eventName){
+        addListenerAllBrswrs(dropArea, eventName, function(e){dropArea.classList.remove("dragHighlight");}, false);
     });
-    addListenerAllBrswrs(dropArea,'drop',dropUpload,false);
+    addListenerAllBrswrs(dropArea,"drop",dropUpload,false);
 }
 
 
@@ -72,15 +76,33 @@ function clickType(e) {
 }
 
 // Booster pack drop-downs
+function setSelectDefault(dropdown, value) {
+    for(var opt, i = 0; opt = dropdown.options[i]; i++) {
+        if(opt.value == value) {
+            dropdown.selectedIndex = i;
+            return;
+        }
+    }
+}
 function addBoosterList(e) {
     var maxBoosters = 10;
     e && e.preventDefault();
     log("add booster pack");
-    // Get list to clone (If less than )
+
+    // Get list to clone
     var setList = document.getElementById("setPicker").cloneNode(true);
+    var setForm = document.getElementById("boosterForm");
+    
     // if length < 2 (base elements) - 1 (0-index) + (max boosters)
-    if (document.getElementById("boosterForm").childNodes.length < maxBoosters + 1) {
-        document.getElementById("boosterForm").appendChild(setList);
+    if (setForm.childNodes.length < maxBoosters + 1) {
+
+        // Set to last dropdown's value
+        if (setForm.lastChild) {
+            setSelectDefault(setList, setForm.lastChild.value);
+        }
+
+        // Add to form
+        setForm.appendChild(setList);
     }
 }
 function removeBoosterList(e) {
@@ -93,22 +115,25 @@ function removeBoosterList(e) {
     }
 }
 
-// HANDLERS
-function handleDrop(e) {
-    let dt = e.dataTransfer
-    let files = dt.files
-
-    handleFiles(files)
-}
   
 
 // Upload cube list
+function clearUpload(e) {
+    var elem = this || e.target || e.srcElemnt;
+    if(!elem.value) { return; }
+
+    // Clear file selection
+    elem.value = null;
+    if(elem.value) { elem.value = ""; } // For IE
+    console.log(elem.files[0]);
+
+}
 function chooseUpload(e) {
     var elem = this || e.target || e.srcElemnt;
     var fileForm = new FormData();
     fileForm.append("cubeFile", elem.files[0]);
 
-    log('file chosen');
+    log("file chosen");
     uploadCube(fileForm);
 }
 function dropUpload(e) {
@@ -117,7 +142,10 @@ function dropUpload(e) {
     var fileForm = new FormData();
     fileForm.append("cubeFile", files[0]);
 
-    log('dropped file');
+    // Add name into box
+    document.getElementById("cubeFilePicker").files = files;
+
+    log("dropped file");
     uploadCube(fileForm);
 }
 function uploadCube(fileForm) {
@@ -146,23 +174,23 @@ function uploadCube(fileForm) {
             if (bigButton.getAttribute("disabled")) {
                 bigButton.removeAttribute("disabled");
             }
-            log('file saved');
+            log("file saved");
         
         // Error
         } else {
             resultHead.innerText =  "File is empty or incorrect format";
             resultBody.innerText = "Please refresh and try another file.\nPreferred format is one card name per line and no additional data.";
-            log('file not saved');
+            log("file not saved");
         }
 
         // Add missing cards to text box
         if (result.hasOwnProperty("missing") && result.missing.length) {
-            resultBody.innerText = "Unable to find "+result.missing.length+" cards:\n" + result.missing.join('\n');
+            resultBody.innerText = "Unable to find "+result.missing.length+" cards:\n" + result.missing.join("\n");
         }
 
         // Send error message to client console
         if (result.hasOwnProperty("error")) {
-            log("Error uploading file: "+result.error,'ERROR FROM SERVER');
+            log("Error uploading file: "+result.error,"ERROR FROM SERVER");
         }
 
         // Clear loading screen
@@ -177,7 +205,7 @@ function uploadCube(fileForm) {
         dragDrop.classList.add("hideForm");
         loading.classList.add("hideForm");
         readout.classList.remove("hideForm");
-        return log('Upload failed',err);
+        return log("Upload failed",err);
     });
 }
 addWindowListenerAllBrswrs("load", initListeners, false);

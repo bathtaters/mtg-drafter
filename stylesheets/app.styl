@@ -1,13 +1,15 @@
 // Nib Stylus API
-@import 'nib'
+// @require '../node_modules/nib'
 
-// My Stylus stylesheets
-@import 'base'
-@import 'cards'
-@import 'draft'
-//@import 'deck'
-//@import 'settings'
-//@import 'create'
+// Base stylesheets
+@require 'svgColor'
+@require 'base'
 
-// Additional CSSes
-@import 'mana.css'
+// Page stylesheets
+@require 'cards'
+@require 'draft'
+@require 'setup'
+
+// Additional stylesheets
+@require 'mana'
+@require 'spinner'

@@ -1,5 +1,8 @@
 // Definitions/Strings
 
+// Default Draft Set
+module.exports.defaultDraftSet = 'KHM'
+
 // Default Draft Name
 module.exports.defaultDraftName = 'New Draft'
 
@@ -7,7 +10,7 @@ module.exports.defaultDraftName = 'New Draft'
 module.exports.basicLands = ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'];
 
 // Card Colors
-module.exports.cardColors = ['W','U','B','R','G','non-mono'];
+module.exports.cardColors = ['W','U','B','R','G','other'];
 
 // Order of booster pack cards (Not-included will be at start)
 module.exports.boosterSortOrder = [

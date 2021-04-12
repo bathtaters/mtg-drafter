@@ -1,5 +1,6 @@
 // Updates mtgJSON data from website (Takes ~ 1 hr)
 //   Usage: updateDb(updateSet?,updateCards?,forceUpdate?) => Promise
+// NOT WORKING ON SERVER (Uses too much memory)
 
 const https = require('https');
 const JSONStream = require('JSONStream');

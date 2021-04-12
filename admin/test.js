@@ -1,8 +1,9 @@
 const Draft = require('../models/Draft');
-const { random, sessionId } = require('../utils/basic');
+const { sessionId } = require('../controllers/shared/basicUtils');
+const random = require('../controllers/shared/random');
 const updateDb = require('./updateDb');
 const mon = require('../config/db');
-const fileOps = require('../utils/fileOps');
+const fileOps = require('../controllers/fileOps');
 
 // updateDb(1, 1, 1, 1, 0);
 

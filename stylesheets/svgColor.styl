@@ -1,0 +1,20 @@
+//* --- Fix SVGs --- *//
+svgColorFilter(blackToColorFilter)
+  filter: blackToColorFilter
+  display: block
+
+
+//* --- Color filter for all black SVG elements --- *//
+// From: https://codepen.io/sosuke/pen/Pjoqqp (use filter: before)
+blackToAntiqueWhite = invert(99%) sepia(74%) saturate(595%) hue-rotate(305deg) brightness(102%) contrast(96%)
+blackToLavenderBlush = invert(92%) sepia(9%) saturate(175%) hue-rotate(256deg) brightness(98%) contrast(98%)
+blackToBgdColor = invert(12%) sepia(19%) saturate(453%) hue-rotate(131deg) brightness(95%) contrast(93%)
+
+// Only works for the above colors, otherwise defaults to bgd color
+svgColorize(svgColor)
+    if svgColor == antiquewhite
+        svgColorFilter(blackToAntiqueWhite)
+    else if svgColor == lavenderblush
+        svgColorFilter(blackToLavenderBlush)
+    else
+        svgColorFilter(blackToBgdColor)

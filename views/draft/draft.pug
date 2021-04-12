@@ -1,0 +1,48 @@
+extends ../generic/layout
+
+mixin cardGroup(name, cardList)
+    if(groupTitles[name])
+        div.cardGroupHeader(id=name+'Header')
+            h3= groupTitles[name]
+            //- Dash below is an 'en dash'
+            span.hider(id=name+'Hider') –
+    div.groupWrapper
+        div.groupContainer(id=name+'Container')
+            each card in cardList
+                +displayCard(card, name)
+
+mixin pickedCards(cards)
+    div#pickedCards
+        +cardGroup('main',cards.main)
+        hr#cardDivider
+        +cardGroup('side',cards.side)
+        hr#cardDivider
+
+block content
+    div#header
+        include ./draftHeader.pug
+    hr#headerDivider
+    case status
+        when draftStatus.pre
+            h2#preMsg Waiting for everyone to join...
+            hr#cardDivider
+        when draftStatus.post
+            +pickedCards(cards)
+        when draftStatus.pause
+        when draftStatus.run
+            form#pickForm(method='post')
+                input.button#pickButton(type='submit' name='button' value='Pick Card' disabled=true)
+                input#selectedDraftId(type='hidden' name='draftId' value='')
+            if activePlayer.packsHeld
+                +cardGroup('pack', pack)
+            else
+                div#cardContainer
+                    h2#waitingMsg Waiting for the next pack...
+            hr#cardDivider
+            +pickedCards(cards)
+        default
+            h2#error There's been a server error, you can wait and try refreshing.
+                
+
+block scripts
+    script(src='/javascripts/draft-listeners.js')

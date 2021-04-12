@@ -56,7 +56,9 @@ cardSchema.virtual('printedName').get(function(){
     return this.faceName || this.name;
 });
 cardSchema.virtual('imgUrl').get(function(){
-    if (this.noGath || !this.gathererImg) return this.scryfallImg;
+    if (this.noGath || !this.gathererImg) {
+        return this.side == 'b' ? this.scryfallImgBack : this.scryfallImg;
+    }
     return this.gathererImg;
 });
 cardSchema.virtual('lineBrText').get(function(){

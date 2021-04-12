@@ -1,0 +1,68 @@
+extends ../generic/layout
+
+mixin numberList(name, text, def, limits)
+  div(id=name+'Form')
+    label.settingsLabel(for=name)= text
+    input(type="number" id=name name=name min=(limits.min || 0) max=limits.max value=def)
+
+mixin colorPips(containerId)
+  div.evenSpacedH(id=containerId)
+    i.ms.ms-cost.ms-shadow.ms-w
+    i.ms.ms-cost.ms-shadow.ms-u
+    i.ms.ms-cost.ms-shadow.ms-b
+    i.ms.ms-cost.ms-shadow.ms-r
+    i.ms.ms-cost.ms-shadow.ms-g
+
+
+
+block scripts
+    script(src='/javascripts/setup-listeners.js')
+
+block content
+  form#setupForm(action='/', method='post')
+    div#setupHeader
+      +colorPips('colorPipsHead')
+      button#setupTitle.button.settingsButton(type='submit', name='start', disabled='true') Start New Draft
+      p.footerText This site is still under construction (v0.2.4) so pardon any clunkiness.
+      +colorPips('colorPipsHead')
+
+      //- Select draft type
+      div#draftTypeContainer
+        input#cubeType.button.settingsButton(type='button', value='Cube')
+        input#boosterType.button.settingsButton(type='button', value='Boosters')
+        input#draftType(type='hidden' name='draftType' value='')
+
+    div#allSettings
+      input#draftName(type='text', name='draftName', value='New Draft' onkeypress="return (this.innerText.length < "+limits.draftName.max+")")
+      +numberList('playerCount', 'Players', 8, limits.playerCount)
+
+      //- Cube Settings
+      div#cubeForm.settingsForm.hideForm
+        div#cubeOptionsForm
+          +numberList('packCount', 'Packs per Player', 3, limits.packCount)
+          +numberList('packSize', 'Card per Pack', 15, limits.packSize)
+        div#cubeFileForm
+          label#cubeFileText(for='cubeFile') Upload Text File
+          input#cubeFileData(type='hidden' name='cubeData' value='')
+          div#cubeFileBox
+            div#uploadWaiting.loading.hideForm Loading&#8230;
+            div 
+            div#cubeFileContent
+              div#uploadResultContainer.hideForm
+                span#uploadResultHeader Successfully uploaded # cards
+                span#uploadResultBody
+              span#dragDropText Drag and drop
+            input#cubeFilePicker(type='file' name='cubeFile' accept='text/plain, text/csv')
+        
+      //- Booster Settings
+      div#boosterForm.settingsForm.hideForm
+        div#setPickerHeader
+          label#setPickerForm.settingsLabel(for='setPicker') Choose a Set:
+          input#addBooster.button(type='button', value='+')
+          //- Dash below is an 'en dash'
+          input#removeBooster.button(type='button', value='–')
+        select#setPicker.settingsPicker(type='text', name='setCode')
+          each set in sets
+            option(value=set.code selected=set.code==defaultSet)=set.name
+
+      //- +colorPips('colorPipsFoot')

@@ -92,6 +92,13 @@
         outline: solid 0.1rem focusOutline
         background: alpha(altBgd, 75%)
 
+// .dragHighlight #dragDropText.hideForm
+//     display: inherit
+// .dragHighlight #uploadResultContainer
+// //& #loading
+//     opacity: 1%
+
+
 #cubeFileContent
     width: 100%
     height: 100%
@@ -146,7 +153,9 @@
     z-index: -1
 
 .hideForm
-    display: none !important
+#cubeForm.hideForm
+#boosterForm.hideForm
+    display: none
 
 // Outline on active
 .settingsPicker:focus

@@ -1,0 +1,56 @@
+mixin cardSide(card, isFoil)
+    - var cardClass = 'card'
+    - cardClass += isFoil ? ' foil' : ''
+
+    - var bgdClass = 'cardBgd'
+    - bgdClass += (card.foil ? 'Foil' : '')
+    - bgdClass += card.side ? ' side-'+card.side : ''
+
+    - var foilText = isFoil ? 'Foil' : ''
+    
+    div(class=bgdClass)
+        div(class=cardClass)
+            div.genCard
+                div(class="genLayout "+card.bgdColor)
+                    div.genHeader
+                        span.genName #{card.printedName}
+                        span.genMana!= symbFix(card.manaCost, true)
+                    div.genArtBox #{foilText}
+                    div.genTypeBox
+                        span.genType #{card.type}
+                        span(class="genRarity "+card.rarity) ⬤
+                    div.genTextBox
+                        each line in card.lineBrText
+                            p.genText!= symbFix(line, false)
+                    if card.side
+                        div(class="genFooterDfc ms ms-dfc-modal-" + (card.side == 'a' ? 'face' : 'back'))
+                    if card.footer
+                        div.genFooterNums #{card.footer}
+
+            if card.imgUrl
+                img.cardImage(src=card.imgUrl)
+        
+    
+
+mixin relatedCards(card)
+    if card.related
+        each relatedCard in card.related
+            +cardSide(relatedCard, card.foil)
+    +cardSide(card, card.foil)
+
+mixin displayCard(card, container)
+
+    - var containerClass = 'cardContainer'
+    - containerClass += card.foil ? ' foil' : ''
+    - containerClass += card.side ? ' dfc' : ''
+    - containerClass += ' ' + container
+
+    if container == 'pack'
+        button(class=containerClass, id=card.draftId)
+            +relatedCards(card)
+    else
+        div(class=containerClass, id=card.draftId, tabindex=0)
+            +relatedCards(card)
+
+        
+            
