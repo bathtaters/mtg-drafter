@@ -125,7 +125,6 @@ function clearUpload(e) {
     // Clear file selection
     elem.value = null;
     if(elem.value) { elem.value = ""; } // For IE
-    console.log(elem.files[0]);
 
 }
 function chooseUpload(e) {
