@@ -1,0 +1,85 @@
+extends ../generic/layout
+
+block scripts
+  script(src='/javascripts/admin-session-listeners.js')
+
+mixin listCard(card)
+  li.adminPlayerCard= card.name
+
+mixin lands(landData, colorRegex)
+  each land in landData
+    - var landColor = land._id.replace(colorRegex,'')
+    if landColor.length == 1
+      .landDetailBox(id=land._id)
+        i.landIcon.ms.ms-cost.ms-shadow(class = 'ms-'+landColor)
+        span.landCount= land.count
+
+mixin player(pdata)
+  div.adminPlayerContainer(id=pdata.cookieId)
+
+    .adminPlayerHeader
+      span.playerPosition(class=pdata.isHost ? 'host' : '')= pdata.position + 1
+      button.button.connectionButton(id=pdata.cookieId class=pdata.connected ? 'connected' : 'disconnected')
+      h3= pdata.name
+    div.playerId= pdata.cookieId
+    .playerDetailOpponent
+      if pdata.opponent
+        span.playerDetailTitle vs.
+        span.playerDetailValue= pdata.opponent.name
+        span.playerDetailValue.playerId= ' ('+pdata.opponent.id+')'
+      else
+        span.playerDetailTitle Bye
+    
+    if pdata.isDrafting
+      .playerDraftDetailContainer
+        span.playerDraftDetail
+          span.playerDetailTitle Pick: 
+          span.playerDetailValue= pdata.pick + 1
+        span.playerDraftDetail
+          span.playerDetailTitle Packs Held: 
+          span.playerDetailValue= pdata.packsHeld
+    
+    h4#mainDetailTitle Mainboard (#{pdata.deck.main.length}/#{pdata.deck.main.length + pdata.landCount.main})
+    .mainLandData
+      +lands(pdata.lands, /main-/)
+    ul.adminPlayerDeck.mainDeck
+      each card in pdata.deck.main
+        +listCard(card)
+        
+    h4#sideDetailTitle Sideboard (#{pdata.deck.side.length}/#{pdata.deck.side.length + pdata.landCount.side})
+    .sideLandData
+      +lands(pdata.lands, /side-/)
+    ul.adminPlayerDeck.sideDeck
+      each card in pdata.deck.side
+        +listCard(card)
+
+
+block content
+  - var sessionKeys = Object.keys(session)
+  .sessionDetail
+    .sessionHeader
+      h1= session.name
+      a(href='../../') back
+    .sessionInfo
+      .sessionStatusContainer
+        b.infoTitle Status: 
+        span.sessionStatus= session.status
+        if draftStatus.isIn(session.status)
+          b.infoTitle Round: 
+          span.sessionRound= session.round + 1
+    .sessionDisconnectContainer
+      input.button#sessionDisconnectAll(type='button' value='Disconnect All')
+    .sessionExtraDetail
+      .sessionUrl
+        b.infoTitle URL:  
+        a(href=session.url)= session.url
+      .sessionTimeDate
+        b.infoTitle Last Updated: 
+        span= session.date + ' ' + session.time
+      
+
+  .adminPlayers
+    each playerData in players
+      +player(playerData)
+
+

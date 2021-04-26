@@ -1,10 +1,10 @@
 // Simple, generic utilies
 
 // Modulo w/ non-negative result
-const modulo = (a,n) => (a % n + n) % n;
+const mod = (a,n) => (a % n + n) % n;
 
 // Looping array retrival (After last element get first & vice-versa)
-const loopArray = (arr, index) => arr[modulo(index, arr.length)];
+const loopArray = (arr, index) => arr[mod(index, arr.length)];
 
 // Swap array elements
 const swapArr = (i,j,arr) => { if (i != j) [arr[i], arr[j]] = [arr[j], arr[i]]; };
@@ -18,8 +18,17 @@ function arraysEqual(arr1, arr2) {
     return arr1.every( (value,index) => value == arr2[index] );
 }
 
+// Short string date
+const dateMMDDYY = date =>
+    ((date.getMonth() + 1) + '/').padStart(3, '0') +
+    (date.getDate() + '/').padStart(3, '0') +
+    date.getFullYear().toString().substr(2);
 
-
+// Send a reply object
+const reply = (res, data={}) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(data));
+  }
 
 // Convert text stream to array of lines
 const splitLines = (buffer) => {
@@ -85,6 +94,8 @@ function objArrayToObj(objArray, keyName='key', valueName='value', skipErrors=tr
 
 
 
+
+
 // Convert to/from Base64
 const convert = {
     // encode mongo.ObjectID as B64
@@ -111,17 +122,19 @@ const convert = {
 
 
 module.exports = {
-    swapArr: swapArr,
-    mod: modulo,
-    loopArray: loopArray,
-    arraysEqual: arraysEqual,
-    notEmpty: notEmpty,
+    swapArr,
+    mod,
+    loopArray,
+    arraysEqual,
+    notEmpty,
+    dateMMDDYY,
+    reply,
 
-    splitLines: splitLines,
-    filterObject: filterObject,
-    maxIndex: maxIndex,
-    objToArray: objToArray,
-    objArrayToObj: objArrayToObj,
+    splitLines,
+    filterObject,
+    maxIndex,
+    objToArray,
+    objArrayToObj,
 
-    convert: convert
+    convert
 }

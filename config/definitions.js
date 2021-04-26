@@ -44,7 +44,7 @@ module.exports.groupTitles = { 'main': 'Mainboard', 'side': 'Sideboard' };
 
 // Draft status enum
 module.exports.draftStatus = {
-    pre: 'not started',
+    pre: 'unstarted',
     run: 'running',
     pause: 'paused',
     post: 'complete',

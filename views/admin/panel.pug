@@ -1,0 +1,29 @@
+extends ../generic/layout
+
+
+block scripts
+    script(src='/javascripts/admin-panel-listeners.js')
+
+block content
+    h1#panelTitle Admin Panel
+    hr#headerDivider
+    #panelContainer
+        form#sessionsContainer.panelContainer(action='session' method='post')
+            label.containerTitle(for='sessionId') Drafts
+            select.panelSelect#sessionBox(name='sessionId' multiple=true)
+                each session in sessionList
+                    - var statusLine = session.status
+                    if draftStatus.isIn(session.status)
+                        - statusLine += '['+(session.round + 1)+']'
+                    option(value=session.sessionId) #{session.date} #{statusLine} #{session.name.substr(0,25)}[#{session.playerCount}]
+            .panelButtons
+                input.button#sessionDetails(type='submit' value='Details')
+                input.button#sessionDelete(type='button' value='Delete')
+                input.button#sessionDisconnect(type='button' value='Disconnect')
+            #clearContainer
+                input.button#sessionClear(type='button' value='Clear')
+                label.clearText(for='clearSessions') drafts older than
+                input#clearDays(type='number' name='clearDays' min=0 value=7)
+                label.clearText(for='clearDays') days. 
+                
+

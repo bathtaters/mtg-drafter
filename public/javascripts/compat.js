@@ -102,7 +102,14 @@ function postFormData(action, formData, url = '../action') {
 
 function updateServer(action, data = null, url = '../action') {
     return postData(action,data,url)
-        .then( function(res){return res.json();} )
+        .then( function(res){return res.json();})
+        .then( function(res){
+            if (res.error) {
+                log('Fetch error',res.error);
+                delete res.error;
+            }
+            return res;
+        })
         .catch( error => log('Fetch error',error) );
 }
 

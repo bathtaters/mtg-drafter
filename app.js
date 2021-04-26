@@ -1,5 +1,5 @@
 // uncomment to execute test.js on server start
-// require('./admin/test');
+require('./admin/test');
 
 
 // main imports
@@ -8,6 +8,7 @@ const path = require('path');
 const createError = require('http-errors');
 
 // middleware
+const basicAuth = require('express-basic-auth');
 const fileUpload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -15,18 +16,24 @@ const stylus = require('stylus');
 const nib = require('nib');
 const compression = require('compression');
 const minify = require('express-minify');
+const adminPw = require('./admin/pword');
 const myMw = require('./controllers/shared/middleware');
 
 // page routers
 const indexRouter = require('./routes/main/index');
 const draftRouter = require('./routes/main/draft');
 const actionRouter = require('./routes/main/actions');
-// const cardRouter = require('./routes/admin/cardInfo');
+const panelRouter = require('./routes/admin/panel');
 
 
 
 
 // Settings
+const authOptions = {
+  authorizer: adminPw.authorizer,
+  challenge: true,
+  unauthorizedResponse: 'This part of the site is restricted.'
+}
 const stylusOptions = {
   debug: true,
   src: path.join(__dirname, 'stylesheets'),
@@ -66,12 +73,13 @@ app.use(cookieParser());
 app.set('views', viewDirs);
 app.set('view engine', 'pug');
 app.use(stylus.middleware(stylusOptions));
-app.use(minify());
+// app.use(minify());
 app.use(express.static(path.join(__dirname, 'public', 'icon')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload(uploadOptions));
 app.use(express.json());
 app.use(myMw.logReq);
+app.use('/restricted/*',basicAuth(authOptions));
 app.use('/action/lands',myMw.landCounts);
 app.use('/draft/:sessionId?',myMw.draftObjs);
 app.use('/action',myMw.draftObjs);
@@ -81,8 +89,7 @@ app.use('/action',myMw.draftObjs);
 app.use('/', indexRouter);
 app.use('/draft', draftRouter);
 app.use('/action', actionRouter);
-// app.use('/card', cardRouter);
-// app.use('/pack', packRouter);
+app.use('/restricted/panel', panelRouter);
 
 // export modules to Pug
 app.locals.symbFix = require('./controllers/shared/htmlParser').mtgSymbolReplace;

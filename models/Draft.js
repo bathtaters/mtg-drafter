@@ -29,6 +29,11 @@ draftSchema.statics.findBySessionId = function(sessionId, proj='', opt={}) {
 
 // Draft Instance Methods
 
+draftSchema.methods.disconnectAll = function() {
+    this.players.forEach( player => player.connected = false );
+    return this.save();
+};
+
 draftSchema.methods.findPlayer = function(objId) {
     return this.players.find( player => player._id == objId );
 };
@@ -95,9 +100,19 @@ playerSchema.methods.setLandData = async function(newLands) {
     return this.parent().save();
 };
 
-playerSchema.methods.getLandData = function() {
-    return objArrayToObj(this.cards.basicLands, '_id', 'count', false);
+playerSchema.methods.getLandData = function(board = undefined) {
+    if (board) board = board.toLowerCase();
+    const landData = this.cards.basicLands.filter(data => !board || data._id.contains(board));
+    return objArrayToObj(landData, '_id', 'count', false);
 };
+
+playerSchema.methods.getLandTotal = function(board = undefined) {
+    if (board) board = board.toLowerCase();
+    
+    return this.cards.basicLands.reduce( (sum,data) =>
+        (!board || data._id.includes(board)) ? sum + data.count : sum,
+    0);
+}
 
 // External player methods
 const playerOps = require('../controllers/draft/playerOps');

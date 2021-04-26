@@ -20,6 +20,7 @@ const fullSession = sessionObj => session(sessionObj) + '\n' + allPlayers(sessio
 const request = req => {
     let str = new Date().toISOString();
     if (notEmpty(req.params)) str += '; Parameters'+JSON.stringify(req.params);
+    if (notEmpty(req.query)) str += '; Query'+JSON.stringify(req.query);
     if (notEmpty(req.cookies)) str += '; Cookies'+JSON.stringify(req.cookies);
     if (notEmpty(req.body)) {
       const body = 'cubeData' in req.body && req.body.cubeData ? Object.assign({}, req.body, {cubeData: '...'}) : req.body;

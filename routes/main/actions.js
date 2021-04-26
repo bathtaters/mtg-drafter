@@ -4,14 +4,8 @@ var express = require('express');
 var router = express.Router();
 const fileOps = require('../../controllers/draft/fileOps');
 const { draftStatus } = require('../../config/definitions');
-const { convert } = require('../../controllers/shared/basicUtils');
+const { convert, reply } = require('../../controllers/shared/basicUtils');
 const { draftRules, validate } = require('../../controllers/shared/validator');
-
-// Send a reply object
-const reply = (res, data={}) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(JSON.stringify(data));
-}
 
 
 // ----------------- Upload file, return data

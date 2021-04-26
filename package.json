@@ -1,6 +1,6 @@
 {
   "name": "mtg-drafter",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
@@ -10,6 +10,7 @@
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "express-basic-auth": "^1.2.0",
     "express-fileupload": "^1.2.1",
     "express-minify": "^1.0.0",
     "express-sessions": "^1.0.1",
