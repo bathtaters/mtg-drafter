@@ -1,11 +1,8 @@
 const Draft = require('../models/Draft');
-const { sessionId } = require('../controllers/shared/basicUtils');
-const random = require('../controllers/shared/random');
 const updateDb = require('./updateDb');
-const mon = require('../config/db');
-const fileOps = require('../controllers/fileOps');
+// const fileOps = require('../controllers/fileOps');
 
-// updateDb(1, 1, 1, 1, 0);
+// updateDb(1, 1, 0, 1, 0);
 
 async function tester() {
     await Draft.deleteMany({});

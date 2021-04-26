@@ -17,13 +17,9 @@ router.get('/', async function(req, res, next) {
     sets: setList,
     limits: limits
   });
-
-  /*cubeData.getCardList(testCards)
-    .then( data => console.log(data))
-    .catch(err => console.log("ERROR: "+err));
-  */
 });
 
+/* START new draft. */
 router.post('/', draftSetupRules(), validate, async function(req, res, next) {
   
   // Booster settings
