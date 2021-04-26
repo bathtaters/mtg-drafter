@@ -7,13 +7,18 @@ const random = require('../shared/random');
 // RNG w/ weights
 const weightKey = 'weight' // key to use, must be in all objects in array
 function getWeightedRandom(array, totalWeight=0) {
-
+    
     // Calculate weight if total not given
-    if (totalWeight < 1)
+    if (totalWeight < 1) {
         totalWeight = array.reduce( (acc,elem) => {
-            if (weightKey in elem) acc += elem[weightKey];
+            if (weightKey in elem && typeof elem[weightKey] === 'number') acc += elem[weightKey];
             return acc;
         }, 0);
+        if (totalWeight < 1) { 
+            console.error('Error finding weights for random choice, using equal weights.'); 
+            return random.elem(array);
+        }
+    }
     
     // Get random number (Between 1 - totalWeight (inclusive))
     const rand = random.int(totalWeight) + 1;
@@ -92,7 +97,7 @@ async function balanceColors(pack, pool, totalWeight=0) {
         if (isWeighted) {
             // Join weights to pool
             missingPool.forEach(
-                card => card.weight = pool.find(entry => entry.card == card._id)
+                card => card.weight = pool.find(entry => entry.card == card._id).weight
             );
             if (!missingPool.length)
                 console.error('WeightedPool empty for '+cardColors[i]+'? '+JSON.stringify(missingPool))

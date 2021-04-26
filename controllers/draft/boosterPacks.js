@@ -1,7 +1,7 @@
 // Setup for a booster draft
 const Set = require('../../models/Set');
 const { swapArr } = require('../shared/basicUtils');
-const { getWeightedRandom, balanceColors } = require('./packOps');
+const packOps = require('./packOps');
 const { boosterSortOrder } = require('../../config/definitions');
 const { shuffle } = require('../shared/random');
 
@@ -26,7 +26,7 @@ async function getBoosterPack(setData) {
     // Select a booster pack layout to use
     const layout = ((setData.boosters.length == 1) ?
         setData.boosters[0] :
-        getWeightedRandom(setData.boosters, setData.boostersTotalWeight))
+        packOps.getWeightedRandom(setData.boosters, setData.boostersTotalWeight))
         .contents;
     
     // Pre-sort the cards in the pack
@@ -53,14 +53,14 @@ async function getBoosterPack(setData) {
         let nextCard, newCards = [];
         for (let i=0; i < sheetCount; i++) {
             do {
-                nextCard = getWeightedRandom(sheetData.cards, sheetData.totalWeight).card;
+                nextCard = packOps.getWeightedRandom(sheetData.cards, sheetData.totalWeight).card;
             } while (newCards.includes(nextCard));
             newCards.push(nextCard);
         }
         
         // Color-balancing algo, if sheet needs to be balanced
         if (sheetData.balanceColors) {
-            await balanceColors(newCards, sheetData.cards);
+            await packOps.balanceColors(newCards, sheetData.cards);
             shuffle(newCards); /// shuffle to mixup colors
         }
 
