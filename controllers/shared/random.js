@@ -1,18 +1,20 @@
 // ------  All random-related operations ------ //
-const { swapArr } = require("./basicUtils");
+const { swapArr } = require('./basicUtils');
+const crypto = require('crypto');
 
 // ----- Algorithm options:
 const allAlgorithms = {
-    simple: (max,min) => min + Math.floor(Math.random() * (max - min))
+  simple: (min,max) => min + Math.floor(Math.random() * (max - min)),
+  secure: crypto.randomInt
 };
 // Selected algorithm
-const randomAlgo = allAlgorithms.simple;
+const randomAlgo = allAlgorithms.secure;
 
 
 // ------ Public functions:
 
 // Basic random operations
-const int = (maxExcl,minInclu=0) => randomAlgo(maxExcl,minInclu);
+const int = (maxExcl,minInclu=0) => randomAlgo(minInclu,maxExcl);
 const elem = array => array[int(array.length)];
 
 // Shuffles any array using Fisher-Yates
