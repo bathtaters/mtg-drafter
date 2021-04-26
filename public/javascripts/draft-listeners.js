@@ -121,9 +121,20 @@ function clickCard(e) {
                 if (result.moveTo == 'side') {
                     document.getElementById('sideContainer').appendChild(elem);
                     elem.classList.replace('main','side');
+
+                    var oldCount = document.getElementById('mainCount');
+                    oldCount.innerText = +oldCount.innerText - 1;
+                    var newCount = document.getElementById('sideCount');
+                    newCount.innerText = +newCount.innerText + 1;
+
                 } else if (result.moveTo == 'main') {
                     document.getElementById('mainContainer').appendChild(elem);
                     elem.classList.replace('side','main');
+
+                    var oldCount = document.getElementById('sideCount');
+                    oldCount.innerText = +oldCount.innerText - 1;
+                    var newCount = document.getElementById('mainCount');
+                    newCount.innerText = +newCount.innerText + 1;
                 } else {
                     log('Card swap returned value: '+JSON.stringify(result));
                 }       

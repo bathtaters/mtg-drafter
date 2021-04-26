@@ -4,6 +4,7 @@ mixin cardGroup(name, cardList)
     if(groupTitles[name])
         div.cardGroupHeader(id=name+'Header')
             h3= groupTitles[name]
+            span.boardCount(id=name+'Count')= cardList.length
             //- Dash below is an 'en dash'
             span.hider(id=name+'Hider') –
     div.groupWrapper

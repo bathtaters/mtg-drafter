@@ -157,6 +157,7 @@ h3
 
 /* --- Show/Hide Sideboard --- */
 
+
 .hiddenGroup
     display: none
     // transform: translateY(-100%);
@@ -168,9 +169,17 @@ h3
     overflow: hidden
 
 .cardGroupHeader
-    display: inline-block
+    display: flex
+    align-items: center
     margin-left: 1rem
     cursor: pointer
+    
+.boardCount
+    margin: 0 0.2em
+    &::before
+        content: '('
+    &::after
+        content: ')'
 
 .hider
     display: inline-block
