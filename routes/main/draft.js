@@ -31,7 +31,7 @@ router.get('/:sessionId?', async function(req, res, next) {
 router.post('/:sessionId?', draftRules.pick(), validate, async function(req, res, next) {
 
   if (req.body.button == "Pick Card" && req.body.draftId) {
-    req.body.player.pickCard(req.body.draftId);
+    await req.body.player.pickCard(req.body.draftId);
   } else {
     console.error('Other POSTS not set')
   }
