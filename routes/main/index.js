@@ -1,21 +1,23 @@
 var express = require('express');
 var router = express.Router();
 
-const Set = require('../../models/Set');
+const setList = require('../../admin/setList');
 const Draft = require('../../models/Draft');
+const Settings = require('../../models/Settings');
 const { convert } = require('../../controllers/shared/basicUtils');
 const { defaultDraftName, defaultDraftSet } = require('../../config/definitions');
 const { limits, draftSetupRules, validate } = require('../../controllers/shared/validator');
 
+
 /* GET home page. */
 router.get('/', async function(req, res, next) {
-  const setList = await Set.getSetList()
+  const sets = await setList.visibleList();
+  const defaultSet = await Settings.get('defaultSet');
   return res.render('setup', {
     title: 'MtG Drafter',
     defaultName: defaultDraftName,
-    defaultSet: defaultDraftSet,
-    sets: setList,
-    limits: limits
+    defaultSet: defaultSet || defaultDraftSet,
+    sets, limits
   });
 });
 

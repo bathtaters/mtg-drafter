@@ -1,9 +1,19 @@
 // Admin Panel styling
 
-#sessionsContainer
+#panelWrapper
+    display: flex
+    flex-wrap: wrap
+
+.panelContainer
     display: flex
     flex-direction: column
     align-items: center
+    margin: 0.5rem
+
+#setsContainer
+    max-width: 26rem
+
+#sessionsContainer
     max-width: 26rem
 
 .panelSelect
@@ -18,17 +28,25 @@
     font-family: monospace
     padding: 0.3em
 
+option.setOff
+    opacity: 75%
+    font-style: italic
+
 .panelButtons
     display: flex
     justify-content: space-evenly
-    padding: 0.5rem
+    align-items: center
+    padding: 0.4rem
 
 .panelButtons .button
-    margin: 0.3rem
+    margin: 0 0.3rem
+
+.smallInputBox
+    margin: 0 0.5em
 
 #clearDays
     max-width: 2em
-    margin: 0 0.5em
+    
 #sessionClear
     margin 0 0.5em
 

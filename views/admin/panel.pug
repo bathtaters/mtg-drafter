@@ -7,7 +7,7 @@ block scripts
 block content
     h1#panelTitle Admin Panel
     hr#headerDivider
-    #panelContainer
+    #panelWrapper
         form#sessionsContainer.panelContainer(action='session' method='post')
             label.containerTitle(for='sessionId') Drafts
             select.panelSelect#sessionBox(name='sessionId' multiple=true)
@@ -20,10 +20,29 @@ block content
                 input.button#sessionDetails(type='submit' value='Details')
                 input.button#sessionDelete(type='button' value='Delete')
                 input.button#sessionDisconnect(type='button' value='Disconnect')
-            #clearContainer
+            .panelButtons#clearContainer
                 input.button#sessionClear(type='button' value='Clear')
                 label.clearText(for='clearSessions') drafts older than
-                input#clearDays(type='number' name='clearDays' min=0 value=7)
+                input.smallInputBox#clearDays(type='number' name='clearDays' min=0 value=7)
                 label.clearText(for='clearDays') days. 
-                
+        form#setsContainer.panelContainer(action='set' method='post')
+            label.containerTitle(for='sets') Sets
+            select.panelSelect#setsBox(name='sets' multiple=true)
+                each set in sets
+                    - var setTitle = set.name
+                    if set.block
+                        - setTitle += ' ('+set.block+')'
+                    if set.code == defaultSet
+                        -setTitle += ' [default]'
+                    option(class=(set.enabled ? 'setOn' : 'setOff') value=set.code)= setTitle + (set.enabled ? '' : ' [hidden]')
+            .panelButtons
+                input.button#setToggle(type='button' value='Toggle Visibility')
+                input.button#setDefault(type='button' value='Make Default')
+            .panelButtons#setsDefaultContainer
+                input.button#setUpdate(type='button' value='Update All')
+                input.button#setReset(type='button' value='Reset All')
+                label.setsDefaultLabel(for='setsDefault') Visibility forced to:
+                select.smallInputBox#setsDefault(name='setsDefault')
+                    option(value=1 selected=true) On
+                    option(value=0) Off
 

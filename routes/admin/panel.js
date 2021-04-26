@@ -4,8 +4,10 @@ var express = require('express');
 var router = express.Router();
 
 const Draft = require('../../models/Draft');
-const { dateMMDDYY, reply, convert } = require('../../controllers/shared/basicUtils');
+const Settings = require('../../models/Settings');
+const { reply, convert } = require('../../controllers/shared/basicUtils');
 const populatePacks = require('../../controllers/shared/populatePacks');
+const setList = require('../../admin/setList');
 
 // Session Data filterer
 const sessionListFilter = 'name players round packs hostId updatedAt';
@@ -50,12 +52,14 @@ const daysAgo = days => {
 
 /* GET Panel page. */
 router.get('/', async function(req, res, next) {
-const sessionList = await Draft.find({},sessionListFilter).sort('-updatedAt')
+  const sessionList = await Draft.find({},sessionListFilter).sort('-updatedAt')
     .then(result => result.map(sessionListData));
+  const sets = await setList.fullList();
+  const defaultSet = await Settings.get('defaultSet');
   
   return res.render('panel', {
     title: 'Admin Panel - MtG Drafter',
-    sessionList
+    sessionList, sets, defaultSet
   });
 
 });
@@ -73,7 +77,7 @@ router.get('/session/:sessionId', async function(req, res, next) {
   });
 });
 
-/* Make changes. */
+/* Make session changes. */
 router.post('/session/:sessionId/:action', async function(req, res, next) {
   
   // TODO: CHECK THERE IS A SESSION ID
@@ -117,6 +121,43 @@ router.post('/session/:sessionId/:action', async function(req, res, next) {
   }
 
   return reply(res, {sessionId: req.params.sessionId, action: req.params.action});
+});
+
+
+/* Make set changes. */
+router.post('/sets/:action', async function(req, res, next) {
+
+  let result = 'Invalid action.';
+
+  // Toggle set visibility
+  if (req.params.action == 'ToggleVisibility') {
+    const checkSet = await Settings.get('defaultSet');
+    if (checkSet === req.body.setCode) {
+      console.error('Cannot toggle visibilty of default set: '+req.body.setCode);
+    } else {
+      result = await setList.setVisibility(req.body.setCode);
+    }
+
+  // Toggle set visibility
+  } else if (req.params.action == 'MakeDefault') {
+    const checkSet = await setList.getVisibility(req.body.setCode);
+    if (!checkSet) {
+      console.error(req.body.setCode+' is not a set or set is hidden.');  
+    } else {
+      result = await Settings.set('defaultSet',req.body.setCode);
+    }
+
+  // Append new sets to setList
+  } else if (req.params.action == 'UpdateAll') {
+    result = await setList.updateSetList(req.body.defaultVisible === undefined ? true : +req.body.defaultVisible);
+  
+  // Reset setList and all visibility
+  } else if (req.params.action == 'ResetAll') {
+    result = await setList.resetSetList(req.body.defaultVisible === undefined ? true : +req.body.defaultVisible);
+  
+  }
+
+  return reply(res, {set: req.body.setCode || 'all', action: req.params.action, result});
 });
 
 // Forward session "post" to session URL

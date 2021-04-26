@@ -43,8 +43,9 @@ const setSchema = new mtgDb.Schema({
 setSchema.statics.getFilter = (data => data.booster);
 
 // Get values for select menu
-setSchema.statics.getSetList = function(){
-    return this.find({_id:{$ne:'_META'}}, 'name code', {sort:'-releaseDate'});
+setSchema.statics.getSetList = async function(){
+    const sets = await this.find({_id:{$ne:'_META'}}, 'name code block releaseDate', {sort:'-releaseDate'});
+    return sets.map(s => s.toObject());
 };
 
 
@@ -90,6 +91,9 @@ sheetSchema.path('cards').set(function(v) {
 layoutSchema.path('contents').set(function(v) {
     return objToArray(v,'sheetName','count');
 });
+
+const setFix = (_,obj) => { obj.code = obj._id; delete obj._id; return obj; };
+setSchema.set('toObject', {versionKey: false, useProjection: true, transform: setFix});
 
 const Set = model('Set', setSchema);
 module.exports = Set;

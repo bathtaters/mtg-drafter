@@ -1,7 +1,7 @@
 // Definitions/Strings
 
 // Default Draft Set
-module.exports.defaultDraftSet = 'KHM'
+module.exports.defaultDraftSet = 'WAR'
 
 // Default Draft Name
 module.exports.defaultDraftName = 'New Draft'

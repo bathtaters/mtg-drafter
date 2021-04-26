@@ -1,73 +1,145 @@
-const Draft = require('../models/Draft');
 const updateDb = require('./updateDb');
-// const fileOps = require('../controllers/fileOps');
 
 // updateDb(1, 1, 0, 1, 0);
 
-async function tester() {
-    await Draft.deleteMany({});
-    console.log('sessions database cleared.');
+const Settings = require('../models/Settings');
+const Set = require('../models/Set');
 
-    // Session settings
-    const settings = {
-        names: ['Matt','Taylor','Gonti','Nick'],
-        packs: ['SOI','KHM','A25','WAR'],
-        sizes: [[2,3],[1,1],[8,3],[2,1],[1,3],[2,3,15]] // [players,packs,packSize? (will use cube)]
-    }
-
-    // Construct Drafts
-    let testDrafts = [], packIndex = 0;
-    await Promise.all(settings.sizes.map( async size => {
-        let draftSettings;
-        // Cube Draft
-        if (size.length == 3) {
-            draftSettings = {playerCount: size[0], packCount: size[1], packSize: size[2]};
-            draftSettings.cubeData = await fileOps.testCube;
-        
-        // Booster Draft
-        } else {
-            let nextPacks = [];
-            for (const o = packIndex; packIndex < o + size[1]; packIndex++) {
-                nextPacks.push(settings.packs[packIndex % settings.packs.length]);
-            }
-            draftSettings = { playerCount: size[0], packLayout: nextPacks };
-        }
-
-        const nextDraft = await Draft.newDraft(draftSettings);
-
-        // Add players
-        nextDraft.findPlayer(nextDraft.hostId).connected = false;
-        for (let i=0; i < nextDraft.players.length && i < settings.names.length; i++) {
-            nextDraft.players[i].name = settings.names[i];
-        }
-        await nextDraft.save()
-        testDrafts.push(nextDraft);
-    }));
-
-    
-    testDrafts.forEach(draft =>
-        console.log(' > URL('+draft.name+'['+draft.players.length+
-        ']): http://192.168.0.139:3000/draft/'+draft.sessionId)
-    );
-    console.log('Servers ready.');
+async function updateSetList() {
+    const setList = await Set.getSetList();
+    setList.forEach(set => set.enabled = true);
+    console.log(setList.length);
+    console.log(setList[0]);
+    console.log(setList[20]);
+    await Settings.set('setList',setList);
+    const savedList = await Settings.get('setList');
+    console.log(savedList.length);
+    console.log(savedList[0]);
+    console.log(savedList[20]);
 }
 
-
-// tester();  
-
+// updateSetList();
 
 
 
 
 
-/*
-    playerCount = number (default: 8)
+async function settingsTester() {
 
-    for Cube:
-        packSize = number (default: 15)
-        packCount = number (default: 3)
-        cubeData = array of cards (default: [], len >= playerCount*packCount*packSize)
-    else:
-        packLayout = array of setCodes (default: [], len > 0)
+    await Settings.getAll().then(r => console.log(r)); // Existing settings (or {})
+    await Settings.delete('test').then(r => console.log(r)); // Existing value (or undefined)
+    await Settings.set('test',420).then(r => console.log(r)); // true/false (did 'test' already exist?)
+    await Settings.get('test').then(r => console.log(r)); // 420
+    await Settings.getAll().then(r => console.log(r)); // Existing settings + {test: 420}
+    
+    await Settings.delete('testArr').then(r => console.log(r)); // Existing value (or undefined)
+    await Settings.push('testArr',1).then(r => console.log(r)); // 0
+    await Settings.get('testArr').then(r => console.log(r)); // [1]
+    await Settings.push('testArr',2).then(r => console.log(r)); // 1 
+    await Settings.get('testArr').then(r => console.log(r)); // [1,2]
+    await Settings.push('testArr',3).then(r => console.log(r)); // 2
+    await Settings.get('testArr').then(r => console.log(r)); // [1,2,3]
+    
+    await Settings.getIndex('testArr',1).then(r => console.log(r)); // 2 
+    await Settings.getIndex('testArr',4).then(r => console.log(r)); // undefined
+    await Settings.setIndex('testArr',2,69).then(r => console.log(r)); // 2
+    await Settings.getIndex('testArr',2).then(r => console.log(r)); // 69
+    await Settings.get('testArr').then(r => console.log(r)); // [1,2,69]
 
-*/
+    await Settings.setIndex('testArr',6,69).then(r => console.log(r)); // 6 
+    await Settings.getIndex('testArr',6).then(r => console.log(r)); // 69
+    await Settings.get('testArr').then(r => console.log(r)); // [1,2,69,-,-,-,69]
+    
+    await Settings.setIndex('testArr2',3,'testnew').then(r => console.log(r)); // 3 
+    await Settings.getIndex('testArr2',0).then(r => console.log(r)); // null
+    await Settings.getIndex('testArr2',3).then(r => console.log(r)); // 'testnew'
+    await Settings.get('testArr2').then(r => console.log(r)); // [-,-,-,'testnew']
+
+    await Settings.get('testArr').then(r => console.log(r)); // [1,2,69,-,-,-,69]
+    await Settings.pop('testArr',1).then(r => console.log(r)); // 2
+    await Settings.getIndex('testArr',1).then(r => console.log(r)); // 69
+    await Settings.get('testArr').then(r => console.log(r)); // [1,69,-,-,-,69]
+
+    await Settings.getAll().then(r => console.log(r)); // Existing settings + {test:420,testArr:[1...],testArr2:[...]}
+    await Settings.setMany({poop: 'is', fun: [3,2,1], party: ['on','garth']}).then(r => console.log(r)); // [t/f,t/f,t/f] (if key existed)
+    await Settings.getAll().then(r => console.log(r)); // Existing settings + test settings + {poop,fun,party}
+    await Settings.pop('fun',1).then(r => console.log(r)); // 2
+    await Settings.get('fun').then(r => console.log(r)); // [3,1]
+    await Settings.getIndex('party',1).then(r => console.log(r)); // 'garth'
+
+    await Settings.getAll().then(r => console.log(r)); // Existing settings + all new settings
+    await Settings.deleteList(['test','testArr','testArr2','poop','fun','party']).then(r => console.log(r)); // [values...]
+    await Settings.getAll().then(r => console.log(r)); // Existing settings only (or {})
+    /*
+        {}
+        undefined
+        false
+        420
+        { test: 420 }
+        undefined
+        0
+        [ 1 ]
+        1
+        [ 1, 2 ]
+        2
+        [ 1, 2, 3 ]
+        2
+        undefined
+        2
+        69
+        [ 1, 2, 69 ]
+        6
+        69
+        [
+        1,    2,    69,
+        null, null, null,
+        69
+        ]
+        3
+        null
+        testnew
+        [ null, null, null, 'testnew' ]
+        [
+        1,    2,    69,
+        null, null, null,
+        69
+        ]
+        2
+        69
+        [ 1, 69, null, null, null, 69 ]
+        {
+        test: 420,
+        testArr: [ 1, 69, null, null, null, 69 ],
+        testArr2: [ null, null, null, 'testnew' ]
+        }
+        [ false, false, false ]
+        {
+        test: 420,
+        testArr: [ 1, 69, null, null, null, 69 ],
+        testArr2: [ null, null, null, 'testnew' ],
+        fun: [ 3, 2, 1 ],
+        poop: 'is',
+        party: [ 'on', 'garth' ]
+        }
+        2
+        [ 3, 1 ]
+        garth
+        {
+        test: 420,
+        testArr: [ 1, 69, null, null, null, 69 ],
+        testArr2: [ null, null, null, 'testnew' ],
+        fun: [ 3, 1 ],
+        poop: 'is',
+        party: [ 'on', 'garth' ]
+        }
+        [
+        420,
+        [ 1, 69, null, null, null, 69 ],
+        [ null, null, null, 'testnew' ],
+        'is',
+        [ 3, 1 ],
+        [ 'on', 'garth' ]
+        ]
+        {}
+    */
+}
