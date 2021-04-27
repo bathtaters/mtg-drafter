@@ -9,7 +9,7 @@ const limits = {
     // Setup Page
     draftType: ['cubeType','boosterType'],  // enum
     draftName: { max: 30 },                 // char limit
-    playerCount: { min: 2, max: 16 },       // int range
+    playerCount: { min: 1, max: 16 },       // int range
     packCount: { min: 1, max: 10 },         // int range (Also applies to setCode array)
         // packCount => Must also update limits in "setup-listeners.add/removeBoosterPack"
     packSize: { min: 1, max: 20 },          // int range
