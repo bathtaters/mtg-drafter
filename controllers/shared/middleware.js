@@ -78,10 +78,17 @@ async function getDraftObjects(req, res, next) {
 }
 const validatedDraftObjects = validator.cookieRules().concat(validator.validate, getDraftObjects);
 
+const addSlash = (req, res, next) => {
+  if (req.originalUrl.endsWith('/')) return next();
+  if (/[^\.]+\.[^\.\/]+$/.test(req.originalUrl)) return next();
+
+  console.log('Added slash: '+req.originalUrl+' => '+req.originalUrl + '/');
+  return res.redirect(301, req.originalUrl + '/');
+}
 
 
 module.exports = {
-    logReq: logReq,
+    logReq, addSlash,
     landCounts: getLandCounts,
     draftObjs: validatedDraftObjects
 }

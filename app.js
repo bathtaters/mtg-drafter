@@ -77,7 +77,6 @@ app.use(stylus.middleware(stylusOptions));
 app.use(express.static(path.join(__dirname, 'public', 'icon')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload(uploadOptions));
-app.use(express.json());
 app.use(myMw.logReq);
 app.use('/restricted/*',basicAuth(authOptions));
 app.use('/action/lands',myMw.landCounts);

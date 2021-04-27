@@ -8,6 +8,7 @@ const Settings = require('../../models/Settings');
 const { reply, convert } = require('../../controllers/shared/basicUtils');
 const populatePacks = require('../../controllers/shared/populatePacks');
 const setList = require('../../admin/setList');
+const { addSlash } = require('../../controllers/shared/middleware');
 
 // Session Data filterer
 const sessionListFilter = 'name players round packs hostId updatedAt';
@@ -51,7 +52,8 @@ const daysAgo = days => {
 }
 
 /* GET Panel page. */
-router.get('/', async function(req, res, next) {
+router.get('/', addSlash, async function(req, res, next) {
+  
   const sessionList = await Draft.find({},sessionListFilter).sort('-updatedAt')
     .then(result => result.map(sessionListData));
   const sets = await setList.fullList();
@@ -65,7 +67,7 @@ router.get('/', async function(req, res, next) {
 });
 
 /* GET Session detail. */
-router.get('/session/:sessionId', async function(req, res, next) {
+router.get('/session/:sessionId', addSlash, async function(req, res, next) {
   const session = await Draft.findBySessionId(req.params.sessionId);
   if (!session) return res.send('Session "'+req.params.sessionId+'" does not exist.');
 
