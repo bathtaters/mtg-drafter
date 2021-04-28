@@ -3,9 +3,11 @@ extends ../generic/layout
 block scripts
   script(src='/javascripts/admin-session-listeners.js')
 
+//- Card info
 mixin listCard(card)
   li.adminPlayerCard= card.name
 
+//- Land info
 mixin lands(landData, colorRegex)
   each land in landData
     - var landColor = land._id.replace(colorRegex,'')
@@ -14,14 +16,18 @@ mixin lands(landData, colorRegex)
         i.landIcon.ms.ms-cost.ms-shadow(class = 'ms-'+landColor)
         span.landCount= land.count
 
+//- Player Box
 mixin player(pdata)
   div.adminPlayerContainer(id=pdata.cookieId)
 
+    //- Player Info header
     .adminPlayerHeader
       span.playerPosition(class=pdata.isHost ? 'host' : '')= pdata.position + 1
       button.button.connectionButton(id=pdata.cookieId class=pdata.connected ? 'connected' : 'disconnected')
       h3= pdata.name
-    div.playerId= pdata.cookieId
+    .playerDetailLine
+      span.playerId= pdata.cookieId
+      span.playerDate= ' – '+pdata.date
     .playerDetailOpponent
       if pdata.opponent
         span.playerDetailTitle vs.
@@ -30,6 +36,7 @@ mixin player(pdata)
       else
         span.playerDetailTitle Bye
     
+    //- Player Draft header
     if pdata.isDrafting
       .playerDraftDetailContainer
         span.playerDraftDetail
@@ -39,23 +46,36 @@ mixin player(pdata)
           span.playerDetailTitle Packs Held: 
           span.playerDetailValue= pdata.packsHeld
     
-    h4#mainDetailTitle Mainboard (#{pdata.deck.main.length}/#{pdata.deck.main.length + pdata.landCount.main})
-    .mainLandData
-      +lands(pdata.lands, /main-/)
-    ul.adminPlayerDeck.mainDeck
-      each card in pdata.deck.main
-        +listCard(card)
-        
-    h4#sideDetailTitle Sideboard (#{pdata.deck.side.length}/#{pdata.deck.side.length + pdata.landCount.side})
-    .sideLandData
-      +lands(pdata.lands, /side-/)
-    ul.adminPlayerDeck.sideDeck
-      each card in pdata.deck.side
-        +listCard(card)
+    //- Player Mainboard
+    div.boardHeader(id=pdata.cookieId+'_mainHeader')
+      h4#mainDetailTitle Mainboard (#{pdata.deck.main.length}/#{pdata.deck.main.length + pdata.landCount.main})
+      span.hider(id=pdata.cookieId+'_mainHider') +
+    div.cardList.hiddenGroup(id=pdata.cookieId+'_mainContainer')
+      .mainLandData
+        +lands(pdata.lands, /main-/)
+      ul.adminPlayerDeck.mainDeck
+        each card in pdata.deck.main
+          +listCard(card)
+    
+    //- Player Sideboard
+    div.boardHeader(id=pdata.cookieId+'_sideHeader')
+      h4#sideDetailTitle Sideboard (#{pdata.deck.side.length}/#{pdata.deck.side.length + pdata.landCount.side})
+      span.hider(id=pdata.cookieId+'_sideHider') +
+    div.cardList.hiddenGroup(id=pdata.cookieId+'_sideContainer')
+      .sideLandData
+        +lands(pdata.lands, /side-/)
+      ul.adminPlayerDeck.sideDeck
+        each card in pdata.deck.side
+          +listCard(card)
+
+    //- Download link
+    .playerFooter
+      a.deckUrl(href='player/'+pdata.cookieId+'/downloadDeck') Download Deck List
 
 
 block content
-  - var sessionKeys = Object.keys(session)
+  
+  //- Session header info
   .sessionDetail
     .sessionHeader
       h1= session.name
@@ -77,7 +97,7 @@ block content
         b.infoTitle Last Updated: 
         span= session.date + ' ' + session.time
       
-
+  //- Player boxes
   .adminPlayers
     each playerData in players
       +player(playerData)

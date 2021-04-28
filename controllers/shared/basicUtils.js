@@ -18,11 +18,12 @@ function arraysEqual(arr1, arr2) {
     return arr1.every( (value,index) => value == arr2[index] );
 }
 
-// Short string date
-const dateMMDDYY = date =>
-    ((date.getMonth() + 1) + '/').padStart(3, '0') +
-    (date.getDate() + '/').padStart(3, '0') +
-    date.getFullYear().toString().substr(2);
+// Date of N days before today (MOVE TO BASIC)
+const daysAgo = days => {
+    let d = new Date();
+    d.setDate(d.getDate() - days);
+    return d;
+}
 
 // Send a reply object
 const reply = (res, data={}) => {
@@ -127,7 +128,7 @@ module.exports = {
     loopArray,
     arraysEqual,
     notEmpty,
-    dateMMDDYY,
+    daysAgo,
     reply,
 
     splitLines,

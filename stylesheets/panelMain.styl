@@ -1,0 +1,117 @@
+// Admin Panel styling
+
+// General styles
+
+#panelWrapper
+    display: flex
+    flex-wrap: wrap
+
+.panelContainer
+    display: flex
+    flex-direction: column
+    align-items: center
+    margin: 0.8rem
+
+.panelSelect
+    width: 100%
+    height: 17rem
+
+.containerTitle
+    padding: 0.3rem
+    font-size: 1rem
+
+.panelSelect option
+    font-family: monospace
+    padding: 0.3em
+
+.panelButtons
+    display: flex
+    justify-content: space-evenly
+    align-items: center
+    padding: 0.4rem
+
+.panelButtons .button
+    margin: 0 0.3rem
+
+.smallInputBox
+    margin: 0 0.5em
+
+
+// Session settings
+
+#sessionsContainer
+    max-width: 26rem
+
+#sessionClear
+    margin 0 0.5em
+
+
+
+// Set settings
+
+#setsContainer
+    max-width: 26rem
+
+option.setOff
+    opacity: 75%
+    font-style: italic
+
+#clearDays
+    max-width: 2em
+
+.setsDefaultLabel
+    text-align: right
+
+
+
+// Database updater
+
+#dbContainer
+    max-width: 22rem
+    position: relative
+    padding: 0.5rem
+
+.dbUrlLine
+.dbCheckbox
+.dbCheckboxContainer
+    display: flex  
+    flex-direction: row
+    align-items: center
+
+.dbUrlLine
+    width: 100%
+    margin: 0.3rem 0
+
+#setUrl
+#cardUrl
+    font-size: 0.7em
+    width: calc(100% - 4em)
+
+.dbUrlLine input
+    font-size: 0.8em
+    min-width: 4em
+    margin: 0 0.2rem
+
+.dbCheckboxContainer
+    flex-wrap: wrap
+    justify-content: center
+
+.dbCheckbox
+    font-size: 0.8em
+    margin: 0.2rem 0.3rem
+
+input:disabled+label
+    opacity: 75%
+    font-style: italic
+
+#updateDbButton
+    margin: 0.5rem
+    padding: 0.3rem 0.5rem
+
+#dbResult
+    font-size: 0.7em
+    margin: 1em
+    font-style: italic
+    opacity: 75%
+    min-height: 1.2em
+

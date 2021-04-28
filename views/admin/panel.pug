@@ -8,6 +8,8 @@ block content
     h1#panelTitle Admin Panel
     hr#headerDivider
     #panelWrapper
+
+        //- Sessions box
         form#sessionsContainer.panelContainer(action='session' method='post')
             label.containerTitle(for='sessionId') Drafts
             select.panelSelect#sessionBox(name='sessionId' multiple=true)
@@ -25,6 +27,8 @@ block content
                 label.clearText(for='clearSessions') drafts older than
                 input.smallInputBox#clearDays(type='number' name='clearDays' min=0 value=7)
                 label.clearText(for='clearDays') days. 
+
+        //- Sets box
         form#setsContainer.panelContainer(action='set' method='post')
             label.containerTitle(for='sets') Sets
             select.panelSelect#setsBox(name='sets' multiple=true)
@@ -46,3 +50,29 @@ block content
                     option(value=1 selected=true) On
                     option(value=0) Off
 
+        //- MTG Database box
+        form#dbContainer.panelContainer(action='updateDb' method='post')
+            label.containerTitle(for='dbContainer') Update MtG Database
+            .dbUrlLine
+                input#setUrl(type='url' name='setUrl' value=url.set disabled=true)
+                input.button#setEdit(type='button' value='Edit')
+            .dbUrlLine
+                input#cardUrl(type='url' name='cardUrl' value=url.card disabled=true)
+                input.button#cardEdit(type='button' value='Edit')
+            .dbCheckboxContainer
+                .dbCheckbox
+                    input#updateSets(type='checkbox' name='updateSets' checked=true)
+                    label(for='updateSets') Update Set database
+                .dbCheckbox
+                    input#updateCards(type='checkbox' name='updateCards' checked=true)
+                    label(for='updateCards') Update Card database
+                .dbCheckbox
+                    input#fixCardAlts(type='checkbox' name='fixCardAlts' checked=true)
+                    label(for='fixCardAlts') Include Card alt data
+                .dbCheckbox
+                    input#skipCurrent(type='checkbox' name='skipCurrent' checked=true)
+                    label(for='skipCurrent') Update outdated only
+            .updateButtonContainer
+                input.button#updateDbButton(type='button' value='Update')
+                #dbLoading.loading.hidden
+            #dbResult
