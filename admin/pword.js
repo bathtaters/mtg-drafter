@@ -1,29 +1,18 @@
-const fs = require('fs');
-const path = require('path');
+const Settings = require('../models/Settings');
 const crypto = require('crypto');
 const basicAuth = require('express-basic-auth');
 
-const tablePath = path.join(__dirname,'..','config','ut.bin');
-
-const fileOps = {
+const tableOps = {
+    key: 'adminTable',
     encode: obj => Buffer.from(JSON.stringify(obj)).toString('base64'),
     decode: txt => JSON.parse(Buffer.from(txt, 'base64').toString('ascii')),
-    read: () => {
-        let data;
-        try { data = fs.readFileSync(tablePath).toString('ascii'); }
-        catch (err) { console.error(err); return; }
-        return data ? fileOps.decode(data) : undefined;
+    read: async () => {
+        const data = await Settings.get(tableOps.key);
+        return data ? tableOps.decode(data) : undefined;
     },
-    write: obj => {
-        try { fs.writeFileSync(tablePath,fileOps.encode(obj)); }
-        catch (err) { console.error(err); return false; } return true;
-    },
-    delete: () => fileOps.write({})
+    write: async obj => Settings.set(tableOps.key,tableOps.encode(obj)),
+    reset: async () => tableOps.write({})
 }
-if (!fs.existsSync(tablePath))
-    fileOps.delete() ?
-        console.log('Created user table.') :
-        console.log('Error creating user table.');
 const pwOps = {
     set: pass => {
         const salt = crypto.randomBytes(32).toString('base64');
@@ -32,30 +21,30 @@ const pwOps = {
     check: (pass, data) =>
         basicAuth.safeCompare(crypto.pbkdf2Sync(pass,data[0],1080,64,'sha512').toString('base64'),data[1])
 }
-function setUser(uname, pword, oldPword) {
-    let users = fileOps.read();
+async function setUser(uname, pword, oldPword) {
+    let users = tableOps.read();
     if ((uname in users) && !checkUser(uname,oldPword))
         return oldPword ? 'Incorrect password' : 'User already exists'
     users[uname] = pwOps.set(pword);
-    return fileOps.write(users) ? 0 : 'Error updating user table'
+    return tableOps.write(users) ? 0 : 'Error updating user table'
 }
-function removeUser(uname) {
-    let users = fileOps.read();
+async function removeUser(uname) {
+    let users = tableOps.read();
     if (!(uname in users)) return 'User does not exists';
     delete users[uname]
-    return fileOps.write(users) ? 0 : 'Error updating user table'
+    return tableOps.write(users) ? 0 : 'Error updating user table'
 }
-function checkUser(uname, pword) {
-    const users = fileOps.read();
+async function checkUser(uname, pword) {
+    const users = tableOps.read();
     if (!(uname in users)) return false;
     return pword && pwOps.check(pword,users[uname]);
 }
 
 module.exports = {
-    deleteAll: () => fileOps.delete(),
-    userList: () => Object.keys(fileOps.read()),
-    // addUser: (uname, pword) => setUser(uname, pword, false),
-    // updateUser: setUser,
+    deleteAll: () => tableOps.reset(),
+    userList: () => tableOps.read().then(t=>Object.keys(t)),
+    addUser: (uname, pword) => setUser(uname, pword, false),
+    updateUser: setUser,
     authorizer: checkUser,
     removeUser
 }

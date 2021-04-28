@@ -8,11 +8,11 @@ const Set = require('../models/Set');
 const Meta = require('../models/Meta');
 const Card = require('../models/Card');
 const { basicLands } = require('../config/definitions');
+const Settings = require('../models/Settings');
 
-// Download links
-const setDatabase = 'https://mtgjson.com/api/v5/AllPrintings.json';
-const cardDatabase = 'https://mtgjson.com/api/v5/AllIdentifiers.json';
-
+// Stored URLs
+const setKey = 'dbSetUrl';
+const cardKey = 'dbCardUrl';
 
 // Generic JSON Parser - filter/map works like array.filter()/array.map()
 function downloadJSON(url, parsePath, filter=undefined, map=undefined, limit=0) {
@@ -72,7 +72,7 @@ async function updateDatabase(url, Model, MetaModel, force=false, limit=0) {
     // Check if metadata is up to date
     const [oldMeta, newMeta] = await Promise.all([
         MetaModel.findById('_META'),
-        downloadJSON(setDatabase, ['meta'], 0, 0, 1).then(data => data[0])
+        downloadJSON(url, ['meta'], 0, 0, 1).then(data => data[0])
     ]);
 
     let willUpdate = true;
@@ -163,20 +163,30 @@ async function getAllCardAlts(CardModel) {
 
 
 
-// Main function (Later make 'updateSets' = setDatabase)
+// Main function
 async function updateBoth(
-    updateSets=true, updateCards=true, forceUpdates=false, 
+    updateSets=true, updateCards=true,
+    skipCurrent=true, 
     fixCardAlts=true, limit=0
 ) {
+    // console.log(' >>>>> UPDATE DB: sets:'+updateSets+',cards:'+updateCards+',outdate:'+skipCurrent+',altfix:'+fixCardAlts);
+    // return (skipCurrent ? '' : 'Force-') + 'Updated database: '+updateSets+' sets + '+updateCards+' cards (w/ '+fixCardAlts+' alt IDs)';
+
+    let msg = (skipCurrent ? '' : 'Force-') + 'Updated database:';
     if (updateSets) {
-        await updateDatabase(setDatabase, Set, Meta.Sets, forceUpdates, limit);
+        const setDatabase = await Settings.get(setKey);
+        const setCount = await updateDatabase(setDatabase, Set, Meta.Sets, !skipCurrent, limit);
+        msg += ' '+(setCount||'no new')+' sets +';
     }
     if (updateCards) {
-        const c = await updateDatabase(cardDatabase, Card, Meta.Cards, forceUpdates, limit);
+        const cardDatabase = await Settings.get(cardKey);
+        const cardCount = await updateDatabase(cardDatabase, Card, Meta.Cards, !skipCurrent, limit);
+        msg += ' '+(cardCount||'no new')+' cards';
 
-        if (fixCardAlts && c) {
+        if (fixCardAlts && cardCount) {
             console.time('Updated CardAlts');
-            await getAllCardAlts(Card).then(_ => console.timeEnd('Updated CardAlts'));
+            const altCount = await getAllCardAlts(Card).then(_ => console.timeEnd('Updated CardAlts'));
+            msg += ' (w/ '+(altCount||'no new')+' alt IDs)';
         }
     }
     
@@ -184,8 +194,18 @@ async function updateBoth(
         console.log(new Date().toISOString(), 'Database(s) update has finished');
     else
         console.log(new Date().toISOString().toLocaleString(), 'No databases chosen');
+    
+    return (msg.endsWith(':') || msg.endsWith('+')) ? msg.slice(0,-1) : msg;
 }
 
 
 
-module.exports = updateBoth;
+module.exports = {
+    update: updateBoth, 
+    url: {
+        set: () => Settings.get(setKey),
+        card: () => Settings.get(cardKey),
+        updateSet: v => Settings.set(setKey,v),
+        updateCard: v => Settings.set(cardKey,v)
+    }
+};
