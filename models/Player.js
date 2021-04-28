@@ -37,7 +37,7 @@ const playerSchema = new mtgDb.Schema({
         side: [ packCardSchema ],
         basicLands: [ landSchema ],
     }
-});
+}, {timestamps: true});
 
 // Player Virtuals
 playerSchema.virtual('cookieId').get( function(){
