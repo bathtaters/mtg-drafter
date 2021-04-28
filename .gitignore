@@ -2,4 +2,4 @@
 node_modules/*
 *.pem
 ut.bin
-/public/stylesheets/*
+./public/stylesheets/*
