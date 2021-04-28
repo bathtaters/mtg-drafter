@@ -39,7 +39,7 @@ block content
       +numberList('playerCount', 'Players', 8, limits.playerCount)
 
       //- Cube Settings
-      div#cubeForm.settingsForm.hideForm
+      div#cubeForm.settingsForm.hidden
         div#cubeOptionsForm
           +numberList('packCount', 'Packs per Player', 3, limits.packCount)
           +numberList('packSize', 'Card per Pack', 15, limits.packSize)
@@ -47,17 +47,17 @@ block content
           label#cubeFileText(for='cubeFile') Upload Text File
           input#cubeFileData(type='hidden' name='cubeData' value='')
           div#cubeFileBox
-            div#uploadWaiting.loading.hideForm Loading&#8230;
+            div#uploadWaiting.loading.hidden Loading&#8230;
             div 
             div#cubeFileContent
-              div#uploadResultContainer.hideForm
+              div#uploadResultContainer.hidden
                 span#uploadResultHeader Successfully uploaded # cards
                 span#uploadResultBody
               span#dragDropText Drag and drop
             input#cubeFilePicker(type='file' name='cubeFile' accept='text/plain, text/csv')
         
       //- Booster Settings
-      div#boosterForm.settingsForm.hideForm
+      div#boosterForm.settingsForm.hidden
         div#setPickerHeader
           label#setPickerForm.settingsLabel(for='setPicker') Choose a Set:
           input#addBooster.button(type='button', value='+')
