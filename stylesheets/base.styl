@@ -22,11 +22,17 @@ transitionDur = 0.2s
 
 // --- Site-wide styles --- //
 
-// Generic layouts
+// Generic styles
 
 .evenSpacedH 
   display: flex
   justify-content: space-evenly
+
+.hidden
+  display: none !important
+  
+.svgColorize
+  svgColorize(bodyBgd)
 
 // Text styles
 body
@@ -90,8 +96,7 @@ a
     text-decoration: underline
     cursor: pointer
 
-.svgColorize
-  svgColorize(bodyBgd)
+
 
 
 
@@ -121,7 +126,7 @@ buttonActive()
       buttonActive()
       
     &:focus
-      border: solid 0.2rem focusOutline
+      border-color: focusOutline
   
   &:disabled
     color: buttonTextDisabled

@@ -72,9 +72,7 @@ function clickHideGroup(e) {
     var elem = this || e.target || e.srcElemnt;
     log("show/hide "+elem.id);
 
-    var prefix;
-    if (elem.id == "mainHeader") { prefix = "main"; }
-    else if (elem.id == "sideHeader") { prefix = "side"; }
+    var prefix = elem.id.slice(0, -("Header".length));
 
     if (prefix) {
         var container = document.getElementById(prefix+"Container");

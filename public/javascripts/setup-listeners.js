@@ -69,8 +69,8 @@ function clickType(e) {
     }
 
     // Set new values
-    hideForm.classList.add("hideForm");
-    showForm.classList.remove("hideForm");
+    hideForm.classList.add("hidden");
+    showForm.classList.remove("hidden");
     upButton.classList.remove("pressed");
     downButton.classList.add("pressed");
 }
@@ -153,9 +153,9 @@ function uploadCube(fileForm) {
     var loading = document.getElementById("uploadWaiting");
     var readout = document.getElementById("uploadResultContainer");
 
-    dragDrop.classList.add("hideForm");
-    readout.classList.add("hideForm");
-    loading.classList.remove("hideForm");
+    dragDrop.classList.add("hidden");
+    readout.classList.add("hidden");
+    loading.classList.remove("hidden");
 
     return uploadFile(fileForm).then(function(result){
         // Capture upload text box
@@ -193,17 +193,17 @@ function uploadCube(fileForm) {
         }
 
         // Clear loading screen
-        dragDrop.classList.add("hideForm");
-        loading.classList.add("hideForm");
-        readout.classList.remove("hideForm");
+        dragDrop.classList.add("hidden");
+        loading.classList.add("hidden");
+        readout.classList.remove("hidden");
         
     }).catch( function(err){
         resultHead.innerText =  "Error encountered during upload";
         resultBody.innerText = "Please refesh and try again.";
         // Clear loading screen
-        dragDrop.classList.add("hideForm");
-        loading.classList.add("hideForm");
-        readout.classList.remove("hideForm");
+        dragDrop.classList.add("hidden");
+        loading.classList.add("hidden");
+        readout.classList.remove("hidden");
         return log("Upload failed",err);
     });
 }
