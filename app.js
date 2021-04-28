@@ -67,14 +67,14 @@ const app = express();
 
 // pre-router middleware
 app.use(compression());
-app.use(logger('dev'));
+app.use(logger('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.set('views', viewDirs);
 app.set('view engine', 'pug');
 app.use(stylus.middleware(stylusOptions));
-// app.use(minify());
+app.use(minify());
 app.use(express.static(path.join(__dirname, 'public', 'icon')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload(uploadOptions));
