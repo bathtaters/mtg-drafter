@@ -1,6 +1,6 @@
 // Retrieve card data from database
 const Card = require('../../models/Card');
-const { draftStatus, groupTitles, directionText } = require('../../config/definitions');
+const { groupTitles } = require('../../config/definitions');
 
 
 // Projection for retrieving card data
