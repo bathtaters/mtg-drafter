@@ -14,6 +14,7 @@ function initListeners() {
     addListenerAllBrswrs(document.getElementById("cardEdit"),"click",clickDbEdit);
     addListenerAllBrswrs(document.getElementById("updateCards"),"click",clickDbCheck);
     addListenerAllBrswrs(document.getElementById("updateSets"),"click",clickDbCheck);
+    addListenerAllBrswrs(document.getElementById("fixCardAlts"),"click",clickDbCheck);
     addListenerAllBrswrs(document.getElementById("updateDbButton"),"click",updateDb);
 }
 
@@ -103,37 +104,28 @@ function clickDbEdit(e) {
 }
 
 // Disable card option when cards are de-selected
-var altsBoxMemory = true;
 function clickDbCheck(e) {
     var elem = this || e.target || e.srcElemnt;
     log("clicked: "+elem.id);
 
     // Get other database box
-    var otherBox;
+    var boxes;
     if (elem.id === "updateCards") {
-        otherBox = document.getElementById("updateSets");
-
-        // Disable/Enable Card alt data checkbox
-        var altsBox = document.getElementById("fixCardAlts");
-
-        if (elem.checked) {
-            altsBox.removeAttribute("disabled");
-            altsBox.checked = altsBoxMemory;
-            log("enabled alts box");
-
-        } else {
-            altsBoxMemory = altsBox.checked;
-            altsBox.checked = false;
-            altsBox.setAttribute("disabled","true");
-            log("disabled alts box");
-        }
+        boxes = ["updateSets", "fixCardAlts"];
     } else if (elem.id === "updateSets") {
-        otherBox = document.getElementById("updateCards");
+        boxes = ["updateCards", "fixCardAlts"];
+    } else if (elem.id === "fixCardAlts") {
+        boxes = ["updateCards", "updateSets"];
     }
+
+    // Check if they're all unchecked
+    var disableUpdate = !elem.checked
+        && !document.getElementById(boxes[0]).checked
+        && !document.getElementById(boxes[1]).checked;
 
     // Enable/disable Update button
     var updateButton = document.getElementById("updateDbButton");
-    if (!elem.checked && !otherBox.checked) {
+    if (disableUpdate) {
         updateButton.setAttribute("disabled","true");
     } else if (updateButton.hasAttribute("disabled")) {
         updateButton.removeAttribute("disabled");
@@ -150,8 +142,9 @@ function updateDb(e) {
 
     // Calculate actual times better
     var msg = 0;
-    if (formData.get('updateSets')) { msg += 2; }
-    if (formData.get('updateCards')) { msg += formData.get('fixCardAlts') ? 58 : 3; }
+    if (formData.get('updateSets'))  { msg += 2; }
+    if (formData.get('updateCards')) { msg += 5; }
+    if (formData.get('fixCardAlts')) { msg += 5; }
 
     msg = "This could take up to " + msg + " minutes for which the site will be down."; 
     msg += "\n\nAre you sure you want to continue?";
