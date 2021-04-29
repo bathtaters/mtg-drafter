@@ -14,8 +14,9 @@ const Settings = require('../models/Settings');
 const setKey = 'dbSetUrl';
 const cardKey = 'dbCardUrl';
 
-// Generic JSON Parser - filter/map works like array.filter()/array.map()
-function downloadJSON(url, parsePath, filter=undefined, map=undefined, limit=0) {
+// Generic JSON Parser - filter/saver works like array.filter()/array.forEach() (saver must return Promise)
+const maxAsyncThreads = 250;
+function downloadJSON(url, parsePath, filter=undefined, saver=undefined, limit=0) {
     
     return new Promise((resolve, reject) => {
         https.get(url, (res) => {
@@ -40,24 +41,30 @@ function downloadJSON(url, parsePath, filter=undefined, map=undefined, limit=0) 
             }
 
             res.setEncoding('utf8');
-            const pipline = res.pipe(JSONStream.parse(parsePath));
-
+            const jsonPipe = res.pipe(JSONStream.parse(parsePath));
             
-                let result = [], filtered = [], count = 0;
-                pipline.on('data', data => {
-                    //const printable = typeof data == 'object' ? data.name : data
-                    //console.log('new data: '+printable);
-                    
-                    if (!filter || filter(data)) {
-                        //if (filter) console.log('filter: true');
-                        //if (map) console.log('mapped to: '+map(data));
-                        
-                        result.push(map ? map(data) : data);
-                        if (limit && limit == ++count) return pipline.destroy();
+            let result = [], filtered = [], count = 0, threads = 0;
+            jsonPipe.on('data', data => {
+                // jsonPipe.pause(); // force to run sync
+                //const printable = typeof data == 'object' ? data.name : data
+                //console.log('new data: '+printable);
+                
+                if (!filter || filter(data)) {
+
+                    if (saver) {
+                        if (++threads === maxAsyncThreads) jsonPipe.pause();
+
+                        saver(data).then(() => {
+                            if (threads-- === maxAsyncThreads) jsonPipe.resume();
+                        });
                     }
-                });
-                pipline.on('error', reject);
-                pipline.on('close', () => resolve(result) );
+                    else result.push(data);
+
+                    if (++count === limit && limit) return jsonPipe.destroy();
+                }
+            });
+            jsonPipe.on('error', reject);
+            jsonPipe.on('close', () => resolve(saver ? count : result) );
         }).on('error', (e) => {
             console.error(`Error downloading data: ${e.message}`);
             reject();
@@ -77,7 +84,7 @@ async function updateDatabase(url, Model, MetaModel, force=false, limit=0) {
 
     let willUpdate = true;
     if (oldMeta && oldMeta.version == newMeta.version) {
-        console.log(`${Model.modelName} is already up to date`)
+        console.log(`${Model.modelName} is already up to date`);
         willUpdate = false;
     } else if (oldMeta && oldMeta.date >= new Date(newMeta.date)) {
         console.log(`${Model.modelName} version is newer than available version (Existing:${oldMeta.version}, Available:${newMeta.version})`);
@@ -105,7 +112,7 @@ async function updateDatabase(url, Model, MetaModel, force=false, limit=0) {
             Model.getFilter,
             data => Model.create(data),
             limit // only gets 1st n entries (FOR TESTING)
-    ).then( data => data.length );
+    );
     
     console.timeEnd('Updated '+Model.modelName)
     console.log(new Date().toISOString(), 'Retrieved '+count+' entries');
@@ -114,7 +121,7 @@ async function updateDatabase(url, Model, MetaModel, force=false, limit=0) {
 
 
 // Retrieve Alt card IDs (Must be done after all documents are saved)
-async function getCardAlts(doc) {
+async function getCardAlts(doc, model) {
     //console.log('Getting alts for '+doc.name);
     if (basicLands.includes(doc.name)) {
         doc.printings = []; return doc.save();
@@ -129,18 +136,19 @@ async function getCardAlts(doc) {
     let query = { setCode: { $in: doc.printings } };
     if (doc.faceName) query.faceName = doc.faceName;
     else query.name = doc.name;
-    const model = doc.model(doc.constructor.modelName, doc.schema);
+    // const model = doc.model(doc.constructor.modelName, doc.schema);
     const matches = await model.find(query, '_id')
     
     // Push matches & save
     doc.printings = matches.map( match => match._id );
-    return doc.save();
-        //.then( _ => console.log(doc.name,'added',matches.length,'alts.') );
+    await doc.save()
+    // console.log(doc.name,'added',matches.length,'alts.')
+    return matches.length;
 }
 
 
 // Get all card alt-IDs
-async function getAllCardAlts(CardModel) {
+async function getAllCardAlts(CardModel, showProgress=false) {
     // Generate list of cards with printings.len > 0
     console.log(new Date().toISOString(),'Retrieving records to scan for alts')
     const cards = await CardModel.find({ 'printings.0': { $exists: true } });
@@ -149,10 +157,11 @@ async function getAllCardAlts(CardModel) {
     console.log(new Date().toISOString(), cards.length+' cards to scan for alts');
     let c = 0;
     for (const card of cards) {
-        await getCardAlts(card);
+        const n = await getCardAlts(card, CardModel);
         
         // Show incremental progress
-        c++; if (c % 2500 == 0)
+        if (n) ++c;
+        if (showProgress && c % 2500 == 0)
             console.log(new Date().toISOString(), c+'/'+cards.length+' cards updated');
     }
 
@@ -173,6 +182,7 @@ async function updateBoth(
     // return (skipCurrent ? '' : 'Force-') + 'Updated database: '+updateSets+' sets + '+updateCards+' cards (w/ '+fixCardAlts+' alt IDs)';
 
     let msg = (skipCurrent ? '' : 'Force-') + 'Updated database:';
+    let cardCount;
     if (updateSets) {
         const setDatabase = await Settings.get(setKey);
         const setCount = await updateDatabase(setDatabase, Set, Meta.Sets, !skipCurrent, limit);
@@ -180,14 +190,20 @@ async function updateBoth(
     }
     if (updateCards) {
         const cardDatabase = await Settings.get(cardKey);
-        const cardCount = await updateDatabase(cardDatabase, Card, Meta.Cards, !skipCurrent, limit);
+        cardCount = await updateDatabase(cardDatabase, Card, Meta.Cards, !skipCurrent, limit);
         msg += ' '+(cardCount||'no new')+' cards';
 
-        if (fixCardAlts && cardCount) {
-            console.time('Updated CardAlts');
-            const altCount = await getAllCardAlts(Card).then(_ => console.timeEnd('Updated CardAlts'));
-            msg += ' (w/ '+(altCount||'no new')+' alt IDs)';
-        }
+        console.time('Updated Card indexes');
+        await Card.ensureIndexes();
+        console.timeEnd('Updated Card indexes');
+    } else if (fixCardAlts) { msg += ' cards not updated'; }
+
+    if (fixCardAlts && (cardCount || !updateCards)) {
+        console.time('Updated CardAlts');
+        const altCount = await getAllCardAlts(Card).then(c => console.timeEnd('Updated CardAlts') || c);
+        msg += ' ('+(altCount||'no')+' new alt IDs stored)';
+    } else if (fixCardAlts) {
+        console.log('No new cards to search for alts');
     }
     
     if(updateSets || updateCards)
@@ -202,10 +218,11 @@ async function updateBoth(
 
 module.exports = {
     update: updateBoth, 
+    storeCardAlts: () => getAllCardAlts(Card),
     url: {
         set: () => Settings.get(setKey),
         card: () => Settings.get(cardKey),
         updateSet: v => Settings.set(setKey,v),
-        updateCard: v => Settings.set(cardKey,v)
+        updateCard: v => Settings.set(cardKey,v),
     }
 };

@@ -10,7 +10,7 @@ const cardSchema = new mtgDb.Schema({
     // Basic data
     _id: { type: String, alias: 'uuid' },
     name: String,
-    setCode: { type: String, ref: 'Set' },
+    setCode: { type: String, ref: 'Set', index: true },
     manaCost: String,
     type: String,
     text: String,
@@ -46,7 +46,7 @@ const cardSchema = new mtgDb.Schema({
     // Alternate data (Variations + Printings)
     variations: [{ type: String, ref: 'Card' }],
     printings: [{ type: String, ref: 'Card' }]
-});
+}, { autoIndex: false });
 
 // Virtual getters
 cardSchema.virtual('scryfallImgBack').get(function(){
