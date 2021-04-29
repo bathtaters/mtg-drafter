@@ -54,9 +54,11 @@ block content
         form#dbContainer.panelContainer(action='updateDb' method='post')
             label.containerTitle(for='dbContainer') Update MtG Database
             .dbUrlLine
+                label(for='setUrl') Sets: 
                 input#setUrl(type='url' name='setUrl' value=url.set disabled=true)
                 input.button#setEdit(type='button' value='Edit')
             .dbUrlLine
+                label(for='setUrl') Cards: 
                 input#cardUrl(type='url' name='cardUrl' value=url.card disabled=true)
                 input.button#cardEdit(type='button' value='Edit')
             .dbCheckboxContainer
@@ -68,7 +70,7 @@ block content
                     label(for='updateCards') Update Card database
                 .dbCheckbox
                     input#fixCardAlts(type='checkbox' name='fixCardAlts' checked=true)
-                    label(for='fixCardAlts') Include Card alt data
+                    label(for='fixCardAlts') Update alternate printings
                 .dbCheckbox
                     input#skipCurrent(type='checkbox' name='skipCurrent' checked=true)
                     label(for='skipCurrent') Update outdated only
