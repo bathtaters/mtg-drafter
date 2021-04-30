@@ -17,7 +17,8 @@ const draftSchema = new mtgDb.Schema({
     players: [ playerSchema ],
     packs: [ [ [ packCardSchema ] ] ],
     round: { type: Number, default: -1 },
-    isPaused: { type: Boolean, default: false }
+    isPaused: { type: Boolean, default: false },
+    logEntries: [ String ]
 }, {timestamps: true})
 
 // Draft Virtuals

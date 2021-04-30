@@ -3,6 +3,11 @@ extends ../generic/layout
 block scripts
   script(src='/javascripts/admin-session-listeners.js')
 
+mixin checkbox(itemId, labelText, isChecked=false, wrapper='logCheckbox')
+  span(class=wrapper id=itemId+'Wrapper')
+    input(type='checkbox' id=itemId name=itemId checked=isChecked)
+    label(for=itemId)= labelText
+
 //- Card info
 mixin listCard(card)
   li.adminPlayerCard= card.name
@@ -101,5 +106,14 @@ block content
   .adminPlayers
     each playerData in players
       +player(playerData)
+  
+  hr
+  .logWrapper
+    h3 Draft Log
+    +checkbox('hideTime', 'Hide timestamps', true)
+    +checkbox('hideUuid', 'Hide IDs', true)
+    #logTextBox
+      each line in session.logEntries
+        p= line
 
 

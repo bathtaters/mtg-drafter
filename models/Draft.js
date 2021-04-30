@@ -6,7 +6,7 @@ const { model } = require('mongoose');
 const draftSchema = require('./DraftDefs');
 const { playerSchema } = require('./Player');
 const { convert, loopArray, objArrayToObj, objToArray } = require('../controllers/shared/basicUtils');
-const { draftStatus } = require('../config/definitions');
+const { draftStatus, timeFormat } = require('../config/definitions');
 
 
 //* --------------- DRAFT EXTENSIONS  --------------- *//
@@ -14,10 +14,11 @@ const { draftStatus } = require('../config/definitions');
 // Draft Static Methods
 
 draftSchema.statics.disconnectAll = function() {
-    return this.updateMany(
-        { 'players.connected': true },
-        { '$set': {'players.$.connected': false} }
-    );
+    const dt = (new Date()).toLocaleString(...timeFormat);
+    return this.updateMany({'players.connected': true}, {
+        $set: {'players.$.connected': false},
+        $push: {logEntries: dt+': All players disconnected (Server reset).'}
+    });
 };
 draftSchema.statics.findBySessionId = function(sessionId, proj='', opt={}) {
     const objId = convert.b64ToObjId(sessionId);
@@ -31,7 +32,7 @@ draftSchema.statics.findBySessionId = function(sessionId, proj='', opt={}) {
 
 draftSchema.methods.disconnectAll = function() {
     this.players.forEach( player => player.connected = false );
-    return this.save();
+    return this.save().then(_=>this.log('All players disconnected.'));
 };
 
 draftSchema.methods.findPlayer = function(objId) {
@@ -57,6 +58,14 @@ draftSchema.methods.pullCard = async function(pack, draftId) {
     if (pickIndex == -1) return;
     pack[pickIndex].picked = 1;
     return pack[pickIndex];
+};
+
+draftSchema.methods.log = function(entry) {
+    const dt = (new Date()).toLocaleString(...timeFormat);
+    if (!this.logEntries) return console.error(this.name + ' <'+this.sessionId+'> unable to add log entry: '+entry);
+    this.logEntries.push(dt+': '+entry);
+    this.markModified('log');
+    return this.save();
 };
 
 // External draft methods

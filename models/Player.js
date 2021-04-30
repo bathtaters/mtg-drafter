@@ -27,9 +27,9 @@ const playerSchema = new mtgDb.Schema({
     name: {
         type: String,
         default: '',
-        get: function(v){ return v || 'Player '+(this.position+1); }
+        get: function(v){ return v || (this.position === -1 ? 'New Player' : 'Player '+(this.position+1)); }
      },
-    position: Number,
+    position: { type: Number, default: -1 },
     connected: { type: Boolean, default: false },
     pick: { type: Number, default: -1 },
     cards: {
@@ -42,6 +42,9 @@ const playerSchema = new mtgDb.Schema({
 // Player Virtuals
 playerSchema.virtual('cookieId').get( function(){
     return convert.objIdToB64(this._id);
+});
+playerSchema.virtual('identifier').get( function(){
+    return '"' + this.name + '" <' + this.cookieId + '>';
 });
 playerSchema.virtual('nextPlayer').get( function(){
     const playerIndex = this.position + this.parent().direction;

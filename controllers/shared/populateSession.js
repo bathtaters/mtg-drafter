@@ -5,10 +5,10 @@ const populatePacks = require('./populatePacks');
 const sessionProjection = 'name players round packs hostId updatedAt';
 const sessionListData = ({
   sessionId, name, players, status,
-  round, updatedAt, hostId, url
+  round, updatedAt, hostId, url, logEntries
 }) => ({
   sessionId, name, status, round,
-  hostId, url,
+  hostId, url, logEntries,
   playerCount: players.length,
   date: updatedAt.toLocaleDateString(),
   time: updatedAt.toLocaleTimeString()

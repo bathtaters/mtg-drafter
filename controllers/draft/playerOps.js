@@ -1,6 +1,6 @@
 // Extended player methods
 const { draftStatus } = require('../../config/definitions');
-const { shuffle } = require('../shared/random');
+const Card = require('../../models/Card');
 
 
 // Open the next pack
@@ -34,7 +34,8 @@ async function pickCard(draftId, toSideBoard=false) {
 
     // Add card to player's board & pass pack
     await this.pushCard(card, toSideBoard ? 'side' : 'main');
-    console.log(this.name+' <'+this.cookieId+'> pick #'+this.pick+' is '+card.uuid);
+    const cardName = await Card.findById(card.uuid).then(c=> c ? c.name : '[Missing name]');
+    await this.parent().log(this.identifier+' picks "'+cardName+'" <'+card.uuid+'>'+' (Pack '+(this.parent().round+1)+', Pick '+(this.pick+1)+').');
     await this.passPack();
 
     await this.parent().save();

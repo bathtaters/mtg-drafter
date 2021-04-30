@@ -34,9 +34,18 @@ router.post('/rename', draftRules.rename(), validate, async function(req, res, n
   
   const newName = req.body.name.replace(/(\r?\n)+/g,' ').substring(0,22);
   if (newName.trim()) {
+
+    if (newName != req.body.player.name)
+      await req.body.session.log(req.body.player.identifier+' renamed "'+newName+'".');
+
     req.body.player.name = newName;
     await req.body.session.save();
+
   } else if (!req.body.player.name.trim()) {
+
+    if (newName != req.body.player.name)
+      await req.body.session.log(req.body.player.identifier+' reset name to Player '+req.body.player.position+'.');
+
     req.body.player.name = 'Player '+req.body.player.position;
   }
   return reply(res, {name: req.body.player.name});
@@ -53,7 +62,7 @@ router.get('/download', async function(req, res, next) {
     'Content-Type': 'text/plain',
     'Content-Disposition':'attachment; filename="'+filename+'"'
   });
-  console.log(req.body.player.cookieId+' downloaded deck list.');
+  await req.body.session.log(req.body.player.identifier+' downloaded deck list.');
   return res.send(deckText);
 });
 

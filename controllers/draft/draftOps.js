@@ -18,7 +18,7 @@ async function addPlayer(returningCookie='') {
     if (!playerData) return console.error('No open slots in '+this.sessionId);
 
     // Connect player
-    console.log('Player: '+playerData.name+' <'+playerData.cookieId+'> was connected.');
+    if (!playerData.connected) await this.log(playerData.identifier+' joined.');
     playerData.connected = true;
     await this.save();
     return playerData;
@@ -38,6 +38,7 @@ async function startDraft() {
     
     shuffle(this.players);
     this.markModified('players');
+    await this.log('Players reordered: '+this.players.map(p=>p.identifier).join(','));
     
     const result = await this.nextRound();
     return result;
@@ -59,14 +60,14 @@ async function nextRound() {
     // Check if game is over
     if (this.round >= this.packs.length) {
         this.round = -2;
-        console.log('Draft ended');
+        await this.log('Draft ended.');
         return 'Game is over';
     }
 
     // Reset picks
     this.players.forEach( player => player.pick = 0 );
     await this.save();
-    console.log('Started round: '+this.round);
+    await this.log('Started round '+(this.round+1)+'.');
     return 0;
 }
 

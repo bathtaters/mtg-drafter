@@ -64,7 +64,7 @@ router.post('/:sessionId/Disconnect', async function(req, res, next) {
     
 // Disconnect a single player
 router.post('/:sessionId/PlayerDisconnect', async function(req, res, next) {
-    const session = await Draft.findBySessionId(req.params.sessionId,'players');
+    const session = await Draft.findBySessionId(req.params.sessionId,'players logEntries');
     if (!session) return reply(res, {error:'Session "'+req.params.sessionId+'" does not exist.'});
 
     const player = await session.findPlayerByCookie(req.body.playerId,'connected');
@@ -73,13 +73,14 @@ router.post('/:sessionId/PlayerDisconnect', async function(req, res, next) {
       error:'Player "'+req.body.playerId+'" does not exist.'
     });
 
+    if (player.connected) await session.log('Admin ('+req.auth.user+') disconnected '+player.identifier+'.');
     player.connected = false; await session.save();
     return reply(res, {sessionId: session.sessionId, playerId: player.cookieId, disconnected: !player.connected})
 });
 
 // Download player deck list
 router.get('/:sessionId/player/:playerId/downloadDeck', async function(req, res, next) {
-    const session = await Draft.findBySessionId(req.params.sessionId,'name players');
+    const session = await Draft.findBySessionId(req.params.sessionId,'name players logEntries');
     if (!session) return res.send('Session "'+req.params.sessionId+'" does not exist.');
     const player = await session.findPlayerByCookie(req.params.playerId,'name cards');
     if (!player) return res.send('Player "'+req.params.playerId+'" does not exist.');
@@ -90,7 +91,7 @@ router.get('/:sessionId/player/:playerId/downloadDeck', async function(req, res,
         'Content-Type': 'text/plain',
         'Content-Disposition':'attachment; filename="'+filename+'"'
     });
-    console.log('ADMIN: downloaded deck list for '+player.cookieId);
+    await session.log('Admin ('+req.auth.user+') downloaded deck list of '+player.identifier+'.');
     return res.send(deckText);
 });
 
