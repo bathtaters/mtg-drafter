@@ -1,6 +1,10 @@
 extends ../generic/layout
 
-
+mixin checkbox(itemId, labelText, isChecked=false, wrapper='dbCheckbox')
+    div(class=wrapper)
+        input(type='checkbox' id=itemId name=itemId checked=isChecked)
+        label(for=itemId)= labelText
+        
 block scripts
     script(src='/javascripts/admin-panel-listeners.js')
 
@@ -65,18 +69,10 @@ block content
                 input#cardUrl(type='url' name='cardUrl' value=url.card disabled=true)
                 input.button#cardEdit(type='button' value='Edit')
             .dbCheckboxContainer
-                .dbCheckbox
-                    input#updateSets(type='checkbox' name='updateSets' checked=true)
-                    label(for='updateSets') Update Set database
-                .dbCheckbox
-                    input#updateCards(type='checkbox' name='updateCards' checked=true)
-                    label(for='updateCards') Update Card database
-                .dbCheckbox
-                    input#fixCardAlts(type='checkbox' name='fixCardAlts' checked=true)
-                    label(for='fixCardAlts') Update alternate printings
-                .dbCheckbox
-                    input#skipCurrent(type='checkbox' name='skipCurrent' checked=true)
-                    label(for='skipCurrent') Update outdated only
+                +checkbox('updateSets', 'Update Set database', true)
+                +checkbox('updateCards', 'Update Card database', true)
+                +checkbox('fixCardAlts', 'Update alternate printings', true)
+                +checkbox('skipCurrent', 'Only update if outdated', true)
             .updateButtonContainer
                 input.button#updateDbButton(type='button' value='Update')
                 #dbLoading.loading.hidden
