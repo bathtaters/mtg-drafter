@@ -1,14 +1,41 @@
 const Settings = require('../models/Settings');
 const Set = require('../models/Set');
+const Card = require('../models/Card')
 
 const setListKey = 'setList'
 
 function settingsSetList() { return Settings.get(setListKey); }
 function filteredSetList() { return settingsSetList().then(list => list.filter(set => set.enabled)); }
 
+async function getCardInfo(setCode) {
+    // Return info from card list
+    const cards = await Card.find({setCode},'scryfallImg gathererImg noGath');
+
+    let info = { cardCount: cards.length, gatherer: 0, scryfall: 0 };
+    cards.forEach( card => {
+        if (card.noGath || !card.gathererImg) info.scryfall++;
+        else info.gatherer++;
+    })
+    // convert to percents
+    // info.gatherer = 100 * info.gatherer / info.cardCount;
+    // info.scryfall = 100 * info.scryfall / info.cardCount;
+    return info;
+}
+
+async function appendSetData(setObj, enabled=true) {
+    const cardInfo = await getCardInfo(setObj.code);
+    setObj = {
+        enabled, ...cardInfo, ...setObj
+    };
+    return setObj;
+}
+
 async function resetSetList(allEnabled = true) {
     const setList = await Set.getSetList();
-    setList.forEach(set => set.enabled = allEnabled);
+    for (let i=0, e=setList.length; i < e; i++) {
+        setList[i] = await appendSetData(setList[i], allEnabled);
+    }
+    console.log(JSON.stringify(setList.slice(0,10)));
     await Settings.set(setListKey,setList);
     return setList.length;
 }
@@ -21,7 +48,7 @@ async function updateSetList(enableNew = true) {
         const index = setListOld.findIndex(oldSet => newSet.code === oldSet.code);
         if (index != -1) continue;
         const insert = setListOld.findIndex(oldSet => newSet.releaseDate > oldSet.releaseDate);
-        newSet.enabled = enableNew;
+        await appendSetData(newSet, enableNew)
         await Settings.push(setListKey,newSet,insert);
         counter++;
     }

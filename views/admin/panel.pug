@@ -36,9 +36,12 @@ block content
                     - var setTitle = set.name
                     if set.block
                         - setTitle += ' ('+set.block+')'
+                    if set.cardCount
+                        - var missing = set.cardCount - set.gatherer - set.scryfall
+                        - setTitle += ' '+'['+set.gatherer+'/'+set.scryfall+(missing ? '/'+missing : '')+']'
                     if set.code == defaultSet
-                        -setTitle += ' [default]'
-                    option(class=(set.enabled ? 'setOn' : 'setOff') value=set.code)= setTitle + (set.enabled ? '' : ' [hidden]')
+                        -setTitle += ' <d>'
+                    option(class=(set.enabled ? 'setOn' : 'setOff') value=set.code)= setTitle + (set.enabled ? '' : ' <h>')
             .panelButtons
                 input.button#setToggle(type='button' value='Toggle Visibility')
                 input.button#setDefault(type='button' value='Make Default')
