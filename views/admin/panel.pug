@@ -10,6 +10,7 @@ block scripts
 
 block content
     h1#panelTitle Admin Panel
+    a#homeLink(href='../../' target='_blank') Create New Draft
     hr#headerDivider
     #panelWrapper
 
@@ -23,9 +24,9 @@ block content
                         - statusLine += '['+(session.round + 1)+']'
                     option(value=session.sessionId) #{session.date} #{statusLine} #{session.name.substr(0,25)}[#{session.playerCount}]
             .panelButtons
-                input.button#sessionDetails(type='submit' value='Details')
-                input.button#sessionDelete(type='button' value='Delete')
-                input.button#sessionDisconnect(type='button' value='Disconnect')
+                input.button#sessionDetails(type='submit' value='Details' disabled='true')
+                input.button#sessionDelete(type='button' value='Delete' disabled='true')
+                input.button#sessionDisconnect(type='button' value='Disconnect' disabled='true')
             .panelButtons#clearContainer
                 input.button#sessionClear(type='button' value='Clear')
                 label.clearText(for='clearSessions') drafts older than
@@ -47,8 +48,8 @@ block content
                         -setTitle += ' <d>'
                     option(class=(set.enabled ? 'setOn' : 'setOff') value=set.code)= setTitle + (set.enabled ? '' : ' <h>')
             .panelButtons
-                input.button#setToggle(type='button' value='Toggle Visibility')
-                input.button#setDefault(type='button' value='Make Default')
+                input.button#setToggle(type='button' value='Toggle Visibility' disabled='true')
+                input.button#setDefault(type='button' value='Make Default' disabled='true')
             .panelButtons#setsDefaultContainer
                 input.button#setUpdate(type='button' value='Update All')
                 input.button#setReset(type='button' value='Reset All')
