@@ -45,14 +45,17 @@ router.get('/', addSlash, async function(req, res, next) {
 
 // Toggle set visibility
 router.post('/sets/ToggleVisibility', async function(req, res, next) {
-  let result = 'Invalid action.';
   const checkSet = await Settings.get('defaultSet');
 
-  if (checkSet === req.body.setCode)
-    console.error('Cannot toggle visibilty of default set: '+req.body.setCode);
-  else result = await setList.setVisibility(req.body.setCode);
+  const results = await Promise.all(
+    req.body.setCodes.map( setCode => {
+      if (checkSet !== setCode) return setList.setVisibility(setCode);
+      console.error('Cannot toggle visibilty of default set: '+setCode);  
+      return Promise.resolve(-2);
+    })
+  );
   
-  return reply(res, {set: req.body.setCode || 'all', action: 'ToggleVisibility', result});
+  return reply(res, {set: req.body.setCodes, action: 'ToggleVisibility', results});
 });
 
 // Toggle set that starts in picker

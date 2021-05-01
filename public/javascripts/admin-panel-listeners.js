@@ -1,14 +1,20 @@
 // Setup listeners
 function initListeners() {
     // Session listeners
+    addListenerAllBrswrs(document.getElementById("sessionBox"),"click",clickSessionBox);
+    addListenerAllBrswrs(document.getElementById("sessionBox"),"dblclick",chooseSessionDetail);
     addListenerAllBrswrs(document.getElementById("sessionDelete"),"click",clickSession);
     addListenerAllBrswrs(document.getElementById("sessionDisconnect"),"click",clickSession);
     addListenerAllBrswrs(document.getElementById("sessionClear"),"click",clickSession);
+
     // Set listeners
+    addListenerAllBrswrs(document.getElementById("setsBox"),"click",clickSetsBox);
+    addListenerAllBrswrs(document.getElementById("setsBox"),"dblclick",chooseSetToggle);
     addListenerAllBrswrs(document.getElementById("setToggle"),"click",clickSets);
     addListenerAllBrswrs(document.getElementById("setDefault"),"click",clickSets);
     addListenerAllBrswrs(document.getElementById("setUpdate"),"click",clickSets);
     addListenerAllBrswrs(document.getElementById("setReset"),"click",clickSets);
+
     // Database listeners
     addListenerAllBrswrs(document.getElementById("setEdit"),"click",clickDbEdit);
     addListenerAllBrswrs(document.getElementById("cardEdit"),"click",clickDbEdit);
@@ -33,11 +39,8 @@ function clickSession(e) {
         data.clearDays = document.getElementById("clearDays").value;
     }
     
-    var sessionBox = document.getElementById("sessionBox");
-    updateServer(action,data,"session/"+(sessionBox.value||"null")).then( result => {
-        log("Completed "+action+" on session: "+(result.sessionId || JSON.stringify(result.sessionIds)));
-        location.reload();
-    });
+    var sessions = getSelectedOptions(document.getElementById("sessionBox"));
+    updateMultiple(sessions,"session/",action,data).then(function() { location.reload(); });
 }
 
 
@@ -50,18 +53,32 @@ function clickSets(e) {
     log("clicked: set."+action);
 
     var data = {};
-    if (action == "ToggleVisibility" || action == "MakeDefault") {
+    if (action == "ToggleVisibility") {
+        data.setCodes = getSelectedOptions(document.getElementById("setsBox"));
+    } else if (action == "MakeDefault") {
         data.setCode = document.getElementById("setsBox").value;
     } else {
         data.defaultVisible = document.getElementById("setsDefault").value;
     }
-    
+
     updateServer(action,data,"sets").then( result => {
         log("Completed "+result.action+" on set: "+result.set);
         location.reload();
     });
 }
 
+
+
+// Clicking in multi-selection boxes
+function clickSessionBox(e) {
+    setButtonStatus(this || e.target || e.srcElemnt, ["sessionDetails","sessionDelete","sessionDisconnect"])
+}
+function chooseSessionDetail() { document.getElementById("sessionDetails").click(); }
+
+function clickSetsBox(e) {
+    setButtonStatus(this || e.target || e.srcElemnt, ["setToggle","setDefault"])
+}
+function chooseSetToggle() { document.getElementById("setToggle").click(); }
 
 
 

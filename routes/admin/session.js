@@ -106,9 +106,11 @@ router.post('/:sessionId/:action', async function(req, res, next) {
 
 // Forward initial session POST to session/id GET
 router.post('/', async function(req, res, next) {
-    if(!req.body.sessionId) return res.send('No sessionId posted.');
-    console.log('Redirecting to: '+req.body.sessionId);
-    res.redirect(req.originalUrl + (req.originalUrl.endsWith('/') ? '' : '/') + req.body.sessionId+'/');
+    let sessionId = req.body.sessionId;
+    if(!sessionId) return res.send('No sessionId posted.');
+    if(Array.isArray(sessionId)) sessionId = sessionId[0];
+    console.log('Redirecting to: '+sessionId);
+    res.redirect(req.originalUrl + (req.originalUrl.endsWith('/') ? '' : '/') + sessionId+'/');
 });
   
 module.exports = router;
