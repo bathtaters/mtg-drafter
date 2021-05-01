@@ -75,6 +75,44 @@ function copyTextToClipboard(text) {
     });
 }
 
+// Extract selected options
+function getSelectedOptions(selectElement) {
+    var allOptions = selectElement.options;
+    var result = [];
+    var opt;
+    for (var i=0, e=allOptions.length; i < e; i++) {
+        opt = allOptions[i];
+        if (opt.selected) { result.push(opt.value || opt.text); }
+    }
+    return result;
+}
+
+// Enable/Disable buttons (using IDs) based on if 'selectElem' is selected
+function setButtonStatus(selectElem, buttonIds) {
+    var disable = true; var opts = selectElem.options;
+    for (var i=0, e=opts.length; i < e; i++) {
+        if (opts[i].selected) { disable = false; break;}
+    }
+
+    var firstButton = document.getElementById(buttonIds[0]);
+    if (disable != firstButton.hasAttribute("disabled")) {
+
+        if (disable) {
+            firstButton.setAttribute("disabled","true");
+            for (var i=1, e=buttonIds.length; i < e; i++) {
+                document.getElementById(buttonIds[i]).setAttribute("disabled","true");
+            }
+            log("disabled "+selectElem.id+" buttons");
+
+        } else {
+            firstButton.removeAttribute("disabled");
+            for (var i=1, e=buttonIds.length; i < e; i++) {
+                document.getElementById(buttonIds[i]).removeAttribute("disabled");
+            }
+            log("enabled "+selectElem.id+" buttons");
+        }
+    }
+}
 
 
 // Fetch requests
@@ -111,6 +149,18 @@ function updateServer(action, data = null, url = '../action') {
             return res;
         })
         .catch( error => log('Fetch error',error) );
+}
+
+function updateMultiple(urlIds, urlPrefix, action, data) {
+    var updates = [];
+    for (var i=0, e=urlIds.length; i < e; i++) {
+        var urlSuffix = urlIds[i].value || urlIds[i] || "null";
+        updates.push(updateServer(action,data,urlPrefix+urlSuffix)
+            .then( function(result) {
+                log("Completed "+action+": "+JSON.stringify(result));
+            }));
+    }
+    return Promise.all(updates);
 }
 
 function poll(action, interval=2000) {
