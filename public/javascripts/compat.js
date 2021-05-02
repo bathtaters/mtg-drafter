@@ -144,7 +144,7 @@ function updateServer(action, data = null, url = '../action') {
         .then( function(res){
             if (res.error) {
                 log('Fetch error',res.error);
-                delete res.error;
+                // delete res.error;
             }
             return res;
         })
