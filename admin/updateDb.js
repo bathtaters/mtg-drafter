@@ -214,11 +214,18 @@ async function updateBoth(
     return (msg.endsWith(':') || msg.endsWith('+')) ? msg.slice(0,-1) : msg;
 }
 
+async function getCounts() {
+    // Count total records ( -1 for metadata )
+    const set = await Set.countDocuments().then(c=>c-1);
+    const card = await Card.countDocuments().then(c=>c-1);
+    return { set, card };
+}
 
 
 module.exports = {
     update: updateBoth, 
     storeCardAlts: () => getAllCardAlts(Card),
+    getCounts: getCounts,
     url: {
         set: () => Settings.get(setKey),
         card: () => Settings.get(cardKey),
