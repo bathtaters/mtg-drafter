@@ -10,6 +10,7 @@ const setList = require('../../admin/setList');
 const updateDb = require('../../admin/updateDb');
 const { addSlash } = require('../../controllers/shared/middleware');
 const { reply } = require('../../controllers/shared/basicUtils');
+const users = require('../../admin/pword');
 
 
 
@@ -24,7 +25,9 @@ router.get('/', addSlash, async function(req, res, next) {
     setList.fullList(), // 1:sets
     Settings.get('defaultSet'), // 2:defaultSet
     updateDb.url.set(), // 3:url.set
-    updateDb.url.card() // 4:url.card
+    updateDb.url.card(), // 4:url.card
+    updateDb.getCounts(), // 5:dbCount
+    users.userList() // 6:user.list
   ])
   
   return res.render('panel', {
@@ -32,11 +35,18 @@ router.get('/', addSlash, async function(req, res, next) {
     sessionList: panelData[0],
     sets: panelData[1],
     defaultSet: panelData[2],
-    url: {set: panelData[3], card: panelData[4]}
+    url: {set: panelData[3], card: panelData[4]},
+    dbCount: panelData[5],
+    user: { current: req.auth.user, isSuper: req.auth.user === 'nick', list: panelData[6] }
   });
 
 });
 
+// Logout
+router.get('/logout', function(req, res, next) {
+  console.log('Logout: '+req.auth.user);
+  res.status(401).send('You are logged out.');
+});
 
 
 
@@ -131,6 +141,55 @@ router.post('/db/updateDb', async function(req, res, next) {
 
 // Catch other actions
 router.post('/db/:action', async function(req, res, next) {
+  return reply(res, {action: req.params.action, error: 'Invalid action.'});
+});
+
+
+
+
+
+/* ----- POST User table changes. ----- */
+
+// Update Password
+router.post('/user/pass', async function(req, res, next) {
+  if (!req.body.currentPassword) 
+    return reply(res, {result:'Update failed: Must enter old password.', error: 'No password provided'});
+
+  const err = await users.updateUser(req.auth.user, req.body.newPassword, req.body.currentPassword);
+  console.log('updated pword?',err)
+  const result = {
+    msg: err ? 'Failed to update password: '+err : 'Successfully updated password',
+    error: err
+  }
+  return reply(res, result);
+});
+
+// Add User
+router.post('/user/add', async function(req, res, next) {
+  const err = await users.updateUser(req.body.addUsername, req.body.addPassword, false);
+  
+  const result = {
+    msg: err ? 'Failed to add user: '+err : 'Successfully added user: '+req.body.addUsername,
+    error: err
+  }
+  
+  return reply(res, result);
+});
+
+// Remove User
+router.post('/user/remove', async function(req, res, next) {
+  const err = await users.removeUser(req.body.username);
+  
+  const result = {
+    msg: err ? 'Failed to add user: '+err : 'Successfully added user: '+req.body.addUsername,
+    error: err
+  }
+  
+  return reply(res, result);
+});
+
+// Catch other actions
+router.post('/user/:action', async function(req, res, next) {
   return reply(res, {action: req.params.action, error: 'Invalid action.'});
 });
 

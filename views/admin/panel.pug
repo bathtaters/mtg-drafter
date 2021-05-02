@@ -10,7 +10,11 @@ block scripts
 
 block content
     h1#panelTitle Admin Panel
-    a#homeLink(href='../../' target='_blank') Create New Draft
+    #userHeader
+        span.infoLabel User:
+        span.infoValue#headerUsername= user.current
+        a.headerLink#logoutLink(href='logout') logout
+        a.headerLink(href='../../' target='_blank') New Draft
     hr#headerDivider
     #panelWrapper
 
@@ -63,11 +67,11 @@ block content
             label.containerTitle(for='dbContainer') Update MtG Database
             .dbUrlLine
                 label(for='setUrl') Sets: 
-                input#setUrl(type='url' name='setUrl' value=url.set disabled=true)
+                input#setUrl(type='url' name='setUrl' value=url.set readonly=true)
                 input.button#setEdit(type='button' value='Edit')
             .dbUrlLine
                 label(for='setUrl') Cards: 
-                input#cardUrl(type='url' name='cardUrl' value=url.card disabled=true)
+                input#cardUrl(type='url' name='cardUrl' value=url.card readonly=true)
                 input.button#cardEdit(type='button' value='Edit')
             .dbCheckboxContainer
                 +checkbox('updateSets', 'Update Set database', true)
@@ -77,4 +81,46 @@ block content
             .updateButtonContainer
                 input.button#updateDbButton(type='button' value='Update')
                 #dbLoading.loading.hidden
-            #dbResult
+            .resultText#dbResult
+            #dbCountsContainer
+                .inlineInfo
+                    span.infoLabel Sets:
+                    span.infoValue= dbCount.set
+                .inlineInfo
+                    span.infoLabel Cards:
+                    span.infoValue= dbCount.card
+        
+        //- User Settings box
+        .panelContainer#userContainer
+            form#currentUserContainer.panelContainer(action='user' method='post')
+                label.containerTitle(for='userContainer') Current User: #{user.current}
+                .userLine
+                    label(for='currentPassword') Old Password: 
+                    input#currentPassword(type='password' name='currentPassword')
+                    .buttonSpacer
+                .userLine
+                    label(for='newPassword') New Password:
+                    input#newPassword(type='password' name='newPassword')
+                    input.button#pwordEdit(type='button' value='Update')
+                .resultText#currentUserResult
+
+            if user.isSuper
+                form#sudoContainer.panelContainer(action='user' method='post')
+                    label.containerTitle(for='userBox') Other Users
+                    #sudoList
+                        select.panelSelect#userBox(name='userBox' multiple=true)
+                            each username in user.list
+                                if username != user.current
+                                    option= username
+                        div
+                            input.button#userRemove(type='button' value='Remove' disabled='true')
+                    #sudoAddUser
+                        .sudoLine
+                            label(for='addUsername') Username: 
+                            input#addUsername(type='test' name='addUsername')
+                            .buttonSpacer
+                        .sudoLine
+                            label(for='addPassword') Password:
+                            input#addPassword(type='password' name='addPassword')
+                            input.button#userAdd(type='button' value='Add')
+                

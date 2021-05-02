@@ -22,20 +22,33 @@ const pwOps = {
         basicAuth.safeCompare(crypto.pbkdf2Sync(pass,data[0],1080,64,'sha512').toString('base64'),data[1])
 }
 async function setUser(uname, pword, oldPword) {
-    let users = tableOps.read();
-    if ((uname in users) && !checkUser(uname,oldPword))
-        return oldPword ? 'Incorrect password' : 'User already exists'
+    if (!uname) return 'Username not provided';
+    let users = await tableOps.read();
+    if (uname in users) {
+        if (!oldPword) return 'User already exists';
+        else if (!pwOps.check(oldPword, users[uname])) return 'Incorrect password';
+    } else if (!pword) { return 'Password not provided'; }
     users[uname] = pwOps.set(pword);
-    return tableOps.write(users) ? 0 : 'Error updating user table'
+    return tableOps.write(users) ? 0 : 'Error updating user table';
+}
+async function changeUsername(uname, pword, newUname) {
+    let users = await tableOps.read();
+    if (!(uname in users)) return 'User doesn\'t exist';
+    if (!pwOps.check(pword, users[uname])) return 'Incorrect password';
+    if (newUname in users) return 'Username already exists'
+    users[newUname] = users[uname];
+    delete users[uname];
+    return tableOps.write(users) ? 0 : 'Error updating user table';
 }
 async function removeUser(uname) {
-    let users = tableOps.read();
+    if (!uname) return 'Username not provided';
+    let users = await tableOps.read();
     if (!(uname in users)) return 'User does not exists';
     delete users[uname]
-    return tableOps.write(users) ? 0 : 'Error updating user table'
+    return tableOps.write(users) ? 0 : 'Error updating user table';
 }
 async function checkUser(uname, pword) {
-    const users = tableOps.read();
+    const users = await tableOps.read();
     if (!(uname in users)) return false;
     return pword && pwOps.check(pword,users[uname]);
 }
@@ -46,5 +59,5 @@ module.exports = {
     addUser: (uname, pword) => setUser(uname, pword, false),
     updateUser: setUser,
     authorizer: checkUser,
-    removeUser
+    changeUsername, removeUser
 }

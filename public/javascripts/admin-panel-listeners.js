@@ -22,6 +22,12 @@ function initListeners() {
     addListenerAllBrswrs(document.getElementById("updateSets"),"click",clickDbCheck);
     addListenerAllBrswrs(document.getElementById("fixCardAlts"),"click",clickDbCheck);
     addListenerAllBrswrs(document.getElementById("updateDbButton"),"click",updateDb);
+
+    // User Settings listeners
+    addListenerAllBrswrs(document.getElementById("pwordEdit"),"click",clickPword);
+    addListenerAllBrswrs(document.getElementById("userAdd"),"click",addUser);
+    addListenerAllBrswrs(document.getElementById("userRemove"),"click",removeUser);
+    addListenerAllBrswrs(document.getElementById("userBox"),"click",clickUserBox);
 }
 
 
@@ -87,7 +93,7 @@ function chooseSetToggle() { document.getElementById("setToggle").click(); }
 // Edit Database URLs
 function clickDbEdit(e) {
     var elem = this || e.target || e.srcElemnt;
-    var urlName = elem.id, button = elem.value;
+    var urlName = elem.id; var button = elem.value;
     log("clicked: "+urlName);
 
     var urlId = {"setEdit": "setUrl", "cardEdit": "cardUrl"};
@@ -96,11 +102,11 @@ function clickDbEdit(e) {
 
     if (button === "Edit") {
         updateButton.setAttribute("disabled","true");
-        urlBox.removeAttribute("disabled");
+        urlBox.removeAttribute("readonly");
         elem.value = "Save";
 
     } else if (button === "Save") {
-        urlBox.setAttribute("disabled","true");
+        urlBox.setAttribute("readonly","true");
         elem.value = " ... ";
 
         var data = {urlKey: urlId[urlName], urlValue: urlBox.value};
@@ -112,8 +118,8 @@ function clickDbEdit(e) {
     }
 
     if (
-        document.getElementById("setUrl").hasAttribute("disabled")
-        && document.getElementById("cardUrl").hasAttribute("disabled")
+        document.getElementById("setUrl").hasAttribute("readonly")
+        && document.getElementById("cardUrl").hasAttribute("readonly")
     ) {
         updateButton.removeAttribute("disabled");
     }
@@ -179,9 +185,80 @@ function updateDb(e) {
         updateStatus.innerText = result.result || "Database updated.";
         progressBar.classList.add("hidden");
         elem.removeAttribute("disabled");
-        console.log("updateDb Message: "+result.result);
+        log("updateDb Message: "+result.result);
     });
 
+}
+
+
+
+
+
+// --- User --- //
+
+// Change password
+function clickPword(e) {
+    var elem = this || e.target || e.srcElemnt;
+    log("clicked: "+elem.id);
+
+    elem.setAttribute("disabled","true");
+    var formData = new FormData(document.getElementById("currentUserContainer"));
+    if (!formData.get("currentPassword")) {
+        elem.removeAttribute("disabled");
+        return alert("Please enter Old Password first.");
+    }
+
+    postFormData("pass",formData,"user").then( result => {
+        log(result.msg);
+
+        document.getElementById("currentPassword").value = "";
+        document.getElementById("newPassword").value = "";
+
+        document.getElementById("currentUserResult").innerText = result.msg;
+        elem.removeAttribute("disabled");
+    });
+
+}
+
+// Add user
+function addUser(e) {
+    var elem = this || e.target || e.srcElemnt;
+    log("clicked: "+elem.id);
+
+    elem.setAttribute("disabled","true");
+    var formData = new FormData(document.getElementById("sudoContainer"));
+
+    postFormData("add",formData,"user").then( result => {
+        log(result.msg);
+        if (!result.error) {  return location.reload(); }
+        
+        document.getElementById("addUsername").value = "";
+        document.getElementById("addPassword").value = "";
+
+        document.getElementById("currentUserResult").innerText = result.msg;
+        elem.removeAttribute("disabled");
+    });
+
+}
+
+// Remove user
+function clickUserBox(e) {
+    setButtonStatus(this || e.target || e.srcElemnt, ["userRemove"])
+}
+function removeUser(e) {
+    var elem = this || e.target || e.srcElemnt;
+    log("clicked: "+elem.id);
+
+    var user = document.getElementById("userBox");
+    user = user.value || user.text;
+    if(!confirm("Are you sure you want to delete "+user+"?")) { return log("Remove user cancelled"); }
+
+    updateServer("remove",{username: user},"user").then( result => {
+        log(result.msg);
+        if (!result.error) { return location.reload(); }
+
+        document.getElementById("currentUserResult").innerText = result.msg;
+    });
 }
 
 addWindowListenerAllBrswrs("load", initListeners, false);

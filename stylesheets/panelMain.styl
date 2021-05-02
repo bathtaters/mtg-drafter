@@ -5,7 +5,16 @@
 #panelTitle
     display: inline-block
     margin-inline-start: 0.5rem
-    margin-inline-end: 2rem
+    // margin-inline-end: 2rem
+
+#userHeader
+    margin-top: 0.5em
+    // font-size: 0.8em
+    font-style: italic
+
+.headerLink
+    margin-inline-start: 2em
+    font-size: 0.7em
 
 #panelWrapper
     display: flex
@@ -41,6 +50,51 @@
 .smallInputBox
     margin: 0 0.5em
 
+input:disabled+label
+    opacity: 75%
+    font-style: italic
+
+.resultText
+    font-size: 0.7em
+    margin: 1em
+    font-style: italic
+    opacity: 75%
+    min-height: 1.2em
+
+.inlineInfo
+    display: inline-block
+    margin: 0.5em
+
+.infoLabel
+.infoValue
+    margin: 0 0.2em
+    font-size: 0.8em
+
+.infoLabel
+    font-weight: bold
+
+textButtonLine(labelWidth, buttonWidth, fontSize = 0.8em, elemSpacing = 0.4em)
+    display: flex
+    align-items: baseline
+    width: 100%
+    margin: elemSpacing 0
+
+    & label
+        font-size: fontSize
+        width: (labelWidth - elemSpacing)
+        text-align: right
+
+    & input
+    & .buttonSpacer
+        font-size: fontSize
+        min-width: buttonWidth
+        margin: 0 elemSpacing
+    
+    & input:not(.button)
+        font-size: (fontSize * 0.90)
+        width: "calc(100% - %s)" % labelWidth
+
+
 
 // Session settings
 
@@ -69,6 +123,8 @@ option.setOff
 
 
 
+
+
 // Database updater
 
 #dbContainer
@@ -77,30 +133,13 @@ option.setOff
     padding: 0.5rem
 
 .dbUrlLine
+    textButtonLine(4em,4em)
+
 .dbCheckbox
 .dbCheckboxContainer
     display: flex  
     flex-direction: row
     align-items: center
-
-.dbUrlLine
-    width: 100%
-    margin: 0.3rem 0
-
-.dbUrlLine label
-    font-size: .8em
-    width: 3.8em
-    text-align: right
-
-#setUrl
-#cardUrl
-    font-size: 0.7em
-    width: calc(100% - 4em)
-
-.dbUrlLine input
-    font-size: 0.8em
-    min-width: 4em
-    margin: 0 0.2rem
 
 .dbCheckboxContainer
     flex-wrap: wrap
@@ -110,18 +149,52 @@ option.setOff
     font-size: 0.8em
     margin: 0.2rem 0.3rem
 
-input:disabled+label
-    opacity: 75%
-    font-style: italic
 
 #updateDbButton
     margin: 0.5rem
     padding: 0.3rem 0.5rem
 
-#dbResult
-    font-size: 0.7em
-    margin: 1em
-    font-style: italic
-    opacity: 75%
-    min-height: 1.2em
+
+
+
+
+// User settings
+
+#userContainer .panelContainer
+    margin: 0
+    width: 100%
+
+#sudoList
+    width: 100%
+    display: flex
+    align-items: center
+
+#sudoAddLines
+    display: inline-block
+
+.sideButtons
+    display: flex
+    flex-direction: column
+
+#userRemove
+    margin: 0 25%
+    padding: 0.3em
+    flex-grow: 1
+
+#userBox
+    width: 65%
+    height: 5rem
+
+    & option
+        font-size: 0.8em
+
+.sideButtons input
+    margin: 0.2em 1em
+
+.userLine
+    textButtonLine(13em,5em)
+
+.sudoLine
+    textButtonLine(6.5em,4em)
+
 
