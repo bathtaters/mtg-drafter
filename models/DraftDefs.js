@@ -25,6 +25,13 @@ const draftSchema = new mtgDb.Schema({
 draftSchema.virtual('sessionId').get( function(){
     return convert.objIdToB64(this._id);
 });
+draftSchema.virtual('accessedAt').get( function(){
+    // Latest of all 'updatedAt' timestamps (Doc + subDocs)
+    return new Date(Math.max(
+        this.updatedAt,
+        ...this.players.map(({updatedAt})=>updatedAt))
+    );
+});
 draftSchema.virtual('direction').get( function(){
     const round = this.round
     return (this.round % 2) ? 1 : -1;
