@@ -55,10 +55,10 @@ router.post('/:sessionId/Clear', async function(req, res, next) {
 
 // Disconnect all players
 router.post('/:sessionId/Disconnect', async function(req, res, next) {
-    const session = await Draft.findBySessionId(req.params.sessionId,'players');
+    const session = await Draft.findBySessionId(req.params.sessionId,'players logEntries');
     if (!session) return reply(res, {error:'Session "'+req.params.sessionId+'" does not exist.'});
 
-    await session.disconnectAll();
+    await session.disconnectAll(req.auth.user);
     return reply(res, {sessionId: session.sessionId, disconnected: session.players.every(p => !p.connected)})
 });
     
@@ -67,14 +67,13 @@ router.post('/:sessionId/PlayerDisconnect', async function(req, res, next) {
     const session = await Draft.findBySessionId(req.params.sessionId,'players logEntries');
     if (!session) return reply(res, {error:'Session "'+req.params.sessionId+'" does not exist.'});
 
-    const player = await session.findPlayerByCookie(req.body.playerId,'connected');
+    const player = await session.findPlayerByCookie(req.body.playerId, 'name connected');
     if (!player) return reply(res, {
       sessionId: req.params.sessionId,
       error:'Player "'+req.body.playerId+'" does not exist.'
     });
 
-    if (player.connected) await session.log('Admin ('+req.auth.user+') disconnected '+player.identifier+'.');
-    player.connected = false; await session.save();
+    await player.disconnect(req.auth.user);
     return reply(res, {sessionId: session.sessionId, playerId: player.cookieId, disconnected: !player.connected})
 });
 

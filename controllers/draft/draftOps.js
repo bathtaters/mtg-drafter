@@ -1,12 +1,10 @@
 // Extended draft methods
-const cubePacks = require('./cubePacks');
-const boosterPacks = require('./boosterPacks');
 const { draftStatus } = require('../../config/definitions');
 const { shuffle } = require('../shared/random');
 
 
 // Add a player to the draft
-async function addPlayer(returningCookie='') {
+function addPlayer(returningCookie='') {
     // Match player to slot
     let playerData;
     if (returningCookie) playerData = this.findPlayerByCookie(returningCookie);
@@ -18,10 +16,8 @@ async function addPlayer(returningCookie='') {
     if (!playerData) return console.error('No open slots in '+this.sessionId);
 
     // Connect player
-    if (!playerData.connected) await this.log(playerData.identifier+' joined.');
-    playerData.connected = true;
-    await this.save();
-    return playerData;
+    return playerData.connect()
+        .then(()=> playerData );
 }
 
 

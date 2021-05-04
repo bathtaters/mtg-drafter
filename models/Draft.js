@@ -13,29 +13,33 @@ const { draftStatus, timeFormat } = require('../config/definitions');
 
 // Draft Static Methods
 
-draftSchema.statics.disconnectAll = function() {
-    const dt = (new Date()).toLocaleString(...timeFormat);
-    return this.updateMany({'players.connected': true}, {
-        $set: {'players.$.connected': false},
-        $push: {logEntries: dt+': All players disconnected (Server reset).'}
-    });
+draftSchema.statics.disconnectAll = function(by='') {
+    const logEntry = (new Date()).toLocaleString(...timeFormat)+': Server reset'+ (by ? ' by '+by : '') + '.';
+    return Draft.updateMany({'players.connected': true}, {
+        $set: {'players.$[i].connected': false},
+        $push: {logEntries: logEntry}
+    },{ arrayFilters: [{'i.connected': true}], timestamps: false }).exec();
 };
 draftSchema.statics.findBySessionId = function(sessionId, proj='', opt={}) {
     const objId = convert.b64ToObjId(sessionId);
     try { mtgDb.Types.ObjectId(objId); }
     catch(e) { console.error('SessionID ("'+sessionId+'") Error: '+e.message); return; }
-    return this.findById(objId, proj, opt);
+    return Draft.findById(objId, proj, opt).exec();
 };
 
 
 // Draft Instance Methods
 
-draftSchema.methods.disconnectAll = function() {
-    this.players.forEach( player => player.connected = false );
-    return this.save().then(_=>this.log('All players disconnected.'));
+draftSchema.methods.disconnectAll = async function(by='') {
+    await Draft.updateMany( {_id: this._id},
+        { $set: {'players.$[i].connected': false } },
+        { arrayFilters: [{'i.connected': true}], timestamps: false }
+    ).exec();
+    return this.log('All players disconnected' + (by ? ' by '+by : '') + '.');
 };
 
 draftSchema.methods.findPlayer = function(objId) {
+    if (typeof objId != 'string') objId = objId.toString();
     return this.players.find( player => player._id == objId );
 };
 
@@ -52,7 +56,7 @@ draftSchema.methods.getPack = function(packIndex) {
         .filter(c => !c.picked); // Only see unpicked cards
 };
 
-draftSchema.methods.pullCard = async function(pack, draftId) {
+draftSchema.methods.pullCard = function(pack, draftId) {
     if (!pack) return;
     const pickIndex = pack.findIndex( card => card._id == draftId );
     if (pickIndex == -1) return;
@@ -61,11 +65,11 @@ draftSchema.methods.pullCard = async function(pack, draftId) {
 };
 
 draftSchema.methods.log = function(entry) {
-    const dt = (new Date()).toLocaleString(...timeFormat);
     if (!this.logEntries) return console.error(this.name + ' <'+this.sessionId+'> unable to add log entry: '+entry);
-    this.logEntries.push(dt+': '+entry);
-    this.markModified('log');
-    return this.save();
+    return Draft.updateOne( {_id: this._id},
+        { $push: {logEntries: (new Date()).toLocaleString(...timeFormat)+': '+entry} },
+        { timestamps: false }
+    ).exec();
 };
 
 // External draft methods
@@ -83,6 +87,26 @@ draftSchema.methods.nextRound = draftOps.nextRound;
 
 // Player Instance Methods
 
+playerSchema.methods.connect = async function(by='') {
+    if (this.connected) return;
+    await Draft.updateOne(
+        { _id: this.parent()._id, 'players._id': this._id },
+        { $set: {'players.$.connected': true} },
+        { timestamps: false }
+    ).exec();
+    return this.parent().log(this.identifier+' connected' + (by ? ' by '+by : '') + '.');
+};
+
+playerSchema.methods.disconnect = async function(by='') {
+    if (!this.connected) return;
+    await Draft.updateOne(
+        { _id: this.parent()._id, 'players._id': this._id },
+        { $set: {'players.$.connected': false} },
+        { timestamps: false }
+    ).exec();
+    return this.parent().log(this.identifier+' disconnected' + (by ? ' by '+by : '') + '.');
+};
+
 playerSchema.methods.pushCard = function(card, toBoard='') {
     const board = toBoard || 'main';
     this.parent().markModified('players.'+this.position+'.cards.'+board);
@@ -97,7 +121,7 @@ playerSchema.methods.pullCard = function(card, fromBoard='') {
     else console.error('Cannot find card to pull: '+card._id);
 };
 
-playerSchema.methods.setLandData = async function(newLands) {
+playerSchema.methods.setLandData = function(newLands) {
     for (const id in newLands) {
         const index = this.cards.basicLands.findIndex( land => land._id == id );
         if (index == -1)
