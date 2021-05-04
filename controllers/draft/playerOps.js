@@ -23,7 +23,7 @@ async function passPack() {
 async function pickCard(draftId, toSideBoard=false) {
 
     // Remove card from draft
-    const card = await this.parent().pullCard(this.currentPack, draftId);
+    const card = this.parent().pullCard(this.currentPack, draftId);
     if (!card) {
         console.error('Card not found for: '+this._id+': '+draftId);
         return 'No card found';
