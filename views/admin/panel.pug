@@ -1,12 +1,15 @@
 extends ../generic/layout
 
+block header
+  link(rel='stylesheet' href='/stylesheets/admin.css')
+  
+block scripts
+    script(src='/javascripts/admin-panel-listeners.js')
+
 mixin checkbox(itemId, labelText, isChecked=false, wrapper='dbCheckbox')
     div(class=wrapper)
         input(type='checkbox' id=itemId name=itemId checked=isChecked)
         label(for=itemId)= labelText
-        
-block scripts
-    script(src='/javascripts/admin-panel-listeners.js')
 
 block content
     h1#panelTitle Admin Panel
