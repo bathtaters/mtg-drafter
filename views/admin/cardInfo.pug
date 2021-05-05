@@ -1,9 +1,0 @@
-extends ../generic/layout
-
-block content
-  - var keys = Object.keys(cardData)
-  h1= cardData.name
-  +displayCard(cardData, false)
-  div.jsonContiainer
-  each key in keys
-    p(style='white-space: break-spaces;') #{key}: !{html[key]}

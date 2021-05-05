@@ -71,3 +71,19 @@ module.exports.timeFormat = [ 'en-US', {
     month:'2-digit', day:'2-digit', year:'2-digit',
     hour:'2-digit', minute:'2-digit', second:'2-digit'
 }];
+
+// Layout for cardDetail page (Admin side)
+module.exports.cardDetailLayout = {
+    hide: ['_id','id','lineBrText','convertedManaCost','hasContentWarning'],
+    unsortedAtEnd: true, // false = at start
+    sort: [ // add 'br' for break
+        'uuid','br','printedName','name','faceName','setCode','br',
+        'type','types','rarity','side','br',
+        'manaCost','cmc','br',
+        'colors','bgdColor','monoColor','br',
+        'text','footer','br','imgUrl',
+        'gathererImg','scryfallImg','scryfallImgBack',
+        'noGath','br',
+        'otherFaceIds','variations','printings'
+    ]
+};

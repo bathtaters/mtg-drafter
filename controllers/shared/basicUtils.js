@@ -12,6 +12,9 @@ const swapArr = (i,j,arr) => { if (i != j) [arr[i], arr[j]] = [arr[j], arr[i]]; 
 // Check that object has keys
 const notEmpty = obj => obj && Object.keys(obj).length !== 0
 
+// Determine if string is UUID
+const isUuid = str => (typeof str === 'string') && /^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/.test(str);
+
 // Array comparison
 function arraysEqual(arr1, arr2) {
     if (arr1.length != arr2.length) return false;
@@ -30,6 +33,18 @@ const reply = (res, data={}) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify(data));
   }
+
+// Convert var name to title
+const varName = varName => {
+    let res = '';
+    for (let i=0, l=varName.length; i < l; i++) {
+        if (!i) res += varName[i].toUpperCase();
+        else if (varName[i].toLowerCase() !== varName[i])
+            res += ' '+varName[i];
+        else res += varName[i];
+    }
+    return res;
+}
 
 // Convert text stream to array of lines
 const splitLines = (buffer) => {
@@ -128,8 +143,10 @@ module.exports = {
     loopArray,
     arraysEqual,
     notEmpty,
+    isUuid,
     daysAgo,
     reply,
+    varName,
 
     splitLines,
     filterObject,
