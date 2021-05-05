@@ -12,6 +12,19 @@ function logReq(req,res,next) {
 
 
 
+
+// --------------- Suffix / to URL if not already
+const addSlash = (req, res, next) => {
+  if (req.originalUrl.endsWith('/')) return next();
+  if (/[^\.]+\.[^\.\/]+$/.test(req.originalUrl)) return next();
+
+  console.log('Added slash: '+req.originalUrl+' => '+req.originalUrl + '/');
+  return res.redirect(301, req.originalUrl + '/');
+}
+
+
+
+
 // --------------- Create landCounts object from form values
 const landKeys = ['main','side'].reduce( (acc,boardName) => 
   acc.concat(cardColors.filter(c => c.length == 1).map( color => 
@@ -77,14 +90,6 @@ async function getDraftObjects(req, res, next) {
   next();
 }
 const validatedDraftObjects = validator.cookieRules().concat(validator.validate, getDraftObjects);
-
-const addSlash = (req, res, next) => {
-  if (req.originalUrl.endsWith('/')) return next();
-  if (/[^\.]+\.[^\.\/]+$/.test(req.originalUrl)) return next();
-
-  console.log('Added slash: '+req.originalUrl+' => '+req.originalUrl + '/');
-  return res.redirect(301, req.originalUrl + '/');
-}
 
 
 module.exports = {
