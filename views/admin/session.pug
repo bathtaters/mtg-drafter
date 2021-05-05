@@ -1,5 +1,8 @@
 extends ../generic/layout
 
+block header
+  link(rel='stylesheet' href='/stylesheets/admin.css')
+
 block scripts
   script(src='/javascripts/admin-session-listeners.js')
 
@@ -10,7 +13,8 @@ mixin checkbox(itemId, labelText, isChecked=false, wrapper='logCheckbox')
 
 //- Card info
 mixin listCard(card)
-  li.adminPlayerCard= card.name
+  li.adminPlayerCard
+    a(href='../../card/'+card.uuid+'/' target='_blank')= card.name
 
 //- Land info
 mixin lands(landData, colorRegex)
@@ -57,7 +61,8 @@ mixin player(pdata)
       span.hider(id=pdata.cookieId+'_mainHider') +
     div.cardList.hiddenGroup(id=pdata.cookieId+'_mainContainer')
       .mainLandData
-        +lands(pdata.lands, /main-/)
+        if pdata.landCount.main
+          +lands(pdata.lands, /main-/)
       ul.adminPlayerDeck.mainDeck
         each card in pdata.deck.main
           +listCard(card)
@@ -68,7 +73,8 @@ mixin player(pdata)
       span.hider(id=pdata.cookieId+'_sideHider') +
     div.cardList.hiddenGroup(id=pdata.cookieId+'_sideContainer')
       .sideLandData
-        +lands(pdata.lands, /side-/)
+        if pdata.landCount.side
+          +lands(pdata.lands, /side-/)
       ul.adminPlayerDeck.sideDeck
         each card in pdata.deck.side
           +listCard(card)
@@ -97,7 +103,7 @@ block content
     .sessionExtraDetail
       .sessionUrl
         b.infoTitle URL:  
-        a(href=session.url)= session.url
+        a(href=session.url target='_blank')= session.url
       .sessionTimeDate
         b.infoTitle Last Updated: 
         span= session.date + ' ' + session.time
