@@ -25,6 +25,7 @@ const draftRouter = require('./routes/main/draft');
 const actionRouter = require('./routes/main/actions');
 const panelRouter = require('./routes/admin/panel');
 const sessionDetailRouter = require('./routes/admin/session');
+const cardDetailRouter = require('./routes/admin/cardDetail');
 
 
 
@@ -91,11 +92,13 @@ app.use('/draft', draftRouter);
 app.use('/action', actionRouter);
 app.use('/restricted/panel', panelRouter);
 app.use('/restricted/panel/session', sessionDetailRouter);
+app.use('/restricted/panel/card', cardDetailRouter);
 
 // export modules to Pug
 app.locals.symbFix = require('./controllers/shared/htmlParser').mtgSymbolReplace;
-app.locals.popCards = require('./controllers/shared/populatePacks');
 app.locals.draftStatus = require('./config/definitions').draftStatus;
+app.locals.isUuid = require('./controllers/shared/basicUtils').isUuid;
+app.locals.varName = require('./controllers/shared/basicUtils').varName;
 
 
 // catch 404 and forward to error handler
