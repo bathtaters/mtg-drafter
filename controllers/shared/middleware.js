@@ -1,6 +1,6 @@
 const { cardColors } = require("../../config/definitions");
 const Draft = require("../../models/Draft");
-const { filterObject } = require("./basicUtils");
+const { reply, filterObject } = require("./basicUtils");
 const logging = require("./logging");
 const validator = require("./validator");
 
@@ -39,7 +39,7 @@ function getLandCounts(req, res, next) {
 
 
 
-// --------------- Import Session/Player from database and add to header
+// --------------- Import Session/Player from database and add to body data
 const draftPathRe = /draft\/([\w_-]{16})(?:$|\/)/;
 async function getDraftObjects(req, res, next) {
 
@@ -92,8 +92,32 @@ async function getDraftObjects(req, res, next) {
 const validatedDraftObjects = validator.cookieRules().concat(validator.validate, getDraftObjects);
 
 
+// --------------- Import Session/Player for Session Detail and add to body data
+async function getSessionObjects(req, res, next) {
+
+  // Get Session from URL -- Minus pack data
+  req.body.session = await Draft.findBySessionId(req.params.sessionId,'-packs');
+  if (!req.body.session) return reply(res, {error: 'Session "'+req.params.sessionId+'" does not exist.'});
+
+  // Get player from POST (disconnect) -- Only retrieve name/connected
+  if (req.body.playerId) {
+    req.body.player = await req.body.session.findPlayerByCookie(req.body.playerId, 'name connected');
+  }
+
+  // Get player from URL (DL deck) -- Only retrieve name/cards
+  if (req.params.playerId) {
+    req.body.player = await req.body.session.findPlayerByCookie(req.params.playerId,'name cards');
+  }
+  
+  return next();
+}
+
+
+
+
 module.exports = {
     logReq, addSlash,
     landCounts: getLandCounts,
-    draftObjs: validatedDraftObjects
+    draftObjs: validatedDraftObjects,
+    sessionObjs: getSessionObjects
 }

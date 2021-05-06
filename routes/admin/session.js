@@ -5,7 +5,7 @@ var router = express.Router();
 
 const Draft = require('../../models/Draft');
 const { sessionListData, playerData } = require('../../controllers/shared/populateSession');
-const { addSlash } = require('../../controllers/shared/middleware');
+const { addSlash, sessionObjs } = require('../../controllers/shared/middleware');
 const { reply, daysAgo } = require('../../controllers/shared/basicUtils');
 const fileOps = require('../../controllers/draft/fileOps');
 
@@ -35,11 +35,9 @@ router.get('/:sessionId', addSlash, async function(req, res, next) {
 /* ----- POST session changes. ----- */
 
 // Remove based on sessionId
-router.post('/:sessionId/Delete', async function(req, res, next) {
-    const session = await Draft.findBySessionId(req.params.sessionId,'_id');
-    if (!session) return reply(res, {error:'Session "'+req.params.sessionId+'" does not exist.'});
-    await session.deleteOne();
-    return reply(res, {sessionIds: session.sessionId, action: 'Delete'});
+router.post('/:sessionId/Delete', sessionObjs, async function(req, res, next) {
+    await req.body.session.deleteOne();
+    return reply(res, {sessionIds: req.body.session.sessionId, action: 'Delete'});
 });
 
 // Remove based on date
@@ -48,49 +46,48 @@ router.post('/:sessionId/Clear', async function(req, res, next) {
     const sessionIds = await Promise.all(sessions.map(async session => {
       await session.deleteOne(); return session.sessionId;
     }));
-    
-    
+
     return reply(res, {sessionIds, action: 'Clear'});
 });
 
 // Disconnect all players
-router.post('/:sessionId/Disconnect', async function(req, res, next) {
-    const session = await Draft.findBySessionId(req.params.sessionId,'players logEntries');
-    if (!session) return reply(res, {error:'Session "'+req.params.sessionId+'" does not exist.'});
+router.post('/:sessionId/Disconnect', sessionObjs, async function(req, res, next) {
+    await req.body.session.disconnectAll(req.auth.user);
 
-    await session.disconnectAll(req.auth.user);
-    return reply(res, {sessionId: session.sessionId, disconnected: session.players.every(p => !p.connected)})
+    return reply(res, {
+        sessionId: req.body.session.sessionId,
+        disconnected: req.body.session.players.every(p => !p.connected)
+    });
 });
     
 // Disconnect a single player
-router.post('/:sessionId/PlayerDisconnect', async function(req, res, next) {
-    const session = await Draft.findBySessionId(req.params.sessionId,'players logEntries');
-    if (!session) return reply(res, {error:'Session "'+req.params.sessionId+'" does not exist.'});
-
-    const player = await session.findPlayerByCookie(req.body.playerId, 'name connected');
-    if (!player) return reply(res, {
+router.post('/:sessionId/PlayerDisconnect', sessionObjs, async function(req, res, next) {
+    if (!req.body.player) return reply(res, {
       sessionId: req.params.sessionId,
       error:'Player "'+req.body.playerId+'" does not exist.'
     });
 
-    await player.disconnect(req.auth.user);
-    return reply(res, {sessionId: session.sessionId, playerId: player.cookieId, disconnected: !player.connected})
+    await req.body.player.disconnect(req.auth.user);
+
+    return reply(res, {
+        sessionId: req.body.session.sessionId,
+        playerId: req.body.player.cookieId,
+        disconnected: !req.body.player.connected
+    });
 });
 
 // Download player deck list
-router.get('/:sessionId/player/:playerId/downloadDeck', async function(req, res, next) {
-    const session = await Draft.findBySessionId(req.params.sessionId,'name players logEntries');
-    if (!session) return res.send('Session "'+req.params.sessionId+'" does not exist.');
-    const player = await session.findPlayerByCookie(req.params.playerId,'name cards');
-    if (!player) return res.send('Player "'+req.params.playerId+'" does not exist.');
+router.get('/:sessionId/player/:playerId/downloadDeck', sessionObjs, async function(req, res, next) {
+    if (!req.body.player) return res.send('Player "'+req.params.playerId+'" does not exist.');
 
-    const deckText = await fileOps.export(player.cards);
-    const filename = player.name+' - '+session.name+' Deck.txt'
+    const deckText = await fileOps.export(req.body.player.cards);
+    const filename = req.body.player.name+' - '+req.body.session.name+' Deck.txt'
     res.set({
         'Content-Type': 'text/plain',
         'Content-Disposition':'attachment; filename="'+filename+'"'
     });
-    await session.log('Admin ('+req.auth.user+') downloaded deck list of '+player.identifier+'.');
+    
+    await req.body.session.log('Admin ('+req.auth.user+') downloaded deck list of '+req.body.player.identifier+'.');
     return res.send(deckText);
 });
 
@@ -109,7 +106,7 @@ router.post('/', async function(req, res, next) {
     if(!sessionId) return res.send('No sessionId posted.');
     if(Array.isArray(sessionId)) sessionId = sessionId[0];
     console.log('Redirecting to: '+sessionId);
-    res.redirect(req.originalUrl + (req.originalUrl.endsWith('/') ? '' : '/') + sessionId+'/');
+    return res.redirect(req.originalUrl + (req.originalUrl.endsWith('/') ? '' : '/') + sessionId+'/');
 });
   
 module.exports = router;
