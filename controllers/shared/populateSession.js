@@ -10,6 +10,7 @@ const sessionListData = ({
   sessionId, name, status, round,
   hostId, url, logEntries,
   playerCount: players.length,
+  connectedCount: players.reduce((acc,p) => acc + p.connected, 0),
   date: accessedAt.toLocaleDateString(),
   time: accessedAt.toLocaleTimeString()
 });

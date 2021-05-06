@@ -29,7 +29,7 @@ block content
                     - var statusLine = session.status
                     if draftStatus.isIn(session.status)
                         - statusLine += '['+(session.round + 1)+']'
-                    option(value=session.sessionId) #{session.date} #{statusLine} #{session.name.substr(0,25)}[#{session.playerCount}]
+                    option(value=session.sessionId) #{session.date} #{statusLine} #{session.name.substr(0,25)}[#{session.connectedCount}/#{session.playerCount}]
             .panelButtons
                 input.button#sessionDetails(type='submit' value='Details' disabled='true')
                 input.button#sessionDelete(type='button' value='Delete' disabled='true')
