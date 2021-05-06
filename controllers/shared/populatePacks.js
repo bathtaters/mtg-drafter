@@ -68,10 +68,8 @@ const playerPopulate = (player, isOppo, isActive) => { return {
 // Get draft-data (formatted for draft.pug)
 const draftPopulate = async (draft,player,forceUpdate=true) => {
   if (forceUpdate) {
-    console.log("CONNECTED BEFORE?: "+player.connected);
     draft = await Draft.findById(draft._id) || draft;
     player = draft.findPlayer(player._id) || player;
-    console.log("CONNECTED AFTER?: "+player.connected);
   }
 
   const oppoId = player.opponent ? player.opponent._id : null;
