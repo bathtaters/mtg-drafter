@@ -31,10 +31,11 @@ draftSchema.statics.findBySessionId = function(sessionId, proj='', opt={}) {
 // Draft Instance Methods
 
 draftSchema.methods.disconnectAll = async function(by='') {
+    this.players.forEach(player => player.connected = false); // disconnect obj
     await Draft.updateMany( {_id: this._id},
         { $set: {'players.$[i].connected': false } },
         { arrayFilters: [{'i.connected': true}], timestamps: false }
-    ).exec();
+    ).exec(); // disconnect DB
     return this.log('All players disconnected' + (by ? ' by '+by : '') + '.');
 };
 
@@ -89,21 +90,23 @@ draftSchema.methods.nextRound = draftOps.nextRound;
 
 playerSchema.methods.connect = async function(by='') {
     if (this.connected) return;
-    await Draft.updateOne(
+    this.connected = true; // connect obj
+    await Draft.updateOne( 
         { _id: this.parent()._id, 'players._id': this._id },
         { $set: {'players.$.connected': true} },
         { timestamps: false }
-    ).exec();
+    ).exec(); // connect DB
     return this.parent().log(this.identifier+' connected' + (by ? ' by '+by : '') + '.');
 };
 
 playerSchema.methods.disconnect = async function(by='') {
     if (!this.connected) return;
+    this.connected = false; // disconnect obj
     await Draft.updateOne(
         { _id: this.parent()._id, 'players._id': this._id },
         { $set: {'players.$.connected': false} },
         { timestamps: false }
-    ).exec();
+    ).exec(); // disconnect DB
     return this.parent().log(this.identifier+' disconnected' + (by ? ' by '+by : '') + '.');
 };
 
