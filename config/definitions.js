@@ -84,6 +84,30 @@ module.exports.cardDetailLayout = {
         'text','footer','br','imgUrl',
         'gathererImg','scryfallImg','scryfallImgBack',
         'noGath','br',
-        'otherFaceIds','variations','printings'
+        'otherFaceIds','variations','printings', 'br'
     ]
 };
+
+// Layout for setDetail page (Admin side)
+module.exports.setDetailLayout = {
+    hide: ['name', 'sheets', 'boosters', 'boostersTotalWeight'],
+    unsortedAtEnd: true, // false = at start
+    sort: [ // add 'br' for break
+        'code', 'releaseDate', 'br',
+        'enabled', 'isDefault', 'br',
+        'cardCount', 'gatherer', 'scryfall', 'br'
+    ]
+};
+
+module.exports.sortedKeys = (keys,layout) => {
+    let result = layout.sort;
+    for (const key of keys) {
+        if (layout.hide.includes(key) || result.includes(key))
+            continue;
+        
+        if (layout.unsortedAtEnd) result.push(key);
+        else result.unshift(key);
+    }
+    return result;
+};
+    

@@ -13,7 +13,6 @@ const { reply } = require('../../controllers/shared/basicUtils');
 const users = require('../../admin/pword');
 
 
-
 /* ----- GET Admin Panel page. ----- */
 
 // Get page
@@ -28,7 +27,7 @@ router.get('/', addSlash, async function(req, res, next) {
     updateDb.url.card(), // 4:url.card
     updateDb.getCounts(), // 5:dbCount
     users.userList() // 6:user.list
-  ])
+  ]);
   
   return res.render('panel', {
     title: 'Admin Panel - MtG Drafter',
@@ -47,7 +46,6 @@ router.get('/logout', function(req, res, next) {
   console.log('Logout: '+req.auth.user);
   res.status(401).send('You are logged out.');
 });
-
 
 
 
@@ -72,8 +70,8 @@ router.post('/sets/ToggleVisibility', async function(req, res, next) {
 router.post('/sets/MakeDefault', async function(req, res, next) {
   let result = 'Invalid action.';
 
-  const checkSet = await setList.getVisibility(req.body.setCode);
-  if (!checkSet) console.error(req.body.setCode+' is not a set or set is hidden.');  
+  const setData = await setList.getSetData(req.body.setCode);
+  if (!setData.enabled) console.error(req.body.setCode+' is not a set or set is hidden.');
   else result = await Settings.set('defaultSet',req.body.setCode);
 
   return reply(res, {set: req.body.setCode || 'all', action: 'MakeDefault', result});

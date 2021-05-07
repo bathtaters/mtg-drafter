@@ -64,16 +64,17 @@ async function setVisibility(code, enabled = undefined) { // No value for enable
     return Settings.setIndex(setListKey,index,newValue);
 }
 
-async function getVisibility(code) {
+// { getSetList(), enabled, cardCount, gatherer, scryfall }
+async function getSetData(code) {
     const setList = await settingsSetList();
     const set = setList.find(set => code === set.code);
     if (!set) return console.error('Cannot find set: '+code);
-    return set.enabled;
+    return set;
 }
 
 module.exports = {
     fullList: settingsSetList,
     visibleList: filteredSetList,
     resetSetList, updateSetList,
-    setVisibility, getVisibility
+    setVisibility, getSetData
 }
