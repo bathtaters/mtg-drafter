@@ -1,0 +1,103 @@
+# This is mainly written in shorthand.
+
+v0.1.0
+Initial version
+
+v0.2.0
+Empty cube crashes server
+Client/server validation for text boxes:
+    draft/player name
+    number boxes
+    FILE box
+    ALL INCOMING POST DATA (use middleware)
+add ‘uses cookies/javascript’ note to start page
+remove console logs on client-side (except errors)
+In txt export, don’t add ‘sideboard’ line if there isn’t a sideboard
+on ‘pick card’ get rid of server-side log.session
+add error on ‘card does not exist’ in populate-cards
+Add footer to all pages
+Change ‘packs per round’ to ‘packs per player’
+
+v0.3.0
+Setup PM2 to run on NGINX
+NGINX pass IP address on
+SERVER: Add TSL https
+Made pack cards buttons to improve navigation
+Make main/sideboard hideable
+make booster + button add same set that is already there
+Fix scryfall link generation for multi-sided cards
+Auto-lands & reset lands
+Fix when you try to upload the same cube file
+
+v0.4.0
+add trailing slash middleware
+Implemented better randomization
+Fixed color balance
+Added main/side card counters
+Fix: sometimes on pick, shows same pack bug
+Admin panel
+    Show/hide sets
+    Save to new db (admin)
+    Password protect everything in here
+    Session details
+    Session delete
+    Session clear
+    Create ‘disconnect’ method for single session
+    Connect Session disconnect button
+Admin > Session detail
+    pack data into headers (disconnect lights, host icon, etc)
+    format player lands better
+    1-index anything that is 0-indexed
+
+
+v0.4.1
+Add 1-player mode
+Admin panel:
+    Database panel
+    save ut.bin to db
+Format session page better
+    collapsible main/side
+    Download text file
+    Add Player.updatedAt info
+Clean up Admin panel:
+    Move router funcs into ‘populateSession’ (populatePacks)
+    split up panel router into multiple routers
+    split up / organize panel stylus
+
+Copy new dbs to server
+Improve copy to MONGO DB (Shouldn’t erase sessions!)
+
+v0.4.2
+Create card details page
+Admin
+    Create draft log
+    Add link to Setup page on Admin Panel header
+    Double clicking a session opens ‘detail’
+    Double clicking a set shows/hides it
+    Allow applying delete/disconnect to multiple sessions
+    Allow applying toggle/default to multiple sets
+    show which sets have gatherer images and which don’t
+    Manage users (Make SU nick & regular LordGonti:Luxury69)
+    Add logout link in header
+    Add ‘remove user’ option
+    Disconnecting shouldn’t change ‘updatedAt’
+    Cards in detail link to cardDetails page
+    Fix updateDb causing crash (forced sync run)
+    Improve updating card names (indexed setCode)
+    Allow ‘update alt cards’ only
+    Determine ‘update alt cards’ only reply
+    Show cards/sets counters below UpdateDb
+Move admin-panel/session ‘get session/player’ to middleware
+Hide restricted CSSes from unrestricted site
+Bugs
+    pick card button text changes alignment in fullscreen on Safari
+    upload cube box is misaligned in safari
+    4-player game didn’t auto-start??
+Check that nothing major is broken then update server
+    4-player booster draft (2-rounds)
+    4-player cube draft (2-rounds)
+    Renaming players
+    Copy link
+    Set lands manually/auto/reset
+    Download txt file
+
