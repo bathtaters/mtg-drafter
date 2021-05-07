@@ -49,7 +49,6 @@ Admin > Session detail
     format player lands better
     1-index anything that is 0-indexed
 
-
 v0.4.1
 Add 1-player mode
 Admin panel:
@@ -63,7 +62,6 @@ Clean up Admin panel:
     Move router funcs into ‘populateSession’ (populatePacks)
     split up panel router into multiple routers
     split up / organize panel stylus
-
 Copy new dbs to server
 Improve copy to MONGO DB (Shouldn’t erase sessions!)
 
@@ -92,12 +90,5 @@ Hide restricted CSSes from unrestricted site
 Bugs
     pick card button text changes alignment in fullscreen on Safari
     upload cube box is misaligned in safari
-    4-player game didn’t auto-start??
-Check that nothing major is broken then update server
-    4-player booster draft (2-rounds)
-    4-player cube draft (2-rounds)
-    Renaming players
-    Copy link
-    Set lands manually/auto/reset
-    Download txt file
+    fix 4-player game didn’t auto-start
 
