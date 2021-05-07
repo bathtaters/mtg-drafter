@@ -1,62 +1,15 @@
 extends ../generic/layout
-
-block header
-  link(rel='stylesheet' href='/stylesheets/admin.css')
   
 block scripts
   script(src='/javascripts/admin-card-listeners.js')
 
-mixin cardValue(val)
-  //- NUMBERS
-  if (typeof val === 'number')
-    span.cardDetailVal.number !{val.toString()}
-
-  //- EMPTY VALUES
-  else if !val || (Array.isArray(val) && !val.length)
-    span.cardDetailVal.empty.hidden Empty
-
-  //- LINKS
-  else if val.startsWith && val.startsWith('http')
-    a.cardDetailVal(href=val target='_blank')= val
-
-  //- UUIDs
-  else if isUuid(val)
-    a.cardDetailVal(href='../'+val+'/')= val
-
-  else if Array.isArray(val) && isUuid(val[0])
-    span.cardDetailVal
-      each uuid in val
-        a.cardDetailArr(href='../'+uuid+'/')= uuid
-
-  //- NON-STRINGS
-  else if Array.isArray(val)
-    span.cardDetailVal
-      each entry in val
-        if (typeof entry === 'string')
-          span.cardDetailArr !{symbFix(entry)}
-        else
-          span.cardDetailArr !{entry}
-
-  else if (typeof val !== 'string')
-    span.cardDetailVal !{val.toString()}
-
-  //- NORMAL STRINGS
-  else
-    span.cardDetailVal !{symbFix(val)}
-
+include ./adminMixins.pug
 
 block content
   h1= cardData.name
-  .cardDetailContainer
+  .detailContainer
     .cardDetailImage
       +displayCard(cardData, false)
       a.detailOption#hideImage Hide Image
-      a.detailOption#hideEmpty Show Empty
-    .cardDetailList
-      each key in cardDataKeys
-        if key == 'br'
-          span.cardDetailKey.spacer
-          span.cardDetailVal.spacer
-        else
-          span.cardDetailKey= varName(key)+':'
-          +cardValue(cardData[key])
+      a.detailOption#hideEmpty Hide Empty
+    +detailList(cardData, cardDataKeys)

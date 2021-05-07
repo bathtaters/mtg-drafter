@@ -1,15 +1,9 @@
 extends ../generic/layout
-
-block header
-  link(rel='stylesheet' href='/stylesheets/admin.css')
   
 block scripts
     script(src='/javascripts/admin-panel-listeners.js')
 
-mixin checkbox(itemId, labelText, isChecked=false, wrapper='dbCheckbox')
-    div(class=wrapper)
-        input(type='checkbox' id=itemId name=itemId checked=isChecked)
-        label(for=itemId)= labelText
+include ./adminMixins.pug
 
 block content
     h1#panelTitle Admin Panel
@@ -29,7 +23,7 @@ block content
                     - var statusLine = session.status
                     if draftStatus.isIn(session.status)
                         - statusLine += '['+(session.round + 1)+']'
-                    option(value=session.sessionId) #{session.date} #{statusLine} #{session.name.substr(0,25)}[#{session.connectedCount}/#{session.playerCount}]
+                    option(value=session.sessionId) #{session.date} #{statusLine} #{session.name.substr(0,25)} [#{session.connectedCount}/#{session.playerCount}]
             .panelButtons
                 input.button#sessionDetails(type='submit' value='Details' disabled='true')
                 input.button#sessionDelete(type='button' value='Delete' disabled='true')
@@ -55,6 +49,7 @@ block content
                         -setTitle += ' <d>'
                     option(class=(set.enabled ? 'setOn' : 'setOff') value=set.code)= setTitle + (set.enabled ? '' : ' <h>')
             .panelButtons
+                input.button#setDetails(type='submit' value='Details' disabled='true')
                 input.button#setToggle(type='button' value='Toggle Visibility' disabled='true')
                 input.button#setDefault(type='button' value='Make Default' disabled='true')
             .panelButtons#setsDefaultContainer
@@ -77,10 +72,10 @@ block content
                 input#cardUrl(type='url' name='cardUrl' value=url.card readonly=true)
                 input.button#cardEdit(type='button' value='Edit')
             .dbCheckboxContainer
-                +checkbox('updateSets', 'Update Set database', true)
-                +checkbox('updateCards', 'Update Card database', true)
-                +checkbox('fixCardAlts', 'Update alternate printings', true)
-                +checkbox('skipCurrent', 'Only update if outdated', true)
+                +checkbox('updateSets', 'Update Set database', true, 'dbCheckbox')
+                +checkbox('updateCards', 'Update Card database', true, 'dbCheckbox')
+                +checkbox('fixCardAlts', 'Update alternate printings', true, 'dbCheckbox')
+                +checkbox('skipCurrent', 'Only update if outdated', true, 'dbCheckbox')
             .updateButtonContainer
                 input.button#updateDbButton(type='button' value='Update')
                 #dbLoading.loading.hidden

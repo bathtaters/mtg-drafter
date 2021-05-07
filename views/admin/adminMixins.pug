@@ -1,0 +1,85 @@
+//- Generic Mix-ins used on Admin pages
+
+//- Get ADMIN stylesheets
+block header
+  link(rel='stylesheet' href='/stylesheets/admin.css')
+
+//- Formats a value in key/value pairs
+mixin formatValue(val)
+  //- NUMBERS
+  if (typeof val === 'number')
+    span.detailVal.number !{val.toString()}
+  
+  //- BOOL
+  else if (typeof val === 'boolean')
+    span.detailVal !{val.toString()}
+
+  //- EMPTY VALUES
+  else if !val || (Array.isArray(val) && !val.length)
+    span.detailVal.empty Empty
+
+  //- LINKS
+  else if val.startsWith && val.startsWith('http')
+    a.detailVal(href=val target='_blank')= val
+
+  //- UUIDs
+  else if isUuid(val)
+    a.detailVal(href='../'+val+'/')= val
+
+  else if Array.isArray(val) && isUuid(val[0])
+    span.detailVal
+      each uuid in val
+        a.detailArr(href='../'+uuid+'/')= uuid
+
+  //- NON-STRINGS
+  else if Array.isArray(val)
+    span.detailVal
+      each entry in val
+        if (typeof entry === 'string')
+          span.detailArr !{symbFix(entry)}
+        else
+          span.detailArr !{entry}
+
+  else if (val instanceof Date)
+    span.detailVal !{val.toLocaleString()}
+
+  else if (typeof val !== 'string')
+    span.detailVal !{val.toString()}
+
+  //- NORMAL STRINGS
+  else
+    span.detailVal !{symbFix(val)}
+
+
+//- Displays list of Object values
+mixin detailList(data, keys)
+    .detailList
+        each key in keys
+            if key == 'br'
+                span.detailKey.spacer
+                span.detailVal.spacer
+            else
+                span.detailKey= varName(key)+':'
+                +formatValue(data[key])
+
+
+
+//- Check box
+mixin checkbox(itemId, labelText, isChecked, wrapper)
+  span(class=wrapper id=itemId+'Wrapper')
+    input(type='checkbox' id=itemId name=itemId checked=isChecked)
+    label(for=itemId)= labelText
+
+//- Card info (Oneline)
+mixin cardOneLine(card,linkPrefix,newWindow=true)
+  - var scryImg = (card.noGath || !card.gathererImg) ? '*' : ''
+  a(href=linkPrefix+'card/'+card.uuid+'/' target=newWindow ? '_blank' : '')= card.name + scryImg
+
+//- Land info (regex = /main-/ or /side-/)
+mixin lands(landData, colorRegex)
+  each land in landData
+    - var landColor = land._id.replace(colorRegex,'')
+    if landColor.length == 1
+      .landDetailBox(id=land._id)
+        i.landIcon.ms.ms-cost.ms-shadow(class = 'ms-'+landColor)
+        span.landCount= land.count
