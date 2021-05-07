@@ -19,6 +19,8 @@ const addSlash = (req, res, next) => {
   if (/[^\.]+\.[^\.\/]+$/.test(req.originalUrl)) return next();
 
   console.log('Added slash: '+req.originalUrl+' => '+req.originalUrl + '/');
+  
+  if (req.method == "POST") return res.redirect(307, req.originalUrl + '/');
   return res.redirect(301, req.originalUrl + '/');
 }
 
