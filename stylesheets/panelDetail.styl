@@ -1,0 +1,88 @@
+// Main layout of Card/Set Detail
+
+.detailContainer
+    display: flex
+    flex-wrap: wrap
+    text-align: center
+
+#flexVertical
+    flex-direction: column
+
+.detailList
+    margin: .625rem
+    display: grid
+    grid-template-columns: auto 1fr
+    grid-auto-flow: row dense
+    grid-gap: 0.3em
+
+.detailKey
+    grid-column-start: 1
+    font-weight: bold
+    text-align: right
+
+.detailVal
+    grid-column-start: 2
+    white-space: break-spaces
+    text-align: left
+    max-width: 40em
+
+// Fix array items
+.detailArr:not(:last-child):after
+    content: ', '
+    
+// Additional element styles
+a.detailOption
+    display: inline-block
+    padding: 0.5em
+    width: 7em
+
+.spacer
+    min-height: 0.5em
+
+.empty
+    font-style: italic
+    opacity: 75%
+
+// Change card image behavior
+.cardDetailImage .cardContainer:hover
+    box-shadow: none !important
+
+.cardDetailImage * .side-a:hover 
+  opacity: 100% !important
+
+
+// Set specific
+.boosterDetail
+    text-align: left
+    margin: 1em
+
+.boosterList
+    margin: 0.3em 0
+
+ul.boosterList
+    padding-left: 2em
+
+.weight
+    font-style: italic
+    font-weight: lighter
+    font-size: 0.8em
+
+
+// Sheet specific
+
+.sheetSetName
+    font-style: italic
+    font-size: 1.25em
+    font-weight: lighter
+    margin-left: 0.2em
+    margin-bottom: 0.5em
+
+.sheetCardContainer
+    display: grid
+    grid-auto-flow: row
+    grid-template-columns: repeat(auto-fit, minmax(max-content,18rem))
+
+.sheetCard
+    padding: 0.1em 0.5em
+    font-size: 0.85em
+    font-family: serif

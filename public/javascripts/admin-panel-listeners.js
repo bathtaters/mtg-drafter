@@ -82,9 +82,9 @@ function clickSessionBox(e) {
 function chooseSessionDetail() { document.getElementById("sessionDetails").click(); }
 
 function clickSetsBox(e) {
-    setButtonStatus(this || e.target || e.srcElemnt, ["setToggle","setDefault"])
+    setButtonStatus(this || e.target || e.srcElemnt, ["setDetails","setToggle","setDefault"])
 }
-function chooseSetToggle() { document.getElementById("setToggle").click(); }
+function chooseSetToggle() { document.getElementById("setDetails").click(); }
 
 
 

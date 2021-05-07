@@ -1,0 +1,23 @@
+extends ../generic/layout
+
+include ./adminMixins.pug
+
+block content
+  .subpanelHeader
+    h1= setData.name
+    a(href='../../').backLink back
+  .detailContainer#flexVertical
+    +detailList(setData, setDataKeys)
+
+    .boosterDetail
+      b Booster Layouts
+      ul.boosterList
+        li.boosterList
+          a(href='all') All cards in set
+        each booster in setData.boosters
+          li.boosterList
+            each sheet in booster.contents
+              a(href=sheet.sheetName).detailArr #{sheet.sheetName} x#{sheet.count}
+            span.weight= ' (Wt: '+booster.weight+')'
+        li.boosterList.weight Total Weight: #{setData.boostersTotalWeight}
+

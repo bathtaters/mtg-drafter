@@ -1,0 +1,21 @@
+extends ../generic/layout
+
+include ./adminMixins.pug
+
+block content
+  .subpanelHeader
+    h1= sheetData.name ? varName(sheetData.name) + ' Sheet' : 'All Cards'
+    a(href='../').backLink back
+  .sheetSetName= set.name
+  .detailContainer#flexVertical
+    +detailList(sheetData, sheetDataKeys)
+
+  .cardsContainer
+    b= 'Cards ' + (sheetData.name ? 'on Sheet' : 'in Set') + ' ('+sheetData.cards.length+')'
+    .sheetCardContainer
+      each card in sheetData.cards
+        .sheetCard
+          +cardOneLine(card,'../../../',false)
+          if card.weight
+            span.weight= ' (Wt: '+card.weight+')'
+    p.footerText * No image on Gatherer
