@@ -8,6 +8,9 @@ function initListeners() {
     for (var i = 0, l = optionLinks.length; i < l; i++) {
         addListenerAllBrswrs(optionLinks[i],"click",clickOptionLink);
     }
+
+    // Start w/ empty values hidden
+    document.getElementById("hideEmpty").click();
 }
 
 // Add 'emptyKey' class to all keys w/ empty values
@@ -16,7 +19,6 @@ function setupHiding() {
     for (var i = 0, l = empty.length; i < l; i++) {
         var emptyKey = empty[i].previousSibling;
         emptyKey.classList.add("emptyKey");
-        emptyKey.classList.add("hidden");
     }
 }
 
