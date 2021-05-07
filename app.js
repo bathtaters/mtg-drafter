@@ -26,7 +26,7 @@ const actionRouter = require('./routes/main/actions');
 const panelRouter = require('./routes/admin/panel');
 const sessionDetailRouter = require('./routes/admin/session');
 const cardDetailRouter = require('./routes/admin/cardDetail');
-
+const setDetailRouter = require('./routes/admin/setDetail');
 
 
 
@@ -93,6 +93,7 @@ app.use('/action', actionRouter);
 app.use('/restricted/panel', panelRouter);
 app.use('/restricted/panel/session', sessionDetailRouter);
 app.use('/restricted/panel/card', cardDetailRouter);
+app.use('/restricted/panel/set', setDetailRouter);
 
 // export modules to Pug
 app.locals.symbFix = require('./controllers/shared/htmlParser').mtgSymbolReplace;
