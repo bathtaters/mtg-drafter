@@ -16,6 +16,7 @@ const users = require('../../admin/pword');
 /* ----- GET Admin Panel page. ----- */
 
 // Get page
+const sudoList = ['nick'];
 router.get('/', addSlash, async function(req, res, next) {
   
   const panelData = await Promise.all([
@@ -25,7 +26,7 @@ router.get('/', addSlash, async function(req, res, next) {
     Settings.get('defaultSet'), // 2:defaultSet
     updateDb.url.set(), // 3:url.set
     updateDb.url.card(), // 4:url.card
-    updateDb.getCounts(), // 5:dbCount
+    updateDb.getMetadata(), // 5:dbMeta
     users.userList() // 6:user.list
   ]);
   
@@ -35,8 +36,10 @@ router.get('/', addSlash, async function(req, res, next) {
     sets: panelData[1],
     defaultSet: panelData[2],
     url: {set: panelData[3], card: panelData[4]},
-    dbCount: panelData[5],
-    user: { current: req.auth.user, isSuper: req.auth.user === 'nick', list: panelData[6] }
+    dbInfo: panelData[5],
+    user: {
+      current: req.auth.user, list: panelData[6],
+      isSuper: sudoList.includes(req.auth.user.toLowerCase()) }
   });
 
 });
@@ -46,62 +49,6 @@ router.get('/logout', function(req, res, next) {
   console.log('Logout: '+req.auth.user);
   res.status(401).send('You are logged out.');
 });
-
-
-
-/* ----- POST set changes. ----- */
-
-// Toggle set visibility
-router.post('/sets/ToggleVisibility', async function(req, res, next) {
-  const checkSet = await Settings.get('defaultSet');
-
-  const results = await Promise.all(
-    req.body.setCodes.map( setCode => {
-      if (checkSet !== setCode) return setList.setVisibility(setCode);
-      console.error('Cannot toggle visibilty of default set: '+setCode);  
-      return Promise.resolve(-2);
-    })
-  );
-  
-  return reply(res, {set: req.body.setCodes, action: 'ToggleVisibility', results});
-});
-
-// Toggle set that starts in picker
-router.post('/sets/MakeDefault', async function(req, res, next) {
-  let result = 'Invalid action.';
-
-  const setData = await setList.getSetData(req.body.setCode);
-  if (!setData.enabled) console.error(req.body.setCode+' is not a set or set is hidden.');
-  else result = await Settings.set('defaultSet',req.body.setCode);
-
-  return reply(res, {set: req.body.setCode || 'all', action: 'MakeDefault', result});
-});
-
-// Append new sets to setList
-router.post('/sets/UpdateAll', async function(req, res, next) {
-  const result = await setList.updateSetList(
-    req.body.defaultVisible === undefined ? true : +req.body.defaultVisible
-  );
-  return reply(res, {set: req.body.setCode || 'all', action: 'UpdateAll', result});
-});
-
-// Reset setList and all visibility
-router.post('/sets/ResetAll', async function(req, res, next) {
-  const result = await setList.resetSetList(
-    req.body.defaultVisible === undefined ? true : +req.body.defaultVisible
-  );
-  return reply(res, {set: req.body.setCode || 'all', action: 'ResetAll', result});
-});
-
-// Catch other actions
-router.post('/sets/:action', async function(req, res, next) {
-  return reply(res, {
-    set: req.body.setCode || 'all',
-    action: req.params.action, error: 'Invalid action.'
-  });
-});
-
-
 
 
 

@@ -6,6 +6,7 @@ block scripts
 include ./adminMixins.pug
 
 block content
+    #dbLoading.loading.hidden
     h1#panelTitle Admin Panel
     #userHeader
         span.infoLabel User:
@@ -78,15 +79,36 @@ block content
                 +checkbox('skipCurrent', 'Only update if outdated', true, 'dbCheckbox')
             .updateButtonContainer
                 input.button#updateDbButton(type='button' value='Update')
-                #dbLoading.loading.hidden
             .resultText#dbResult
             #dbCountsContainer
                 .inlineInfo
-                    span.infoLabel Sets:
-                    span.infoValue= dbCount.set
+                    .infoTitle Sets Info
+                    .infoLine
+                        span.infoLabel Version: 
+                        span.infoValue= dbInfo.set.version
+                    .infoLine
+                        span.infoLabel Records:
+                        span.infoValue= dbInfo.set.count
+                    .infoLine
+                        span.infoLabel Db Date:
+                        span.infoValue= dbInfo.set.date.toLocaleDateString()
+                    .infoLine
+                        span.infoLabel Update:
+                        span.infoValue= dbInfo.set.updatedAt.toLocaleDateString()
                 .inlineInfo
-                    span.infoLabel Cards:
-                    span.infoValue= dbCount.card
+                    .infoTitle Cards Info
+                    .infoLine
+                        span.infoLabel Version: 
+                        span.infoValue= dbInfo.card.version
+                    .infoLine
+                        span.infoLabel Records:
+                        span.infoValue= dbInfo.card.count
+                    .infoLine
+                        span.infoLabel Db Date:
+                        span.infoValue= dbInfo.card.date.toLocaleDateString()
+                    .infoLine
+                        span.infoLabel Update:
+                        span.infoValue= dbInfo.card.updatedAt.toLocaleDateString()
         
         //- User Settings box
         .panelContainer#userContainer
