@@ -31,9 +31,9 @@ function initListeners() {
 }
 
 
+// --- Session --- //
 
-
-// Change draft type
+// Change draft settings
 function clickSession(e) {
     // stopPropagationAllBrswrs(e);
     var elem = this || e.target || e.srcElemnt;
@@ -49,9 +49,18 @@ function clickSession(e) {
     updateMultiple(sessions,"session/",action,data).then(function() { location.reload(); });
 }
 
+// Clicking in multi-selection boxes
+function clickSessionBox(e) {
+    setButtonStatus(this || e.target || e.srcElemnt, ["sessionDetails","sessionDelete","sessionDisconnect"])
+}
+function chooseSessionDetail() { document.getElementById("sessionDetails").click(); }
 
 
-// Change set stuff
+
+
+// --- Sets --- //
+
+// Change set settings
 function clickSets(e) {
     // stopPropagationAllBrswrs(e);
     var elem = this || e.target || e.srcElemnt;
@@ -67,24 +76,18 @@ function clickSets(e) {
         data.defaultVisible = document.getElementById("setsDefault").value;
     }
 
-    updateServer(action,data,"sets").then( result => {
+    updateServer(action,data,"set").then( result => {
         log("Completed "+result.action+" on set: "+result.set);
         location.reload();
     });
 }
 
-
-
 // Clicking in multi-selection boxes
-function clickSessionBox(e) {
-    setButtonStatus(this || e.target || e.srcElemnt, ["sessionDetails","sessionDelete","sessionDisconnect"])
-}
-function chooseSessionDetail() { document.getElementById("sessionDetails").click(); }
-
 function clickSetsBox(e) {
     setButtonStatus(this || e.target || e.srcElemnt, ["setDetails","setToggle","setDefault"])
 }
 function chooseSetToggle() { document.getElementById("setDetails").click(); }
+
 
 
 
@@ -165,9 +168,9 @@ function updateDb(e) {
 
     // Calculate actual times better
     var msg = 0;
-    if (formData.get('updateSets'))  { msg += 2; }
-    if (formData.get('updateCards')) { msg += 5; }
-    if (formData.get('fixCardAlts')) { msg += 5; }
+    if (formData.get('updateSets'))  { msg += 1; }
+    if (formData.get('updateCards')) { msg += 3; }
+    if (formData.get('fixCardAlts')) { msg += 6; }
 
     msg = "This could take up to " + msg + " minutes for which the site will be down."; 
     msg += "\n\nAre you sure you want to continue?";
@@ -176,16 +179,13 @@ function updateDb(e) {
         return elem.removeAttribute("disabled");
     }
 
-    var updateStatus = document.getElementById("dbResult");
-    var progressBar = document.getElementById("dbLoading");
-    progressBar.classList.remove("hidden");
-    updateStatus.innerText = "Updating database...";
+    document.getElementById("dbResult").innerText = "Updating database...";
+    document.getElementsByTagName("body")[0].classList.add("noScroll")
+    document.getElementById("dbLoading").classList.remove("hidden");
 
     postFormData("updateDb",formData,"db").then( result => {
-        updateStatus.innerText = result.result || "Database updated.";
-        progressBar.classList.add("hidden");
-        elem.removeAttribute("disabled");
-        log("updateDb Message: "+result.result);
+        alert(result.result || "Database update completed with no message.");
+        location.reload();
     });
 
 }
