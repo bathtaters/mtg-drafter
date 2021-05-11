@@ -24,6 +24,9 @@ body
   background: bodyBgd
   color: bodyText
   font-family: sans-serif
+  position: relative
+  margin: 0
+  padding: 8px // Chrome default?
   
 h1
   display: block
@@ -151,3 +154,6 @@ scrollbarColor(thumb = scrollbarThumb, bgd = invisible)
 
 *
   scrollbarColor()
+
+.noScroll
+  overflow: hidden
