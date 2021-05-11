@@ -14,7 +14,7 @@ module.exports.cardColors = ['W','U','B','R','G','other'];
 
 // Order of booster pack cards (Not-included will be at start)
 module.exports.boosterSortOrder = [
-    'sta','lesson', // ?? strixhaven
+    'sta', // strixhaven
     'playtest', 'oldFrame', // Playtest set
     'dfc', 'therosGods', 'contraption', 'conspiracy', 'legendary', 'special',
     'mythicPartner1', 'nondraftRareMythic',
@@ -41,7 +41,7 @@ module.exports.boosterSortOrder = [
     'sfcCommon', 'nonconspiracyCommon', 'nondraftCommon',
     'nongainlandCommon', 'nonlandCommon', 'nonBasictypeCommon', 'common',
     
-    'commonOrBasic', 'basicOrCommonLand',
+    'lesson', 'commonOrBasic', 'basicOrCommonLand',
     'basicOrGainland', 'basictype', 'basic', 'land'
 ].reverse();
 
