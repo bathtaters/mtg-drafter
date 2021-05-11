@@ -53,14 +53,17 @@ mixin formatValue(val)
 
 //- Displays list of Object values
 mixin detailList(data, keys)
-    .detailList
-        each key in keys
-            if key == 'br'
-                span.detailKey.spacer
-                span.detailVal.spacer
-            else
-                span.detailKey= varName(key)+':'
-                +formatValue(data[key])
+  .detailList
+    each key in keys
+      if key == 'br'
+        span.detailKey.spacer
+        span.detailVal.spacer
+      else if key == 'setCode' || key == 'code'
+        span.detailKey= varName(key)+':'
+        a.detailVal#setCodeValue(href='../../set/'+data[key]+'/' target='_blank')= data[key]
+      else
+        span.detailKey= varName(key)+':'
+        +formatValue(data[key])
 
 
 
