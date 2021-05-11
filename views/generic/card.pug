@@ -20,8 +20,9 @@ mixin cardSide(card, isFoil)
                         span.genType #{card.type}
                         span(class="genRarity "+card.rarity) ⬤
                     div.genTextBox
-                        each line in card.lineBrText
-                            p.genText!= symbFix(line, false)
+                        .genTextContainer
+                            each line in card.lineBrText
+                                p.genText!= symbFix(line, false)
                     if card.side
                         div(class="genFooterDfc ms ms-dfc-modal-" + (card.side == 'a' ? 'face' : 'back'))
                     if card.footer
