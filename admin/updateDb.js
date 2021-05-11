@@ -9,13 +9,15 @@ const Meta = require('../models/Meta');
 const Card = require('../models/Card');
 const { basicLands } = require('../config/definitions');
 const Settings = require('../models/Settings');
+const { resolve } = require('path');
+const asyncPool = require('tiny-async-pool');
 
 // Stored URLs
 const setKey = 'dbSetUrl';
 const cardKey = 'dbCardUrl';
 
 // Generic JSON Parser - filter/saver works like array.filter()/array.forEach() (saver must return Promise)
-const maxAsyncThreads = 250;
+const maxAsyncThreads = 500;
 function downloadJSON(url, parsePath, filter=undefined, saver=undefined, limit=0) {
     
     return new Promise((resolve, reject) => {
@@ -121,26 +123,33 @@ async function updateDatabase(url, Model, MetaModel, force=false, limit=0) {
 
 
 // Retrieve Alt card IDs (Must be done after all documents are saved)
-async function getCardAlts(doc, model) {
+const setCodeRe = /^.{2,5}$/;
+async function getCardAlts(doc, Model) {
     //console.log('Getting alts for '+doc.name);
     if (basicLands.includes(doc.name)) {
-        doc.printings = []; return doc.save();
+        doc.printings = []; await doc.save(); return 0;
     }
     
     // Remove card's own set from search
     const thisSetIndex = doc.printings.indexOf(doc.setCode);
     if (thisSetIndex != -1) doc.printings.splice(thisSetIndex, 1);
-    if (!doc.printings.length) { doc.printings = []; return doc.save(); }
+    const setCodes = doc.printings.filter(p => setCodeRe.test(p));
+    if (!setCodes.length) { await doc.save(); return 0; }
 
     // Find matching card ids by name
-    let query = { setCode: { $in: doc.printings } };
+    let query = { setCode: { $in: setCodes } };
     if (doc.faceName) query.faceName = doc.faceName;
     else query.name = doc.name;
-    // const model = doc.model(doc.constructor.modelName, doc.schema);
-    const matches = await model.find(query, '_id')
+    // const Model = doc.model(doc.constructor.modelName, doc.schema);
+    const matches = await Model.find(query, 'setCode');
     
     // Push matches & save
-    doc.printings = matches.map( match => match._id );
+    matches.forEach( match => {
+        const matchIndex = doc.printings.indexOf(match.setCode);
+        doc.markModified('printings.'+(matchIndex < 0 ? doc.printings.length : matchIndex));
+        if (matchIndex >= 0) doc.printings[matchIndex] = match._id;
+        else doc.printings.push(match._id);
+    });
     await doc.save()
     // console.log(doc.name,'added',matches.length,'alts.')
     return matches.length;
@@ -155,18 +164,18 @@ async function getAllCardAlts(CardModel, showProgress=false) {
 
     // Call setAlts on each card from above
     console.log(new Date().toISOString(), cards.length+' cards to scan for alts');
-    let c = 0;
-    for (const card of cards) {
-        const n = await getCardAlts(card, CardModel);
-        
-        // Show incremental progress
-        if (n) ++c;
-        if (showProgress && c % 2500 == 0)
-            console.log(new Date().toISOString(), c+'/'+cards.length+' cards updated');
-    }
+    let total = 0, matched = 0;
+    await asyncPool(maxAsyncThreads, cards, async (card,_) => {
+        const next = await getCardAlts(card, CardModel);
+        ++total && next && ++matched; // Inc counters
 
-    console.log(new Date().toISOString(), c+'/'+cards.length+' cards updated');
-    return c;
+        // Show incremental progress
+        if (showProgress && total % 5000 == 0)
+            console.log(new Date().toISOString(), total+'/'+cards.length+' cards checked, '+matched+' matched'); 
+    });
+
+    console.log(new Date().toISOString(), total+'/'+cards.length+' cards checked w/ '+matched+' cards matched');
+    return matched;
 };
 
 
@@ -214,18 +223,38 @@ async function updateBoth(
     return (msg.endsWith(':') || msg.endsWith('+')) ? msg.slice(0,-1) : msg;
 }
 
-async function getCounts() {
-    // Count total records ( -1 for metadata )
-    const set = await Set.countDocuments().then(c=>c-1);
-    const card = await Card.countDocuments().then(c=>c-1);
-    return { set, card };
+const dbName = { Both: 'both', Set: 'set', Card: 'card' };
+const multiDbFunc = func => async function(modelname = dbName.Both) {
+    modelname = modelname.toLowerCase();
+    if (modelname === dbName.Both) {
+        const set = await func(Set);
+        const card = await func(Card);
+        return {set, card};
+    }
+
+    const Model = modelname === dbName.Set ? Set : modelname === dbName.card ? Card : null;
+    if (!Model)
+        return console.error('Model not found: '+modelname+'. Try: '+[dbName.Set,dbName.Card,dbName.both].join(', ')+'.');
+    return func(Model);
+};
+
+const metaFields = ({date, version, url, updatedAt}) => ({date, version, url, updatedAt});
+async function getMeta(Model) {
+    // Create an object from the given Model's metadata    
+    const meta = await Model.findById('_META');
+    if (!meta) return console.error('No metadata exists for '+Model.modelName);
+    
+    // Add in document count
+    let result = metaFields(meta.toObject());
+    result.count = await Model.countDocuments().then(c=>c-1);
+    return result;
 }
 
 
 module.exports = {
     update: updateBoth, 
     storeCardAlts: () => getAllCardAlts(Card),
-    getCounts: getCounts,
+    getMetadata: multiDbFunc(getMeta),
     url: {
         set: () => Settings.get(setKey),
         card: () => Settings.get(cardKey),
