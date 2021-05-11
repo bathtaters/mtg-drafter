@@ -2,10 +2,17 @@ extends ../generic/layout
 
 include ./adminMixins.pug
 
+block scripts
+    script(src='/javascripts/admin-set-listeners.js')
+
 block content
   .subpanelHeader
     h1= setData.name
     a(href='../../').backLink back
+    .panelButtons
+      input.button#setToggle(type='button' value='Toggle Visibility')
+      input.button#setDefault(type='button' value='Make Default')
+
   .detailContainer#flexVertical
     +detailList(setData, setDataKeys)
 
@@ -13,7 +20,9 @@ block content
       b Booster Layouts
       ul.boosterList
         li.boosterList
-          a(href='all') All cards in set
+          a(href='all') All cards in set, 
+          //- a(href='gath') Gatherer cards, 
+          //- a(href='scry') Scryfall cards
         each booster in setData.boosters
           li.boosterList
             each sheet in booster.contents
