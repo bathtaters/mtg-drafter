@@ -24,9 +24,9 @@ const indexRouter = require('./routes/main/index');
 const draftRouter = require('./routes/main/draft');
 const actionRouter = require('./routes/main/actions');
 const panelRouter = require('./routes/admin/panel');
-const sessionDetailRouter = require('./routes/admin/session');
-const cardDetailRouter = require('./routes/admin/cardDetail');
-const setDetailRouter = require('./routes/admin/setDetail');
+const adminSessionRouter = require('./routes/admin/session');
+const adminCardRouter = require('./routes/admin/cards');
+const adminSetRouter = require('./routes/admin/sets');
 
 
 
@@ -91,9 +91,9 @@ app.use('/', indexRouter);
 app.use('/draft', draftRouter);
 app.use('/action', actionRouter);
 app.use('/restricted/panel', panelRouter);
-app.use('/restricted/panel/session', sessionDetailRouter);
-app.use('/restricted/panel/card', cardDetailRouter);
-app.use('/restricted/panel/set', setDetailRouter);
+app.use('/restricted/panel/session', adminSessionRouter);
+app.use('/restricted/panel/card', adminCardRouter);
+app.use('/restricted/panel/set', adminSetRouter);
 
 // export modules to Pug
 app.locals.symbFix = require('./controllers/shared/htmlParser').mtgSymbolReplace;
