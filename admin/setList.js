@@ -35,7 +35,6 @@ async function resetSetList(allEnabled = true) {
     for (let i=0, e=setList.length; i < e; i++) {
         setList[i] = await appendSetData(setList[i], allEnabled);
     }
-    console.log(JSON.stringify(setList.slice(0,10)));
     await Settings.set(setListKey,setList);
     return setList.length;
 }
