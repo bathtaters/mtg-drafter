@@ -2,6 +2,8 @@ extends ../generic/layout
   
 block scripts
     script(src='/javascripts/admin-panel-listeners.js')
+    if user.isSuper
+        script(src='/javascripts/admin-su-panel-listeners.js')
 
 include ./adminMixins.pug
 
