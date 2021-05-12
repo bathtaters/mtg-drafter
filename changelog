@@ -92,3 +92,24 @@ Bugs
     upload cube box is misaligned in safari
     fix 4-player game didn’t auto-start
 
+v0.4.3
+Admin
+    Share similar code blocks
+    Create set-detail page
+    Option to view all cards in set
+    Combine set actions & setDetail
+    Add set action buttons into set detail page
+    Make updateDb AltPrintings able to run partially then pickup (Leave not-found setCodes)
+    After DB update page should refresh
+        Also make entire page disabled during update
+        Update times = set:1 + card:3 + alts:6
+        Increased maxThreads to 500
+        Also add info from “META” to page to DBs
+Bugs
+    addSlash not working on POST requests
+    (Admin) “Reset all” Sets shows unwanted console output
+    (Admin) SUDO if uname == nick should be case insensitive
+    (Admin) Hid sudo admin clientJS from non-sudo admin
+Bugs
+    ADMIN: Authentication is broken! (Accepts any value)
+    ADMIN: update time/date updates on server disconnect (only on linode?)
