@@ -5,7 +5,7 @@ var router = express.Router();
 const fileOps = require('../../controllers/draft/fileOps');
 const { draftStatus } = require('../../config/definitions');
 const { convert, reply } = require('../../controllers/shared/basicUtils');
-const { draftRules, validate } = require('../../controllers/shared/validator');
+const { draftRules, validate } = require('../../config/validator');
 
 
 // ----------------- Upload file, return data

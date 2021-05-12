@@ -1,8 +1,8 @@
 const { cardColors } = require("../../config/definitions");
 const Draft = require("../../models/Draft");
 const { reply, filterObject } = require("./basicUtils");
-const logging = require("./logging");
-const validator = require("./validator");
+const logging = require("../../config/logging");
+const validator = require("../../config/validator");
 
 
 // --------------- Log requests

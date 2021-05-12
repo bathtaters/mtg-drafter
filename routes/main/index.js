@@ -6,7 +6,7 @@ const Draft = require('../../models/Draft');
 const Settings = require('../../models/Settings');
 const { convert } = require('../../controllers/shared/basicUtils');
 const { defaultDraftName, defaultDraftSet } = require('../../config/definitions');
-const { limits, draftSetupRules, validate } = require('../../controllers/shared/validator');
+const { limits, draftSetupRules, validate } = require('../../config/validator');
 
 
 /* GET home page. */

@@ -1,4 +1,4 @@
-const { notEmpty } = require("./basicUtils");
+const { notEmpty } = require("../controllers/shared/basicUtils");
 
 
 const player = playerObj =>

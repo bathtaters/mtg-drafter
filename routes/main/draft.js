@@ -1,7 +1,7 @@
 var express = require('express');
 const { draftStatus } = require('../../config/definitions');
 const populatePacks = require('../../controllers/shared/populatePacks');
-const { limits, draftRules, validate } = require('../../controllers/shared/validator');
+const { limits, draftRules, validate } = require('../../config/validator');
 var router = express.Router();
 
 
