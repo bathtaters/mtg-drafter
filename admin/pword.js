@@ -49,8 +49,10 @@ async function removeUser(uname) {
 }
 async function checkUser(uname, pword) {
     const users = await tableOps.read();
-    if (!(uname in users)) return false;
-    return pword && pwOps.check(pword,users[uname]);
+    const userList = Object.keys(users);
+    const userInd = userList.map(u=>u.toLowerCase()).indexOf(uname.toLowerCase());
+    if (userInd < 0) return false;
+    return pword && pwOps.check(pword,users[userList[userInd]]);
 }
 
 module.exports = {
@@ -58,6 +60,6 @@ module.exports = {
     userList: () => tableOps.read().then(t=>Object.keys(t)),
     addUser: (uname, pword) => setUser(uname, pword, false),
     updateUser: setUser,
-    authorizer: checkUser,
+    authorizerAsync: (uname, pword, cb) => checkUser(uname, pword).then(valid => cb(null, valid)),
     changeUsername, removeUser
 }
