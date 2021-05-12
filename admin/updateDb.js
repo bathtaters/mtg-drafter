@@ -17,7 +17,7 @@ const setKey = 'dbSetUrl';
 const cardKey = 'dbCardUrl';
 
 // Generic JSON Parser - filter/saver works like array.filter()/array.forEach() (saver must return Promise)
-const maxAsyncThreads = 500;
+const maxAsyncThreads = 300;
 function downloadJSON(url, parsePath, filter=undefined, saver=undefined, limit=0) {
     
     return new Promise((resolve, reject) => {
