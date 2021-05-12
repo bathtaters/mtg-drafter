@@ -15,7 +15,7 @@ block content
     .sheetCardContainer
       each card in sheetData.cards
         .sheetCard
-          +cardOneLine(card,'../../../',false)
+          +cardOneLine(card,'../../../',true)
           if card.weight
             span.weight= ' (Wt: '+card.weight+')'
     p.footerText * No image on Gatherer
