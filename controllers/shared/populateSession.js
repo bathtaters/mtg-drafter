@@ -4,15 +4,17 @@ const populatePacks = require('./populatePacks');
 // Populate session data for admin panel
 const sessionProjection = 'name players round packs hostId updatedAt';
 const sessionListData = ({
-  sessionId, name, players, status,
-  round, accessedAt, hostId, url, logEntries
+  sessionId, name, players, status, round,
+  accessedAt, updatedAt, hostId, url, logEntries
 }) => ({
   sessionId, name, status, round,
   hostId, url, logEntries,
   playerCount: players.length,
   connectedCount: players.reduce((acc,p) => acc + p.connected, 0),
-  date: accessedAt.toLocaleDateString(),
-  time: accessedAt.toLocaleTimeString()
+  date: updatedAt.toLocaleDateString(),
+  time: updatedAt.toLocaleTimeString(),
+  aggDate: accessedAt.toLocaleDateString(),
+  aggTime: accessedAt.toLocaleTimeString()
 });
 
 
