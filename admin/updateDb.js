@@ -9,15 +9,17 @@ const Meta = require('../models/Meta');
 const Card = require('../models/Card');
 const { basicLands } = require('../config/definitions');
 const Settings = require('../models/Settings');
-const { resolve } = require('path');
-const asyncPool = require('tiny-async-pool');
+
+// Thread settings
+const maxAsyncThreads = 750;
+const maxAsyncAlts = 750;
+const showProgress = 0; // update every N records (0 == don't show)
 
 // Stored URLs
 const setKey = 'dbSetUrl';
 const cardKey = 'dbCardUrl';
 
 // Generic JSON Parser - filter/saver works like array.filter()/array.forEach() (saver must return Promise)
-const maxAsyncThreads = 300;
 function downloadJSON(url, parsePath, filter=undefined, saver=undefined, limit=0) {
     
     return new Promise((resolve, reject) => {
@@ -26,8 +28,8 @@ function downloadJSON(url, parsePath, filter=undefined, saver=undefined, limit=0
             const contentType = res.headers['content-type'];
 
             let error;
-            // Any 2xx status code signals a successful response but
-            // here we're only checking for 200.
+            // Any 2xx status code = successful response
+            // This only succeeds on 200
             if (statusCode !== 200) {
                 error = new Error('Request Failed.\n' +
                                 `Status Code: ${statusCode}`);
@@ -63,6 +65,10 @@ function downloadJSON(url, parsePath, filter=undefined, saver=undefined, limit=0
                     else result.push(data);
 
                     if (++count === limit && limit) return jsonPipe.destroy();
+
+                    // Show incremental progress
+                    if (showProgress && count % showProgress == 0)
+                        console.log(new Date().toISOString(), count+' records retrieved.'); 
                 }
             });
             jsonPipe.on('error', reject);
@@ -114,7 +120,7 @@ async function updateDatabase(url, Model, MetaModel, force=false, limit=0) {
             Model.getFilter,
             data => Model.create(data),
             limit // only gets 1st n entries (FOR TESTING)
-    );
+    ).catch( e => console.error(Model.modelName+' download was interrupted.',e) );
     
     console.timeEnd('Updated '+Model.modelName)
     console.log(new Date().toISOString(), 'Retrieved '+count+' entries');
@@ -157,24 +163,43 @@ async function getCardAlts(doc, Model) {
 
 
 // Get all card alt-IDs
-async function getAllCardAlts(CardModel, showProgress=false) {
+
+async function getAllCardAlts(CardModel) {
     // Generate list of cards with printings.len > 0
-    console.log(new Date().toISOString(),'Retrieving records to scan for alts')
-    const cards = await CardModel.find({ 'printings.0': { $exists: true } });
+    console.log(new Date().toISOString(),'Retrieving records to scan for alts');
+    const count = await CardModel.countDocuments({ 'printings.0': { $exists: true } });
+    const cards = CardModel.find({ 'printings.0': { $exists: true } }).cursor()
+        .addCursorFlag('noCursorTimeout',true);
 
     // Call setAlts on each card from above
-    console.log(new Date().toISOString(), cards.length+' cards to scan for alts');
-    let total = 0, matched = 0;
-    await asyncPool(maxAsyncThreads, cards, async (card,_) => {
-        const next = await getCardAlts(card, CardModel);
-        ++total && next && ++matched; // Inc counters
+    console.log(new Date().toISOString(), count+' cards to scan for alts');
+    let total = 0, matched = 0, threads = 0;
+    let asyncBuff = new Array(maxAsyncAlts);
+    for (let card = await cards.next(); card != null; card = await cards.next()) {
+    // await asyncPool(10, new Array(count), async (_a, _b) => {
+        // const card = await cards.next();
+        // if (!card) return;
+
+        // const next = await getCardAlts(card, CardModel);
+
+        // Wait for next position to open to add a new thread
+        if (++threads >= maxAsyncAlts) await asyncBuff[total % maxAsyncAlts];
+
+        // Add next card thread to circle buffer
+        asyncBuff[total++ % maxAsyncAlts] = getCardAlts(card, CardModel).then( next => {
+            threads-- && next && ++matched; // Inc/Dec counters
+        });
 
         // Show incremental progress
-        if (showProgress && total % 5000 == 0)
-            console.log(new Date().toISOString(), total+'/'+cards.length+' cards checked, '+matched+' matched'); 
-    });
+        if (showProgress && total % showProgress == 0)
+            console.log(new Date().toISOString(), total+'/'+count+' cards checked, '+matched+' matched'); 
+        
+    // });
+    }
+    // Wait for remaining processes to complete
+    await Promise.all(asyncBuff);
 
-    console.log(new Date().toISOString(), total+'/'+cards.length+' cards checked w/ '+matched+' cards matched');
+    console.log(new Date().toISOString(), total+'/'+count+' cards checked w/ '+matched+' cards matched');
     return matched;
 };
 
@@ -203,7 +228,7 @@ async function updateBoth(
         msg += ' '+(cardCount||'no new')+' cards';
 
         console.time('Updated Card indexes');
-        await Card.ensureIndexes();
+        await Card.createIndexes();
         console.timeEnd('Updated Card indexes');
     } else if (fixCardAlts) { msg += ' cards not updated'; }
 
