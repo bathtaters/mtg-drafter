@@ -73,7 +73,7 @@ module.exports.timeFormat = [ 'en-US', {
 }];
 
 // Layout for cardDetail page (Admin side)
-module.exports.cardDetailLayout = {
+cardDetailLayout = {
     hide: ['_id','id','lineBrText','convertedManaCost','hasContentWarning'],
     unsortedAtEnd: true, // false = at start
     sort: [ // add 'br' for break
@@ -82,14 +82,15 @@ module.exports.cardDetailLayout = {
         'manaCost','cmc','br',
         'colors','bgdColor','monoColor','br',
         'text','footer','br','imgUrl',
-        'gathererImg','scryfallImg','scryfallImgBack',
+        'multiverseId','gathererImg',
+        'scryfallId','scryfallImg','scryfallImgBack',
         'noGath','br',
         'otherFaceIds','variations','printings', 'br'
     ]
 };
 
 // Layout for setDetail page (Admin side)
-module.exports.setDetailLayout = {
+setDetailLayout = {
     hide: ['name', 'sheets', 'boosters', 'boostersTotalWeight'],
     unsortedAtEnd: true, // false = at start
     sort: [ // add 'br' for break
@@ -99,7 +100,12 @@ module.exports.setDetailLayout = {
     ]
 };
 
-module.exports.sortedKeys = (keys,layout) => {
+// Get sort keys for a given model
+module.exports.sortedKeys = (keys,modelName) => {
+    const layout = modelName.toLowerCase() == 'set' ? setDetailLayout :
+        (modelName.toLowerCase() == 'card' ? cardDetailLayout : null);
+    if (!layout) return console.error('Invalid layout model: '+modelName) || keys;
+
     let result = layout.sort;
     for (const key of keys) {
         if (layout.hide.includes(key) || result.includes(key))
@@ -110,4 +116,12 @@ module.exports.sortedKeys = (keys,layout) => {
     }
     return result;
 };
-    
+
+// Don't allow editing of these keys
+module.exports.editDisable = {
+    card: [
+        'uuid','setCode','printedName','imgUrl','monoColor','bgdColor',
+        'gathererImg','scryfallImg','scryfallImgBack'
+    ],
+    set: ['everything']
+}
