@@ -75,6 +75,17 @@ function copyTextToClipboard(text) {
     });
 }
 
+// Change dropdown selection
+function selectOption(selectElement, selectValue) {
+    var opts = selectElement.options;
+    for (var opt, i = 0; opt = opts[i]; i++) {
+        if (opt.value == selectValue) {
+            selectElement.selectedIndex = i;
+            break;
+        }
+    }
+}
+
 // Extract selected options
 function getSelectedOptions(selectElement) {
     var allOptions = selectElement.options;
@@ -85,6 +96,27 @@ function getSelectedOptions(selectElement) {
         if (opt.selected) { result.push(opt.value || opt.text); }
     }
     return result;
+}
+
+// Replace options in select menu
+function setSelectOptions(selectElement, options) {
+    var selected = getSelectedOptions(selectElement);
+    // Remove all options
+    for (var i=0, e=selectElement.options.length; i < e; i++ ) {
+        selectElement.remove(0);
+    }
+    addSelectOptions(selectElement, options);
+    return selectOption(selectElement, selected[0]);
+}
+
+// Add options to select menu
+function addSelectOptions(selectElement, options) {
+    for (var i = 0, e = options.length; i < e; i++){
+        var newOpt = document.createElement("option");
+        newOpt.value = options[i];
+        newOpt.innerHTML = options[i];
+        selectElement.add(newOpt);
+    }
 }
 
 // Enable/Disable buttons (using IDs) based on if 'selectElem' is selected
@@ -238,3 +270,46 @@ function downloadFile(data = null, contentType = 'text/plain', url = '../action'
             }
         });
   }
+
+// Replace Brace code (used in db) w/ CSS styles (For mana.css)
+function mtgSymbolReplace(text, shadow=false) {
+    const specials = {
+        'T': 'tap'
+    };
+    const tagBuild = [
+        '<i class="ms ms-cost' + (shadow ? ' ms-shadow' : '') + ' ms-',
+        '"></i>'
+    ];
+    const braceRegex = /\{(.{1,3})\}/g;
+
+    const replaceWith = (m, p1, o, s) => {
+        let val = String(p1);
+        if (val in specials) val = specials[val];
+        val = val.replace(/\//g,'');
+        val = val.toLowerCase();
+        val = tagBuild[0] + val + tagBuild[1];
+        //console.log('replaced: '+m+' with '+val);
+        return val;
+    }
+    return text ? text.replaceAll(braceRegex, replaceWith) : '';
+}
+
+// Inverse of SymbolReplace
+function mtgSymbolRevert(text) {
+    const invSpecials = {
+        'tap': 'T'
+    };
+    const braceBuild = ['{','}'];
+    const tagRegex = /<i class="ms ms-cost(?: ms-shadow)? ms-(.{1,3})"><\/i>/g;
+
+    const replaceWithInv = (m, p1, o, s) => {
+        let val = String(p1);
+        if (val in invSpecials) val = invSpecials[val];
+        val = val.toUpperCase();
+        if (val.length == 2) val = val.charAt(0) + '/' + val.charAt(1);
+        val = braceBuild[0] + val + braceBuild[1];
+        //console.log('replaced: '+m+' with '+val);
+        return val;
+    }
+    return text ? text.replaceAll(tagRegex, replaceWithInv) : '';
+}
