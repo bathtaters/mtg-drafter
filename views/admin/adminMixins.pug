@@ -5,54 +5,55 @@ block header
   link(rel='stylesheet' href='/stylesheets/admin.css')
 
 //- Formats a value in key/value pairs
-mixin formatValue(val)
+mixin formatValue(key, val, editable)
+  - var detailCls = 'detailVal' + (editable ? ' unlocked' : ' locked')
+
   //- NUMBERS
   if (typeof val === 'number')
-    span.detailVal.number !{val.toString()}
+    span.number(class=detailCls id=key role='textbox') !{val.toString()}
   
   //- BOOL
   else if (typeof val === 'boolean')
-    span.detailVal !{val.toString()}
+    span(class=detailCls id=key role='textbox') !{val.toString()}
 
   //- EMPTY VALUES
   else if !val || (Array.isArray(val) && !val.length)
-    span.detailVal.empty Empty
+    span.empty(class=detailCls id=key role='textbox') Empty
 
   //- LINKS
   else if val.startsWith && val.startsWith('http')
-    a.detailVal(href=val target='_blank')= val
+    a(class=detailCls id=key role='textbox' href=val target='_blank')= val
 
   //- UUIDs
   else if isUuid(val)
-    a.detailVal(href='../'+val+'/')= val
+    a(class=detailCls id=key role='textbox' href='../'+val+'/')= val
 
-  else if Array.isArray(val) && isUuid(val[0])
-    span.detailVal
-      each uuid in val
-        a.detailArr(href='../'+uuid+'/')= uuid
+  //- DATEs
+  else if (val instanceof Date)
+    span.date(class=detailCls id=key role='textbox') !{val.toLocaleString()}
 
-  //- NON-STRINGS
+  //- ARRAYs
   else if Array.isArray(val)
-    span.detailVal
+    span.arrayWrapper(class=detailCls id=key role='textbox')
       each entry in val
-        if (typeof entry === 'string')
+        if isUuid(entry)
+          a.detailArr(href='../'+entry+'/')= entry
+        else if (typeof entry === 'string')
           span.detailArr !{symbFix(entry)}
         else
           span.detailArr !{entry}
 
-  else if (val instanceof Date)
-    span.detailVal !{val.toLocaleString()}
+  //- STRINGS
+  else if (typeof val === 'string')
+    span(class=detailCls id=key role='textbox') !{symbFix(val)}
 
-  else if (typeof val !== 'string')
-    span.detailVal !{val.toString()}
-
-  //- NORMAL STRINGS
+  //- OTHER
   else
-    span.detailVal !{symbFix(val)}
+    span(class=detailCls id=key role='textbox') !{val.toString()}
 
 
 //- Displays list of Object values
-mixin detailList(data, keys)
+mixin detailList(data, keys, disableEditList=false)
   .detailList
     each key in keys
       if key == 'br'
@@ -63,7 +64,7 @@ mixin detailList(data, keys)
         a.detailVal#setCodeValue(href='../../set/'+data[key]+'/' target='_blank')= data[key]
       else
         span.detailKey= varName(key)+':'
-        +formatValue(data[key])
+        +formatValue(key, data[key], disableEditList && !disableEditList.includes(key))
 
 
 
@@ -76,7 +77,7 @@ mixin checkbox(itemId, labelText, isChecked, wrapper)
 //- Card info (Oneline)
 mixin cardOneLine(card,linkPrefix,newWindow=true)
   - var scryImg = (card.noGath || !card.gathererImg) ? '*' : ''
-  a(href=linkPrefix+'card/'+card.uuid+'/' target=newWindow ? '_blank' : '')= card.name + scryImg
+  a.cardOneLine(class=card.bgdColor  href=linkPrefix+'card/'+card.uuid+'/' target=newWindow ? '_blank' : '')= card.name + scryImg
 
 //- Land info (regex = /main-/ or /side-/)
 mixin lands(landData, colorRegex)
