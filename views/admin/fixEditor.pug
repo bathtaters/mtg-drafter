@@ -1,0 +1,37 @@
+
+#fixEditBox.hidden
+    h3 Fix Editor
+    form#fixesEditor.panelContainer(action='set' method='post')
+        #cardName
+        .infoLine
+            span.panelOption
+                label.selectLabel(for='model') Model: 
+                select.editorSelect#model(name='model' disabled=true)
+                    option#onlyModel(value='Card') Card
+            span.panelOption
+                label.selectLabel(for='uuid') UUID: 
+                if existingSettings
+                    span.editorSelect#uuid= existingSettings.uuid
+                else
+                    input.editorSelect#uuid(name='uuid' value='')
+            span.panelOption
+                label.selectLabel(for='key') Setting: 
+                select.editorSelect#key(name='key' disabled=true)
+                    if existingSettings
+                        option(value=existingSettings.key)= existingSettings.key || 'Enter UUID'
+                    else
+                        option(value='') Enter UUID
+        .panelOption
+            label.selectLabel(for='value') Fixed Value: 
+            input.editorSelect#value(name='value' value='')
+        .infoLine    
+            span.panelOption
+                label.selectLabel Current Value: 
+                span.editorSelect#current= currentVal || 'Select setting'
+            span.panelOption
+                label.selectLabel Original Value: 
+                span.editorSelect#original= existingSettings ? existingSettings.original || 'Empty' : 'Select setting'
+        .panelButtons
+            input.button#fixSave(type='button' value='Save')
+            input.button#fixCancel(type='button' value='Cancel')
+#fixEditBgd.hidden

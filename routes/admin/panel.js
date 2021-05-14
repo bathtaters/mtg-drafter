@@ -79,7 +79,8 @@ router.post('/db/updateDb', async function(req, res, next) {
     req.body.updateSets === 'on',
     req.body.updateCards === 'on',
     req.body.skipCurrent === 'on',
-    req.body.fixCardAlts === 'on'
+    req.body.fixCardAlts === 'on',
+    true // auto-apply fixes
   );
   return reply(res, {action: 'updateDb', result});
 });

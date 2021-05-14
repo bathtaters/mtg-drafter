@@ -5,9 +5,10 @@ const Set = require('../../models/Set');
 const Card = require('../../models/Card');
 const Settings = require('../../models/Settings');
 const setList = require('../../admin/setList');
-const { setDetailLayout, sortedKeys } = require('../../config/definitions');
+const { sortedKeys } = require('../../config/definitions');
 const { addSlash } = require('../../controllers/shared/middleware');
 const { reply } = require('../../controllers/shared/basicUtils');
+const fixDb = require('../../admin/fixDb');
 
 
 
@@ -88,7 +89,7 @@ router.get('/:setCode', addSlash, async function(req, res, next) {
     setData = { isDefault, ...setDetail[0], ...setData };
     
     // Get sorted list of keys
-    const setDataKeys = sortedKeys(Object.keys(setData),setDetailLayout);
+    const setDataKeys = sortedKeys(Object.keys(setData),'set');
     
     return res.render('setDetail', {
       title: 'Admin Panel - '+req.params.setCode+' Detail',
@@ -99,13 +100,14 @@ router.get('/:setCode', addSlash, async function(req, res, next) {
 
 
 // All cards in set page
-const cardDataObj = ({uuid, name, noGath, gathererImg}) => ({uuid, name, noGath, gathererImg}); 
+const cardProj = 'name noGath gathererImg colors types';
+const cardDataObj = ({uuid, name, noGath, gathererImg, bgdColor}) => ({uuid, name, noGath, gathererImg, bgdColor}); 
 router.get('/:setCode/all', addSlash, async function(req, res, next) {
     let setData = await Set.findById(req.params.setCode,'name');
     if (!setData) res.send(req.params.setCode+' set not found.');
 
     // Get all card names
-    let cardData = await Card.find({setCode: req.params.setCode},'name noGath gathererImg');
+    let cardData = await Card.find({setCode: req.params.setCode}, cardProj);
     cardData = cardData.map(cardDataObj);
 
     return res.render('sheetDetail', {
@@ -128,7 +130,7 @@ router.get('/:setCode/:sheet', addSlash, async function(req, res, next) {
     // Lookup card names
     sheetData = sheetData.toObject();
     sheetData.cards = await Promise.all(sheetData.cards.map(async card => {
-        const cardData = await Card.findById(card.card,'name noGath gathererImg');
+        const cardData = await Card.findById(card.card, cardProj);
         return {...cardDataObj(cardData), uuid: card.card, weight: card.weight};
     }));
 
@@ -137,6 +139,28 @@ router.get('/:setCode/:sheet', addSlash, async function(req, res, next) {
         set: { name: setData.name, code: setData.code },
         sheetData, sheetDataKeys
       });
+});
+
+// ------- Set changes
+
+// Edit DB - post {key, value}
+router.post('/:setCode/db/set', async function(req, res, next) {
+  let value = req.body.value;
+  if (typeof value === 'string') {
+    try {
+      value = JSON.parse(value);
+    } catch {
+      value = req.body.value.toString();
+    }
+  }
+  await fixDb.setDb(Set.modelName, req.params.setCode, req.body.key, value);
+  return reply(res, {key: req.body.key, value});
+});
+
+// Clear DB Edit - post {key} (Will not remove from DB until next download)
+router.post('/:setCode/db/clear', async function(req, res, next) {
+  await fixDb.clearSetting(Set.modelName, req.params.setCode, req.body.key);
+  return reply(res, {key: req.body.key, cleared: true});
 });
 
 

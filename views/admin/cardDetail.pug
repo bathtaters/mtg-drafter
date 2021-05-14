@@ -6,10 +6,12 @@ block scripts
 include ./adminMixins.pug
 
 block content
-  h1= cardData.name
+  .detailContainer
+    h1= cardData.name
+    input.button#editCard(type='button' value='Edit')
   .detailContainer
     .cardDetailImage
       +displayCard(cardData, false)
       a.detailOption#hideImage Hide Image
       a.detailOption#hideEmpty Hide Empty
-    +detailList(cardData, cardDataKeys)
+    +detailList(cardData, cardDataKeys, editDisable)

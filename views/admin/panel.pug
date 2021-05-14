@@ -111,6 +111,14 @@ block content
                     .infoLine
                         span.infoLabel Update:
                         span.infoValue= dbInfo.card.updatedAt.toLocaleDateString()
+            #dbAdditionalContainer
+                .inlineInfo
+                    .infoTitle Fixes Info
+                    .infoLine
+                        span.infoLabel Card Fixes: 
+                        span.infoValue= 0
+                    .infoLine
+                        a.infoValue(href='fixes') Edit Fixes
         
         //- User Settings box
         .panelContainer#userContainer

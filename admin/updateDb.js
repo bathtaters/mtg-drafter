@@ -9,6 +9,7 @@ const Meta = require('../models/Meta');
 const Card = require('../models/Card');
 const { basicLands } = require('../config/definitions');
 const Settings = require('../models/Settings');
+const fixDb = require('./fixDb');
 
 // Thread settings
 const maxAsyncThreads = 750;
@@ -209,8 +210,8 @@ async function getAllCardAlts(CardModel) {
 // Main function
 async function updateBoth(
     updateSets=true, updateCards=true,
-    skipCurrent=true, 
-    fixCardAlts=true, limit=0
+    skipCurrent=true, fixCardAlts=true,
+    applyFixes=true, limit=0
 ) {
     // console.log(' >>>>> UPDATE DB: sets:'+updateSets+',cards:'+updateCards+',outdate:'+skipCurrent+',altfix:'+fixCardAlts);
     // return (skipCurrent ? '' : 'Force-') + 'Updated database: '+updateSets+' sets + '+updateCards+' cards (w/ '+fixCardAlts+' alt IDs)';
@@ -227,9 +228,7 @@ async function updateBoth(
         cardCount = await updateDatabase(cardDatabase, Card, Meta.Cards, !skipCurrent, limit);
         msg += ' '+(cardCount||'no new')+' cards';
 
-        console.time('Updated Card indexes');
         await Card.createIndexes();
-        console.timeEnd('Updated Card indexes');
     } else if (fixCardAlts) { msg += ' cards not updated'; }
 
     if (fixCardAlts && (cardCount || !updateCards)) {
@@ -238,6 +237,11 @@ async function updateBoth(
         msg += ' ('+(altCount||'no')+' new alt IDs stored)';
     } else if (fixCardAlts) {
         console.log('No new cards to search for alts');
+    }
+
+    if (applyFixes) {
+        const applied = await fixDb.applySettings();
+        msg += ' ('+(applied||'no')+' fixes applied)';
     }
     
     if(updateSets || updateCards)

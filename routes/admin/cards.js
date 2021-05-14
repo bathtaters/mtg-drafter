@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 const Card = require('../../models/Card');
-const { cardDetailLayout, sortedKeys } = require('../../config/definitions');
-const { addSlash } = require('../../controllers/shared/middleware');
-
+const { editDisable, sortedKeys } = require('../../config/definitions');
+const { addSlash, formatFixValue } = require('../../controllers/shared/middleware');
+const { reply } = require('../../controllers/shared/basicUtils');
+const fixDb = require('../../admin/fixDb');
 
 
 /* GET cardDetail page. */
@@ -18,15 +19,16 @@ router.get('/:uuid', addSlash, async function(req, res, next) {
 
     // Lookup card data
     const cardData = await Card.findById(req.params.uuid).then(d => d && d.toObject());
-    if (!cardData) res.send('No card data for: '+req.params.uuid);
+    if (!cardData) return res.send('No card data for: '+req.params.uuid);
 
     // Get sorted list of keys
-    const cardDataKeys = sortedKeys(Object.keys(cardData),cardDetailLayout);
+    const cardDataKeys = sortedKeys(Object.keys(cardData),'card');
 
     return res.render('cardDetail', {
         title: cardData.printedName || cardData.name,
         cardDataKeys,
-        cardData: cardData
+        cardData: cardData,
+        editDisable: editDisable.card
     });
     
 });
@@ -36,5 +38,26 @@ router.post('/', addSlash, function(req, res, next) {
     if (!req.body.card) return res.send('No card data sent');
     return res.redirect('./' + (req.body.card.uuid || req.body.card)+'/');
 });
+
+
+// ------- Card changes
+
+// Edit DB - post {editSet: {key, value}}
+router.post('/:uuid/db/set', formatFixValue, async function(req, res, next) {
+  let kvSet = req.body.editSet;
+  for (const key in kvSet) {
+    kvSet[key] = getValue(kvSet[key]);
+  }
+  const setKeys = await fixDb.setMulti(Card, req.params.uuid, kvSet);
+  return reply(res, {setKeys});
+});
+
+// Clear DB Edit - post {key} (Will not remove from DB until next download)
+router.post('/:uuid/db/clear', async function(req, res, next) {
+  await fixDb.clearSetting(Card.modelName, req.params.uuid, req.body.key);
+  return reply(res, {key: req.body.uuid, cleared: true});
+});
+
+
 
 module.exports = router;

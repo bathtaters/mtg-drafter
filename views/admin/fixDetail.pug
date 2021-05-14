@@ -1,0 +1,33 @@
+extends ../generic/layout
+
+include ./adminMixins
+
+block scripts
+    script(src='/javascripts/admin-fix-listeners.js')
+            
+
+block content
+    .subpanelHeader#fixesSubpanel
+        h1= title
+        a(href='../').backLink back
+
+    form#fixesContainer.panelContainer(action='' method='post')
+        label.containerTitle(for='fixes') Fixes
+        select.panelSelect#fixesBox(name='fixes' multiple=true)
+            each val,fix in fixList
+                option(class=(fixActive[fix] ? 'fixOn' : 'fixOff') value=fix) #{fix} = #{val}
+        .panelButtons
+            input.button#fixNew(type='button' value='New')
+            input.button#fixEdit(type='button' value='Edit' disabled=true)
+            input.button#fixDelete(type='button' value='Delete' disabled=true)
+        .panelButtons
+            input.button#fixApply(type='button' value='Apply All')
+            input.button#fixRevert(type='button' value='Revert All')
+            input.button#fixClearAll(type='button' value='Delete All')
+        .panelButtons
+            //- input#cubeFilePicker(type='file' name='cubeFile' accept='text/plain, text/csv')
+            input.button#fixImport(type='button' value='Import')
+            a.button#fixExport(href='./export/FixList.json') Export
+        input.button.hidden#fixFile(type='file' name='fixList' accept='.json' value='Import')
+    
+    include ./fixEditor
