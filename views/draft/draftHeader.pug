@@ -74,7 +74,7 @@ div#headContainer
     div#toolBox.headerCell
         if isHost
             div#copyBox.hostTool
-                button.button.toolButton#linkButton(type='button' disabled=false)
+                button.button.toolButton#linkButton(type='button')
                     img.svgColorize#linkIcon(src='/images/link.svg')
                 span#copyTip.tooltip
                     span#copyMsg= 'Copy URL '
@@ -83,7 +83,7 @@ div#headContainer
             if false
                 - var pauseTipText = status == draftStatus.run ? 'Pause draft' : 'Start draft'
                 div#pauseBox.hostTool
-                    button.button.toolButton#pauseButton(type='button' disabled=false)
+                    button.button.toolButton#pauseButton(type='button')
                         if status == draftStatus.run
                             img.svgColorize#pauseIcon(src='/images/pause.svg')
                         else if status == draftStatus.pause
@@ -94,6 +94,6 @@ div#headContainer
             button.button.toolButton#landButton(type='button') Lands
             +landDropdown()
         div#downloadBox.playerTool
-            button.button.toolButton#dlButton(type='button' disabled=false)
+            a.button.toolButton#dlButton(href='../action/download/Deck.txt')
                 img.svgColorize#dlIcon(src='/images/download.svg')
             span#downloadTip.tooltip Download text file

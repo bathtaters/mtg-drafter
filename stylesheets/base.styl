@@ -103,11 +103,18 @@ buttonActive()
   border: solid 0.25rem #00000000
   box-shadow: 0.2rem 0.2rem 0.3rem #111
   transition-duration: transitionDur
+  text-decoration: none
+  
+  a&
+    padding: 0.1em 0.4em
 
+  a&:not([disabled])
   &:enabled
     &:hover
       background-color: buttonHover
       cursor: pointer
+      color: buttonText
+      text-decoration: none
 
     &:active
       buttonActive()
@@ -115,10 +122,12 @@ buttonActive()
     &:focus
       border-color: focusOutline
   
+  &[disabled]
   &:disabled
     color: buttonTextDisabled
     cursor: not-allowed
     background-color: buttonDisabled
+    text-decoration: none
 
 
 

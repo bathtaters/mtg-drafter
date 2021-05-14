@@ -196,8 +196,8 @@ function copyUrl(e) {
 
 function downloadTextFile(e) {
     stopPropagationAllBrswrs(e);
-    downloadFile()
-        .catch(function(err){log('Error downloading deck',err);});
+    // downloadFile()
+    //     .catch(function(err){log('Error downloading deck',err);});
 }
 
 

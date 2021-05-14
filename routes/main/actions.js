@@ -53,7 +53,7 @@ router.post('/rename', draftRules.rename(), validate, async function(req, res, n
 });
 
 // ----------------- Download Decklist
-router.get('/download', async function(req, res, next) {
+router.get('/download/Deck.txt', async function(req, res, next) {
   if (!req.body.player) return reply(res);
 
   const deckText = await fileOps.export(req.body.player.cards);
