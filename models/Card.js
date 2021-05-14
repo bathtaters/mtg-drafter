@@ -2,6 +2,7 @@
 
 const { model } = require('mongoose');
 const mtgDb = require('../config/db');
+const { isUuid } = require('../controllers/shared/basicUtils');
 
 const gathererUrl = ['https://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=',''];
 const scryfallUrl = ['https://api.scryfall.com/cards/','?format=image','&face=back '];
@@ -25,16 +26,11 @@ const cardSchema = new mtgDb.Schema({
     monoColor: { type: Boolean, default: false },
     
     // Image data
-    scryfallImg: {
-        type: String,
-        get: v => v ? `${scryfallUrl[0]}${v}${scryfallUrl[1]}` : v
-    }, // identifiers.scryfallId
-    gathererImg: {
-        type: String,
-        get: v => v ? `${gathererUrl[0]}${v}${gathererUrl[1]}` : v
-    }, // identifiers.multiverseId
+    scryfallId: String, // identifiers.scryfallId
+    multiverseId: String, // identifiers.multiverseId
     noGath: {
         type: Boolean,
+        default: false,
         alias: 'hasContentWarning'
     },
 
@@ -49,8 +45,14 @@ const cardSchema = new mtgDb.Schema({
 }, { autoIndex: false });
 
 // Virtual getters
+cardSchema.virtual('gathererImg').get(function(){
+    return this.multiverseId ? `${gathererUrl[0]}${this.multiverseId}${gathererUrl[1]}` : this.multiverseId;
+});
+cardSchema.virtual('scryfallImg').get(function(){
+    return this.scryfallId ? `${scryfallUrl[0]}${this.scryfallId}${scryfallUrl[1]}` : this.scryfallId;
+});
 cardSchema.virtual('scryfallImgBack').get(function(){
-    return this.scryfallImg ? (this.scryfallImg + scryfallUrl[2]) : this.scryfallImg;
+    return this.scryfallId ? (this.scryfallImg + scryfallUrl[2]) : this.scryfallId;
 });
 cardSchema.virtual('printedName').get(function(){
     return this.faceName || this.name;
@@ -83,9 +85,9 @@ cardSchema.path('colors').set(function(v){
 // Set image URLs
 cardSchema.virtual('identifiers').set(function(v){
     if (v.scryfallId)
-        this.scryfallImg = v.scryfallId;
+        this.scryfallId = v.scryfallId;
     if (v.multiverseId)
-        this.gathererImg = v.multiverseId;
+        this.multiverseId = v.multiverseId;
     else this.noGath = true;
 });
 
@@ -102,10 +104,6 @@ cardSchema.virtual('toughness').set(function(v){
 
 // Options for retrieving as Object
 cardSchema.set('toObject', {getters: true, versionKey: false, useProjection: true});
-
-// Previous interface to retrieve altIds
-//cardSchema.methods.setAlts = function() { return getCardAlts(this); };
-//cardSchema.statics.setAllAlts = getAllCardAlts
 
 const Card = model('Card', cardSchema);
 module.exports = Card;
