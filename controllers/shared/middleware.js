@@ -115,11 +115,38 @@ async function getSessionObjects(req, res, next) {
 }
 
 
+// --------------- Format 'Value' for Fixes
+const fixesValueFormatter = (req,res,next) => {
+  const fmtValue = value => {
+    if (typeof value === 'string') {
+      try { value = JSON.parse(value); }
+      catch { value = value.toString(); }
+    }
+    if (Array.isArray(value)) {
+      value = value.map(entry => 
+        (typeof entry === 'string')
+        ? entry.split(',').map( s => s.trim() ) // split based on ','
+        : entry
+      ).flat() // remove nesting
+      .filter(e=>e); // remove blanks
+    }
+    return value;
+  }
+
+  if (req.body.value) req.body.value = fmtValue(req.body.value);
+  if (req.body.editSet) {
+    for (const key in req.body.editSet) {
+      req.body.editSet[key] = getValue(req.body.editSet[key]);
+    }
+  }
+  return next();
+}
 
 
 module.exports = {
     logReq, addSlash,
     landCounts: getLandCounts,
     draftObjs: validatedDraftObjects,
-    sessionObjs: getSessionObjects
+    sessionObjs: getSessionObjects,
+    formatFixValue: fixesValueFormatter
 }
