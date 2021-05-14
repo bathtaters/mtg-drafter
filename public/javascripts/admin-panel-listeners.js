@@ -62,7 +62,7 @@ function chooseSessionDetail() { document.getElementById("sessionDetails").click
 function clickSets(e) {
     // stopPropagationAllBrswrs(e);
     var elem = this || e.target || e.srcElemnt;
-    var action = elem.value.replace(/\s/g,'');
+    var action = elem.value.replace(/\s/g,"");
     log("clicked: set."+action);
 
     var data = {};
@@ -166,9 +166,9 @@ function updateDb(e) {
 
     // Calculate actual times better
     var msg = 0;
-    if (formData.get('updateSets'))  { msg += 1; }
-    if (formData.get('updateCards')) { msg += 3; }
-    if (formData.get('fixCardAlts')) { msg += 6; }
+    if (formData.get("updateSets"))  { msg += 1; }
+    if (formData.get("updateCards")) { msg += 3; }
+    if (formData.get("fixCardAlts")) { msg += 7; }
 
     msg = "This could take up to " + msg + " minutes for which the site will be down."; 
     msg += "\n\nAre you sure you want to continue?";
