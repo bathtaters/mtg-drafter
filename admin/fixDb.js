@@ -29,7 +29,7 @@ function setDbFromObj(setting, toOriginal=false) {
 async function testDbSetting(setting) {
     const doc = await modelDict[setting.model].findById(setting.id).exec();
     if (doc[setting.key] === setting.value) return true;
-    if (/Img$/.test(setting.key)) return doc[setting.key].includes(setting.value);
+    if (+doc[setting.key] === +setting.value) return true;
     return false;
 }
 
