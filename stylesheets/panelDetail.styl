@@ -92,8 +92,11 @@ ul.boosterList
     width: 4.5em
     padding: 0.2em
 
-[contenteditable="true"]
+.detailVal[contenteditable="true"]
     background: alpha(white,0.2)
+
+.hasFix::before
+    content: '*'
 
 // Fixes specific
 
@@ -117,6 +120,7 @@ option.fixOff::before
     margin-top: 0.3em
 
 #cardName
+    display: block
     font-style: italic
     opacity: 80%
     margin-bottom: 0.4em
@@ -128,8 +132,8 @@ option.fixOff::before
     width: 80%
     z-index: 1000
     position: absolute;
-    left: 8%;
-    padding: 2%;
+    left: 9.5%;
+    padding: 0.5%;
     background: bodyBgd;
     top: 6rem;
 
@@ -141,6 +145,7 @@ div#fixEditBgd
     width: 100vw
     height: 200vh
     z-index: 999
+    overflow: hidden
 
 .infoLine
     display: flex
