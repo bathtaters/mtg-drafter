@@ -100,8 +100,8 @@ router.get('/:setCode', addSlash, async function(req, res, next) {
 
 
 // All cards in set page
-const cardProj = 'name noGath gathererImg colors types';
-const cardDataObj = ({uuid, name, noGath, gathererImg, bgdColor}) => ({uuid, name, noGath, gathererImg, bgdColor}); 
+const cardProj = 'name noGath multiverseId colors types';
+const cardDataObj = ({uuid, name, noGath, multiverseId, bgdColor}) => ({uuid, name, noGath, multiverseId, bgdColor}); 
 router.get('/:setCode/all', addSlash, async function(req, res, next) {
     let setData = await Set.findById(req.params.setCode,'name');
     if (!setData) res.send(req.params.setCode+' set not found.');

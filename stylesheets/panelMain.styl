@@ -162,7 +162,8 @@ option.setOff
     margin: 0.5rem
     padding: 0.3rem 0.5rem
 
-
+#dbAdditionalContainer
+    text-align: center
 
 
 
@@ -205,4 +206,31 @@ option.setOff
 .sudoLine
     textButtonLine(6.5em,4em)
 
+
+
+
+// AdminMixins
+
+.cardLineBgd
+    outline: solid .03em bodyBgd
+    padding: 0.1em 0.5em
+    font-family: serif
+
+    & *
+        color: bodyBgd
+
+    &.bgdG *
+    &.bgdB *
+        color: bodyText
+        opacity: 85%
+
+a.cardOneLine
+    padding: 0.1em
+
+    &:not(:hover)
+        text-decoration: none
+    &:hover
+        text-decoration: underline
+
+    
 

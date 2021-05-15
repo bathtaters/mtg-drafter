@@ -43,9 +43,9 @@ mixin player(pdata)
       .mainLandData
         if pdata.landCount.main
           +lands(pdata.lands, /main-/)
-      ul.adminPlayerDeck.mainDeck
+      .adminPlayerDeck.mainDeck
         each card in pdata.deck.main
-          li.adminPlayerCard
+          .cardLineBgd(class=card.bgdColor)
             +cardOneLine(card,'../../')
     
     //- Player Sideboard
@@ -56,9 +56,9 @@ mixin player(pdata)
       .sideLandData
         if pdata.landCount.side
           +lands(pdata.lands, /side-/)
-      ul.adminPlayerDeck.sideDeck
+      .adminPlayerDeck.sideDeck
         each card in pdata.deck.side
-          li.adminPlayerCard
+          .cardLineBgd(class=card.bgdColor)
             +cardOneLine(card,'../../')
 
     //- Download link

@@ -14,7 +14,7 @@ block content
     b= 'Cards ' + (sheetData.name ? 'on Sheet' : 'in Set') + ' ('+sheetData.cards.length+')'
     .sheetCardContainer
       each card in sheetData.cards
-        .sheetCard
+        .cardLineBgd(class=card.bgdColor)
           +cardOneLine(card,'../../../',true)
           if card.weight
             span.weight= ' (Wt: '+card.weight+')'

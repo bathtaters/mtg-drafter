@@ -25,7 +25,7 @@ mixin formatValue(key, val, editable)
     a(class=detailCls id=key role='textbox' href=val target='_blank')= val
 
   //- UUIDs
-  else if isUuid(val)
+  else if isUuid(val) && key != 'scryfallId'
     a(class=detailCls id=key role='textbox' href='../'+val+'/')= val
 
   //- DATEs
@@ -76,8 +76,9 @@ mixin checkbox(itemId, labelText, isChecked, wrapper)
 
 //- Card info (Oneline)
 mixin cardOneLine(card,linkPrefix,newWindow=true)
-  - var scryImg = (card.noGath || !card.gathererImg) ? '*' : ''
-  a.cardOneLine(class=card.bgdColor  href=linkPrefix+'card/'+card.uuid+'/' target=newWindow ? '_blank' : '')= card.name + scryImg
+  - var scryImg = (card.noGath || !card.multiverseId) ? '*' : ''
+  //- class=card.bgdColor
+  a.cardOneLine(href=linkPrefix+'card/'+card.uuid+'/' target=newWindow ? '_blank' : '')= card.name + scryImg
 
 //- Land info (regex = /main-/ or /side-/)
 mixin lands(landData, colorRegex)
