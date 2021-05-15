@@ -29,98 +29,106 @@ function initListeners() {
 
 // --- Shared Functions --- //
 
+// Fetch data
+
 function getCardData(uuid) {
     return updateServer("card",{uuid: uuid},"./editor").then( function(result) {
         if (!result || result.invalid) {
-            document.getElementById("key").setAttribute("disabled","true");
-            document.getElementById("current").innerText = "";
-            document.getElementById("cardName").innerText = result ? "Invalid UUID" : "No response from server";
-            return;
+            setCardKeys(); setCardValue();
+            return setCardName(null, result);
         }
         return result;
     });
 }
 
-function getSettingData(key, id=null) {
+function getSettingData(key, id = null) {
+    // id = null if key contains id in fixString format
     return updateServer("setting",{key: key, id: id},"./editor").then( function (setting) {
         if (!setting || setting.invalid) { 
-            document.getElementById("value").value = "";
-            document.getElementById("original").innerText = "";
-            setting ? log("Get setting: "+setting.result) :
+            setSettingValues();
+            return setting ?
+                log("Get setting: "+setting.result) :
                 log("No response from server","Could not retrieve settings key: "+key+", id: "+id);
         }
-        else { return setting; }
+        return setting;
     });
 }
 
-function updateValues(setting) {
-    document.getElementById("value").value = JSON.stringify(setting.value) || "";
-    document.getElementById("original").innerText = JSON.stringify(setting.original) || "Empty";
+
+// Page setters
+
+function setCardName(card = null, invalidMsg = true) {
+    var cardName = document.getElementById("cardName");
+    if (card) {
+        cardName.innerText = card.printedName + " (" + card.setCode + ")";
+        cardName.setAttribute("href","../card/"+card.uuid);
+        cardName.setAttribute("target","_blank");
+    } else {
+        cardName.innerText = invalidMsg ? "Invalid UUID" : "";
+        cardName.removeAttribute("href");
+        cardName.removeAttribute("target");
+    }
 }
 
-function updateCurrent(card, key=null) {
-    if (!key) {
-        var selected = getSelectedOptions(document.getElementById("key"));
-        if (selected && selected.length > 0) {
-            key = selected[0];
-        }
-        if (!key) { 
-            document.getElementById("current").innerText = "Choose setting";
-            return log("No key selected","Select key to retrieve current value.");
-        }
+function setCardKeys(keys = null, defaultKey = null) {
+    var keyMenu = document.getElementById("key");
+    if (keys) {
+        setSelectOptions(keyMenu, keys, varName);
+        if (defaultKey) { selectOption(keyMenu, defaultKey); }
+        keyMenu.removeAttribute("disabled");
+    } else {
+        keyMenu.setAttribute("disabled","true");
+        setSelectOptions(keyMenu, ["Enter UUID"]);
     }
-    if (typeof card === "string") {
-        return getCardData(card).then( function(result) { if (result) {
-                document.getElementById("current").innerText = JSON.stringify(result.card[key]) || "Empty";
-        } });
+}
+
+function setCardValue(card = null, key = null) {
+    if (!card) {
+        document.getElementById("current").innerText = ""; return;
+    } if (!key) {
+        var keys = getSelectedOptions(document.getElementById("key"));
+        if (keys && keys.length > 0) { key = keys[0]; }
+        if (!key) { return setCardValue() || setSettingValues(); }
     }
     document.getElementById("current").innerText = JSON.stringify(card[key]) || "Empty";
 }
 
-function updateAll(key, id=null) {
-    return getSettingData(key, id).then( function(setting) { if (setting) {
-        var elemIds = ["onlyModel", "uuid", "key"];
-        var elemVals = [
-            setting.model, setting.id, setting.key
-        ];
-        
-        return updateCard(setting.id).then( function (card) {
-            if (!card) { return log("Card not found",setting.id+" is not a valid card."); }
-            
-            for (var i = 0, l = elemIds.length; i < l; i++) {
-                var elem = document.getElementById(elemIds[i]);
-                if (elem.id == "onlyModel") {
-                    elem.value = elemVals[i];
-                    elem.innerText = elemVals[i];
-                }
-                if (elem.tagName == "SELECT") {
-                    selectOption(elem,elemVals[i]);
-                    // enterKey(elem);
-                } else if (elem.tagName == "INPUT") {
-                    elem.value = elemVals[i];
-                } else {
-                    elem.innerText = elemVals[i];
-                }
-            }
-            updateValues(setting);
-            return updateCurrent(card, setting.key);
-        });
-    } });    
+function setSettingValues(setting = null) {
+    if (setting) {
+        document.getElementById("value").value = JSON.stringify(setting.value) || "";
+        document.getElementById("original").innerText = JSON.stringify(setting.original) || "Empty";
+    } else {
+        document.getElementById("value").value = "";
+        document.getElementById("original").innerText = "";
+    }
+    
 }
 
-function updateCard(uuid) {
+
+// Updaters
+
+function updateSettingData(key, id = null) {
+    return getSettingData(key, id).then( function(setting) { if (setting) {
+        setSettingValues(setting);
+        return setting;
+    } });
+}
+
+function updateCardData(uuid, onlyCurrent = false, withKey = null) {
     return getCardData(uuid).then( function(result) { if (result) {
-        var keyMenu = document.getElementById("key");
-        setSelectOptions(keyMenu, result.keys);
-        keyMenu.removeAttribute("disabled");
-        document.getElementById("cardName").innerText = result.card.printedName + " (" + result.card.setCode + ")";
+        if (!onlyCurrent) {
+            setCardName(result.card);
+            setCardKeys(result.keys, withKey);
+        }
+        setCardValue(result.card, withKey);
         return result.card;
     } });
 }
 
-function updateSetting(key, id=null) {
-    return getSettingData(key, id).then( function(setting) { if (setting) {
-        updateValues(setting);
+function updateAll(key, id = null) {
+    return updateSettingData(key, id).then( function(setting) { if (setting) {
+        document.getElementById("uuid").value = setting.id || "";
+        return updateCardData(setting.id, false, setting.key);
     } });
 }
 
@@ -130,6 +138,9 @@ function showEditor() {
 }
 
 function reload() { location.reload(); }
+
+
+
 
 // --- Listener Functions --- //
 
@@ -177,7 +188,6 @@ function clickFixButton(e) {
     }
 }
 
-
 // Clicking in multi-selection box
 function clickFixesBox(e) {
     setButtonStatus(this || e.target || e.srcElemnt, ["fixEdit","fixDelete"])
@@ -213,7 +223,7 @@ function enterKey(e) {
 
     var uuid = document.getElementById("uuid");
     uuid = uuid.innerText || uuid.value;
-    return updateSetting(key, uuid).then(updateCurrent(uuid, key));
+    return updateSettingData(key, uuid).then(updateCardData(uuid, true));
 }
 
 function enterUuid(e) {
@@ -222,7 +232,7 @@ function enterUuid(e) {
     var uuid = elem.value;
     log("changed: fixes.uuid");
 
-    return updateCard(uuid);
+    return updateCardData(uuid).then(setSettingValues());
 }
 
 // Upload
