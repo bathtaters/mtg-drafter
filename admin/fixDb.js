@@ -117,13 +117,17 @@ async function getSetting(key,id=null,model=Card.modelName) {
     return settings.find(s => same(q, s));
 }
 
-async function testSettings() {
+async function testSettings(forId=null) {
     // Test which settings were applied (returns as object)
-    const settings = await Settings.get(settingsKey);
+    let settings = await Settings.get(settingsKey);
     if (!settings) return settings;
+
+    // Only match forId (doesn't check model==card.model)
+    if (forId) settings = settings.filter(({id}) => id == forId);
+
     let result = {};
     for (const s of settings) {
-        result[settingString(s)] = await testDbSetting(s);
+        result[forId ? s.key : settingString(s)] = await testDbSetting(s);
     }
     return result;
 }
