@@ -41,7 +41,7 @@ function removeUser(e) {
 
     var user = document.getElementById("userBox");
     user = user.value || user.text;
-    if(!confirm("Are you sure you want to delete "+user+"?")) { return log("Remove user cancelled"); }
+    if(!confirm("Are you sure you want to delete user "+user+"?")) { return log("Remove user cancelled"); }
 
     updateServer("remove",{username: user},"user").then( result => {
         log(result.msg);
