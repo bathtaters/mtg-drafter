@@ -135,9 +135,9 @@ function clickEditCard(e) {
             
         }
         
-        updateServer("set",{editSet},"db").then( result => {
+        updateServer("set",{editSet},"db").then( function(result) {
             elem.value = "Edit";
-            log("Updated keys: "+result.setKeys);
+            log("Updated keys: "+(result ? result.setKeys : "None"));
             location.reload();
         });
     }
