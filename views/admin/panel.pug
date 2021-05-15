@@ -13,6 +13,7 @@ block content
     #userHeader
         span.infoLabel User:
         span.infoValue#headerUsername= user.current
+        a.headerLink#refreshLink(href='.') refresh
         a.headerLink#logoutLink(href='logout') logout
         a.headerLink(href='../../' target='_blank') New Draft
     hr#headerDivider
@@ -116,7 +117,7 @@ block content
                     .infoTitle Fixes Info
                     .infoLine
                         span.infoLabel Card Fixes: 
-                        span.infoValue= 0
+                        span.infoValue= fixCount
                     .infoLine
                         a.infoValue(href='fixes') Edit Fixes
         

@@ -11,6 +11,7 @@ const updateDb = require('../../admin/updateDb');
 const { addSlash } = require('../../controllers/shared/middleware');
 const { reply } = require('../../controllers/shared/basicUtils');
 const users = require('../../admin/pword');
+const fixDb = require('../../admin/fixDb');
 
 
 /* ----- GET Admin Panel page. ----- */
@@ -27,7 +28,8 @@ router.get('/', addSlash, async function(req, res, next) {
     updateDb.url.set(), // 3:url.set
     updateDb.url.card(), // 4:url.card
     updateDb.getMetadata(), // 5:dbMeta
-    users.userList() // 6:user.list
+    users.userList(), // 6:user.list
+    fixDb.getSettings(false).then(s => s.length) // 7:fixCount
   ]);
   
   return res.render('panel', {
@@ -39,7 +41,9 @@ router.get('/', addSlash, async function(req, res, next) {
     dbInfo: panelData[5],
     user: {
       current: req.auth.user, list: panelData[6],
-      isSuper: sudoList.includes(req.auth.user.toLowerCase()) }
+      isSuper: sudoList.includes(req.auth.user.toLowerCase())
+    },
+    fixCount: panelData[7]
   });
 
 });
