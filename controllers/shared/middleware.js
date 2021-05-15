@@ -136,7 +136,7 @@ const fixesValueFormatter = (req,res,next) => {
   if (req.body.value) req.body.value = fmtValue(req.body.value);
   if (req.body.editSet) {
     for (const key in req.body.editSet) {
-      req.body.editSet[key] = getValue(req.body.editSet[key]);
+      req.body.editSet[key] = fmtValue(req.body.editSet[key]);
     }
   }
   return next();
