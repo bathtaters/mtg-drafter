@@ -24,10 +24,13 @@ router.get('/:uuid', addSlash, async function(req, res, next) {
     // Get sorted list of keys
     const cardDataKeys = sortedKeys(Object.keys(cardData),'card');
 
+    // Lookup fix data
+    const fixData = await fixDb.testSettings(req.params.uuid);
+
     return res.render('cardDetail', {
         title: cardData.printedName || cardData.name,
-        cardDataKeys,
         cardData: cardData,
+        cardDataKeys, fixData,
         editDisable: editDisable.card
     });
     
@@ -44,11 +47,7 @@ router.post('/', addSlash, function(req, res, next) {
 
 // Edit DB - post {editSet: {key, value}}
 router.post('/:uuid/db/set', formatFixValue, async function(req, res, next) {
-  let kvSet = req.body.editSet;
-  for (const key in kvSet) {
-    kvSet[key] = getValue(kvSet[key]);
-  }
-  const setKeys = await fixDb.setMulti(Card, req.params.uuid, kvSet);
+  const setKeys = await fixDb.setMulti(Card, req.params.uuid, req.body.editSet);
   return reply(res, {setKeys});
 });
 
