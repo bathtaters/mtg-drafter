@@ -53,18 +53,25 @@ mixin formatValue(key, val, editable)
 
 
 //- Displays list of Object values
-mixin detailList(data, keys, disableEditList=false)
+mixin detailList(data, keys, disableEditList=false, fixData=false)
   .detailList
+    - var showLegend = false
     each key in keys
+      - var fixCls = ''
+      if fixData && fixData[key]
+        - showLegend = true
+        - fixCls = 'hasFix'
       if key == 'br'
         span.detailKey.spacer
         span.detailVal.spacer
       else if key == 'setCode' || key == 'code'
-        span.detailKey= varName(key)+':'
+        span.detailKey(class=fixCls)= varName(key)+':'
         a.detailVal#setCodeValue(href='../../set/'+data[key]+'/' target='_blank')= data[key]
       else
-        span.detailKey= varName(key)+':'
+        span.detailKey(class=fixCls)= varName(key)+':'
         +formatValue(key, data[key], disableEditList && !disableEditList.includes(key))
+    if showLegend
+      p.footerText * Has fix applied
 
 
 
@@ -75,10 +82,13 @@ mixin checkbox(itemId, labelText, isChecked, wrapper)
     label(for=itemId)= labelText
 
 //- Card info (Oneline)
-mixin cardOneLine(card,linkPrefix,newWindow=true)
+mixin cardOneLine(card,linkPrefix,newWindow=true,includeSet=false)
   - var scryImg = (card.noGath || !card.multiverseId) ? '*' : ''
   //- class=card.bgdColor
-  a.cardOneLine(href=linkPrefix+'card/'+card.uuid+'/' target=newWindow ? '_blank' : '')= card.name + scryImg
+  a.cardOneLine(href=linkPrefix+'card/'+card.uuid+'/' target=newWindow ? '_blank' : '')
+    if includeSet
+      i.cardOLSet= card.setCode+' '
+    span.cardOLName= card.name + scryImg
 
 //- Land info (regex = /main-/ or /side-/)
 mixin lands(landData, colorRegex)
