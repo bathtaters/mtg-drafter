@@ -46,7 +46,7 @@ mixin player(pdata)
       .adminPlayerDeck.mainDeck
         each card in pdata.deck.main
           .cardLineBgd(class=card.bgdColor)
-            +cardOneLine(card,'../../')
+            +cardOneLine(card,'../../',true,true)
     
     //- Player Sideboard
     div.boardHeader(id=pdata.cookieId+'_sideHeader')
@@ -59,7 +59,7 @@ mixin player(pdata)
       .adminPlayerDeck.sideDeck
         each card in pdata.deck.side
           .cardLineBgd(class=card.bgdColor)
-            +cardOneLine(card,'../../')
+            +cardOneLine(card,'../../',true,true)
 
     //- Download link
     .playerFooter
