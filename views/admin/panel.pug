@@ -8,7 +8,7 @@ block scripts
 include ./adminMixins.pug
 
 block content
-    #dbLoading.loading.hidden
+    #dbLoading.loading(class=(busy ? '' : 'hidden'))
     h1#panelTitle Admin Panel
     #userHeader
         span.infoLabel User:

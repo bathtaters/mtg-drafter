@@ -8,8 +8,7 @@ const { sessionListData, sessionProjection } = require('../../controllers/shared
 const Settings = require('../../models/Settings');
 const setList = require('../../admin/setList');
 const updateDb = require('../../admin/updateDb');
-const { addSlash } = require('../../controllers/shared/middleware');
-const { reply } = require('../../controllers/shared/basicUtils');
+const { addSlash, makeBusy } = require('../../controllers/shared/middleware');
 const users = require('../../admin/pword');
 const fixDb = require('../../admin/fixDb');
 
@@ -46,7 +45,8 @@ router.get('/', addSlash, async function(req, res, next) {
     fixInfo: {
       applied: Object.keys(panelData[7]).reduce((a,k)=>a+panelData[7][k], 0),
       total: Object.keys(panelData[7]).length
-    }
+    },
+    busy: req.body.busy
   });
 
 });
@@ -62,7 +62,7 @@ router.get('/logout', function(req, res, next) {
 /* ----- POST MTGJSON db changes. ----- */
 
 // Change MTG JSON urls
-router.post('/db/updateUrl', async function(req, res, next) {
+router.post('/db/updateUrl', makeBusy, async function(req, res, next) {
   let result = req.body.urlValue;
 
   if (req.body.urlKey === 'setUrl' && req.body.urlValue) {
@@ -74,27 +74,27 @@ router.post('/db/updateUrl', async function(req, res, next) {
   } else {
     result = 'Invalid URL key or no value given: '+req.body.urlKey+' = '+result;
     console.error('Set DB URL failed.', result);
-    return reply(res, {error: result});
+    return res.reply({error: result});
   }
 
-  return reply(res, {action: 'updateUrl', result});
+  return res.reply({action: 'updateUrl', result});
 });
 
 // Run a database update
-router.post('/db/updateDb', async function(req, res, next) {
-  result = await updateDb.update(
+router.post('/db/updateDb', makeBusy, async function(req, res, next) {
+  const result = await updateDb.update(
     req.body.updateSets === 'on',
     req.body.updateCards === 'on',
     req.body.skipCurrent === 'on',
     req.body.fixCardAlts === 'on',
     false // don't auto-apply fixes (Can apply them in 'Fixes info')
   );
-  return reply(res, {action: 'updateDb', result});
+  return res.reply({action: 'updateDb', result});
 });
 
 // Catch other actions
 router.post('/db/:action', async function(req, res, next) {
-  return reply(res, {action: req.params.action, error: 'Invalid action.'});
+  return res.reply({action: req.params.action, error: 'Invalid action.'});
 });
 
 
@@ -106,7 +106,7 @@ router.post('/db/:action', async function(req, res, next) {
 // Update Password
 router.post('/user/pass', async function(req, res, next) {
   if (!req.body.currentPassword) 
-    return reply(res, {result:'Update failed: Must enter old password.', error: 'No password provided'});
+    return res.reply({result:'Update failed: Must enter old password.', error: 'No password provided'});
 
   const err = await users.updateUser(req.auth.user, req.body.newPassword, req.body.currentPassword);
   console.log('updated pword?',err)
@@ -114,7 +114,7 @@ router.post('/user/pass', async function(req, res, next) {
     msg: err ? 'Failed to update password: '+err : 'Successfully updated password',
     error: err
   }
-  return reply(res, result);
+  return res.reply(result);
 });
 
 // Add User
@@ -126,7 +126,7 @@ router.post('/user/add', async function(req, res, next) {
     error: err
   }
   
-  return reply(res, result);
+  return res.reply(result);
 });
 
 // Remove User
@@ -138,12 +138,12 @@ router.post('/user/remove', async function(req, res, next) {
     error: err
   }
   
-  return reply(res, result);
+  return res.reply(result);
 });
 
 // Catch other actions
 router.post('/user/:action', async function(req, res, next) {
-  return reply(res, {action: req.params.action, error: 'Invalid action.'});
+  return res.reply({action: req.params.action, error: 'Invalid action.'});
 });
 
 

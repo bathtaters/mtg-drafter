@@ -1,6 +1,7 @@
 const { cardColors } = require("../../config/definitions");
 const Draft = require("../../models/Draft");
-const { reply, filterObject } = require("./basicUtils");
+const Settings = require("../../models/Settings");
+const { filterObject } = require("./basicUtils");
 const logging = require("../../config/logging");
 const validator = require("../../config/validator");
 
@@ -14,7 +15,7 @@ function logReq(req,res,next) {
 
 
 // --------------- Suffix / to URL if not already
-const addSlash = (req, res, next) => {
+function addSlash(req, res, next) {
   if (req.originalUrl.endsWith('/')) return next();
   if (/[^\.]+\.[^\.\/]+$/.test(req.originalUrl)) return next();
 
@@ -25,6 +26,43 @@ const addSlash = (req, res, next) => {
 }
 
 
+// --------------- Reply 'endware' that makes res.reply(data) reply w/ data (And {alert: {msg, redirect}} sends an alert)
+function setupReply(req,res,next) {
+  res.reply = (data = {}) => {
+    res.replyData = data;
+    return reply(req,res,next);
+  };
+  return next();
+}
+async function reply(req,res,next) {
+  if (req.cancelBusy) { await Settings.set('busy', false); delete req.cancelBusy; }
+  if (res.replyData === undefined) res.replyData = {error: 'Empty reply'};
+  if (res.replyData.alert) return res.send( makeAlert(res.replyData.alert) );
+  
+  res.setHeader('Content-Type', 'application/json');
+  return res.send(JSON.stringify(res.replyData));
+}
+// Create js alert() code
+const makeAlert = (msg, redirect = null) => {
+  if (Array.isArray(msg) && !redirect) [msg,redirect] = msg;
+  let code = `<script>alert("${msg || ''}");`
+  if (redirect) code += `window.location.replace("${redirect}");`
+  code += '</script>'; return code;
+}
+
+// --------------- Include 'busy' flag
+async function includeBusy(req, res, next) {
+  req.body.busy = await Settings.get('busy').then(f=>f||false);
+  return next();
+}
+async function makeBusy(req, res, next) {
+  if (req.body.busy)
+    return res.reply({error: 'Admin server is busy.'});
+
+  await Settings.set('busy', true);
+  req.body.busy = true; req.cancelBusy = true;
+  return next();
+}
 
 
 // --------------- Create landCounts object from form values
@@ -33,7 +71,7 @@ const landKeys = ['main','side'].reduce( (acc,boardName) =>
     boardName + '-' + color.toLowerCase()
   )), []);
   
-function getLandCounts(req, res, next) {
+function landCounts(req, res, next) {
   req.body.landCount = filterObject(req.body, (k,v) => landKeys.includes(k));
   landKeys.forEach( k => delete req.body[k] );
   next();
@@ -91,15 +129,15 @@ async function getDraftObjects(req, res, next) {
   
   next();
 }
-const validatedDraftObjects = validator.cookieRules().concat(validator.validate, getDraftObjects);
+const draftObjs = validator.cookieRules().concat(validator.validate, getDraftObjects);
 
 
 // --------------- Import Session/Player for Session Detail and add to body data
-async function getSessionObjects(req, res, next) {
+async function sessionObjs(req, res, next) {
 
   // Get Session from URL -- Minus pack data
   req.body.session = await Draft.findBySessionId(req.params.sessionId,'-packs');
-  if (!req.body.session) return reply(res, {error: 'Session "'+req.params.sessionId+'" does not exist.'});
+  if (!req.body.session) return res.reply({error: 'Session "'+req.params.sessionId+'" does not exist.'});
 
   // Get player from POST (disconnect) -- Only retrieve name/connected
   if (req.body.playerId) {
@@ -116,7 +154,7 @@ async function getSessionObjects(req, res, next) {
 
 
 // --------------- Format 'Value' for Fixes
-const fixesValueFormatter = (req,res,next) => {
+function formatFixValue(req,res,next) {
   const fmtValue = value => {
     if (typeof value === 'string') {
       try { value = JSON.parse(value); }
@@ -143,10 +181,11 @@ const fixesValueFormatter = (req,res,next) => {
 }
 
 
+
 module.exports = {
     logReq, addSlash,
-    landCounts: getLandCounts,
-    draftObjs: validatedDraftObjects,
-    sessionObjs: getSessionObjects,
-    formatFixValue: fixesValueFormatter
+    setupReply, reply,
+    includeBusy, makeBusy,
+    landCounts, draftObjs,
+    sessionObjs, formatFixValue
 }

@@ -77,15 +77,17 @@ app.use(cookieParser());
 app.set('views', viewDirs);
 app.set('view engine', 'pug');
 app.use(stylus.middleware(stylusOptions));
-app.use(minify());
+app.use(minify());                                         // COMMENT/UNCOMMENT FOR DEV/RELEASE
 app.use(express.static(path.join(__dirname, 'public', 'icon')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload(uploadOptions));
 app.use(myMw.logReq);
 app.use('/restricted/*',basicAuth(authOptions));
+app.use('/restricted/*',myMw.includeBusy);
 app.use('/action/lands',myMw.landCounts);
 app.use('/draft/:sessionId?',myMw.draftObjs);
 app.use('/action',myMw.draftObjs);
+app.use(myMw.setupReply);
 
 
 // page router setup
@@ -98,11 +100,6 @@ app.use('/restricted/panel/card', adminCardRouter);
 app.use('/restricted/panel/set', adminSetRouter);
 app.use('/restricted/panel/fixes', adminFixRouter);
 
-// export modules to Pug
-app.locals.symbFix = require('./config/htmlParser').mtgSymbolReplace;
-app.locals.draftStatus = require('./config/definitions').draftStatus;
-app.locals.isUuid = require('./controllers/shared/basicUtils').isUuid;
-app.locals.varName = require('./controllers/shared/basicUtils').varName;
 
 
 // catch 404 and forward to error handler
@@ -121,7 +118,15 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+
+// export modules
+const basicUtils = require('./controllers/shared/basicUtils');
+app.locals.symbFix = require('./config/htmlParser').mtgSymbolReplace;
+app.locals.draftStatus = require('./config/definitions').draftStatus;
+app.locals.isUuid = basicUtils.isUuid;
+app.locals.varName = basicUtils.varName;
+
 module.exports = app;
 
 // Run initial setup
-require('./config/init');
+require('./config/init')();

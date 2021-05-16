@@ -8,7 +8,7 @@ include ./adminMixins.pug
 block content
   .detailContainer
     h1= cardData.name
-    input.button#editCard(type='button' value='Edit')
+    input.button#editCard(type='button' value='Edit' disabled=busy)
   .detailContainer
     .cardDetailImage
       +displayCard(cardData, false)

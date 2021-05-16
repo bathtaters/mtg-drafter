@@ -6,8 +6,7 @@ const Card = require('../../models/Card');
 const Settings = require('../../models/Settings');
 const setList = require('../../admin/setList');
 const { sortedKeys } = require('../../config/definitions');
-const { addSlash, formatFixValue } = require('../../controllers/shared/middleware');
-const { reply } = require('../../controllers/shared/basicUtils');
+const { addSlash, makeBusy, formatFixValue } = require('../../controllers/shared/middleware');
 const fixDb = require('../../admin/fixDb');
 
 
@@ -26,7 +25,7 @@ router.post('/ToggleVisibility', async function(req, res, next) {
     })
   );
   
-  return reply(res, {set: req.body.setCodes, action: 'ToggleVisibility', results});
+  return res.reply({set: req.body.setCodes, action: 'ToggleVisibility', results});
 });
 
 // Toggle set that starts in picker
@@ -37,23 +36,23 @@ router.post('/MakeDefault', async function(req, res, next) {
   if (!setData.enabled) console.error(req.body.setCode+' is not a set or set is hidden.');
   else result = await Settings.set('defaultSet',req.body.setCode);
 
-  return reply(res, {set: req.body.setCode || 'all', action: 'MakeDefault', result});
+  return res.reply({set: req.body.setCode || 'all', action: 'MakeDefault', result});
 });
 
 // Append new sets to setList
-router.post('/UpdateAll', async function(req, res, next) {
+router.post('/UpdateAll', makeBusy, async function(req, res, next) {
   const result = await setList.updateSetList(
     req.body.defaultVisible === undefined ? true : +req.body.defaultVisible
   );
-  return reply(res, {set: req.body.setCode || 'all', action: 'UpdateAll', result});
+  return res.reply({set: req.body.setCode || 'all', action: 'UpdateAll', result});
 });
 
 // Reset setList and all visibility
-router.post('/ResetAll', async function(req, res, next) {
+router.post('/ResetAll', makeBusy, async function(req, res, next) {
   const result = await setList.resetSetList(
     req.body.defaultVisible === undefined ? true : +req.body.defaultVisible
   );
-  return reply(res, {set: req.body.setCode || 'all', action: 'ResetAll', result});
+  return res.reply({set: req.body.setCode || 'all', action: 'ResetAll', result});
 });
 
 /* Redirect empty POST request as GET. */
@@ -144,7 +143,7 @@ router.get('/:setCode/:sheet', addSlash, async function(req, res, next) {
 // ------- Set changes
 
 // Edit DB - post {key, value}
-router.post('/:setCode/db/set', formatFixValue, async function(req, res, next) {
+router.post('/:setCode/db/set', formatFixValue, makeBusy, async function(req, res, next) {
   let value = req.body.value;
   if (typeof value === 'string') {
     try {
@@ -154,13 +153,13 @@ router.post('/:setCode/db/set', formatFixValue, async function(req, res, next) {
     }
   }
   await fixDb.setDb(Set.modelName, req.params.setCode, req.body.key, req.body.value, req.body.note);
-  return reply(res, {key: req.body.key, value});
+  return res.reply({key: req.body.key, value});
 });
 
-// Clear DB Edit - post {key} (Will not remove from DB until next download)
-router.post('/:setCode/db/clear', async function(req, res, next) {
+// Clear DB Edit - post {key}
+router.post('/:setCode/db/clear', makeBusy, async function(req, res, next) {
   await fixDb.clearSetting(Set.modelName, req.params.setCode, req.body.key);
-  return reply(res, {key: req.body.key, cleared: true});
+  return res.reply({key: req.body.key, cleared: true});
 });
 
 

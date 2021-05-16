@@ -3,8 +3,7 @@ const router = express.Router();
 
 const Card = require('../../models/Card');
 const { editDisable, sortedKeys } = require('../../config/definitions');
-const { addSlash, formatFixValue } = require('../../controllers/shared/middleware');
-const { reply } = require('../../controllers/shared/basicUtils');
+const { addSlash, formatFixValue, makeBusy } = require('../../controllers/shared/middleware');
 const fixDb = require('../../admin/fixDb');
 
 
@@ -17,7 +16,8 @@ router.get('/', addSlash, async function(req, res, next) {
   
   return res.render('fixDetail', {
       title: 'Card Fixes',
-      fixList, fixActive
+      fixList, fixActive,
+      busy: req.body.busy
   });
     
 });
@@ -29,18 +29,18 @@ router.get('/', addSlash, async function(req, res, next) {
 // Fetch card data
 router.post('/editor/card', async function(req, res, next) {
   const card = await Card.findById(req.body.uuid).then(d => d && d.toObject());
-  if (!card) return reply(res,{uuid: req.body.uuid, invalid: true});
+  if (!card) return res.reply({uuid: req.body.uuid, invalid: true});
 
   const keys = sortedKeys(Object.keys(card),'card')
     .filter( key => key != 'br' && !editDisable.card.includes(key) );
-  return reply(res, {keys, card});
+  return res.reply({keys, card});
 });
 
 // Fetch setting data
 router.post('/editor/setting', async function(req, res, next) {
   const setting = await fixDb.getSetting(req.body.key, req.body.id);
-  if (!setting) return reply(res, {result: 'Setting '+req.body.key+' not found.', invalid: true});
-  return reply(res, setting)
+  if (!setting) return res.reply({result: 'Setting '+req.body.key+' not found.', invalid: true});
+  return res.reply(setting)
 });
 
 
@@ -48,14 +48,14 @@ router.post('/editor/setting', async function(req, res, next) {
 // ------ Fix Actions
 
 // Edit DB - post {uuid, key, value}
-router.post('/set', formatFixValue, async function(req, res, next) {
+router.post('/set', formatFixValue, makeBusy, async function(req, res, next) {
   await fixDb.setDb(Card.modelName, req.body.uuid, req.body.key, req.body.value, req.body.note);
-  return reply(res, {...req.body, set: true});
+  return res.reply({...req.body, set: true});
 });
 
 // Bulk edit notes - post {keys, note}
-router.post('/rename',  async function(req, res, next) {
-  if (!req.body.keys) return reply(res, {error: 'No keys provided'});
+router.post('/rename', async function(req, res, next) {
+  if (!req.body.keys) return res.reply({error: 'No keys provided'});
   const note = (req.body.note || '').toString();
 
   let fixed = [];
@@ -63,48 +63,50 @@ router.post('/rename',  async function(req, res, next) {
     const next = await fixDb.changeNote(note, key);
     if (next) fixed.push(next.id+'.'+next.key);
   }
-  return reply(res, {keys: fixed, renamed: fixed.length});
+  return res.reply({keys: fixed, renamed: fixed.length});
 });
 
 // Move a setting - post {offset, key}
 router.post('/move', formatFixValue, async function(req, res, next) {
   const index = await fixDb.moveSetting(req.body.offset, req.body.key);
-  return reply(res, {...req.body, index, moved: true});
+  return res.reply({...req.body, index, moved: true});
 });
 
 // Clear DB Edit - post [keys] (Will not remove from DB until next download)
-router.post('/clear', async function(req, res, next) {
-  if (!req.body.keys) return reply(res, {error: 'No keys provided'});
+router.post('/clear', makeBusy, async function(req, res, next) {
+  if (!req.body.keys) return res.reply({error: 'No keys provided'});
   let fixed = [];
   for (const key of req.body.keys) {
     const next = await fixDb.clearSetting(key);
     if (next) fixed.push(next.id+'.'+next.key);
   }
-  return reply(res, {keys: fixed, cleared: fixed.length});
+  return res.reply({keys: fixed, cleared: fixed.length});
 });
 
 // Apply all DB edits to DB
-router.post('/applyAll', async function(req, res, next) {
+router.post('/applyAll', makeBusy, async function(req, res, next) {
   const count = await fixDb.applySettings();
-  return reply(res, {...req.body, applied: count});
+  return res.reply({...req.body, applied: count});
 });
 
 router.get('/applyAll', addSlash, async function(req, res, next) {
+  if (req.body.busy)
+    return res.reply({alert:["Cannot apply: Admin server is busy.","../../"]});
   await fixDb.applySettings();
   return res.redirect('../../');
 });
 
 // Apply all DB edits to DB
-router.post('/revertAll', async function(req, res, next) {
+router.post('/revertAll', makeBusy, async function(req, res, next) {
   const count = await fixDb.applySettings(true);
-  return reply(res, {...req.body, reverted: count});
+  return res.reply({...req.body, reverted: count});
 });
 
 // Remove all DB edits
-router.post('/clearAll', async function(req, res, next) {
+router.post('/clearAll', makeBusy, async function(req, res, next) {
   const count = await fixDb.applySettings(true);
   await fixDb.clearAll();
-  return reply(res, {...req.body, cleared: count});
+  return res.reply({...req.body, cleared: count});
 });
 
 const currTimestamp = () => new Date().toJSON().replace(/\.\d+[A-Z]$/,'')
@@ -123,12 +125,12 @@ router.get('/export/FixList.json', async function(req, res, next) {
 });
 
 // Import file
-router.post('/import', async function(req, res, next) {
-  if (!req.files || !req.files.fixList) return reply(res, {error: 'No files were sent'});
+router.post('/import', makeBusy, async function(req, res, next) {
+  if (!req.files || !req.files.fixList) return res.reply({error: 'No files were sent'});
   
   const count = await fixDb.importSettings(JSON.parse(req.files.fixList.data));
 
-  return reply(res,{imported: true, files: count});
+  return res.reply({imported: true, files: count});
 });
 
 module.exports = router;

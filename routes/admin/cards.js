@@ -3,8 +3,7 @@ const router = express.Router();
 
 const Card = require('../../models/Card');
 const { editDisable, sortedKeys } = require('../../config/definitions');
-const { addSlash, formatFixValue } = require('../../controllers/shared/middleware');
-const { reply } = require('../../controllers/shared/basicUtils');
+const { addSlash, formatFixValue, makeBusy } = require('../../controllers/shared/middleware');
 const fixDb = require('../../admin/fixDb');
 
 
@@ -31,7 +30,8 @@ router.get('/:uuid', addSlash, async function(req, res, next) {
         title: cardData.printedName || cardData.name,
         cardData: cardData,
         cardDataKeys, fixData,
-        editDisable: editDisable.card
+        editDisable: editDisable.card,
+        busy: req.body.busy
     });
     
 });
@@ -46,15 +46,15 @@ router.post('/', addSlash, function(req, res, next) {
 // ------- Card changes
 
 // Edit DB - post {editSet: {key, value}}
-router.post('/:uuid/db/set', formatFixValue, async function(req, res, next) {
+router.post('/:uuid/db/set', formatFixValue, makeBusy, async function(req, res, next) {
   const setKeys = await fixDb.setMulti(Card, req.params.uuid, req.body.editSet, req.body.note || 'Set from card detail');
-  return reply(res, {setKeys});
+  return res.reply({setKeys});
 });
 
-// Clear DB Edit - post {key} (Will not remove from DB until next download)
-router.post('/:uuid/db/clear', async function(req, res, next) {
+// Clear DB Edit - post {key}
+router.post('/:uuid/db/clear', makeBusy, async function(req, res, next) {
   await fixDb.clearSetting(Card.modelName, req.params.uuid, req.body.key);
-  return reply(res, {key: req.body.uuid, cleared: true});
+  return res.reply({key: req.body.uuid, cleared: true});
 });
 
 
