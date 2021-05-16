@@ -211,7 +211,7 @@ async function getAllCardAlts(CardModel) {
 async function updateBoth(
     updateSets=true, updateCards=true,
     skipCurrent=true, fixCardAlts=true,
-    applyFixes=true, limit=0
+    applyFixes=false, limit=0
 ) {
     // console.log(' >>>>> UPDATE DB: sets:'+updateSets+',cards:'+updateCards+',outdate:'+skipCurrent+',altfix:'+fixCardAlts);
     // return (skipCurrent ? '' : 'Force-') + 'Updated database: '+updateSets+' sets + '+updateCards+' cards (w/ '+fixCardAlts+' alt IDs)';
