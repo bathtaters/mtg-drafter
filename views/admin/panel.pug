@@ -116,10 +116,11 @@ block content
                 .inlineInfo
                     .infoTitle Fixes Info
                     .infoLine
-                        span.infoLabel Card Fixes: 
-                        span.infoValue= fixCount
+                        span.infoLabel Cards Fixed: 
+                        span.infoValue= fixInfo.applied + ' / ' + fixInfo.total
                     .infoLine
                         a.infoValue(href='fixes') Edit Fixes
+                        a.infoValue(href='fixes/applyAll/') Apply Fixes
         
         //- User Settings box
         .panelContainer#userContainer

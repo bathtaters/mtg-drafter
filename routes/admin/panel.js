@@ -29,7 +29,7 @@ router.get('/', addSlash, async function(req, res, next) {
     updateDb.url.card(), // 4:url.card
     updateDb.getMetadata(), // 5:dbMeta
     users.userList(), // 6:user.list
-    fixDb.getSettings(false).then(s => s.length) // 7:fixCount
+    fixDb.testSettings() // 7:fixInfo
   ]);
   
   return res.render('panel', {
@@ -43,7 +43,10 @@ router.get('/', addSlash, async function(req, res, next) {
       current: req.auth.user, list: panelData[6],
       isSuper: sudoList.includes(req.auth.user.toLowerCase())
     },
-    fixCount: panelData[7]
+    fixInfo: {
+      applied: Object.keys(panelData[7]).reduce((a,k)=>a+panelData[7][k], 0),
+      total: Object.keys(panelData[7]).length
+    }
   });
 
 });
@@ -84,7 +87,7 @@ router.post('/db/updateDb', async function(req, res, next) {
     req.body.updateCards === 'on',
     req.body.skipCurrent === 'on',
     req.body.fixCardAlts === 'on',
-    true // auto-apply fixes
+    false // don't auto-apply fixes (Can apply them in 'Fixes info')
   );
   return reply(res, {action: 'updateDb', result});
 });
