@@ -6,7 +6,7 @@ var router = express.Router();
 const Draft = require('../../models/Draft');
 const { sessionListData, playerData } = require('../../controllers/shared/populateSession');
 const { addSlash, sessionObjs } = require('../../controllers/shared/middleware');
-const { reply, daysAgo } = require('../../controllers/shared/basicUtils');
+const { daysAgo } = require('../../controllers/shared/basicUtils');
 const fileOps = require('../../controllers/draft/fileOps');
 
   
@@ -37,7 +37,7 @@ router.get('/:sessionId', addSlash, async function(req, res, next) {
 // Remove based on sessionId
 router.post('/:sessionId/Delete', sessionObjs, async function(req, res, next) {
     await req.body.session.deleteOne();
-    return reply(res, {sessionIds: req.body.session.sessionId, action: 'Delete'});
+    return res.reply({sessionIds: req.body.session.sessionId, action: 'Delete'});
 });
 
 // Remove based on date
@@ -47,14 +47,14 @@ router.post('/:sessionId/Clear', async function(req, res, next) {
       await session.deleteOne(); return session.sessionId;
     }));
 
-    return reply(res, {sessionIds, action: 'Clear'});
+    return res.reply({sessionIds, action: 'Clear'});
 });
 
 // Disconnect all players
 router.post('/:sessionId/Disconnect', sessionObjs, async function(req, res, next) {
     await req.body.session.disconnectAll(req.auth.user);
 
-    return reply(res, {
+    return res.reply({
         sessionId: req.body.session.sessionId,
         disconnected: req.body.session.players.every(p => !p.connected)
     });
@@ -62,14 +62,14 @@ router.post('/:sessionId/Disconnect', sessionObjs, async function(req, res, next
     
 // Disconnect a single player
 router.post('/:sessionId/PlayerDisconnect', sessionObjs, async function(req, res, next) {
-    if (!req.body.player) return reply(res, {
+    if (!req.body.player) return res.reply({
       sessionId: req.params.sessionId,
       error:'Player "'+req.body.playerId+'" does not exist.'
     });
 
     await req.body.player.disconnect(req.auth.user);
 
-    return reply(res, {
+    return res.reply({
         sessionId: req.body.session.sessionId,
         playerId: req.body.player.cookieId,
         disconnected: !req.body.player.connected
@@ -94,7 +94,7 @@ router.get('/:sessionId/player/:playerId/downloadDeck', sessionObjs, async funct
 
 // Catch other actions
 router.post('/:sessionId/:action', async function(req, res, next) {
-    return reply(res, {sessionId: req.params.sessionId, action: req.params.action, error: 'Invalid action.'});
+    return res.reply({sessionId: req.params.sessionId, action: req.params.action, error: 'Invalid action.'});
 });
   
 

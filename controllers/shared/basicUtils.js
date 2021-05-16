@@ -10,7 +10,7 @@ const loopArray = (arr, index) => arr[mod(index, arr.length)];
 const swapArr = (i,j,arr) => { if (i != j) [arr[i], arr[j]] = [arr[j], arr[i]]; };
 
 // Check that object has keys
-const notEmpty = obj => obj && Object.keys(obj).length !== 0
+const notEmpty = obj => obj && Object.keys(obj).length !== 0;
 
 // Determine if string is UUID
 const isUuid = str => (typeof str === 'string') && /^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/.test(str);
@@ -26,13 +26,7 @@ const daysAgo = days => {
     let d = new Date();
     d.setDate(d.getDate() - days);
     return d;
-}
-
-// Send a reply object
-const reply = (res, data={}) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(data));
-  }
+};
 
 // Convert var name to title
 const varName = varName => {
@@ -44,7 +38,7 @@ const varName = varName => {
         else res += varName[i];
     }
     return res;
-}
+};
 
 // Convert text stream to array of lines
 const splitLines = (buffer) => {
@@ -145,7 +139,6 @@ module.exports = {
     notEmpty,
     isUuid,
     daysAgo,
-    reply,
     varName,
 
     splitLines,
