@@ -6,7 +6,7 @@ const Card = require('../../models/Card');
 const Settings = require('../../models/Settings');
 const setList = require('../../admin/setList');
 const { sortedKeys } = require('../../config/definitions');
-const { addSlash } = require('../../controllers/shared/middleware');
+const { addSlash, formatFixValue } = require('../../controllers/shared/middleware');
 const { reply } = require('../../controllers/shared/basicUtils');
 const fixDb = require('../../admin/fixDb');
 
@@ -75,7 +75,7 @@ router.post('/', addSlash, function(req, res, next) {
 router.get('/:setCode', addSlash, async function(req, res, next) {
     // Lookup Set Data
     let setData = await Set.findById(req.params.setCode,'-sheets');
-    if (!setData) res.send(req.params.setCode+' set not found.');
+    if (!setData) return res.send(req.params.setCode+' set not found.');
     setData = setData.toObject();
   
     // Lookup additional data
@@ -144,7 +144,7 @@ router.get('/:setCode/:sheet', addSlash, async function(req, res, next) {
 // ------- Set changes
 
 // Edit DB - post {key, value}
-router.post('/:setCode/db/set', async function(req, res, next) {
+router.post('/:setCode/db/set', formatFixValue, async function(req, res, next) {
   let value = req.body.value;
   if (typeof value === 'string') {
     try {
@@ -153,7 +153,7 @@ router.post('/:setCode/db/set', async function(req, res, next) {
       value = req.body.value.toString();
     }
   }
-  await fixDb.setDb(Set.modelName, req.params.setCode, req.body.key, value);
+  await fixDb.setDb(Set.modelName, req.params.setCode, req.body.key, req.body.value, req.body.note);
   return reply(res, {key: req.body.key, value});
 });
 

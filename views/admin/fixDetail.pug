@@ -12,14 +12,21 @@ block content
         a(href='../').backLink back
 
     form#fixesContainer.panelContainer(action='' method='post')
-        label.containerTitle(for='fixes') Fixes
+        - var fixKeys = Object.keys(fixActive)
+        - var activeCount = fixKeys.reduce((a,k)=>a+fixActive[k], 0)
+        label.containerTitle(for='fixes') Active: #{activeCount} / Total: #{fixKeys.length}
         select.panelSelect#fixesBox(name='fixes' multiple=true)
-            each val,fix in fixList
-                option(class=(fixActive[fix] ? 'fixOn' : 'fixOff') value=fix) #{fix} = #{val}
+            each data,fix in fixList
+                option(class=(fixActive[fix] ? 'fixOn' : 'fixOff') value=fix) #{data.note ? data.note+': ' : ''}#{fix.slice(4)} = #{data.value}
         .panelButtons
             input.button#fixNew(type='button' value='New')
             input.button#fixEdit(type='button' value='Edit' disabled=true)
             input.button#fixDelete(type='button' value='Delete' disabled=true)
+        .panelButtons
+            input.button#fixUp(type='button' value='Move Up' disabled=true)
+            input.button#fixDown(type='button' value='Move Down' disabled=true)
+            input.button#fixRename(type='button' value='Bulk Rename')
+            input.hidden#fixNewName(name='fixNewName' value='')
         .panelButtons
             input.button#fixApply(type='button' value='Apply All')
             input.button#fixRevert(type='button' value='Revert All')

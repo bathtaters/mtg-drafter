@@ -19,13 +19,19 @@ const settingObj = setStr => {
 }
 const same = (lhs, rhs) => lhs.model == rhs.model && lhs.id == rhs.id && lhs.key == rhs.key;
 
-function setDbFromObj(setting, toOriginal=false) {
-    return modelDict[setting.model].updateOne(
-        {_id: setting.id},
-        { $set: { [setting.key]: toOriginal ? setting.original : setting.value } }
-    ).exec();
+// Make update in DB
+async function setDbFromObj(setting, toOriginal=false) {
+    if (toOriginal ? setting.original === undefined : setting.value === undefined)
+        return console.error('Cannot set '+settingString(setting)+' to '+(toOriginal ? 'original' : 'value')+' due to missing value.');
+
+    const doc = await modelDict[setting.model].findById(setting.id);
+    if (!doc) return console.error('Cannot set '+settingString(setting)+' to '+(toOriginal ? 'original' : 'value')+' due to bad id.');
+
+    doc[setting.key] = toOriginal ? setting.original : setting.value;
+    await doc.save(); return doc[setting.key];
 }
 
+// Check DB for setting
 async function testDbSetting(setting) {
     const doc = await modelDict[setting.model].findById(setting.id).exec();
     if (doc[setting.key] === setting.value) return true;
@@ -33,49 +39,38 @@ async function testDbSetting(setting) {
     return false;
 }
 
-
-async function setDb(Model, id, key, value, forceOriginal=null) {
+// Update DB & Settings (UNDEFINED value will skip DB write (update note only))
+async function setDb(Model, id, key, value=undefined, note='', forceOriginal=null) {
     // Update DB currently & save to Settings table
     const model = (typeof Model === 'string') ? Model : Model.modelName;
-    if (!model) return console.error('Invalid Model, cannot setDb: '+JSON.stringify({Model,id,key,value}));
+    if (!model) return console.error('Invalid Model, cannot setDb: ',{Model,id,key,value});
     
     const settings = await Settings.get(settingsKey);
     const index = settings ? settings.findIndex(s => same(s, {model,id,key})) : -2;
 
-    let newSetting = { model, id, key, value };
-    if (index < 0) newSetting.original = await Card.findById(id).then(c=>c[key]); // Save original value
+    let newSetting = { model, id, key, value, note };
     if (forceOriginal) newSetting.original = forceOriginal;
-    return Promise.all([
-        setDbFromObj(newSetting), // UNCOMMENT TO ENABLE DB WRITES
-        index < 0 ? Settings.push(settingsKey, newSetting) :
-            Settings.setIndex(settingsKey, index, newSetting)
-    ]);
+    else if (index >= 0 && settings[index].original) newSetting.original = settings[index].original; // Retain original value
+    else newSetting.original = await Card.findById(id).then(c=>c[key]); // Get original value
+
+    if (newSetting.value === undefined && index >= 0) newSetting.value = settings[index].value;
+
+    // Only do DB update when VALUE is changed
+    if (index < 0 || settings[index].value !== newSetting.value) {
+        return Promise.all([
+            setDbFromObj(newSetting), // UNCOMMENT TO ENABLE DB WRITES
+            index < 0 ? Settings.push(settingsKey, newSetting) :
+                Settings.setIndex(settingsKey, index, newSetting)
+        ]);
+    }
+    return Settings.setIndex(settingsKey, index, newSetting);
 }
-
-async function clearSettingObj(Model, id, key) {
-    const model = (typeof Model === 'string') ? Model : Model.modelName;
-    if (!model) return console.error('Invalid Model, cannot clearSetting: '+JSON.stringify({Model,id,key}));
-
-    const settings = await Settings.get(settingsKey);
-    const index = settings ? settings.find( s => same(s, {model,id,key})) : -1;
-    if (index < 0) return console.error('Cannot find setting to clear: '+JSON.stringify({Model,id,key}));
-
-    if (settings.original) await setDbFromObj(settings, true);
-
-    return Settings.pop(settingsKey, index);
-}
-async function clearSetting(key,id=null,model=Card.modelName) {
-    const q = id ? {model: model.modelName || model, id, key} : settingObj(key);
-    return clearSettingObj(q.model, q.id, q.key);
-}
-const clearAll = () => Settings.set(settingsKey, []);
-
-async function setMulti(model, id, kvSet, ignoreUnchanged = true) {
+async function setMulti(model, id, kvSet, note = '', ignoreUnchanged = true) {
     if (ignoreUnchanged) {
         const Model = (typeof model === 'string') ? modelDict[model] : model;
-        if (!Model.modelName) return console.error('Invalid Model, cannot ignore setMultiDb: '+JSON.stringify({model,id}));
+        if (!Model.modelName) return console.error('Invalid Model, cannot ignore setMultiDb: ',{model,id});
         const doc = await Model.findById(id).exec();
-        if (!doc) return console.error('Invalid id, cannot ignore setMultiDb: '+JSON.stringify({model,id}));
+        if (!doc) return console.error('Invalid id, cannot ignore setMultiDb: ',{model,id});
         
         // Strip out already matching settings
         for (const key in kvSet) {
@@ -85,16 +80,53 @@ async function setMulti(model, id, kvSet, ignoreUnchanged = true) {
     }
 
     const modelName = (typeof model === 'string') ? model : model.modelName;
-    if (!modelName) return console.error('Invalid Model, cannot setMultiDb: '+JSON.stringify({model,id}));
+    if (!modelName) return console.error('Invalid Model, cannot setMultiDb: ',{model,id});
     for (const key in kvSet) {
-        await setDb(modelName, id, key, kvSet[key]);
+        await setDb(modelName, id, key, kvSet[key], note);
     }
     
     return Object.keys(kvSet);
 }
+const changeNote = (note,key,id=null,model=Card.modelName) => {
+    const q = id ? {model, id, key} : settingObj(key);
+    return setDb(q.model, q.id, q.key, undefined, note).then(()=>q);
+};
 
+// Reset to original & update Settings
+async function clearSettingObj(Model, id, key, ignoreOriginal = false) {
+    const model = Model.modelName || Model;
+    if (!model) return console.error('Invalid Model, cannot clearSetting: ',{Model,id,key});
+
+    const settings = await Settings.get(settingsKey);
+    const index = settings ? settings.findIndex(s => same(s, {model,id,key})) : -1;
+    if (index < 0) return console.error('Cannot find setting to clear: ',{Model,id,key});
+
+    if (!ignoreOriginal && settings[index].original) await setDbFromObj(settings[index], true);
+    else if (!ignoreOriginal) console.error('No original value for: ',settings[index]);
+
+    return Settings.pop(settingsKey, index);
+}
+async function clearSetting(key,id=null,model=Card.modelName,ignoreOriginal=false) {
+    const q = id ? {model: model.modelName || model, id, key} : settingObj(key);
+    return q ? clearSettingObj(q.model, q.id, q.key, ignoreOriginal) : console.error('Invalid setting to clear: '+key);
+}
+const clearAll = () => Settings.set(settingsKey, []);
+
+// Move setting fwd (+) or back (-) in array
+async function moveSetting(offset, key, id = null, model = Card.modelName) {
+    const q = id ? {model: model.modelName || model, id, key} : settingObj(key);
+
+    const settings = await Settings.get(settingsKey);
+    const index = settings ? settings.findIndex(s => same(s, q)) : -1;
+    if (index < 0) return console.error('Cannot find setting to clear: ',q);
+
+    const newIndex = ((index + offset + 1) || 1) - 1; // Force -1 to be 0
+    const setting = await Settings.pop(settingsKey, index);
+    return Settings.push(settingsKey, setting, newIndex);
+}
+
+// Apply all saved settings from table
 async function applySettings(revertToOriginal = false) {
-    // Apply all saved settings from table
     const settings = await Settings.get(settingsKey);
     if (!settings) return 0;
     for (const setting of settings) {
@@ -103,22 +135,22 @@ async function applySettings(revertToOriginal = false) {
     return settings.length;
 }
 
-async function getSettings(pretty=true) {
-    // Get entire table as an object
+// Get entire table as an array OR object
+async function getSettings(asObject = false) {
     const settings = await Settings.get(settingsKey);
-    if (!settings || !pretty) return settings;
+    if (!settings || !asObject) return settings;
     let result = {};
-    settings.forEach(s => result[settingString(s)] = s.value );
+    settings.forEach(s => result[settingString(s)] = s );
     return result;
 }
-async function getSetting(key,id=null,model=Card.modelName) {
+async function getSetting(key, id = null, model = Card.modelName) {
     const q = id ? {model: model.modelName || model, id, key} : settingObj(key);
     const settings = await Settings.get(settingsKey);
     return settings.find(s => same(q, s));
 }
 
-async function testSettings(forId=null) {
-    // Test which settings were applied (returns as object)
+// Test which settings were applied (returns as object {settingString: true/false})
+async function testSettings(forId = null) {
     let settings = await Settings.get(settingsKey);
     if (!settings) return settings;
 
@@ -134,17 +166,17 @@ async function testSettings(forId=null) {
 const testAll = () => testSettings.then(res => Object.keys(res).every(key => 
     res[key]) ? 1 : (!Object.keys(res).every(key => !res[key]) ? 0 : -1 ) );
 
-
+// Import from settings object (Overwrite/Ignore exisiting settings)
 async function importSettings(settings, overwrite=true) {
     let existing;
-    if (!overwrite) existing = await getSettings(false);
+    if (!overwrite) existing = await getSettings();
     const exists = setting => existing.findIndex(s => same(s, setting)) != -1;
 
     let r = 0, w = 0;
     for (const setting of settings) {
         r++;
         if (existing && exists(setting)) continue;
-        await setDb(setting.model, setting.id, setting.key, setting.value, setting.original);
+        await setDb(setting.model, setting.id, setting.key, setting.value, setting.note, setting.original);
         w++;
     }
     console.log('Imported '+w+'/'+r+' fixes.');
@@ -155,6 +187,8 @@ module.exports = {
     setDb, setMulti, applySettings,
     clearSetting, clearAll,
     getSetting, getSettings,
+    testSetting: testDbSetting,
     testSettings, testAll,
+    moveSetting, changeNote,
     importSettings
 }

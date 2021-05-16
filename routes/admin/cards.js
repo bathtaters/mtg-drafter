@@ -47,7 +47,7 @@ router.post('/', addSlash, function(req, res, next) {
 
 // Edit DB - post {editSet: {key, value}}
 router.post('/:uuid/db/set', formatFixValue, async function(req, res, next) {
-  const setKeys = await fixDb.setMulti(Card, req.params.uuid, req.body.editSet);
+  const setKeys = await fixDb.setMulti(Card, req.params.uuid, req.body.editSet, req.body.note || 'Set from card detail');
   return reply(res, {setKeys});
 });
 

@@ -25,6 +25,9 @@
             span.panelOption
                 label.selectLabel Original Value: 
                 span.editorSelect#original Choose setting
+        .panelOption
+            label.selectLabel(for='note') Note: 
+            input.editorSelect#note(name='note' value='')
         .panelButtons
             input.button#fixSave(type='button' value='Save')
             input.button#fixCancel(type='button' value='Cancel')

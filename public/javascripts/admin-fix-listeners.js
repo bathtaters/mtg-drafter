@@ -7,6 +7,10 @@ function initListeners() {
     addListenerAllBrswrs(document.getElementById("fixNew"),"click",clickFixButton);
     addListenerAllBrswrs(document.getElementById("fixEdit"),"click",clickFixButton);
     addListenerAllBrswrs(document.getElementById("fixDelete"),"click",clickFixButton);
+
+    addListenerAllBrswrs(document.getElementById("fixUp"),"click",clickFixButton);
+    addListenerAllBrswrs(document.getElementById("fixDown"),"click",clickFixButton);
+    addListenerAllBrswrs(document.getElementById("fixRename"),"click",clickFixButton);
     
     addListenerAllBrswrs(document.getElementById("fixApply"),"click",clickFixButton);
     addListenerAllBrswrs(document.getElementById("fixRevert"),"click",clickFixButton);
@@ -57,7 +61,7 @@ function getSettingData(key, id = null) {
 
 // Page setters
 
-function setCardName(card = null, invalidMsg = true) {
+function setCardName(card = null, invalidMsg = false) {
     var cardName = document.getElementById("cardName");
     if (card) {
         cardName.innerText = card.printedName + " (" + card.setCode + ")";
@@ -97,11 +101,12 @@ function setSettingValues(setting = null) {
     if (setting) {
         document.getElementById("value").value = JSON.stringify(setting.value) || "";
         document.getElementById("original").innerText = JSON.stringify(setting.original) || "Empty";
+        document.getElementById("note").value = setting.note || "";
     } else {
         document.getElementById("value").value = "";
         document.getElementById("original").innerText = "";
+        document.getElementById("note").value = "";
     }
-    
 }
 
 
@@ -117,7 +122,7 @@ function updateSettingData(key, id = null) {
 function updateCardData(uuid, onlyCurrent = false, withKey = null) {
     return getCardData(uuid).then( function(result) { if (result) {
         if (!onlyCurrent) {
-            setCardName(result.card);
+            setCardName(result.card, true);
             setCardKeys(result.keys, withKey);
         }
         setCardValue(result.card, withKey);
@@ -137,6 +142,16 @@ function showEditor() {
     document.getElementById("fixEditBox").classList.remove("hidden");
 }
 
+function hideEditor() {
+    document.getElementById("fixEditBgd").classList.add("hidden");
+    document.getElementById("fixEditBox").classList.add("hidden");
+}
+
+function resetEditor() {
+    document.getElementById("uuid").value = "";
+    setCardName(); setCardKeys(); setCardValue(); setSettingValues();
+}
+
 function reload() { location.reload(); }
 
 
@@ -152,6 +167,7 @@ function clickFixButton(e) {
     log("clicked: fixes."+action);
 
     if (action == "New") {
+        resetEditor();
         return showEditor();
 
     } else if (action == "Edit") {
@@ -161,21 +177,45 @@ function clickFixButton(e) {
         }
 
     } else if (action == "Delete") {
-        var keys = getSelectedOptions(document.getElementById("fixesBox"));
-        if (confirm("Are you sure you want to revert & delete the selected setting(s): " + keys + "?")) {
-            return updateServer("clear",{keys: keys}, "./").then(reload);
+        var selected = getSelectedOptions(document.getElementById("fixesBox"));
+        if (selected.length > 0) {
+            if (confirm("Are you sure you want to revert & delete the selected setting(s): " + selected + "?")) {
+                return updateServer("clear",{keys: selected}, ".").then(reload);
+            }
+        }
+    
+    }  else if (action == "Move Up" || action == "Move Down") {
+        var selectBox = document.getElementById("fixesBox");
+        var selected = getSelectedOptions(selectBox);
+        if (selected.length > 0) {
+            var offset = 1;
+            if (action == "Move Up") { offset = -1; }
+            return updateServer("move",{offset: offset, key: selected[0]},".")
+                .then(function(res) { if (res.moved){ selectOptionMove(selectBox, offset); } });
+        }
+    
+    }  else if (action == "Bulk Rename") {
+        var newName = document.getElementById("fixNewName");
+        newName.classList.remove("hidden");
+        elem.value = "Apply Name"
+    
+    }  else if (action == "Apply Name") {
+        var selected = getSelectedOptions(document.getElementById("fixesBox"));
+        if (selected.length > 0) {
+            var newName = document.getElementById("fixNewName").value;
+            return updateServer("rename",{keys: selected, note: newName}, ".").then(reload);
         }
 
     }  else if (action == "Apply All") {
-        return updateServer("applyAll",{}, "./").then(reload);
+        return updateServer("applyAll",{}, ".").then(reload);
 
     }  else if (action == "Revert All") {
-        return updateServer("revertAll",{}, "./").then(reload);
+        return updateServer("revertAll",{}, ".").then(reload);
 
     }  else if (action == "Delete All") {
         if (confirm("Are you sure you want to delete all settings? They will not be recoverable.")) {
-            return updateServer("revertAll",{}, "./")
-                .then(_=>updateServer("clearAll",{}, "./")).then(reload);
+            return updateServer("revertAll",{}, ".")
+                .then(_=>updateServer("clearAll",{}, ".")).then(reload);
         }
     
     }  else if (action == "Import") {
@@ -190,7 +230,7 @@ function clickFixButton(e) {
 
 // Clicking in multi-selection box
 function clickFixesBox(e) {
-    setButtonStatus(this || e.target || e.srcElemnt, ["fixEdit","fixDelete"])
+    setButtonStatus(this || e.target || e.srcElemnt, ["fixEdit","fixDelete","fixUp","fixDown"]);
 }
 function chooseFixDetail() { document.getElementById("fixEdit").click(); }
 
@@ -205,10 +245,10 @@ function clickEditorButton(e) {
 
     if (action == "Save") {
         var editorForm = new FormData(document.getElementById("fixesEditor"))
-        return postFormData("set",editorForm,"./").then(reload);
+        return postFormData("set",editorForm,".").then(reload);
 
     } else if (action == "Cancel") {
-        return location.reload();
+        return hideEditor();
     
     } else {
         log("Not Implemented",action+" action has no implementation.");
