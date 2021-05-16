@@ -87,13 +87,16 @@ function selectOption(selectElement, selectValue) {
 }
 
 // Extract selected options
-function getSelectedOptions(selectElement) {
+function getSelectedOptions(selectElement, getIndex = false) {
     var allOptions = selectElement.options;
     var result = [];
     var opt;
     for (var i=0, e=allOptions.length; i < e; i++) {
         opt = allOptions[i];
-        if (opt.selected) { result.push(opt.value || opt.text); }
+        if (opt.selected) {
+            if (getIndex) { result.push(i); }
+            else { result.push(opt.value || opt.text); }
+        }
     }
     return result;
 }
@@ -126,6 +129,27 @@ function addSelectOptions(selectElement, values, options = null) {
         selectElement.add(newOpt);
     }
 }
+
+// Move options in select menu (offset +/- = down/up)
+function selectOptionMove(selectElement, offset) {
+    var selIndex = getSelectedOptions(selectElement, true);
+    if (!selIndex || !selIndex.length) {
+      return log("Error moving option","No option selected to move.");
+    }
+    selIndex = selIndex[0];
+    if ((selIndex + offset) < 0 ||
+      (selIndex + offset) > (selectElement.options.length - 1)) {
+      return;
+    }
+
+    var attribs = ["value","innerHTML","classList"], selAttrib;
+    for (var i=0, e=attribs.length; i < e; i++) {
+        selAttrib = selectElement.options[selIndex][attribs[i]];
+        selectElement.options[selIndex][attribs[i]] = selectElement.options[selIndex + offset][attribs[i]];
+        selectElement.options[selIndex + offset][attribs[i]] = selAttrib;
+    }
+    selectElement.selectedIndex = selIndex + offset;
+  }
 
 // Enable/Disable buttons (using IDs) based on if 'selectElem' is selected
 function setButtonStatus(selectElem, buttonIds) {
