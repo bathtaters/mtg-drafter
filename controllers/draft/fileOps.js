@@ -1,6 +1,7 @@
 const Card = require('../../models/Card');
 const { basicLands, cardColors } = require('../../config/definitions');
 const { splitLines } = require('../shared/basicUtils');
+const asyncPool = require('tiny-async-pool');
 
 // Pre-compiled RegExs
 const qtyRegEx = new RegExp(/^\s*(\d)+\s+(.*)\s*$/)
@@ -16,17 +17,18 @@ const lineToCards = async (line, missing) => {
     if (capture) [qty, trimmed] = [+capture[1], capture[2]];
     else trimmed = line.trim();
     if (!trimmed) return found;
-    //console.log('    looking up: '+JSON.stringify(line));
 
     // Lookup card
-    trimmed = new RegExp('^'+trimmed+'$', 'i');
+    const regexName = new RegExp('^'+trimmed+'$', 'i');
     const cardId = await Card.findOne({
         $or: [
-            { 'name': { $regex: trimmed } },
-            { 'faceName': { $regex: trimmed } }
+            { 'name': { $regex: regexName } },
+            { 'faceName': { $regex: regexName } }
         ],
-        'gathererImg': { $exists: true } // ONLY FINDS IMAGES ON GATHERER
+        'side': { $in: [null, 'a'] },
+        'multiverseId': { $exists: true } // ONLY FINDS IMAGES ON GATHERER
     },'_id').then( card => card ? card._id : 0)
+    
     if (cardId) {
         for (let i=0; i < qty; i++) { found.push(cardId) }
     }
@@ -51,9 +53,10 @@ const basicLandText = (array, board, i) => {
 // Import text blob from user
 async function importText(file) {
     let missing = [];
-    const cards = await Promise.all(splitLines(file.data).map( line =>
-        lineToCards(line, missing)
-    ));
+    const cards = await asyncPool(
+        500, splitLines(file.data),
+        line => lineToCards(line, missing)
+    );
     return {cards: cards.flat(), missing: missing};
 }
 
