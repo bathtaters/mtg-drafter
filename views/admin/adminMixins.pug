@@ -86,9 +86,11 @@ mixin cardOneLine(card,linkPrefix,newWindow=true,includeSet=false)
   - var scryImg = (card.noGath || !card.multiverseId) ? '*' : ''
   //- class=card.bgdColor
   a.cardOneLine(href=linkPrefix+'card/'+card.uuid+'/' target=newWindow ? '_blank' : '')
-    if includeSet
-      i.cardOLSet= card.setCode+' '
     span.cardOLName= card.name + scryImg
+    if includeSet
+      i.cardOLSet (#{card.setCode})
+    if card.picked
+      span.cardOLPick [#{card.picked.pack+1}.#{card.picked.pick+1}]
 
 //- Land info (regex = /main-/ or /side-/)
 mixin lands(landData, colorRegex)

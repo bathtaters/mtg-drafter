@@ -1,6 +1,7 @@
 // Retrieve card data from database
 const Card = require('../../models/Card');
 const { groupTitles } = require('../../config/definitions');
+const { cardPickCodec } = require('../shared/basicUtils');
 const Draft = require('../../models/Draft');
 
 
@@ -18,7 +19,11 @@ async function populateCard(cardUuid, draftCard) {
   newCard = newCard.toObject();
   const draftObj = draftCard.toObject();
   
+  // Add fields from Draft data
   draftFields.forEach( f => newCard[f] = draftObj[f]);
+  // Decode 'picked' data
+  if (newCard.picked) newCard.picked = cardPickCodec.decode(newCard.picked);
+  
   return newCard;
 }
 

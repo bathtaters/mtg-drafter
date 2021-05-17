@@ -1,6 +1,7 @@
 // Extended player methods
 const { draftStatus } = require('../../config/definitions');
 const Card = require('../../models/Card');
+const { cardPickCodec } = require('../shared/basicUtils');
 
 
 // Open the next pack
@@ -29,8 +30,8 @@ async function pickCard(draftId, toSideBoard=false) {
         return 'No card found';
     }
 
-    // Set code for when it was picked (round*100 + 0-indexed pick)
-    card.picked = 100 * (this.parent().round + 1) + this.pick;
+    // Set code for when it was picked (in Definitions)
+    card.picked = cardPickCodec.encode(this.parent().round, this.pick);
 
     // Add card to player's board & pass pack
     await this.pushCard(card, toSideBoard ? 'side' : 'main');
