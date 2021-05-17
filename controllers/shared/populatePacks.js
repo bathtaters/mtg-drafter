@@ -23,14 +23,14 @@ async function populateCard(cardUuid, draftCard) {
   draftFields.forEach( f => newCard[f] = draftObj[f]);
   // Decode 'picked' data
   if (newCard.picked) newCard.picked = cardPickCodec.decode(newCard.picked);
-  
+
   return newCard;
 }
 
 
 
 // Main populate function
-async function populatePack(packArray) {
+async function populatePack(packArray, sortCompare) {
   if(!packArray) return [];
   
   let result = [];
@@ -55,6 +55,7 @@ async function populatePack(packArray) {
     result.push(newCard);
     //console.log(JSON.stringify(newCard)+'\n');
   }
+  if (sortCompare) result = result.sort(sortCompare);
   return result;
 }
 

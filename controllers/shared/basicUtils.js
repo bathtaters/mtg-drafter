@@ -104,12 +104,13 @@ function objArrayToObj(objArray, keyName='key', valueName='value', skipErrors=tr
 
 // Card.picked encoding
 const rndFactor = 100;
-module.exports.cardPickCodec = {
+const cardPickCodec = {
     encode: (pack, pick) => ((pack + 1) * rndFactor) + pick,
     decode: (encoded) => ({
         pack: Math.floor(encoded / rndFactor) - 1,
         pick: encoded % rndFactor
-    })
+    }),
+    sortDecoded: (a,b) => (a.picked.pack - b.picked.pack) || (a.picked.pick - b.picked.pick)
 };
 
 

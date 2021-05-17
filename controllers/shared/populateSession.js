@@ -1,4 +1,5 @@
 
+const { cardPickCodec } = require('./basicUtils');
 const populatePacks = require('./populatePacks');
 
 // Populate session data for admin panel
@@ -23,8 +24,8 @@ const playerData = ({ players, hostId }) => Promise.all(players.map(async ({
     _id, name, position, connected, pick, cards,
     cookieId, isDrafting, opponent, packsHeld, updatedAt
   }) => {
-    const main = await populatePacks.all(cards.main);
-    const side = await populatePacks.all(cards.side);
+    const main = await populatePacks.all(cards.main, cardPickCodec.sortDecoded);
+    const side = await populatePacks.all(cards.side, cardPickCodec.sortDecoded);
     const countLands = board => cards.basicLands.reduce((sum,data) =>
       (!board || data._id.includes(board)) ? sum + data.count : sum,
     0);
