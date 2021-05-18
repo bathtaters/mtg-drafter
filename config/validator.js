@@ -1,10 +1,12 @@
 // Validation for user input
-const { body, validationResult, cookie, param } = require('express-validator')
+const { body, validationResult, cookie, param } = require('express-validator');
+const { width } = require('../controllers/draft/sessionURL');
 
 // Modifiable Validation Ranges
 const limits = {
     // Generic
     base64id: { min: 16, max: 16 },         // chars in sessionId/playerId
+    sessionId:{ min: width, max: 16 },      // chars in sessionId //// EVENTUALLY DELETE 16, make 'width'
 
     // Setup Page
     draftType: ['cubeType','boosterType'],  // enum
@@ -27,8 +29,8 @@ const limits = {
 
 // Cookie middleware (Session/Player)
 const cookieRules = () => [
-  param('sessionId').optional().isLength(limits.base64id).isBase64({urlSafe: true}),
-  cookie('sessionId').optional().isLength(limits.base64id).isBase64({urlSafe: true}),
+  param('sessionId').optional().isLength(limits.sessionId).isBase64({urlSafe: true}),
+  cookie('sessionId').optional().isLength(limits.sessionId).isBase64({urlSafe: true}),
   cookie('playerId').optional().isLength(limits.base64id).isBase64({urlSafe: true})
 ];
 

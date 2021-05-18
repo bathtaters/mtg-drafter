@@ -14,7 +14,9 @@ const { draftStatus, timeFormat } = require('../config/definitions');
 const DraftDB = mtgDb.connection.then(c=>c.db.collection('sessions'));
 
 // Draft Static Methods
+//// EVENTUALLY DELETE THIS ++++ SEARCH findBySessionId REPLACE WITH findById ////
 draftSchema.statics.findBySessionId = function(sessionId, proj='', opt={}) {
+    if (sessionId.length == 6) return this.findById(sessionId, proj, opt);
     const objId = convert.b64ToObjId(sessionId);
     try { mtgDb.Types.ObjectId(objId); }
     catch(e) { console.error('SessionID ("'+sessionId+'") Error: '+e.message); return; }
@@ -140,6 +142,7 @@ playerSchema.methods.getLandTotal = function(board = undefined) {
 
 // External player methods
 const playerOps = require('../controllers/draft/playerOps');
+const { getURLCode } = require('../controllers/draft/sessionURL');
 playerSchema.methods.setAutoLands = require('../controllers/draft/autoLands');
 playerSchema.methods.passPack = playerOps.passPack;
 playerSchema.methods.pickCard = playerOps.pickCard;

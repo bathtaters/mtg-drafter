@@ -5,15 +5,15 @@ Session object for a Draft -- Exports Schemas
 const mtgDb = require('../config/db');
 const { Schema } = require('mongoose');
 const { playerSchema, packCardSchema } = require('./Player');
-const { convert } = require('../controllers/shared/basicUtils');
 const { draftStatus } = require('../config/definitions');
 
 
 // Draft Model:
 const draftSchema = new mtgDb.Schema({
+    _id: { type: String, alias: 'sessionId' },
     name: { type: String, default: 'Draft' },
-    hostId: { type: Schema.Types.ObjectId, ref: 'Draft.players' },
     url: String,
+    hostId: { type: Schema.Types.ObjectId, ref: 'Draft.players' },
     players: [ playerSchema ],
     packs: [ [ [ packCardSchema ] ] ],
     round: { type: Number, default: -1 },
@@ -22,10 +22,7 @@ const draftSchema = new mtgDb.Schema({
 }, {timestamps: true})
 
 // Draft Virtuals
-draftSchema.virtual('sessionId').get( function(){
-    return convert.objIdToB64(this._id);
-});
-draftSchema.virtual('accessedAt').get( function(){
+draftSchema.virtual('updatedAtAgg').get( function(){
     // Latest of all 'updatedAt' timestamps (Doc + subDocs)
     return new Date(Math.max(
         this.updatedAt,
