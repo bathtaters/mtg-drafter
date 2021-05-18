@@ -11,8 +11,8 @@ const fixDb = require('../../admin/fixDb');
 router.get('/', addSlash, async function(req, res, next) {  
 
   // Lookup fix data
-  const fixList = await fixDb.getSettings(true);
-  const fixActive = await fixDb.testSettings();
+  const fixList = await fixDb.getSettings(true).then(r => r || {});
+  const fixActive = await fixDb.testSettings().then(r => r || {});
   
   return res.render('fixDetail', {
       title: 'Card Fixes',
