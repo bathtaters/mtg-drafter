@@ -113,3 +113,27 @@ Bugs
 Bugs
     ADMIN: Authentication is broken! (Accepts any value)
     ADMIN: update time/date updates on server disconnect (only on linode?)
+
+v0.4.4
+New admin.updateDb timings (min) = set:1, card: 3, alt: 7
+ADMIN minor changes:
+    Format setting names in Fix Editor nicer
+    add ‘refresh’ link at top of main panel
+    Format one line card displays better
+    Add pack/pick details to session panel/player decks
+ADMIN Major changes
+    Add ‘applyCustomFixes’ interface to panel (Allow export/import/remove one/all/edit/link to card)
+    Mark edited fields in cardDetail
+    Allow tweaking of DB values (Save changes to Settings for DB updates) to fix backwards flip cards or incorrect images
+    Create a site-wide ‘busy’ flag, when on don’t allow any ADMIN changes, on server reset this shuts off
+Bugs
+    Fixed cube upload & cube error readout
+    Create settings log that flips all KHM DFCs & gets GathImg of all ZNR b-sides
+    Change message on invalid set GET. Now: “Cannot read property 'toObject' of null (routes/admin/sets.js:78:23)”
+    Fix downloading issue in Firefox
+    Fix ‘weight’ display on sheetDetail page
+    Fix asterisks on sheet display
+    On card update (Updated Card indexes): DeprecationWarning: collection.ensureIndex is deprecated. Use createIndexes instead.
+    Removing admin should say: “Are you sure you want to delete user <name>?”
+    Switched all ‘opacity’ to decimal for Firefox
+Server: allow more time for response on UploadCube
