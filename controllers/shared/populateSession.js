@@ -6,7 +6,7 @@ const populatePacks = require('./populatePacks');
 const sessionProjection = 'name players round packs hostId updatedAt';
 const sessionListData = ({
   sessionId, name, players, status, round,
-  accessedAt, updatedAt, hostId, url, logEntries
+  updatedAtAgg, updatedAt, hostId, url, logEntries
 }) => ({
   sessionId, name, status, round,
   hostId, url, logEntries,
@@ -14,8 +14,8 @@ const sessionListData = ({
   connectedCount: players.reduce((acc,p) => acc + p.connected, 0),
   date: updatedAt.toLocaleDateString(),
   time: updatedAt.toLocaleTimeString(),
-  aggDate: accessedAt.toLocaleDateString(),
-  aggTime: accessedAt.toLocaleTimeString()
+  aggDate: updatedAtAgg.toLocaleDateString(),
+  aggTime: updatedAtAgg.toLocaleTimeString()
 });
 
 
