@@ -43,8 +43,8 @@ router.get('/', addSlash, async function(req, res, next) {
       isSuper: sudoList.includes(req.auth.user.toLowerCase())
     },
     fixInfo: {
-      applied: Object.keys(panelData[7]).reduce((a,k)=>a+panelData[7][k], 0),
-      total: Object.keys(panelData[7]).length
+      applied: panelData[7] ? Object.keys(panelData[7]).reduce((a,k)=>a+panelData[7][k], 0) : 0,
+      total: panelData[7] ? Object.keys(panelData[7]).length : 0
     },
     busy: req.body.busy
   });
