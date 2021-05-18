@@ -15,9 +15,6 @@
                 label.selectLabel(for='key') Setting: 
                 select.editorSelect#key(name='key' disabled=true)
                     option(value='') Enter UUID
-        .panelOption
-            label.selectLabel(for='value') Fixed Value: 
-            input.editorSelect#value(name='value' value='')
         .infoLine    
             span.panelOption
                 label.selectLabel Current Value: 
@@ -25,6 +22,9 @@
             span.panelOption
                 label.selectLabel Original Value: 
                 span.editorSelect#original Choose setting
+        .panelOption
+            label.selectLabel(for='value') Fixed Value: 
+            input.editorSelect#value(name='value' value='')
         .panelOption
             label.selectLabel(for='note') Note: 
             input.editorSelect#note(name='note' value='')
