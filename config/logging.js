@@ -18,7 +18,7 @@ const allPlayers = sessionObj => sessionObj.players.map(player).join('\n');
 const fullSession = sessionObj => session(sessionObj) + '\n' + allPlayers(sessionObj);
 
 const request = req => {
-    let str = new Date().toISOString();
+    let str = new Date().toISOString() + ': '+ req.originalUrl;
     if (notEmpty(req.params)) str += '; Parameters'+JSON.stringify(req.params);
     if (notEmpty(req.query)) str += '; Query'+JSON.stringify(req.query);
     if (notEmpty(req.cookies)) str += '; Cookies'+JSON.stringify(req.cookies);
