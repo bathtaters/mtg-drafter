@@ -47,14 +47,14 @@ router.post('/', addSlash, function(req, res, next) {
 
 // Edit DB - post {editSet: {key, value}}
 router.post('/:uuid/db/set', formatFixValue, makeBusy, async function(req, res, next) {
-  const setKeys = await fixDb.setMulti(Card, req.params.uuid, req.body.editSet, req.body.note || 'Set from card detail');
+  const setKeys = await fixDb.setMulti(Card, req.params.uuid, req.body.editSet, req.body.note || 'Set on card');
   return res.reply({setKeys});
 });
 
 // Clear DB Edit - post {key}
 router.post('/:uuid/db/clear', makeBusy, async function(req, res, next) {
-  await fixDb.clearSetting(Card.modelName, req.params.uuid, req.body.key);
-  return res.reply({key: req.body.uuid, cleared: true});
+  await fixDb.clearSetting(req.body.key, req.params.uuid, Card.modelName);
+  return res.reply({key: req.body.key, cleared: true});
 });
 
 

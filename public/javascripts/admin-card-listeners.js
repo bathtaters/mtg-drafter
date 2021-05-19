@@ -73,6 +73,18 @@ function clickOptionLink(e) {
     }
 }
 
+function clickRemove(e) {
+    var elem = this || e.target || e.srcElemnt;
+    var key = elem.id;
+    log("clicked: remove."+key);
+    if (confirm("Are you sure you want to delete the fix for \""+key+"\"? It will not be recoverable.")) {
+        updateServer("clear",{key:key},"db").then( function(result) {
+            log("Deleted key fix: "+(result && result.cleared ? result.key : "none"));
+            location.reload();
+        });
+    }
+}
+
 // Click edit card button
 function clickEditCard(e) {
     var elem = this || e.target || e.srcElemnt;
@@ -82,15 +94,32 @@ function clickEditCard(e) {
     var editable = document.getElementsByClassName("unlocked");
 
     if (button === "Edit") {
-        elem.value = "Save";
-        
+        elem.value = " ... ";
+
+        // Show hidden
         var emptyHider = document.getElementById("hideEmpty");
         if (emptyHider.innerText == "Show Empty") { emptyHider.click(); }
         
+        // Allow editing
         for (var i = 0, l = editable.length; i < l; i++) {
             editable[i].innerHTML = mtgSymbolRevert(editable[i].innerHTML);
             editable[i].setAttribute("contenteditable",true);
         }
+
+        // Hide asterisks
+        var starred = document.getElementsByClassName("hasFix");
+        for (var i = starred.length - 1; i >= 0; i--) {
+            starred[i].classList.remove("hasFix");
+        }
+
+        // Show delete buttons
+        var removable = document.getElementsByClassName("rmvFix");
+        for (var i = 0, l = removable.length; i < l; i++) {
+            addListenerAllBrswrs(removable[i],"click",clickRemove);
+            removable[i].classList.remove("hidden");
+        }
+
+        elem.value = "Save";
 
     } else if (button === "Save") {
         let editSet = {};
@@ -135,7 +164,7 @@ function clickEditCard(e) {
             
         }
         
-        updateServer("set",{editSet},"db").then( function(result) {
+        updateServer("set",{editSet:editSet},"db").then( function(result) {
             elem.value = "Edit";
             log("Updated keys: "+(result ? result.setKeys : "None"));
             location.reload();

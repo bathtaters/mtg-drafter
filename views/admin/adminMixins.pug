@@ -61,14 +61,21 @@ mixin detailList(data, keys, disableEditList=false, fixData=false)
       if fixData && fixData[key]
         - showLegend = true
         - fixCls = 'hasFix'
+        
       if key == 'br'
         span.detailKey.spacer
         span.detailVal.spacer
       else if key == 'setCode' || key == 'code'
-        span.detailKey(class=fixCls)= varName(key)+':'
+        span.detailKey(class=fixCls)
+          if fixData && fixData[key]
+            input.button.rmvFix.hidden(type='button' id=key value='x')
+          span #{varName(key)}:
         a.detailVal#setCodeValue(href='../../set/'+data[key]+'/' target='_blank')= data[key]
       else
-        span.detailKey(class=fixCls)= varName(key)+':'
+        span.detailKey(class=fixCls)
+          if fixData && fixData[key]
+            input.button.rmvFix.hidden(type='button' id=key value='x')
+          span #{varName(key)}:
         +formatValue(key, data[key], disableEditList && !disableEditList.includes(key))
     if showLegend
       p.footerText * Has fix applied
