@@ -1,0 +1,33 @@
+//- User Settings box in Admin Panel
+.panelContainer#userContainer
+    form#currentUserContainer.panelContainer(action='user' method='post')
+        label.containerTitle(for='userContainer') Current User: #{user.current}
+        .userLine
+            label(for='currentPassword') Old Password: 
+            input#currentPassword(type='password' name='currentPassword')
+            .buttonSpacer
+        .userLine
+            label(for='newPassword') New Password:
+            input#newPassword(type='password' name='newPassword')
+            input.button#pwordEdit(type='button' value='Update')
+        .resultText#currentUserResult
+
+    if user.isSuper
+        form#sudoContainer.panelContainer(action='user' method='post')
+            label.containerTitle(for='userBox') Other Users
+            #sudoList
+                select.panelSelect#userBox(name='userBox' multiple=true)
+                    each username in user.list
+                        if username.toLowerCase() != user.current.toLowerCase()
+                            option= username
+                div
+                    input.button#userRemove(type='button' value='Remove' disabled='true')
+            #sudoAddUser
+                .sudoLine
+                    label(for='addUsername') Username: 
+                    input#addUsername(type='test' name='addUsername')
+                    .buttonSpacer
+                .sudoLine
+                    label(for='addPassword') Password:
+                    input#addPassword(type='password' name='addPassword')
+                    input.button#userAdd(type='button' value='Add')

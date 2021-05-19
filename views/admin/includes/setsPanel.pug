@@ -1,0 +1,26 @@
+//- Sets box in Admin Panel
+form#setsContainer.panelContainer(action='set' method='post')
+    label.containerTitle(for='sets') Sets
+    select.panelSelect#setsBox(name='sets' multiple=true)
+        each set in sets
+            - var setTitle = set.name
+            if set.block
+                - setTitle += ' ('+set.block+')'
+            if set.cardCount
+                - var missing = set.cardCount - set.gatherer - set.scryfall
+                - setTitle += ' '+'['+set.gatherer+'/'+set.scryfall+(missing ? '/'+missing : '')+']'
+            if set.code == defaultSet
+                -setTitle += ' <d>'
+            option(class=(set.enabled ? 'setOn' : 'setOff') value=set.code)= setTitle + (set.enabled ? '' : ' <h>')
+    .panelButtons
+        input.button#setDetails(type='submit' value='Details' disabled='true')
+        input.button#setToggle(type='button' value='Toggle Visibility' disabled='true')
+        input.button#setDefault(type='button' value='Make Default' disabled='true')
+    .panelButtons#setsDefaultContainer
+        input.button#setUpdate(type='button' value='Update All')
+        input.button#setReset(type='button' value='Reset All')
+        label.setsDefaultLabel(for='setsDefault') Visibility forced to:
+        select.smallInputBox#setsDefault(name='setsDefault')
+            option(value=1 selected=true) On
+            option(value=0) Off
+

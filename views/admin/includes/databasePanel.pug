@@ -1,0 +1,57 @@
+//- MTG Database box in Admin Panel
+form#databaseContainer.panelContainer(action='updateDb' method='post')
+    label.containerTitle(for='databaseContainer') Update MtG Database
+    .dbUrlLine
+        label(for='setUrl') Sets: 
+        input#setUrl(type='url' name='setUrl' value=url.set readonly=true)
+        input.button#setEdit(type='button' value='Edit')
+    .dbUrlLine
+        label(for='setUrl') Cards: 
+        input#cardUrl(type='url' name='cardUrl' value=url.card readonly=true)
+        input.button#cardEdit(type='button' value='Edit')
+    .dbCheckboxContainer
+        +checkbox('updateSets', 'Update Set database', true, 'dbCheckbox')
+        +checkbox('updateCards', 'Update Card database', true, 'dbCheckbox')
+        +checkbox('fixCardAlts', 'Update alternate printings', true, 'dbCheckbox')
+        +checkbox('skipCurrent', 'Only update if outdated', true, 'dbCheckbox')
+    .updateButtonContainer
+        input.button#updateDbButton(type='button' value='Update')
+    .resultText#dbResult
+    #dbCountsContainer
+        .inlineInfo
+            .infoTitle Sets Info
+            .infoLine
+                span.infoLabel Version: 
+                span.infoValue= dbInfo.set.version
+            .infoLine
+                span.infoLabel Records:
+                span.infoValue= dbInfo.set.count
+            .infoLine
+                span.infoLabel Db Date:
+                span.infoValue= dbInfo.set.date.toLocaleDateString()
+            .infoLine
+                span.infoLabel Update:
+                span.infoValue= dbInfo.set.updatedAt.toLocaleDateString()
+        .inlineInfo
+            .infoTitle Cards Info
+            .infoLine
+                span.infoLabel Version: 
+                span.infoValue= dbInfo.card.version
+            .infoLine
+                span.infoLabel Records:
+                span.infoValue= dbInfo.card.count
+            .infoLine
+                span.infoLabel Db Date:
+                span.infoValue= dbInfo.card.date.toLocaleDateString()
+            .infoLine
+                span.infoLabel Update:
+                span.infoValue= dbInfo.card.updatedAt.toLocaleDateString()
+    #dbAdditionalContainer
+        .inlineInfo
+            .infoTitle Fixes Info
+            .infoLine
+                span.infoLabel Cards Fixed: 
+                span.infoValue= fixInfo.applied + ' / ' + fixInfo.total
+            .infoLine
+                a.infoValue(href='fixes') Edit Fixes
+                a.infoValue(href='fixes/applyAll/') Apply Fixes
