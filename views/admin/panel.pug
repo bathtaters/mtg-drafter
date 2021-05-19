@@ -5,154 +5,28 @@ block scripts
     if user.isSuper
         script(src='/javascripts/admin-su-panel-listeners.js')
 
-include ./adminMixins.pug
+include ./includes/adminMixins.pug
 
 block content
     #dbLoading.loading(class=(busy ? '' : 'hidden'))
-    h1#panelTitle Admin Panel
+
+    #titleContainer
+        h1#panelTitle Admin Panel
+        each panel in ['drafts','sets','database','user']
+            input.button.pressed.panelHider(type='button' id=panel+'Hider' value=varName(panel))
+
     #userHeader
         span.infoLabel User:
         span.infoValue#headerUsername= user.current
-        a.headerLink#refreshLink(href='.') refresh
-        a.headerLink#logoutLink(href='logout') logout
-        a.headerLink(href='../../' target='_blank') New Draft
+        a.button.headerLink#refreshLink(href='.') refresh
+        a.button.headerLink#logoutLink(href='logout') logout
+        a.button.headerLink(href='../../' target='_blank') New Draft
+
     hr#headerDivider
+
     #panelWrapper
-
-        //- Sessions box
-        form#sessionsContainer.panelContainer(action='session' method='post')
-            label.containerTitle(for='sessionId') Drafts
-            select.panelSelect#sessionBox(name='sessionId' multiple=true)
-                each session in sessionList
-                    - var statusLine = session.status
-                    if draftStatus.isIn(session.status)
-                        - statusLine += '['+(session.round + 1)+']'
-                    option(value=session.sessionId) #{session.aggDate} #{statusLine} #{session.name.substr(0,25)} [#{session.connectedCount}/#{session.playerCount}]
-            .panelButtons
-                input.button#sessionDetails(type='submit' value='Details' disabled='true')
-                input.button#sessionDelete(type='button' value='Delete' disabled='true')
-                input.button#sessionDisconnect(type='button' value='Disconnect' disabled='true')
-            .panelButtons#clearContainer
-                input.button#sessionClear(type='button' value='Clear')
-                label.clearText(for='clearSessions') drafts older than
-                input.smallInputBox#clearDays(type='number' name='clearDays' min=0 value=7)
-                label.clearText(for='clearDays') days. 
-
-        //- Sets box
-        form#setsContainer.panelContainer(action='set' method='post')
-            label.containerTitle(for='sets') Sets
-            select.panelSelect#setsBox(name='sets' multiple=true)
-                each set in sets
-                    - var setTitle = set.name
-                    if set.block
-                        - setTitle += ' ('+set.block+')'
-                    if set.cardCount
-                        - var missing = set.cardCount - set.gatherer - set.scryfall
-                        - setTitle += ' '+'['+set.gatherer+'/'+set.scryfall+(missing ? '/'+missing : '')+']'
-                    if set.code == defaultSet
-                        -setTitle += ' <d>'
-                    option(class=(set.enabled ? 'setOn' : 'setOff') value=set.code)= setTitle + (set.enabled ? '' : ' <h>')
-            .panelButtons
-                input.button#setDetails(type='submit' value='Details' disabled='true')
-                input.button#setToggle(type='button' value='Toggle Visibility' disabled='true')
-                input.button#setDefault(type='button' value='Make Default' disabled='true')
-            .panelButtons#setsDefaultContainer
-                input.button#setUpdate(type='button' value='Update All')
-                input.button#setReset(type='button' value='Reset All')
-                label.setsDefaultLabel(for='setsDefault') Visibility forced to:
-                select.smallInputBox#setsDefault(name='setsDefault')
-                    option(value=1 selected=true) On
-                    option(value=0) Off
-
-        //- MTG Database box
-        form#dbContainer.panelContainer(action='updateDb' method='post')
-            label.containerTitle(for='dbContainer') Update MtG Database
-            .dbUrlLine
-                label(for='setUrl') Sets: 
-                input#setUrl(type='url' name='setUrl' value=url.set readonly=true)
-                input.button#setEdit(type='button' value='Edit')
-            .dbUrlLine
-                label(for='setUrl') Cards: 
-                input#cardUrl(type='url' name='cardUrl' value=url.card readonly=true)
-                input.button#cardEdit(type='button' value='Edit')
-            .dbCheckboxContainer
-                +checkbox('updateSets', 'Update Set database', true, 'dbCheckbox')
-                +checkbox('updateCards', 'Update Card database', true, 'dbCheckbox')
-                +checkbox('fixCardAlts', 'Update alternate printings', true, 'dbCheckbox')
-                +checkbox('skipCurrent', 'Only update if outdated', true, 'dbCheckbox')
-            .updateButtonContainer
-                input.button#updateDbButton(type='button' value='Update')
-            .resultText#dbResult
-            #dbCountsContainer
-                .inlineInfo
-                    .infoTitle Sets Info
-                    .infoLine
-                        span.infoLabel Version: 
-                        span.infoValue= dbInfo.set.version
-                    .infoLine
-                        span.infoLabel Records:
-                        span.infoValue= dbInfo.set.count
-                    .infoLine
-                        span.infoLabel Db Date:
-                        span.infoValue= dbInfo.set.date.toLocaleDateString()
-                    .infoLine
-                        span.infoLabel Update:
-                        span.infoValue= dbInfo.set.updatedAt.toLocaleDateString()
-                .inlineInfo
-                    .infoTitle Cards Info
-                    .infoLine
-                        span.infoLabel Version: 
-                        span.infoValue= dbInfo.card.version
-                    .infoLine
-                        span.infoLabel Records:
-                        span.infoValue= dbInfo.card.count
-                    .infoLine
-                        span.infoLabel Db Date:
-                        span.infoValue= dbInfo.card.date.toLocaleDateString()
-                    .infoLine
-                        span.infoLabel Update:
-                        span.infoValue= dbInfo.card.updatedAt.toLocaleDateString()
-            #dbAdditionalContainer
-                .inlineInfo
-                    .infoTitle Fixes Info
-                    .infoLine
-                        span.infoLabel Cards Fixed: 
-                        span.infoValue= fixInfo.applied + ' / ' + fixInfo.total
-                    .infoLine
-                        a.infoValue(href='fixes') Edit Fixes
-                        a.infoValue(href='fixes/applyAll/') Apply Fixes
-        
-        //- User Settings box
-        .panelContainer#userContainer
-            form#currentUserContainer.panelContainer(action='user' method='post')
-                label.containerTitle(for='userContainer') Current User: #{user.current}
-                .userLine
-                    label(for='currentPassword') Old Password: 
-                    input#currentPassword(type='password' name='currentPassword')
-                    .buttonSpacer
-                .userLine
-                    label(for='newPassword') New Password:
-                    input#newPassword(type='password' name='newPassword')
-                    input.button#pwordEdit(type='button' value='Update')
-                .resultText#currentUserResult
-
-            if user.isSuper
-                form#sudoContainer.panelContainer(action='user' method='post')
-                    label.containerTitle(for='userBox') Other Users
-                    #sudoList
-                        select.panelSelect#userBox(name='userBox' multiple=true)
-                            each username in user.list
-                                if username.toLowerCase() != user.current.toLowerCase()
-                                    option= username
-                        div
-                            input.button#userRemove(type='button' value='Remove' disabled='true')
-                    #sudoAddUser
-                        .sudoLine
-                            label(for='addUsername') Username: 
-                            input#addUsername(type='test' name='addUsername')
-                            .buttonSpacer
-                        .sudoLine
-                            label(for='addPassword') Password:
-                            input#addPassword(type='password' name='addPassword')
-                            input.button#userAdd(type='button' value='Add')
+        include ./includes/draftsPanel.pug
+        include ./includes/setsPanel.pug
+        include ./includes/databasePanel.pug
+        include ./includes/userPanel.pug
                 
