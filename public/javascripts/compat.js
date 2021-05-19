@@ -353,7 +353,7 @@ function mtgSymbolRevert(text) {
         let val = String(p1);
         if (val in invSpecials) val = invSpecials[val];
         val = val.toUpperCase();
-        if (val.length == 2) val = val.charAt(0) + '/' + val.charAt(1);
+        if (val.length == 2 && isNaN(val)) val = val.charAt(0) + '/' + val.charAt(1);
         val = braceBuild[0] + val + braceBuild[1];
         //console.log('replaced: '+m+' with '+val);
         return val;
