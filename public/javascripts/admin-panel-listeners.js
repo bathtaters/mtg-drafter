@@ -1,5 +1,12 @@
 // Setup listeners
 function initListeners() {
+    // Hider listeners
+    var hiders = document.getElementsByClassName("panelHider");
+    for (var i = 0, l = hiders.length; i < l; i++) {
+        addListenerAllBrswrs(hiders[i],"click",clickHider);
+        console.log("added listener to: "+hiders[i].id);
+    }
+
     // Session listeners
     addListenerAllBrswrs(document.getElementById("sessionBox"),"click",clickSessionBox);
     addListenerAllBrswrs(document.getElementById("sessionBox"),"dblclick",chooseSessionDetail);
@@ -26,6 +33,27 @@ function initListeners() {
     // User Settings listeners
     addListenerAllBrswrs(document.getElementById("pwordEdit"),"click",clickPword);
     // Additional in SU Panel
+}
+
+// --- Other --- //
+
+// Click show/hide buttons up top
+function clickHider(e) {
+    console.log("hit clickHider");
+    // stopPropagationAllBrswrs(e);
+    var elem = this || e.target || e.srcElemnt;
+    var panelId = elem.id.replace("Hider","Container");
+    var visible = elem.classList.contains("pressed");
+    log("clicked: "+panelId+"."+(visible ? "hide" : "show"));
+    
+    var panel = document.getElementById(panelId);
+    if (visible) {
+        panel.setAttribute("style","max-width: 0rem;");
+        elem.classList.remove("pressed");
+    } else {
+        panel.removeAttribute("style");
+        elem.classList.add("pressed");
+    }
 }
 
 
@@ -162,7 +190,7 @@ function updateDb(e) {
     log("clicked: updateDatabase");
 
     elem.setAttribute("disabled","true");
-    var formData = new FormData(document.getElementById("dbContainer"));
+    var formData = new FormData(document.getElementById("databaseContainer"));
 
     // Calculate actual times better
     var msg = 0;

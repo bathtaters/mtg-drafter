@@ -2,14 +2,25 @@
 
 // General styles
 
+#titleContainer
+    display: flex
+    flex-direction: row
+    align-items: center
+    justify-content: flex-start
+
 #panelTitle
     display: inline-block
     margin-inline-start: 0.5rem
-    // margin-inline-end: 2rem
+    margin-inline-end: 2rem
+
+.panelHider
+    margin: 0.5em
+    font-size: 0.85em
+    &.pressed
+        z-index: 0
 
 #userHeader
     margin-top: 0.5em
-    // font-size: 0.8em
     font-style: italic
 
 .headerLink
@@ -19,12 +30,17 @@
 #panelWrapper
     display: flex
     flex-wrap: wrap
+    min-height: 32rem
 
 .panelContainer
     display: flex
     flex-direction: column
     align-items: center
     margin: 0.8rem
+    // Animate hides
+    transition: max-width 0.3s ease-out
+    overflow: hidden
+    max-height: 27rem;
 
 .panelSelect
     width: 100%
@@ -107,7 +123,7 @@ textButtonLine(labelWidth, buttonWidth, fontSize = 0.8em, elemSpacing = 0.4em)
 
 // Session settings
 
-#sessionsContainer
+#draftsContainer
     max-width: 26rem
 
 #sessionClear
@@ -136,9 +152,8 @@ option.setOff
 
 // Database updater
 
-#dbContainer
+#databaseContainer
     max-width: 22rem
-    padding: 0.5rem
 
 .dbUrlLine
     textButtonLine(4em,4em)
@@ -168,6 +183,9 @@ option.setOff
 
 
 // User settings
+
+#userContainer
+    max-width: 22rem
 
 #userContainer .panelContainer
     margin: 0
@@ -205,6 +223,8 @@ option.setOff
 
 .sudoLine
     textButtonLine(6.5em,4em)
+
+    
 
 
 
