@@ -1,5 +1,11 @@
 /*
     Create session URL (Unique fixed-length base62 string, can be decoded to Date + Counter)
+    The current limits to uniqueness are:
+     - Too Old:   Year will start to loop after 9 years
+     - Too Quick: Max of 170 new drafts can be started each second
+    To update, add another digit (fixedLength += 1), then increase everything accordingly:
+        base62.offset = MIN, ( base62.decode(base62.digits[1] + base62.digits[0].repeat(fixedLength)) - 1 ) = MAX
+        MAX - MIN = RANGE, Product of all maxes should be < RANGE (get prod of maxes[1:6] then adjust [0:cntr] accordingly)
 */
 
 // -- Settings -- //
