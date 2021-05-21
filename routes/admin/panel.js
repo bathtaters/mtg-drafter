@@ -17,11 +17,12 @@ const fixDb = require('../../admin/fixDb');
 
 // Get page
 const sudoList = ['nick'];
+const sessionSort = (a, b) => b.sortVal - a.sortVal;
 router.get('/', addSlash, async function(req, res, next) {
   
   const panelData = await Promise.all([
-    Draft.find({},sessionProjection).sort('-updatedAt') 
-      .then(result => result.map(sessionListData)), // 0:sessionList
+    Draft.find({},sessionProjection) // 0:sessionList
+      .then(result => result.map(sessionListData).sort(sessionSort)), 
     setList.fullList(), // 1:sets
     Settings.get('defaultSet'), // 2:defaultSet
     updateDb.url.set(), // 3:url.set
@@ -49,6 +50,20 @@ router.get('/', addSlash, async function(req, res, next) {
     busy: req.body.busy
   });
 
+});
+
+// Just Session panel
+router.get('/draftsList', async function(req, res, next) {
+  const sessionList = await Draft.find({},sessionProjection) 
+    .then(result => result.map(sessionListData).sort(sessionSort))
+  return res.render('draftsList', { sessionList });
+});
+
+// Just Sets panel
+router.get('/setsList', async function(req, res, next) {
+  const sets = await setList.fullList();
+  const defaultSet = Settings.get('defaultSet');
+  return res.render('setsList', { sets, defaultSet });
 });
 
 // Logout

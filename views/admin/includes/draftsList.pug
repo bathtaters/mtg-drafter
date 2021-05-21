@@ -1,0 +1,13 @@
+each session in sessionList
+    - var shortName = session.name.substr(0,25)
+    - var counts = session.connectedCount+'/'+session.playerCount
+    - var statusLine = session.status
+    if draftStatus.isIn(session.status)
+        - statusLine = statusLine.padEnd(6,' ') + ':'+(session.round + 1)
+    - statusLine = statusLine.padEnd(9,'.')
+
+    - statusLine = statusLine + (statusLine.length > 9 ? '&nbsp;' : '')
+    option(value=session.sessionId) #{session.aggDate} #{statusLine} [#{counts}] #{shortName}
+
+if !sessionList.length
+    option(disabled=true).fauxOption -- No available drafts --

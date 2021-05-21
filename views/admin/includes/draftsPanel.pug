@@ -3,11 +3,8 @@
 form#draftsContainer.panelContainer(action='session' method='post')
     label.containerTitle(for='sessionId') Drafts
     select.panelSelect#sessionBox(name='sessionId' multiple=true)
-        each session in sessionList
-            - var statusLine = session.status
-            if draftStatus.isIn(session.status)
-                - statusLine += '['+(session.round + 1)+']'
-            option(value=session.sessionId) #{session.aggDate} #{statusLine} #{session.name.substr(0,25)} [#{session.connectedCount}/#{session.playerCount}]
+        include ./draftsList.pug
+        
     .panelButtons
         input.button#sessionDetails(type='submit' value='Details' disabled='true')
         input.button#sessionDelete(type='button' value='Delete' disabled='true')

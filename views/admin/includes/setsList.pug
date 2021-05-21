@@ -1,0 +1,14 @@
+each set in sets
+    - var setTitle = set.name
+    if set.block
+        - setTitle += ' ('+set.block+')'
+    if set.cardCount
+        - var missing = set.cardCount - set.gatherer - set.scryfall
+        - setTitle += ' ['+set.gatherer+'/'+set.scryfall+(missing ? '/'+missing : '')+']'
+    - var setCls = set.enabled ? 'setOn' : 'setOff'
+    if set.code == defaultSet
+        - setCls += ' setDef'
+    option(class=setCls value=set.code)= setTitle
+
+if !sets.length
+    option(disabled=true).fauxOption -- No available sets --
