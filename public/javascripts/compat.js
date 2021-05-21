@@ -75,15 +75,47 @@ function copyTextToClipboard(text) {
     });
 }
 
+// Get option elements by value/text
+function getOptions(selectElement, optionValues) {
+    var opts = selectElement.options, result = [];
+    for (var opt, i = 0; opt = opts[i]; i++) {
+        var index = optionValues.indexOf(opt.value || opt.text);
+        if (index != -1) {
+            result.push(opt);
+            optionValues.splice(index,1);
+            if (!optionValues.length) { break; }
+        }
+    }
+    return result;
+}
+function getOption(selectElement, optionValue) { return getOptions(selectElement, [optionValue])[0]; }
+
+// Delete option elements by value/text
+function removeOptions(selectElement, optionValues) {
+    var opts = selectElement.options, removed = [];
+    for (var opt, i = 0; opt = opts[i]; i++) {
+        var index = optionValues.indexOf(opt.value || opt.text);
+        if (index != -1) {
+            removed.push(opt.value || opt.text);
+            selectElement.remove(i);
+            optionValues.splice(index,1);
+            if (!optionValues.length) { break; }
+        }
+    }
+    return removed;
+}
+function removeOption(selectElement, optionValue) { return removeOptions(selectElement, [optionValue])[0]; }
+
 // Change dropdown selection
 function selectOption(selectElement, selectValue) {
     var opts = selectElement.options;
     for (var opt, i = 0; opt = opts[i]; i++) {
         if (opt.value == selectValue) {
             selectElement.selectedIndex = i;
-            break;
+            return true;
         }
     }
+    return false;
 }
 
 // Extract selected options
@@ -154,8 +186,11 @@ function selectOptionMove(selectElement, offset) {
 // Enable/Disable buttons (using IDs) based on if 'selectElem' is selected
 function setButtonStatus(selectElem, buttonIds) {
     var disable = true; var opts = selectElem.options;
-    for (var i=0, e=opts.length; i < e; i++) {
-        if (opts[i].selected) { disable = false; break;}
+    if (opts === undefined) { disable = !selectElem; }
+    else {
+        for (var i=0, e=opts.length; i < e; i++) {
+            if (opts[i].selected) { disable = false; break; }
+        }
     }
 
     var firstButton = document.getElementById(buttonIds[0]);
@@ -180,13 +215,13 @@ function setButtonStatus(selectElem, buttonIds) {
 
 
 // Fetch requests
-function postData(action, data = null, url = '../action') {
-    log('PostData: '+url+'/'+action);
+function postData(action, data = null, url = '../action', content = 'application/json') {
+    log((data ? 'Post' : 'Get')+'Data: '+url+'/'+action);
     return fetch(url + '/' + action, {
         method: data ? 'POST' : 'GET',
         //cache: 'no-cache', // Forces to not use cache
         credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': content },
         body: data ? JSON.stringify(data) : undefined
     }).then( function(response){
         if (response.ok) { return response; }
@@ -202,9 +237,9 @@ function postFormData(action, formData, url = '../action') {
     return updateServer(action, jsonFormData, url);
 }
 
-function updateServer(action, data = null, url = '../action') {
-    return postData(action,data,url)
-        .then( function(res){return res ? res.json() : res;})
+function updateServer(action, data = null, url = '../action', html = false) {
+    return postData(action,data,url, html ? 'text/html' : 'application/json')
+        .then( function(res){ return res ? (html ? res.text() :  res.json()) : res; })
         .then( function(res){
             if (!res || res.error) {
                 log('Fetch error',res ? res.error : 'No response from server');
@@ -219,10 +254,7 @@ function updateMultiple(urlIds, urlPrefix, action, data) {
     var updates = [];
     for (var i=0, e=urlIds.length; i < e; i++) {
         var urlSuffix = urlIds[i].value || urlIds[i] || "null";
-        updates.push(updateServer(action,data,urlPrefix+urlSuffix)
-            .then( function(result) {
-                log("Completed "+action+": "+JSON.stringify(result));
-            }));
+        updates.push(updateServer(action,data,urlPrefix+urlSuffix));
     }
     return Promise.all(updates);
 }
