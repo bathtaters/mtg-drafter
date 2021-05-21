@@ -15,7 +15,8 @@ const sessionListData = ({
   date: updatedAt.toLocaleDateString(),
   time: updatedAt.toLocaleTimeString(),
   aggDate: updatedAtAgg.toLocaleDateString(),
-  aggTime: updatedAtAgg.toLocaleTimeString()
+  aggTime: updatedAtAgg.toLocaleTimeString(),
+  sortVal: updatedAtAgg.valueOf()
 });
 
 
@@ -31,7 +32,7 @@ const playerData = ({ players, hostId }) => Promise.all(players.map(async ({
     0);
     return {
       cookieId, name, position, connected,
-      isHost: hostId.toString() == _id.toString(),
+      isHost: hostId ? hostId.toString() == _id.toString() : false,
       isDrafting, pick, packsHeld,
       opponent: opponent ? { name: opponent.name, id: opponent.cookieId } : 0,
       lands: cards.basicLands,
