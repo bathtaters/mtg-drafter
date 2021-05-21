@@ -59,6 +59,7 @@ const uploadOptions = {
 }
 const viewDirs = [
   path.join(__dirname, 'views', 'admin'),
+  path.join(__dirname, 'views', 'admin', 'includes'),
   path.join(__dirname, 'views', 'draft'),
   path.join(__dirname, 'views', 'generic')
 ];
