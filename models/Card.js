@@ -58,7 +58,7 @@ cardSchema.virtual('printedName').get(function(){
     return this.faceName || this.name;
 });
 cardSchema.virtual('imgUrl').get(function(){
-    if (this.noGath || !this.gathererImg) {
+    if (this.noGath || !this.multiverseId) {
         return this.side == 'b' ? this.scryfallImgBack : this.scryfallImg;
     }
     return this.gathererImg;
