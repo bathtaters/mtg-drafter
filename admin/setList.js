@@ -4,16 +4,16 @@ const Card = require('../models/Card')
 
 const setListKey = 'setList'
 
-function settingsSetList() { return Settings.get(setListKey); }
+function settingsSetList() { return Settings.get(setListKey).then(l => l || []); }
 function filteredSetList() { return settingsSetList().then(list => list.filter(set => set.enabled)); }
 
 async function getCardInfo(setCode) {
     // Return info from card list
-    const cards = await Card.find({setCode},'scryfallImg gathererImg noGath');
+    const cards = await Card.find({setCode},'multiverseId noGath');
 
     let info = { cardCount: cards.length, gatherer: 0, scryfall: 0 };
     cards.forEach( card => {
-        if (card.noGath || !card.gathererImg) info.scryfall++;
+        if (card.noGath || !card.multiverseId) info.scryfall++;
         else info.gatherer++;
     })
     // convert to percents
@@ -47,7 +47,7 @@ async function updateSetList(enableNew = true) {
         const index = setListOld.findIndex(oldSet => newSet.code === oldSet.code);
         if (index != -1) continue;
         const insert = setListOld.findIndex(oldSet => newSet.releaseDate > oldSet.releaseDate);
-        await appendSetData(newSet, enableNew)
+        newSet = await appendSetData(newSet, enableNew)
         await Settings.push(setListKey,newSet,insert);
         counter++;
     }
