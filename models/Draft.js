@@ -14,14 +14,6 @@ const { draftStatus, timeFormat } = require('../config/definitions');
 const DraftDB = mtgDb.connection.then(c=>c.db.collection('sessions'));
 
 // Draft Static Methods
-//// EVENTUALLY DELETE THIS ++++ SEARCH findBySessionId REPLACE WITH findById ////
-draftSchema.statics.findBySessionId = function(sessionId, proj='', opt={}) {
-    if (sessionId.length == 6) return this.findById(sessionId, proj, opt);
-    const objId = convert.b64ToObjId(sessionId);
-    try { mtgDb.Types.ObjectId(objId); }
-    catch(e) { console.error('SessionID ("'+sessionId+'") Error: '+e.message); return; }
-    return Draft.findById(objId, proj, opt).exec();
-};
 draftSchema.statics.disconnectAll = function(by='') {
     // Disconnect all players w/o updating timestamps
     const logEntry = (new Date()).toLocaleString(...timeFormat)+': Server reset'+ (by ? ' by '+by : '') + ' (All players disconnected).';

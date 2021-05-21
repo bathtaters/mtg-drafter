@@ -80,7 +80,9 @@ function landCounts(req, res, next) {
 
 
 // --------------- Import Session/Player from database and add to body data
-const draftPathRe = /draft\/([\w_-]{16})(?:$|\/)/;
+
+const draftPathRe = new RegExp(`draft\\/(\\w{${validator.limits.sessionId.min}})(?:$|\\/)`)
+// const draftPathRe = /draft\/([\w_-]{16})(?:$|\/)/;
 async function getDraftObjects(req, res, next) {
 
   // URL is called from outside a session
@@ -95,7 +97,7 @@ async function getDraftObjects(req, res, next) {
   }
 
   // Load session from database
-  const session = await Draft.findBySessionId(sessionId);
+  const session = await Draft.findById(sessionId);
   if (!session) {
     logging.log('SessionId not found: '+sessionId);
     return next();
@@ -136,7 +138,7 @@ const draftObjs = validator.cookieRules().concat(validator.validate, getDraftObj
 async function sessionObjs(req, res, next) {
 
   // Get Session from URL -- Minus pack data
-  req.body.session = await Draft.findBySessionId(req.params.sessionId,'-packs');
+  req.body.session = await Draft.findById(req.params.sessionId,'-packs');
   if (!req.body.session) return res.reply({error: 'Session "'+req.params.sessionId+'" does not exist.'});
 
   // Get player from POST (disconnect) -- Only retrieve name/connected

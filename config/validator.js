@@ -6,7 +6,7 @@ const { width } = require('../controllers/draft/sessionURL');
 const limits = {
     // Generic
     base64id: { min: 16, max: 16 },         // chars in sessionId/playerId
-    sessionId:{ min: width, max: 16 },      // chars in sessionId //// EVENTUALLY DELETE 16, make 'width'
+    sessionId:{ min: width, max: width },   // chars in sessionId
 
     // Setup Page
     draftType: ['cubeType','boosterType'],  // enum
