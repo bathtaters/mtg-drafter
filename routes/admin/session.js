@@ -8,6 +8,7 @@ const { sessionListData, playerData } = require('../../controllers/shared/popula
 const { addSlash, sessionObjs } = require('../../controllers/shared/middleware');
 const { daysAgo } = require('../../controllers/shared/basicUtils');
 const fileOps = require('../../controllers/draft/fileOps');
+const asyncPool = require('tiny-async-pool');
 
   
    
@@ -16,7 +17,7 @@ const fileOps = require('../../controllers/draft/fileOps');
 
 // Get page
 router.get('/:sessionId', addSlash, async function(req, res, next) {
-    const session = await Draft.findBySessionId(req.params.sessionId);
+    const session = await Draft.findById(req.params.sessionId);
     if (!session) return res.send('Session "'+req.params.sessionId+'" does not exist.');
 
     const players = await playerData(session);
@@ -36,18 +37,25 @@ router.get('/:sessionId', addSlash, async function(req, res, next) {
 
 // Remove based on sessionId
 router.post('/:sessionId/Delete', sessionObjs, async function(req, res, next) {
-    await req.body.session.deleteOne();
-    return res.reply({sessionIds: req.body.session.sessionId, action: 'Delete'});
+    const sessionId = await Draft.findByIdAndDelete(req.body.session._id).then(s=>s ? s._id : s);
+    return res.reply({sessionId: sessionId, action: 'Delete'});
 });
 
 // Remove based on date
 router.post('/:sessionId/Clear', async function(req, res, next) {
-    const sessions = await Draft.find({updatedAt: {$lte: daysAgo(req.body.clearDays)}},'_id')
-    const sessionIds = await Promise.all(sessions.map(async session => {
-      await session.deleteOne(); return session.sessionId;
-    }));
+    const sessions = await Draft.find({updatedAt: {$lte: daysAgo(req.body.clearDays)}}, '_id')
+        .then(res=>res.map(s=>s._id));
+    const sessionIds = await asyncPool(100, sessions, sessionId => 
+        Draft.findByIdAndDelete(sessionId).then(session => session ? session._id : session)
+    );
 
-    return res.reply({sessionIds, action: 'Clear'});
+    // let session = true, sessionIds = [];
+    // while (session) {
+    //     session = await Draft.findOneAndDelete({updatedAt: {$lte: daysAgo(+req.body.clearDays + 1)}});
+    //     session && sessionIds.push(session._id);
+    // }
+    
+    return res.reply(sessionIds.map(sessionId => ({sessionId, action: 'Clear'})));
 });
 
 // Disconnect all players
