@@ -43,19 +43,12 @@ router.post('/:sessionId/Delete', sessionObjs, async function(req, res, next) {
 
 // Remove based on date
 router.post('/:sessionId/Clear', async function(req, res, next) {
-    const sessions = await Draft.find({updatedAt: {$lte: daysAgo(req.body.clearDays)}}, '_id')
-        .then(res=>res.map(s=>s._id));
-    const sessionIds = await asyncPool(100, sessions, sessionId => 
-        Draft.findByIdAndDelete(sessionId).then(session => session ? session._id : session)
+    const sessions = await Draft.find({}, 'updatedAt players');
+    const sessionIds = await asyncPool(100, sessions, session =>
+        session.updatedAtAgg < daysAgo(+req.body.clearDays) ?
+            session.deleteOne().then(s=>s._id) : null
     );
-
-    // let session = true, sessionIds = [];
-    // while (session) {
-    //     session = await Draft.findOneAndDelete({updatedAt: {$lte: daysAgo(+req.body.clearDays + 1)}});
-    //     session && sessionIds.push(session._id);
-    // }
-    
-    return res.reply(sessionIds.map(sessionId => ({sessionId, action: 'Clear'})));
+    return res.reply(sessionIds.filter(Boolean).map(sessionId => ({sessionId, action: 'Clear'})));
 });
 
 // Disconnect all players

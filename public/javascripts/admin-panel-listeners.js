@@ -70,6 +70,7 @@ function clickSession(e) {
         data.clearDays = document.getElementById("clearDays").value;
         if (!confirm("Are you sure you wish to delete all drafts older than "+data.clearDays+" days?")) {return;}
     } else {
+        if (action == "Delete" && !confirm("Are you sure you wish to delete all selected drafts?")) {return;}
         sessions = getSelectedOptions(document.getElementById("sessionBox"));
     }
 
@@ -107,9 +108,19 @@ function clickSets(e) {
 
     var data = {};
     if (action == "ToggleVisibility") {
-        data.setCodes = getSelectedOptions(document.getElementById("setsBox"));
+        var setOpt = document.getElementById("setsBox");
+        data.setCodes = getSelectedOptions(setOpt);
+        setOpt = getOptions(setOpt, data.setCodes);
+        if (setOpt && setOpt.length == 1 && setOpt[0].classList.contains("setDef")) {
+            return alert("Cannot hide default set: "+data.setCodes[0]+".");
+        }
     } else if (action == "MakeDefault") {
-        data.setCode = document.getElementById("setsBox").value;
+        var setOpt = document.getElementById("setsBox");
+        data.setCode = setOpt.value || setOpt.text;
+        setOpt = getOption(setOpt, data.setCode);
+        if (setOpt && setOpt.classList.contains("setOff")) {
+            return alert("Cannot make "+data.setCode+" default because it is hidden.");
+        }
     } else {
         loadingSplash();
         data.defaultVisible = document.getElementById("setsDefault").value;
@@ -126,11 +137,14 @@ function clickSets(e) {
             if (newDefault) { newDefault.classList.add("setDef"); }
             
         // Just update on ToggleVisibility
-        } else if (result.action == "ToggleVisibility" && result.results && Array.isArray(result.set)) {
+        } else if (
+            result.action == "ToggleVisibility" && Array.isArray(result.results) &&
+            (result.results.length > 1 || result.results[0] >= 0) && Array.isArray(result.set)
+        ) {
             var setBox = document.getElementById("setsBox");
-            for (var i=0, e=result.set.length; i < e; i++) {
-                if (result.results[i] < 0) { continue; }
-                var setOpt = getOption(setBox, result.set[i]);
+            for (var i=result.set.length; i > 0; i--) {
+                if (result.results[i-1] < 0) { result.set.splice(i-1,1); continue; }
+                var setOpt = getOption(setBox, result.set[i-1]);
                 if (!setOpt) { continue; }
                 if (setOpt.classList.contains("setOff")) {
                     setOpt.classList.remove("setOff");
@@ -158,7 +172,7 @@ function clickSets(e) {
             return log("Error updating set(s): "+action, result.error || "Response from server: "+JSON.stringify(result));
         }
 
-        log("Completed "+result.action+" on: "+result.set);
+        log("Completed "+result.action+" on: "+(result.set.length ? result.set : "No sets"));
     });
 }
 

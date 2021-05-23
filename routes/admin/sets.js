@@ -30,11 +30,14 @@ router.post('/ToggleVisibility', async function(req, res, next) {
 
 // Toggle set that starts in picker
 router.post('/MakeDefault', async function(req, res, next) {
-  let result = 'Invalid action.';
+  let result = false;
 
   const setData = await setList.getSetData(req.body.setCode);
   if (!setData.enabled) console.error(req.body.setCode+' is not a set or set is hidden.');
-  else result = await Settings.set('defaultSet',req.body.setCode);
+  else {
+    await Settings.set('defaultSet',req.body.setCode);
+    result = true;
+  }
 
   return res.reply({set: req.body.setCode || 'all', action: 'MakeDefault', result});
 });

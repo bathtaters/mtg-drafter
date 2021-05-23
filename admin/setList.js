@@ -57,7 +57,7 @@ async function updateSetList(enableNew = true) {
 async function setVisibility(code, enabled = undefined) { // No value for enabled will toggle
     const setList = await settingsSetList();
     const index = setList.findIndex(set => code === set.code);
-    if (index == -1) return console.error('Cannot find set: '+code);
+    if (index == -1) return console.error('Cannot find set: '+code) || index;
     let newValue = setList[index];
     newValue.enabled = enabled === undefined ? !newValue.enabled : enabled;
     return Settings.setIndex(setListKey,index,newValue);

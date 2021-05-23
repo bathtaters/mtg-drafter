@@ -62,7 +62,7 @@ router.get('/draftsList', async function(req, res, next) {
 // Just Sets panel
 router.get('/setsList', async function(req, res, next) {
   const sets = await setList.fullList();
-  const defaultSet = Settings.get('defaultSet');
+  const defaultSet = await Settings.get('defaultSet');
   return res.render('setsList', { sets, defaultSet });
 });
 
