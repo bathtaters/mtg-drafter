@@ -77,13 +77,14 @@ function copyTextToClipboard(text) {
 
 // Get option elements by value/text
 function getOptions(selectElement, optionValues) {
+    var remaining = optionValues.filter(function(){return true;});
     var opts = selectElement.options, result = [];
     for (var opt, i = 0; opt = opts[i]; i++) {
-        var index = optionValues.indexOf(opt.value || opt.text);
+        var index = remaining.indexOf(opt.value || opt.text);
         if (index != -1) {
             result.push(opt);
-            optionValues.splice(index,1);
-            if (!optionValues.length) { break; }
+            remaining.splice(index,1);
+            if (!remaining.length) { break; }
         }
     }
     return result;
@@ -242,9 +243,10 @@ function updateServer(action, data = null, url = '../action', html = false) {
         .then( function(res){ return res ? (html ? res.text() :  res.json()) : res; })
         .then( function(res){
             if (!res || res.error) {
-                log('Fetch error',res ? res.error : 'No response from server');
+                log('Fetch error',res ? res.error : 'No response from server: '+JSON.stringify(res));
                 // delete res.error;
             }
+            log('Response: '+JSON.stringify(res));
             return res;
         })
         .catch( error => log('Fetch error',error) );
