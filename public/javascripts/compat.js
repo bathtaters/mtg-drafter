@@ -218,6 +218,7 @@ function setButtonStatus(selectElem, buttonIds) {
 mtgDrafterGlobals.sort = {
     colorKey: "WUBRG",
     rarityKey: ["mythic","rare","uncommon","common"],
+    bgdKey: ["None","W","U","B","R","G","Multi","Land"],
     defaultAlgo: function(a, b){
         if (!isNaN(a) && !isNaN(b)) { return a - b; }
         return a < b ? -1 : (a > b ? 1 : 0);
@@ -231,6 +232,10 @@ mtgDrafterGlobals.sort = {
     rarityAlgo: function(a, b) {
         return mtgDrafterGlobals.sort.rarityKey.indexOf(a)
             - mtgDrafterGlobals.sort.rarityKey.indexOf(b);
+    },
+    bgdAlgo: function(a, b) {
+        return mtgDrafterGlobals.sort.bgdKey.indexOf(a.replace(/^bgd/,""))
+            - mtgDrafterGlobals.sort.bgdKey.indexOf(b.replace(/^bgd/,""));
     }
 }
 // Sort a table based on column number
@@ -242,6 +247,8 @@ function sortTable(table, colIndex, reverse=false, sortAlgo=null, getText=functi
             sortAlgo = mtgDrafterGlobals.sort.colorAlgo;
         } else if (sortAlgo.toLowerCase() == "rarity") {
             sortAlgo = mtgDrafterGlobals.sort.rarityAlgo;
+        } else if (sortAlgo.toLowerCase() == "bgdcolor") {
+            sortAlgo = mtgDrafterGlobals.sort.bgdAlgo;
         } else { sortAlgo = null; }
     }
     if (!sortAlgo) { sortAlgo = mtgDrafterGlobals.sort.defaultAlgo; }
