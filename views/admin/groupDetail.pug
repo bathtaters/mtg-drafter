@@ -1,0 +1,31 @@
+extends ../generic/layout
+
+include ./includes/adminMixins.pug
+
+block scripts
+  script(src='/javascripts/admin-group-listeners.js')
+
+block content
+    .grpHeader
+        h1 Card Explorer
+        .grpViewContainer
+            input.button(type='button' id='showViewForm' value='View Settings')
+            form#viewForm.popupBox.hidden
+                +checkbox('showBgds', 'Show Background Colors', false)
+                each key in cardDataKeys
+                    if key != 'br'
+                        +checkbox(key+'Hide', varName(key), true, 'grpViewCheckbox')
+    .grpContainer
+        table#grpTable.hideBgds
+            thead
+                tr
+                    each key in cardDataKeys
+                        if key != 'br'
+                            th(class=key+'Col' id=key+'Hdr')= varName(key)+'  '
+            tbody
+                each card in cardGroup
+                    tr(id=card.uuid class=card.bgdColor)
+                        each key in cardDataKeys
+                            if key != 'br'
+                                td(class=key+'Col')
+                                    +formatValue(key, card[key], false, true)
