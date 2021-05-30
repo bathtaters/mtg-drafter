@@ -214,6 +214,69 @@ function setButtonStatus(selectElem, buttonIds) {
     }
 }
 
+// Setup sort algorithms
+mtgDrafterGlobals.sort = {
+    colorKey: "WUBRG",
+    rarityKey: ["mythic","rare","uncommon","common"],
+    defaultAlgo: function(a, b){
+        if (!isNaN(a) && !isNaN(b)) { return a - b; }
+        return a < b ? -1 : (a > b ? 1 : 0);
+    },
+    colorAlgo: function(a,b){
+        if (a.length == 1 && b.length == 1) {
+            return mtgDrafterGlobals.sort.colorKey.indexOf(a)
+                - mtgDrafterGlobals.sort.colorKey.indexOf(b);
+        } else { return a.length - b.length; }
+    },
+    rarityAlgo: function(a, b) {
+        return mtgDrafterGlobals.sort.rarityKey.indexOf(a)
+            - mtgDrafterGlobals.sort.rarityKey.indexOf(b);
+    }
+}
+// Sort a table based on column number
+function sortTable(table, colIndex, reverse=false, sortAlgo=null, getText=function(e){return e.innerText;}) {
+
+    // Pick sort algorithm
+    if (typeof sortAlgo == "string") {
+        if (sortAlgo.toLowerCase() == "colors") {
+            sortAlgo = mtgDrafterGlobals.sort.colorAlgo;
+        } else if (sortAlgo.toLowerCase() == "rarity") {
+            sortAlgo = mtgDrafterGlobals.sort.rarityAlgo;
+        } else { sortAlgo = null; }
+    }
+    if (!sortAlgo) { sortAlgo = mtgDrafterGlobals.sort.defaultAlgo; }
+
+    // Get rows
+    var body = table.getElementsByTagName("tbody");
+    if (body && body.length) { table = body[0]; } // Get body
+    let rows = Array.from(table.querySelectorAll("tbody > tr"));
+    if (!body || !body.length) { rows = rows.slice(1); } // Ignore header
+  
+    // Column selector
+    let qs = "td:nth-child(" + colIndex + ")";
+    
+    // Sort rows by column selector
+    rows.sort( function(rowA,rowB) {
+      let cellA = rowA.querySelector(qs);
+      let cellB = rowB.querySelector(qs);
+      return (reverse ? -1 : 1) * sortAlgo(getText(cellA), getText(cellB));
+    });
+  
+    // Apply sort to page
+    for (var i=0, e=rows.length; i < e; i++) {
+        table.appendChild(rows[i]);
+    }
+}
+
+
+
+
+
+
+
+
+// ------------------ FETCH ------------------------ //
+
 
 // Fetch requests
 function postData(action, data = null, url = '../action', content = 'application/json') {
