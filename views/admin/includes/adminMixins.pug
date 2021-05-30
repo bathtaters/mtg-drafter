@@ -5,8 +5,9 @@ block header
   link(rel='stylesheet' href='/stylesheets/admin.css')
 
 //- Formats a value in key/value pairs
-mixin formatValue(key, val, editable)
-  - var detailCls = 'detailVal' + (editable ? ' unlocked' : ' locked')
+mixin formatValue(key, val, editable, mini=false, baseClass='detailVal')
+  - var maxMiniString = 40
+  - var detailCls = baseClass + (editable ? ' unlocked' : ' locked')
 
   //- NUMBERS
   if (typeof val === 'number')
@@ -18,15 +19,21 @@ mixin formatValue(key, val, editable)
 
   //- EMPTY VALUES
   else if !val || (Array.isArray(val) && !val.length)
-    span.empty(class=detailCls id=key role='textbox') Empty
+    span.empty(class=detailCls id=key role='textbox')= mini ? ' ' : 'Empty'
 
   //- LINKS
   else if val.startsWith && val.startsWith('http')
-    a(class=detailCls id=key role='textbox' href=val target='_blank')= val
+    if mini
+      a(class=detailCls id=key role='textbox' href=val target='_blank') URL
+    else  
+      a(class=detailCls id=key role='textbox' href=val target='_blank')= val
 
   //- UUIDs
-  else if isUuid(val) && key != 'scryfallId'
-    a(class=detailCls id=key role='textbox' href='../'+val+'/')= val
+  else if isUuid(val) && !key.includes('scryfallId')
+    if mini
+      a(class=detailCls id=key role='textbox' href='../'+val+'/' target='_blank') Card
+    else
+      a(class=detailCls id=key role='textbox' href='../'+val+'/')= val
 
   //- DATEs
   else if (val instanceof Date)
@@ -35,17 +42,22 @@ mixin formatValue(key, val, editable)
   //- ARRAYs
   else if Array.isArray(val)
     span.arrayWrapper(class=detailCls id=key role='textbox')
-      each entry in val
-        if isUuid(entry)
-          a.detailArr(href='../'+entry+'/')= entry
-        else if (typeof entry === 'string')
-          span.detailArr !{symbFix(entry)}
-        else
-          span.detailArr !{entry}
+      each entry, i in val
+        +formatValue(key+'-'+i,entry,false,mini,'detailArr')
+        //- if isUuid(entry)
+        //-   a.detailArr(href='../'+entry+'/')= entry
+        //- else if (typeof entry === 'string')
+        //-   span.detailArr !{symbFix(entry)}
+        //- else
+        //-   span.detailArr !{entry}
 
   //- STRINGS
   else if (typeof val === 'string')
-    span(class=detailCls id=key role='textbox') !{symbFix(val)}
+    - var strCls = ''
+    if mini && val.length > maxMiniString
+      - strCls = ' strPopup popupBox'
+      span(class=detailCls id=key role='textbox') !{symbFix(val.slice(0,maxMiniString - 5)) + '...'}
+    span(class=detailCls+strCls id=key role='textbox') !{symbFix(val)}
 
   //- OTHER
   else
