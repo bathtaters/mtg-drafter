@@ -212,15 +212,16 @@ span.editorSelect
 
 // Database Box
 
-.grpHeader
+// Header
+.explorerHeader
     margin: 1em
 
-.grpHeader h1
-.grpViewContainer
+.explorerHeader h1
+.explorerViewContainer
     display: inline-block
     vertical-align: middle
 
-div.grpViewContainer
+div.explorerViewContainer
     position: relative
 
     & .button
@@ -233,10 +234,82 @@ div.grpViewContainer
         flex-wrap: wrap
         justify-content: space-between
 
-        & .grpViewCheckbox
+        & .explorerViewCheckbox
             margin: 0.2em 0.5em
 
-.grpContainer
+
+// Query
+#queryFilterTitle
+#queryDisplayTitle
+    font-size: 1.2em
+    font-weight: bold
+    margin-inline-end: 0.35em
+    opacity: 0.75
+
+#queryDisplay
+#queryFilter
+#queryButtons
+    display: flex
+    flex-direction: row
+    flex-wrap: wrap
+    justify-content: flex-start
+    align-items: baseline
+    margin: 1em
+
+.queryFilterItem
+    margin: 0.2em 0.8em
+
+    & > input
+        margin-left: 0.2em
+
+        &.button
+            font-size: 0.7em
+            width: 2.3em
+            height: 2.0em
+            padding: 0
+            border-width: 0.3em
+
+#queryButtons > .button
+    margin: 0 1em
+    padding: 0.3em 0.5em
+
+#queryDisplayTitle
+    margin-inline-end: 0.35em
+
+.queryDisplayItem
+    margin-inline: 0.45em
+
+.queryName
+    font-weight: bold
+    font-style: italic
+    margin-inline: 0.15em
+
+.queryVal
+    margin-inline: 0.4em 0.15em
+
+    &::before
+        font-style: italic
+        font-size: 0.7em
+        opacity: 0.6
+        margin-inline-end: 0.6em
+
+    &.queryAnd::before
+        content: 'AND'
+
+    &.queryOr::before
+        content: 'OR'
+
+.rmvKey
+    display: inline-block
+    border: none
+    vertical-align: super
+    font-size: .7em
+    padding: 0 0.3em 0.1em
+    line-height: 1.2em
+
+
+// Results
+.resultsContainer
     background: #111
     margin: 0.5em
     max-height: calc(100vh - 10em)
@@ -244,7 +317,7 @@ div.grpViewContainer
     width: fit-content
     max-width: calc(100% - 1em)
 
-#grpTable
+#resultsTable
     table-layout: auto
     border-collapse: collapse
     font-size: 0.9em
@@ -312,6 +385,7 @@ div.grpViewContainer
 
 .popupBox
     position: absolute
+    color: bodyText
     background: rgba(16,16,16,0.9)
     z-index: 100
     padding: 0.5em

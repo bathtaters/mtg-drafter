@@ -1,0 +1,58 @@
+extends ../generic/layout
+
+include ./includes/adminMixins.pug
+
+block scripts
+  script(src='/javascripts/admin-explorer-listeners.js')
+
+block content
+    .explorerHeader
+        h1 Card Explorer
+        .explorerViewContainer
+            input.button(type='button' id='showViewForm' value='View Settings')
+            form#viewForm.popupBox.hidden
+                +checkbox('showBgds', 'Show Background Colors', false)
+                each key in cardDataKeys
+                    if key != 'br'
+                        +checkbox(key+'Hide', varName(key), true, 'explorerViewCheckbox')
+            input.button(type='button' id='showQueryForm' value='Show Search')
+    
+    hr
+
+    #queryContainer.hidden
+        #queryDisplay
+            #queryDisplayTitle Query: 
+            //- .queryDisplayItem#keyQuery
+                span.queryName Key
+                span.queryVal.queryAnd Value1
+                a.button.rmvKey(type='button' id='keyRemove' value='x')
+                span.queryVal.queryOr Value2
+                a.button.rmvKey(type='button' id='keyRemove' value='x')
+        #queryFilter
+            //- #queryFilterTitle Filter: 
+            each key in cardDataKeys
+                if key != 'br'
+                    .queryFilterItem(id=key+'FilterItem')
+                        label.filterName(for=key+'Filter' id=key+'FilterName')= varName(key)
+                        input.filterVal(type='text' id=key+'Filter' name=key+'Filter')
+                        input.button.filterButton(type='button' id=key+'And' value='&')
+                        input.button.filterButton(type='button' id=key+'Or' value='OR')
+        #queryButtons
+            input.button(type='button' id='searchQuery' value='Search')
+            input.button(type='button' id='resetQuery' value='Reset')
+        hr
+
+    .resultsContainer
+        table#resultsTable.hideBgds
+            thead
+                tr
+                    each key in cardDataKeys
+                        if key != 'br'
+                            th(class=key+'Col' id=key+'Hdr')= varName(key)+'  '
+            tbody
+                each card in cardGroup
+                    tr(id=card.uuid class=card.bgdColor)
+                        each key in cardDataKeys
+                            if key != 'br'
+                                td(class=key+'Col')
+                                    +formatValue(key, card[key], false, true)
