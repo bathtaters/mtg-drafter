@@ -6,6 +6,10 @@
     "start": "node ./bin/www",
     "inspect": "node --inspect ./bin/www"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bathtaters/mtg-drafter.git"
+  },
   "dependencies": {
     "compression": "^1.7.4",
     "cookie-parser": "~1.4.4",
