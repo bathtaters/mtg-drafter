@@ -43,15 +43,18 @@ draftSchema.methods.findPlayerByCookie = function(cookieId) {
     return this.findPlayer(objId);
 };
 draftSchema.methods.getPack = function(packIndex) {
-    if (!draftStatus.isIn(this.status)) return;
+    console.debug('GET PACK. status:',this.status,'round:',this.round,'index:',packIndex);
+    if (!draftStatus.isIn(this.status)) return console.debug('CANNOT GET PACK!');
     return loopArray(this.packs[this.round], packIndex)
         .filter(c => !c.picked); // Only see unpicked cards
 };
 draftSchema.methods.pullCard = function(pack, draftId) {
-    if (!pack) return;
+    if (!pack) return console.debug('CANNOT PULL CARD!');
     const pickIndex = pack.findIndex( card => card._id == draftId );
+    console.debug('PULL CARD. status:',this.status,'round:',this.round,'index:',pickIndex,'currentVal:',pack[pickIndex] && pack[pickIndex].picked);
     if (pickIndex == -1) return;
     pack[pickIndex].picked = 1;
+    console.debug('newVal:',pack[pickIndex].picked);
     return pack[pickIndex];
 };
 draftSchema.methods.log = function(entry) {
@@ -134,7 +137,7 @@ playerSchema.methods.getLandTotal = function(board = undefined) {
 
 // External player methods
 const playerOps = require('../controllers/draft/playerOps');
-const { getURLCode } = require('../controllers/draft/sessionURL');
+// const { getURLCode } = require('../controllers/draft/sessionURL');
 playerSchema.methods.setAutoLands = require('../controllers/draft/autoLands');
 playerSchema.methods.passPack = playerOps.passPack;
 playerSchema.methods.pickCard = playerOps.pickCard;
