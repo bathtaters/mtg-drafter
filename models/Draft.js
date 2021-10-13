@@ -43,18 +43,15 @@ draftSchema.methods.findPlayerByCookie = function(cookieId) {
     return this.findPlayer(objId);
 };
 draftSchema.methods.getPack = function(packIndex) {
-    console.debug('GET PACK. status:',this.status,'round:',this.round,'index:',packIndex);
-    if (!draftStatus.isIn(this.status)) return console.debug('CANNOT GET PACK!');
+    if (!draftStatus.isIn(this.status)) return;
     return loopArray(this.packs[this.round], packIndex)
         .filter(c => !c.picked); // Only see unpicked cards
 };
 draftSchema.methods.pullCard = function(pack, draftId) {
-    if (!pack) return console.debug('CANNOT PULL CARD!');
+    if (!pack) return;
     const pickIndex = pack.findIndex( card => card._id == draftId );
-    console.debug('PULL CARD. status:',this.status,'round:',this.round,'index:',pickIndex,'currentVal:',pack[pickIndex] && pack[pickIndex].picked);
     if (pickIndex == -1) return;
     pack[pickIndex].picked = 1;
-    console.debug('newVal:',pack[pickIndex].picked);
     return pack[pickIndex];
 };
 draftSchema.methods.log = function(entry) {
