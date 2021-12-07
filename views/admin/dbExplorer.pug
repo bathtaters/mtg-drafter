@@ -8,6 +8,7 @@ block scripts
 block content
     .explorerHeader
         h1 Card Explorer
+        a.headerLink(href='../../') back
         .explorerViewContainer
             input.button(type='button' id='showViewForm' value='View Settings')
             form#viewForm.popupBox.hidden
@@ -38,8 +39,8 @@ block content
                         input.button.filterButton(type='button' id=key+'And' value='&')
                         input.button.filterButton(type='button' id=key+'Or' value='OR')
         #queryButtons
-            input.button(type='button' id='searchQuery' value='Search')
-            input.button(type='button' id='resetQuery' value='Reset')
+            input.button#searchQuery(type='button' value='Search')
+            input.button#resetQuery(type='button' value='Reset')
         hr
 
     .resultsContainer
@@ -54,5 +55,10 @@ block content
                     tr(id=card.uuid class=card.bgdColor)
                         each key in cardDataKeys
                             if key != 'br'
-                                td(class=key+'Col')
+                                -var isTn = key === 'uuid' && card.multiverseId
+                                td(
+                                    class=key+'Col'+(isTn ? ' thumbnail' : '')
+                                    mvid=(isTn ? card.multiverseId : null)
+                                )
                                     +formatValue(key, card[key], false, true)
+                                    

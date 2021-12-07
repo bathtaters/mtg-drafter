@@ -24,14 +24,32 @@ function initListeners() {
         addListenerAllBrswrs(hdrCells[i],"click",clickHdrCell);
     }
 
+    // Query Buttons
+    addListenerAllBrswrs(document.getElementById("resetQuery"),"click",clickResetQuery);
+    addListenerAllBrswrs(document.getElementById("searchQuery"),"click",clickSearchQuery);
+
     // Setup stuff
     setupHiding();
+}
+
+function getQueryValues() {
+    var queryVals = document.getElementsByClassName("queryVal");
+    var result = {};
+    for (var i=0,e=queryVals.length; i<e; i++) {
+        var key = queryVals[i].id.replace(/Value\d+/,"");
+        var multi = "and";
+        if (queryVals[i].classList.contains("queryOr")) { multi = "or"; }
+        if (!result[key]) { result[key] = {}; }
+        if (!result[key][multi]) { result[key][multi] = []; }
+        result[key][multi].push(queryVals[i].innerText);
+    }
+    return result;
 }
 
 function setupHiding() {
     // Hide these columns by default
     var toHide = [
-        "name","faceName","types","side","bgdColor","monoColor","text","footer",
+        "printedName","faceName","types","side","bgdColor","monoColor","text","footer",
         "imgUrl","multiverseId","gathererImg","scryfallId","scryfallImg","scryfallImgBack",
         "otherFaceIds","variations","printings"
     ];
@@ -85,6 +103,16 @@ function resetColumnClasses() {
 
 function removeQuery(key, index=0) {
     // No index removes entire key
+
+    // No key removes all queries
+    if (!key) {
+        var queryParent = document.getElementById("queryDisplay");
+        var queries = document.getElementsByClassName("queryDisplayItem");
+        for (var i=queries.length; i>0; i--) {
+            queryParent.removeChild(queries[i-1]);
+        }
+        return;
+    }
 
     var queryBox = document.getElementById(key + "Query");
 
@@ -260,4 +288,58 @@ function clickRemoveQuery(e) {
     removeQuery(key, index);
 }
 
+function clickResetQuery(e) {
+    var elem = this || e.target || e.srcElemnt;
+    log("clicked: "+elem.id);
+    removeQuery(null,null);
+}
+
+function clickSearchQuery(e) {
+    var elem = this || e.target || e.srcElemnt;
+    log("clicked: "+elem.id);
+    customSubmit({filter: getQueryValues()});
+}
+
+
+// Setup Mouseover
+
+function mtgExplorerGetImages() {
+    function getImgUrl(gathId) {
+        return "https://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid="+gathId;
+    }
+    var localCache = {};
+    
+    function placeImage(wrapper) {
+        var newImage = document.createElement("img");
+        newImage.src = getImgUrl(wrapper.getAttribute('mvid'));
+        newImage.classList.add("thumbnail-img");
+        wrapper.appendChild(newImage);
+    }
+
+    function fetchImages(arr) {
+        for (var i=0,e=arr.length; i<e; i++){
+            if (arr[i].getAttribute('mvid')) {
+                placeImage(arr[i]);
+            }
+        }
+        // var cont = i + 1 < arr.length;
+        // return fetch(getImgUrl(arr[i].getAttribute('mvid')), {mode: 'no-cors'})
+        //     .then(response => response.blob())
+        //     .then(imageBlob => {
+        //         var imgURL = URL.createObjectURL(imageBlob);
+        //         localCache[arr[i].getAttribute('mvid')] = imgURL;
+        //         placeImage(arr[i]);
+        //         cont && setTimeout(()=>fetchImages(arr, i+1),10);
+        //     });
+    }
+
+    function loadImages() {
+        var imgs = document.getElementsByClassName("thumbnail");
+        return fetchImages(imgs);
+    }
+    
+    addWindowListenerAllBrswrs("load",loadImages,false);
+}
+
+mtgExplorerGetImages();
 addWindowListenerAllBrswrs("load", initListeners, false);

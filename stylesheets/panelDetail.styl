@@ -308,6 +308,24 @@ div.explorerViewContainer
     line-height: 1.2em
 
 
+// Image Thumbnails
+.thumbnail-img
+  display: none
+  width: 360px
+  height: 510px
+  position: fixed
+
+td.thumbnail
+  background: #555
+  position: relative
+
+.thumbnail:hover > .thumbnail-img
+  display: block
+  top: calc(50vh - 260px)
+  left: calc(2rem + 60px)
+  z-index: 1000
+
+
 // Results
 .resultsContainer
     background: #111
