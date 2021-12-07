@@ -19,13 +19,11 @@ block scripts
     script(src='/javascripts/setup-listeners.js')
 
 block content
-  - var version = '0.4.4'
-
   form#setupForm(action='/', method='post')
     div#setupHeader
       +colorPips('colorPipsHead')
       button#setupTitle.button.settingsButton(type='submit', name='start', disabled='true') Start New Draft
-      p.footerText This site is still under construction (v#{version}) so pardon any clunkiness.
+      p.footerText This site is still under construction (v#{appVersion}) so pardon any clunkiness.
       +colorPips('colorPipsHead')
 
       //- Select draft type
