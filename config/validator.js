@@ -40,7 +40,7 @@ const draftSetupRules = () => [
   body('draftName').default('New Draft').isAscii().bail().stripLow(false).isLength(limits.draftName).escape(),
   body('playerCount').isInt(limits.playerCount),
   body('packCount').optional().isInt(limits.packCount),
-  body('packSize').optional().isInt(limits.packSize),
+  body('packSize').optional().isInt({min:1,max:800}),
   body('setCode').optional().customSanitizer(strToArray).isArray(limits.packCount).withMessage('Is not array or too long'),
   body('setCode.*').isAlphanumeric().withMessage('Contains invalid characters').isLength(limits.setCode).withMessage('Invalid length'),
   //body('cubeFile'), // settings for file import
