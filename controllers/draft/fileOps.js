@@ -20,14 +20,18 @@ const lineToCards = async (line, missing) => {
 
     // Lookup card
     const regexName = new RegExp('^'+trimmed+'$', 'i');
-    const cardId = await Card.findOne({
-        $or: [
+    const cardId = await Card.findOne({ $and: [
+        { $or: [
             { 'name': { $regex: regexName } },
             { 'faceName': { $regex: regexName } }
-        ],
-        'side': { $in: [null, 'a'] },
-        'multiverseId': { $exists: true } // ONLY FINDS IMAGES ON GATHERER
-    },'_id').then( card => card ? card._id : 0)
+        ]},
+        {$or: [
+            { 'skipArt': { $exists: false } },
+            { 'skipArt': false },
+        ]},
+        {'side': { $in: [null, 'a'] }},
+        {'multiverseId': { $exists: true }}, // ONLY FINDS IMAGES ON GATHERER
+    ]},'_id').then( card => card ? card._id : 0)
     
     if (cardId) {
         for (let i=0; i < qty; i++) { found.push(cardId) }

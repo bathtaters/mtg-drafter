@@ -84,7 +84,7 @@ cardDetailLayout = {
         'text','footer','br','imgUrl',
         'multiverseId','gathererImg',
         'scryfallId','scryfallImg','scryfallImgBack',
-        'noGath','br',
+        'noGath','skipArt','br',
         'otherFaceIds','variations','printings', 'br'
     ]
 };

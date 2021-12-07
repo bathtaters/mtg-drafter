@@ -33,6 +33,10 @@ const cardSchema = new mtgDb.Schema({
         default: false,
         alias: 'hasContentWarning'
     },
+    skipArt: {
+        type: Boolean,
+        default: false,
+    },
 
     // Double-faced card data
     faceName: String,
