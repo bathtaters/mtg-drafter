@@ -122,6 +122,7 @@ app.use(function(err, req, res, next) {
 
 // export modules
 const basicUtils = require('./controllers/shared/basicUtils');
+app.locals.appVersion = require('./package.json').version;
 app.locals.symbFix = require('./config/htmlParser').mtgSymbolReplace;
 app.locals.draftStatus = require('./config/definitions').draftStatus;
 app.locals.isUuid = basicUtils.isUuid;
