@@ -284,6 +284,27 @@ function sortTable(table, colIndex, reverse=false, sortAlgo=null, getText=functi
 
 // ------------------ FETCH ------------------------ //
 
+// Custom Submit
+function customSubmit(data = {}, url = './', method='POST') {
+    var form = document.createElement('form');
+    form.method = method;
+    form.action = url;
+  
+    for (var key in data) {
+      if (data.hasOwnProperty(key)) {
+        var newProp = document.createElement('input');
+        newProp.type = 'hidden';
+        newProp.name = key;
+        newProp.value = typeof data[key] === 'object' ? JSON.stringify(data[key]) : data[key];
+  
+        form.appendChild(newProp);
+      }
+    }
+  
+    document.body.appendChild(form);
+    form.submit();
+}
+
 
 // Fetch requests
 function postData(action, data = null, url = '../action', content = 'application/json') {
