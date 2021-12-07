@@ -8,7 +8,7 @@ const fixDb = require('../../admin/fixDb');
 
 
 /* GET cardDetail page. */
-router.get('/:uuid', addSlash, async function(req, res, next) {  
+router.get('/:uuid([^/]{36})', addSlash, async function(req, res, next) {  
     
     // Missing param
     if (!req.params.uuid) {
@@ -40,6 +40,44 @@ router.get('/:uuid', addSlash, async function(req, res, next) {
 router.post('/', addSlash, function(req, res, next) {
     if (!req.body.card) return res.send('No card data sent');
     return res.redirect('./' + (req.body.card.uuid || req.body.card)+'/');
+});
+
+// Get a set of cards
+const baseQuery = [{setCode: 'KLD'}];
+const parseVal = key => val => ({ [key]: isNaN(val) ? val : +val });
+router.all('/explorer', addSlash, async function(req, res) {
+  let query = [];
+  if (req.body.filter) {
+    const filter = JSON.parse(req.body.filter);
+    for (const key in filter) {
+      let entry = filter[key].and || [];
+      if (filter[key].or && filter[key].or.length) {
+        if (filter[key].or.length === 1) entry.push(filter[key].or[0]);
+        else query.push({ $or: filter[key].or.map(parseVal(key))});
+      }
+      if (entry.length) query.push(...entry.map(parseVal(key)));
+    }
+  }
+  else { query = baseQuery; }
+  console.log(req.body.filter, query);
+  if (!query.length) return res.status(400).send('No parameters sent');
+  else if (query.length === 1) query = query[0];
+  else query = { $and: query };
+  console.log(query);
+
+  const cardGroup = await Card.find(query).then(r=>r.map(c=>c.toObject()));;
+  if (!cardGroup || !cardGroup.length) return res.send('No card data for: '+req.body.filter);
+  const cardDataKeys = sortedKeys(Object.keys(cardGroup[0]),'card');
+  let fixData = [];
+  for (const card of cardGroup) {
+    fixData.push(await fixDb.testSettings(card.uuid));
+  }
+
+  return res.render('dbExplorer', {
+    title: 'Explorer - Query Result',
+    cardGroup: cardGroup,
+    cardDataKeys, fixData
+  });
 });
 
 
