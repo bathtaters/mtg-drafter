@@ -31,7 +31,18 @@ const lineToCards = async (line, missing) => {
         ]},
         {'side': { $in: [null, 'a'] }},
         {'multiverseId': { $exists: true }}, // ONLY FINDS IMAGES ON GATHERER
-    ]},'_id').then( card => card ? card._id : 0)
+    ]},'_id').then(card => card || Card.findOne({ $and: [
+        { $or: [
+            { 'name': { $regex: regexName } },
+            { 'faceName': { $regex: regexName } }
+        ]},
+        {$or: [
+            { 'skipArt': { $exists: false } },
+            { 'skipArt': false },
+        ]},
+        {'side': { $in: [null, 'a'] }},
+        // {'multiverseId': { $exists: true }}, // ONLY FINDS IMAGES ON GATHERER
+    ]},'_id')).then( card => card ? card._id : 0)
     
     if (cardId) {
         for (let i=0; i < qty; i++) { found.push(cardId) }
