@@ -27,7 +27,7 @@
     "morgan": "~1.9.1",
     "nib": "^1.1.2",
     "pug": "^3.0.2",
-    "socket.io": "^4.0.1",
+    "socket.io": "^4.5.1",
     "stylus": "0.54.5",
     "tiny-async-pool": "^1.2.0"
   }
