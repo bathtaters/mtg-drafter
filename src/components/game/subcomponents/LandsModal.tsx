@@ -7,7 +7,7 @@ import { ColorInputWrapper, ColorsWrapper } from "../styles/GameMenuStyles";
 const ColorInput = ({ label, value, setValue }: { label: string, value: number, setValue?: (value: number) => void }) => (
   <ColorInputWrapper label={label}>
     <input
-      className="input input-bordered"
+      className="input input-bordered text-xl"
       type="number" min={0} id={label+'Lands'}
       defaultValue={setValue ? undefined : value}
       value={setValue && value}

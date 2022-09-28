@@ -21,6 +21,7 @@ export default function Document() {
 
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter&display=swap" />
+        <link href="//cdn.jsdelivr.net/npm/mana-font@latest/css/mana.min.css" rel="stylesheet" type="text/css" />
       </Head>
       <body>
         <Main />
