@@ -1,0 +1,206 @@
+/* ----- Card layout ----- */
+
+.genLayout {
+  display: grid;
+  grid-template-rows: 10% 25% 9% 50% 6%;
+  grid-template-columns: 77% 23%;
+  grid-template-areas: 'header header' 'art art' 'type type' 'txt txt' 'footL footR';
+  place-items: stretch;
+}
+.genHeader {
+  grid-area: header;
+}
+.genArtBox {
+  grid-area: art;
+}
+.genTypeBox {
+  grid-area: type;
+}
+.genTextBox {
+  grid-area: txt;
+}
+.genFooterDfc {
+  grid-area: footL;
+}
+.genFooterNums {
+  grid-area: footR;
+}
+.card, .genCard, .cardImage,
+.cardBgd, .cardBgdFoil {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.cardBgd, .cardBgdFoil {
+  overflow: hidden;
+  border-radius: 5%;
+  background-color: #d3d3d3;
+}
+
+/* Card border */
+.genCard {
+  display: flex;
+  background: #000;
+  border-radius: 4%;
+  color: #000;
+}
+.genLayout {
+  width: 92%;
+  height: 94%;
+  margin: auto;
+  padding: 2%;
+  border-radius: 3%;
+}
+
+/* Card element spacing */
+.genHeader {
+  margin: 2%;
+  padding: 1% 2%;
+}
+.genArtBox {
+  margin: 0 4%;
+  background: #a9a9a9;
+}
+.genTypeBox {
+  margin: 2%;
+  padding: 1% 2%;
+}
+.genTextBox {
+  margin: 1%;
+  padding: 1% 2%;
+}
+.genFooterNums {
+  margin-top: 4%;
+  margin-right: 15%;
+}
+.genFooterDfc {
+  display: flex;
+  align-items: center;
+  font-size: 1.6em;
+  margin-top: 3%;
+}
+
+/* Text wrapping/position */
+.genHeader, .genTypeBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.genArtBox, .genFooterNums {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.genTextBox {
+  display: flex;
+  overflow: visible auto;
+  pointer-events: all;
+}
+.genName, .genType, .genMana,
+.genRarity, .genTextContainer {
+  z-index: 1;
+  text-align: left;
+  line-height: 0.9em;
+}
+.genTextContainer { margin: auto 0; }
+.cardImage { z-index: 11; }
+.side-b .card .cardImage { z-index: 10; }
+
+/* Card text formatting */
+.genLayout {
+  font-family: serif;
+}
+.genType {
+  font-size: 0.7em;
+  font-weight: bold;
+}
+.genRarity {
+  font-size: 0.6em;
+}
+.genName {
+  align-self: flex-start;
+  margin-top: 0.2em;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+.genMana {
+  font-size: 0.78em;
+  white-space: nowrap;
+}
+.genFooterNums {
+  font-size: 0.93em;
+  letter-spacing: 0.03em;
+}
+.genTextBox {
+  font-size: 0.75em;
+  text-align: left;
+}
+
+/* main text paragraph spacing */
+p.genText {
+  margin-top: 0;
+  margin-bottom: 0.4em;
+  line-height: 1.15em;
+}
+
+/* 'foil' text in genCard */
+.genArtBox {
+  color: rgba(255,255,255,0.627);
+  font-family: sans-serif;
+  font-size: 1.8em;
+}
+
+/* fix for mana stylesheet */
+.manaFix { font-size: 0.8em; }
+.manaFixShadow { margin: auto 0.07em; }
+
+
+/* ----- Card Effects ----- */
+
+/* Foil effect */
+.foil.card {
+  opacity: 0.9;
+  mix-blend-mode: multiply;
+}
+.cardBgdFoil {
+  background: #dbfff7;
+  background: linear-gradient(45deg, #c0fff0 20%, #b0c0f0 36%, #ffd0d0 52%, #ffffc0 67%, #ffafaf 80%);
+}
+
+/* Text box shading */
+.genHeader, .genTypeBox, .genFooterNums {
+  background: rgba(255,255,255,0.439);
+  border-radius: 0.3em;
+  box-shadow: 0 0 0.15em 0 rgba(0,0,0,0.388);
+}
+.genTextBox {
+  background: rgba(255,255,255,0.941);
+  box-shadow: inset 0.2em 0.2em 1em -0.2em rgba(0,0,0,0.388);
+}
+.genText, .genType, .genFooterNums {
+  text-shadow: 0.03em 0.03em 0.05em rgba(0,0,0,0.231);
+}
+.genRarity {
+  text-shadow: 0.03em 0.03em 0.1em rgba(0,0,0,0.439);
+  opacity: 0.85;
+}
+
+
+/* Rarity colors */
+.mythic { color: #a52a2a; }
+.rare { color: #ffd700; }
+.uncommon { color: #d3d3d3; }
+.common { color: #000; }
+
+
+/* Card BGD colors */
+.bgdNone { background: #afada2; }
+.bgdW { background: #e2ddc6; }
+.bgdU { background: #26a0cd; }
+.bgdB { background: #354541; }
+.bgdR { background: #d66049; }
+.bgdG { background: #3d7753; }
+.bgdMulti { background: #c3b070; }
+.bgdLand { background: #b19277; }

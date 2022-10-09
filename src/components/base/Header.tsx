@@ -1,7 +1,9 @@
-import { ReactNode } from "react";
-import { HeaderWrapperStyle, HeaderTitleStyle, HeaderPartStyle } from "./AppStyles";
+import type { ReactNode } from "react";
+import { HeaderWrapperStyle, HeaderTitleStyle, HeaderPartStyle } from "./styles/AppStyles";
 
-export default function Header({ title, left, right, children }: { title?: ReactNode, left?: ReactNode, right?: ReactNode, children?: ReactNode }) {
+type Props = { title?: ReactNode, left?: ReactNode, right?: ReactNode, children?: ReactNode }
+
+export default function Header({ title, left, right, children }: Props) {
   return (
     <HeaderWrapperStyle>
       {children ? children : <>

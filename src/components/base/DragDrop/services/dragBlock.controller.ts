@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { useDrag, useDrop, ConnectableElement, DropTargetMonitor } from "react-dnd"
+import { useState } from "react"
+import { useDrag, useDrop, ConnectableElement } from "react-dnd"
 
 function useDndController<DropItem, ThisItem>(type: Identifier, item: ThisItem | undefined, onDrop: DropHandler, dropCheck: DropTester, droppable: boolean, draggable: boolean, disabled: boolean) {
   // Simple data

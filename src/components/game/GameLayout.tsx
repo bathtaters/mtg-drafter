@@ -1,37 +1,63 @@
-import { Game } from '../../models/Game'
+import type { GameProps, PickCard, SwapCard } from './services/game'
 import CardContainer from "./subcomponents/CardContainer"
 import { NoCardStyle, PickCardButton } from "./styles/GameCardStyles"
-import useGameController from "./services/game.controller"
+import { RoundButton, GameLayoutWrapper, Divider, CardZoomWrapper } from './styles/GameLayoutStyles'
+import usePickController from "./services/pick.controller"
+import Overlay from 'components/base/common/Overlay'
+import Spinner from 'components/base/common/Spinner'
+import RangeInput from 'components/base/common/RangeInput'
+import CardZoom from './subcomponents/CardZoom'
 
+type Props = {
+  game: GameProps['options'],
+  player: GameProps['player'],
+  pack?: GameProps['packs'][number],
+  pickCard: PickCard,
+  swapCard: SwapCard,
+  clickRoundBtn?: () => void,
+  loadingPack: boolean,
+}
 
-export default function GameLayout({ data, playerIdx }: { data: Game, playerIdx: number }) {
-  const { selectedCard, packIdx, pickCard, clickPackCard, clickBoardCard } = useGameController(data, playerIdx)
+export default function GameLayout({ game, player, pack, clickRoundBtn, pickCard, swapCard, loadingPack }: Props) {
 
-  if (data.round < 1) return (
-    <div className="w-full text-center my-6">
-      <NoCardStyle>Waiting to start draft.</NoCardStyle>
-    </div>
+  const {
+    selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard, cardWidth, setCardWidth
+  } = usePickController(pack, pickCard, swapCard)
+
+  if (game.round < 1) return (
+    <GameLayoutWrapper>
+      { clickRoundBtn && <RoundButton onClick={clickRoundBtn} label="start" /> }
+      <NoCardStyle>Waiting for draft to start.</NoCardStyle>
+    </GameLayoutWrapper>
   )
 
   return (
-    <div className="flex flex-col">
+    <GameLayoutWrapper>
 
-      {data.round <= data.roundCount &&
+      <CardZoomWrapper><CardZoom updateClass={setCardWidth} /></CardZoomWrapper>
+
+      {game.round <= game.roundCount &&
         <CardContainer
-          label="Pack" cards={typeof packIdx === 'number' ? data.packs[packIdx] : undefined}
-          selectedIdx={selectedCard} onClick={clickPackCard}
+          label="Pack" cardWidth={cardWidth}
+          cards={pack?.cards} selectedIdx={selectedCard}
+          onClick={clickPackCard} onBgdClick={deselectCard}
         >
-          {typeof packIdx === 'number' && <PickCardButton disabled={selectedCard < 0} onClick={pickCard} />}
+          { clickRoundBtn ?
+            <RoundButton onClick={clickRoundBtn} label={game.round === game.roundCount ? 'end' : 'next'} /> :
+            pack &&
+            <PickCardButton disabled={loadingPack || selectedCard < 0} onClick={clickPickButton} />}
+
+          { loadingPack && <Overlay className="absolute"><Spinner /></Overlay> }
         </CardContainer>
       }
 
-      <div className="divider" />
+      <Divider />
 
-      <CardContainer label="Main" cards={data.players[playerIdx].mainBoard} onClick={clickBoardCard('main')} />
+      <CardContainer label="Main" cards={player.cards.filter(({ board }) => board === 'main')} onClick={clickBoardCard('main')} cardWidth={cardWidth} />
 
-      <div className="divider" />
+      <Divider />
 
-      <CardContainer label="Side" cards={data.players[playerIdx].sideBoard} open={false} onClick={clickBoardCard('side')} />
-    </div>
+      <CardContainer label="Side" cards={player.cards.filter(({ board }) => board === 'side')} open={false} onClick={clickBoardCard('side')} cardWidth={cardWidth} />
+    </GameLayoutWrapper>
   )
 }

@@ -1,4 +1,4 @@
-import { FooterWrapperStyle } from "./AppStyles";
+import { FooterWrapperStyle } from "./styles/AppStyles";
 
 export default function Footer() {
   return (

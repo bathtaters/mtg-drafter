@@ -1,11 +1,11 @@
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 
 
 export const LeftHeaderWrapper = ({ children }: { children: ReactNode }) => (
   <div className="w-full mr-8 grid grid-cols-2 grid-flow-row items-center gap-4">{children}</div>
 )
 
-export const GameTitle = ({ title }: { title: string }) => <h1 className="font-serif">{title}</h1>
+export const GameTitle = ({ title }: { title: string }) => <h1 className="font-serif">{title || "New Draft"}</h1>
 
 export const RoundCounter = ({ children }: { children: ReactNode }) => (
   <div className="ml-2">{children}</div>
@@ -13,9 +13,9 @@ export const RoundCounter = ({ children }: { children: ReactNode }) => (
 
 
 
-const Arrow = ({ up, className }: { up: boolean, className?: string }) => (
+const Arrow = ({ up, className }: { up?: boolean, className?: string }) => (
   <svg viewBox="0 0 30 500" className={className}>
-    <path d={up ? "M 0 0 L 30 40 L 15 40 L 15 500 L 0 500 L 0 0 Z" : "M 0 0 L 15 0 L 15 460 L 30 460 L 0 500 L 0 0 Z"} />
+    { typeof up === 'boolean' && <path d={up ? "M 0 0 L 30 40 L 15 40 L 15 500 L 0 500 L 0 0 Z" : "M 0 0 L 15 0 L 15 460 L 30 460 L 0 500 L 0 0 Z"} /> }
   </svg>
 )
 
@@ -26,7 +26,7 @@ export const PlayerContainersWrapper = ({ upArrow, children }: { upArrow?: boole
         {children}
       </div>
     </div>
-    {typeof upArrow === 'boolean' && <Arrow up={upArrow} className="h-48 w-2 ml-1 fill-base-content" />}
+    <Arrow up={upArrow} className="h-48 w-2 ml-1 fill-base-content" />
   </div>
 )
 

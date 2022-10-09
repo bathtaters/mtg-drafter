@@ -1,23 +1,19 @@
-import { useState, useCallback } from "react"
-import { FormWrapper, FieldWrapper, InputWrapper, FormTitle, SubmitButton } from "./SetupStyles" 
-import RangeInput from "./subcomponents/RangeInput"
-import FileInput from "./subcomponents/FileInput"
 import FilePreview from "./subcomponents/FilePreview"
-
-const defaultOptions = { players: "8", packs: "3", packSize: "15" }
+import FileInput from "components/base/common/FileInput"
+import RangeInput from "components/base/common/RangeInput"
+import Spinner from "components/base/common/Spinner"
+import Overlay from "components/base/common/Overlay"
+import { FormWrapper, FieldWrapper, InputWrapper, FormTitle, SubmitButton, ErrorText } from "./SetupStyles" 
+import useSetupController from "./services/setup.controller"
+import { fileType } from "./services/setup.utils"
 
 
 export default function SetupForm() {
-  const [ options, setOptions ] = useState(defaultOptions)
-  const [ textFile, setFile ] = useState<File | null>(null)
-
-  const setPlayers  = useCallback((value: string) => setOptions((curr) => ({ ...curr, players: value  })), [setOptions])
-  const setPacks    = useCallback((value: string) => setOptions((curr) => ({ ...curr, packs: value    })), [setOptions])
-  const setPackSize = useCallback((value: string) => setOptions((curr) => ({ ...curr, packSize: value })), [setOptions])
+  const { options, file, fileLoading, setFile, submitForm, gameLoading, error, setName, setPlayers, setPacks, setPackSize } = useSetupController()
 
   return (
-    <FormWrapper>
-      <FormTitle placeholder="New Draft" />
+    <FormWrapper onSubmit={submitForm}>
+      <FormTitle placeholder="New Draft" value={options.name} setValue={setName} />
 
       <InputWrapper>
         <FieldWrapper label="Options">
@@ -27,15 +23,19 @@ export default function SetupForm() {
         </FieldWrapper>
 
         <FieldWrapper label="Cube File">
-          {textFile ?
-            <FilePreview file={textFile} clearFile={() => setFile(null)} />
+          {fileLoading ? <Spinner /> :
+          file ?
+            <FilePreview file={file} clearFile={() => setFile(null)} />
             :
-            <FileInput helperText="DROP HERE" setFile={setFile} />
+            <FileInput fileMimeType={fileType} helperText="DROP HERE" setFile={setFile} />
           }
         </FieldWrapper>
       </InputWrapper>
+      
+      <ErrorText>{error}</ErrorText>
+      <SubmitButton disabled={!file}>Start Draft</SubmitButton>
 
-      <SubmitButton>Start Draft</SubmitButton>
+      <Overlay hide={!gameLoading}><Spinner /></Overlay>
     </FormWrapper>
   )
 }

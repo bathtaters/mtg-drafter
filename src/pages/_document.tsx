@@ -1,6 +1,6 @@
-import { Html, Head, Main, NextScript } from 'next/document'
+import { Html, Head, Main, NextScript, DocumentProps } from 'next/document'
 
-export default function Document() {
+function Document(props: DocumentProps) {
   return (
     <Html lang="en">
       <Head>
@@ -14,10 +14,10 @@ export default function Document() {
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000033" />
         
         <link rel="canonical" href="/index.html" />
-        <link rel="manifest" href="/manifest.json" />
+        {/* <link rel="manifest" href="/manifest.json" /> */}
         <link rel="icon" href="/favicon.ico" />
 
-        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <meta httpEquiv="x-ua-compatible" content="ie=edge" />
 
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter&display=swap" />
@@ -30,3 +30,5 @@ export default function Document() {
     </Html>
   )
 }
+
+export default Document

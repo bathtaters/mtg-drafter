@@ -1,11 +1,12 @@
-import { Dispatch, SetStateAction } from "react";
-import ModalWrapper from "../../base/common/Modal";
+import type { Dispatch, SetStateAction } from "react"
+import ModalWrapper from "components/base/common/Modal"
 
-
-export default function HostModal({ isOpen, setOpen }: {
+type Props = {
   isOpen: boolean,
   setOpen: Dispatch<SetStateAction<boolean>>,
-}) {
+}
+
+export default function HostModal({ isOpen, setOpen }: Props) {
   return (
     <ModalWrapper isOpen={isOpen} setOpen={setOpen}
       buttons={<button type="button" className="btn" onClick={() => setOpen((st) => !st)}>Cancel</button>}

@@ -1,40 +1,32 @@
-import { MouseEvent, useCallback, useMemo, useRef, useState } from "react"
-import { Game } from '../../../models/Game'
-import { getPackIdx, getPrevPlayerIdx } from './game.utils'
+import type { ServerProps } from './game'
+import { useState } from 'react'
+import { useRouter } from 'next/router'
+import useSocket from 'components/base/services/socket.controller'
+import useLocalController from './local.controller'
+import { initGameSocket, useGameEmitters } from './socket.controller'
+import { INVALID_PATH } from 'assets/constants'
 
-const DBL_CLICK_DELAY = 500
+const socketEndpoint = (gameURL: any) => `/api/game/${typeof gameURL === 'string' ? gameURL : INVALID_PATH}/socket`
 
-export default function useGameController(game: Game, playerIdx: number) {
+export default function useGameController(props: ServerProps) {
+  const router = useRouter()
+  const gameURL = typeof router.query.url === 'string' ? router.query.url : '_INVALID'
 
-  const lastClick = useRef(-1)
-  const [ selectedCard, setSelectedCard ] = useState(-1)
+  const [landModal, setLandModal] = useState(false)
+  const [hostModal, setHostModal] = useState(false)
 
-  const neighborIdx = useMemo(() => getPrevPlayerIdx(game, playerIdx), [game.round])
-  const packIdx = getPackIdx(game, playerIdx, neighborIdx)
+  const local = useLocalController(props)
+
+  const socket = useSocket(`/game/${gameURL}`, socketEndpoint(gameURL), initGameSocket(local))
+  const { renamePlayer, nextRound, pickCard, swapCard, setLands } = useGameEmitters(local, socket)
   
-
-  const pickCard = useCallback(() => {
-    if (typeof packIdx !== 'number') return console.warn('PackIdx is not defined')
-    console.log('Picked card:',game.packs[packIdx][selectedCard]) // Send pick to server
-    setSelectedCard(-1)
-  }, [selectedCard, setSelectedCard])
-
-
-  const clickPackCard = useCallback((idx: number, ev: MouseEvent) => {
-    if (ev.detail > 1 && idx === selectedCard && lastClick.current + DBL_CLICK_DELAY > ev.timeStamp) return pickCard()
-    if (idx === selectedCard) lastClick.current = ev.timeStamp
-    setSelectedCard(idx)
-  }, [selectedCard, pickCard, setSelectedCard])
-
-
-  const clickBoardCard = useCallback((board: "main"|"side") => (idx: number, ev: MouseEvent) => {
-    // Send clicking board card to server
-    console.log('Move card',game.players[playerIdx][board === 'side' ? 'sideBoard' : 'mainBoard'][idx],'to',board === 'side' ? 'mainBoard' : 'sideBoard')
-  }, [])
-
-
   return {
-    selectedCard, packIdx,
-    pickCard, clickPackCard, clickBoardCard,
+    ...local,
+    isConnected: socket.isConnected,
+    renamePlayer, nextRound, pickCard, swapCard, setLands,
+
+    landModal, hostModal,
+    toggleLandModal: local.player?.basics ? () => setLandModal((o) => !o) : null,
+    toggleHostModal: !local.game?.hostId || local.player?.id === local.game?.hostId ? (() => setHostModal((o) => !o)) : null,
   }
 }

@@ -1,10 +1,10 @@
-import Link from "next/link"
+import { ErrorIcon } from "components/svgs/Icons"
 
 // WRAPPERS
 
-export const FormWrapper = ({ children }: { children: React.ReactNode }) => (
+export const FormWrapper = ({ onSubmit, children }: { onSubmit?: React.FormEventHandler, children: React.ReactNode }) => (
   <div className="flex flex-col h-full justify-center items-center w-full max-w-3xl m-auto">
-    <form className="bg-base-300 p-6 form-control gap-6 w-full">{children}</form>
+    <form className="bg-base-300 p-6 form-control gap-6 w-full" onSubmit={onSubmit}>{children}</form>
   </div>
 )
 
@@ -14,6 +14,13 @@ export const FieldWrapper = ({ label, children }: { label: string, children: Rea
     {children}
   </fieldset>
 )
+
+export const ErrorText = ({ children }: { children?: React.ReactNode }) => children ? (
+  <div className="alert alert-error shadow-lg"><div>
+    <ErrorIcon className="stroke-current flex-shrink-0 h-6 w-6" />
+    <span>{children}</span>
+  </div></div>
+) : <span />
 
 export const InputWrapper = ({ children }: { children: React.ReactNode }) => (
   <div className="grid grid-cols-1 p-4 gap-8 sm:grid-cols-2">{children}</div>
@@ -33,7 +40,6 @@ export const FormTitle = ({ placeholder, value, setValue }: { placeholder: strin
   </div>
 )
 
-export const SubmitButton = ({ children }: { children: React.ReactNode }) => (
-  <Link href="/game/test_game"><a className="btn btn-secondary btn-lg m-4 text-2xl">{children}</a></Link>
-  // <button type="button" className="btn btn-secondary btn-lg m-4 text-2xl">{children}</button>
+export const SubmitButton = ({ disabled, children }: { disabled?: boolean, children: React.ReactNode }) => (
+  <button type="submit" disabled={disabled} className="btn btn-secondary btn-lg m-4 text-2xl">{children}</button>
 )

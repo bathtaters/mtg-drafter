@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import Header from '../components/base/Header'
 import Footer from '../components/base/Footer'
 import SetupForm from '../components/setup/SetupForm'
-import { BodyWrapperStyle, SetPageTitle } from '../components/base/AppStyles'
+import { BodyWrapperStyle, SetPageTitle } from '../components/base/styles/AppStyles'
 
 
 const Setup: NextPage = () => {

@@ -1,0 +1,159 @@
+// Meta
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+
+// Enums
+
+enum Board {
+  main
+  side
+}
+
+enum Color {
+  W
+  U
+  B
+  R
+  G
+}
+
+enum Rarity {
+  common
+  uncommon
+  rare
+  mythic
+  bonus
+  special
+}
+
+enum Side {
+  a
+  b
+  c
+  d
+  e
+}
+
+enum DataType {
+  String
+  Number
+  Boolean
+  Date
+  Timestamp
+  JSON
+  StringList
+  NumberList
+  BooleanList
+  DateList
+  TimestampList
+}
+
+
+// Main Models
+
+model Settings {
+  id      String @id
+  type    DataType
+  value   String?
+}
+
+model Game {
+  id          String @id @default(uuid())
+  name        String
+  url         String @unique
+
+  packs       Pack[]
+  packSize    Int
+  roundCount  Int
+  round       Int @default(0)
+  isPaused    Boolean @default(false)
+
+  players     Player[] @relation("GamePlayers")
+  host        Player? @relation("GameHost", fields: [hostId], references: [id])
+  hostId      String? @unique
+}
+
+model Card {
+  uuid        String @id
+  name        String
+  normalName  String?
+  setCode     String? // ref Set
+  manaCost    String?
+  type        String?
+  text        String?
+  footer      String? // power/toughness | loyalty
+  rarity      Rarity?
+  colors      Color[]
+  types       String[]
+  manaValue   Float?
+  monoColor   Color?
+  
+  // Image data
+  scryfallId    String?
+  multiverseId  String?
+  noGath        Boolean
+  preferredArt  Boolean @default(false)
+
+  // Double-faced card data
+  faceName      String?
+  side          Side?
+  otherFaces    Card[] @relation("OtherFaceCards")
+
+  // Relation fields
+  inGame        GameCard[]
+  inOtherFaces  Card[] @relation("OtherFaceCards")
+
+  @@index([name])
+  @@index([name, setCode])
+}
+
+
+
+// Embedded Models
+
+model Player {
+  id          String @id @default(cuid()) 
+  name        String?
+  sessionId   String?
+  pick        Int @default(0)
+  cards       GameCard[]
+  basics      Json @default("{\"w\":0,\"u\":0,\"b\":0,\"r\":0,\"g\":0}")
+
+  game        Game @relation("GamePlayers", fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  hostOf      Game? @relation("GameHost")
+  gameId      String
+
+  @@unique([sessionId, gameId])
+}
+
+model Pack {
+  id        String @id @default(cuid())
+  index     Int
+  cards     GameCard[]
+
+  game      Game @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  gameId    String
+
+  @@unique([gameId, index])
+}
+
+model GameCard {
+  id        String @id @default(cuid())
+  card      Card @relation(fields: [cardId], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+
+  pack      Pack @relation(fields: [packId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  player    Player? @relation(fields: [playerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  board     Board @default(main)
+
+  cardId    String
+  packId    String
+  playerId  String?
+}

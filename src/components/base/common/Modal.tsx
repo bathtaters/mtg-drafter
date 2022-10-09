@@ -1,13 +1,15 @@
-import { Dispatch, ReactNode, SetStateAction } from "react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 
-export default function ModalWrapper({ title, className, children, buttons, isOpen, setOpen }: {
+type Props = {
   isOpen: boolean,
   setOpen?: Dispatch<SetStateAction<boolean>>,
   title?: ReactNode,
   className?: string,
   children?: ReactNode,
   buttons?: ReactNode,
-}) {
+}
+
+export default function ModalWrapper({ title, className, children, buttons, isOpen, setOpen }: Props) {
   return (
     <div className={`modal${isOpen ? ' modal-open' : ''}`} onClick={setOpen ? () => setOpen((st) => !st) : undefined}>
       <div className={`modal-box ${className || ''}`} onClick={(ev) => ev.stopPropagation()}>

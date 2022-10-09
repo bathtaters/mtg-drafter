@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
-import { colorClass, colorPip } from "../../base/styles/manaIcons";
+import type { ReactNode } from "react"
+import { colorClass, colorPip } from "components/base/styles/manaIcons"
 
 export function ColorsWrapper({ children }: { children: ReactNode }) {
   return <div className="grid grid-cols-5 gap-4">{children}</div>
