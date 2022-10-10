@@ -1,15 +1,11 @@
 import type { MouseEvent } from "react"
 import type { GameCard, Board } from "@prisma/client"
-import type { GameProps, PickCard, SwapCard } from "./game"
+import type { PackFull, PickCard, SwapCard } from "./game"
 import { useCallback, useRef, useState } from "react"
 
 const DBL_CLICK_DELAY = 500
 
-export default function usePickController(
-  pack: GameProps['packs'][number] | undefined,
-  pickCard: PickCard,
-  swapCard: SwapCard,
-) {
+export default function usePickController(pickCard: PickCard, swapCard: SwapCard, pack?: PackFull) {
 
   const lastClick = useRef(-1)
   const [ selectedCard, setSelectedCard ] = useState(-1)

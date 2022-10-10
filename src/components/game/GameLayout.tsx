@@ -22,7 +22,7 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, pickCard
 
   const {
     selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard, cardWidth, setCardWidth
-  } = usePickController(pack, pickCard, swapCard)
+  } = usePickController(pickCard, swapCard, pack)
 
   if (game.round < 1) return (
     <GameLayoutWrapper>
