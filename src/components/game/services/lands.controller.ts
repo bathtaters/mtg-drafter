@@ -3,7 +3,7 @@ import type { BasicLands } from "types/definitions"
 import type { GameCardFull } from "./game"
 import { useState } from "react"
 import getAutoLands from "./autoLands"
-import { getObjectSum } from "./game.utils"
+import { getObjectSum } from "components/base/services/common.services"
 import { useLocalStorage } from "components/base/services/storage.services"
 
 

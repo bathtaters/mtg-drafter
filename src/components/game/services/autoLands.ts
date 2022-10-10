@@ -1,7 +1,7 @@
 import type { BasicLands, BoardLands } from "types/definitions"
 import type { GameCardFull } from "./game"
 import { colorOrder } from "assets/constants"
-import { sameValueObject } from "./game.utils";
+import { sameValueObject } from "components/base/services/common.services"
 
 const pipRegEx = /{([^}]+)}/g // pip format: {<color>}
 

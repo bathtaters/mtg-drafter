@@ -9,3 +9,8 @@ export const spliceInPlace = <T>(array: T[], find: ((entry: T, idx: number) => b
   if (idx === -1) return array
   return array.slice(0, idx).concat(array.slice(idx + removeCount))
 }
+
+export const sameValueObject = <T extends { [key: string]: any }> (keys: (keyof T)[], value: T[keyof T]): T =>
+  Object.fromEntries(keys.map((key) => [key, value])) as T
+
+export const getObjectSum = (obj: { [key: string]: number }) => Object.values(obj).reduce((sum, n) => sum + n, 0)
