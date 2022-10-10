@@ -17,7 +17,7 @@ type Props = {
 export default function CardContainer({ label, cards, open = true, children, onClick, onBgdClick, selectedIdx, cardWidth }: Props) {
   return (
     <CardContainerWrapper defaultOpen={open} 
-      title={<>{!cards && <NoCardsPip />}{label}</>}
+      title={<>{!cards && <NoCardsPip />}{label}{cards ? ` [${cards.length}]` : ''}</>}
       isPrimary={selectedIdx == null} onClick={onBgdClick}
     >
       {children}

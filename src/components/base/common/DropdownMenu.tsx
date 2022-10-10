@@ -5,11 +5,11 @@ type Props = { label?: ReactNode, labelClass?: string, menuClass?: string, child
 export default function DropdownMenu({
   label = '↓',
   labelClass = 'btn-primary btn-circle btn-sm sm:btn-md sm:w-12 sm:text-lg',
-  menuClass = 'p-2 shadow-lg shadow-black bg-base-100 rounded-box w-52',
+  menuClass = 'p-2 shadow-lg shadow-black bg-base-100 rounded-box w-48 md:w-52',
   children
 }: Props) {
   return (
-    <div className="dropdown dropdown-hover dropdown-end">
+    <div className="dropdown dropdown-hover dropdown-content md:dropdown-end">
       <label tabIndex={0} className={`btn ${labelClass}`}>
         {label}
       </label>
