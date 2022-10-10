@@ -4,11 +4,9 @@ import { useRouter } from 'next/router'
 import useSocket from 'components/base/services/socket.controller'
 import useLocalController from './local.controller'
 import { getGameListeners, useGameEmitters } from './socket.controller'
-import { INVALID_PATH } from 'assets/constants'
+import { socketEndpoint } from 'assets/urls'
 
 const fullMsg = 'This game is full, you can wait here or start a new one.'
-
-const socketEndpoint = (gameURL: any) => `/api/game/${typeof gameURL === 'string' ? gameURL : INVALID_PATH}/socket`
 
 export default function useGameController(props: ServerProps) {
   const router = useRouter()

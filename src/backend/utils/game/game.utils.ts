@@ -1,4 +1,7 @@
 import { nanoid } from 'nanoid'
+import { gameUrlRegEx } from 'assets/urls'
+
+export const parseGameURL = (url: string) => (url.match(gameUrlRegEx) || [])[1]
 
 const randomInt = (max: number, min: number = 0) => min + Math.floor(Math.random() * max)
 const popRandom = <T = any>(array: T[]) => array.splice(randomInt(array.length), 1)[0]
