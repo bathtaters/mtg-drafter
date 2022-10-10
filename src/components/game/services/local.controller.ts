@@ -5,8 +5,8 @@ import { filterPackIds, getHolding, getNeighborIdx, getPackIdx, getPlayerIdx } f
 
 
 export default function useLocalController(props: ServerProps) {
-  const [loadingAll,  setLoadingAll] = useState(false)
-  const [loadingPack, setLoadingPack] = useState(false)
+  const [loadingAll,  setLoadingAll] = useState(0)
+  const [loadingPack, setLoadingPack] = useState(0)
 
   const [ game,    updateGame    ] = useState(props.options)
   const [ player,  updatePlayer  ] = useState(props.player)
@@ -14,13 +14,12 @@ export default function useLocalController(props: ServerProps) {
   const [ players, updatePlayers ] = useState(props.players || [])
   const [ slots,   updateSlots   ] = useState(props.playerSlots || [])
 
+  const holding = getHolding(game, players)
   const playerIdx = useMemo(() => getPlayerIdx(players, player), [player?.id, players.length])
   const neighborIdx = useMemo(() => getNeighborIdx(game, players.length, playerIdx), [game?.round, players.length, playerIdx])
-  const packIdx = useMemo(() => getPackIdx(game, players, playerIdx, neighborIdx), [game?.round, player?.pick, players[neighborIdx]?.pick])
+  const packIdx = useMemo(() => getPackIdx(game, players, playerIdx, neighborIdx), [game?.round, player?.pick, holding[playerIdx]])
 
   const [ pack, setPack ] = useState<PackFull | undefined>(packs[packIdx])
-
-  const holding = getHolding(game, players)
 
   const isReady = game != null && game?.hostId && game.hostId === player?.id && (
     game.round < 1 ? players.every(({ sessionId }) => sessionId) : holding.every((n) => !n)
@@ -31,6 +30,7 @@ export default function useLocalController(props: ServerProps) {
     updateGame((g) => g && ({ ...g, round }))
     updatePlayers((list) => list.map((p) => ({ ...p, pick: 1 })))
     updatePlayer((p) => p && ({ ...p, pick: 1 }))
+    game?.hostId && game.hostId === player?.id && setLoadingPack((v) => v && v - 1)
   }, [])
 
 
@@ -50,6 +50,8 @@ export default function useLocalController(props: ServerProps) {
 
   const pickCard: Local.PickCard = useCallback((pick, gameCardId, board = 'main') => {
     const gameCard = pack?.cards.find(({ id }) => id === gameCardId)
+    setLoadingPack((v) => v && v - 1)
+    
     if (!gameCard) {
       updatePlayer((p) => p && ({ ...p, pick }))
       return console.error('Pick not found in current pack',pack?.id,gameCardId)
@@ -76,9 +78,9 @@ export default function useLocalController(props: ServerProps) {
 
 
   const setNextPack: Local.SetPack = useCallback((pickableIds) => {
+    setLoadingPack((v) => v && v - 1)
     if (!pickableIds || !packs[packIdx]?.id) return setPack(undefined)
     setPack(filterPackIds(packs[packIdx], pickableIds))
-    setLoadingPack(false)
   }, [packs, packIdx])
 
 
@@ -88,7 +90,7 @@ export default function useLocalController(props: ServerProps) {
       ({ id }) => id === playerId, (p) => ({ ...p, sessionId })
     ))
     if (isSelf) updatePlayer((p) => p && sessionId ? ({ ...p, sessionId }) : undefined)
-    setLoadingAll(false)
+    setLoadingAll((v) => v && v - 1)
   }, [])
 
 

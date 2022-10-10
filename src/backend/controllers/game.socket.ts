@@ -1,79 +1,85 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import type { GameServer, GameMiddleware } from './game.socket.d'
-import { getReqSessionId } from '../../components/base/services/sessionId.services'
-import { getGameAndPlayer, getPack, nextRound, pickCard } from '../services/game/game.services'
+import type { GameServer } from './game.socket.d'
+import { parseCookies } from 'nookies'
+import { getReqSessionId } from 'components/base/services/sessionId.services'
+import { gameExists, getPack, nextRound, pickCard } from '../services/game/game.services'
 import { renamePlayer, setStatus, swapCard, updateLands } from '../services/game/player.services'
 import { debugSockets, MAX_GAME_CONN } from 'assets/constants'
+import { IncomingMessage } from 'http'
+
+const getSessionId = (req: IncomingMessage) => parseCookies({ req }).sessionId
 
 export default async function gameSockets(io: GameServer, req: NextApiRequest, res: NextApiResponse) {
+  const sessionId = getReqSessionId(req,res)
 
-  const userData = await getGameAndPlayer(req.query.url, getReqSessionId(req, res))
-  if (!userData) return 400
+  const exists = await gameExists(req.query.url)
+  if (!exists) return 400
 
   io.setMaxListeners(MAX_GAME_CONN)
-
+  
   io.on("connect", (socket) => {
-    if (!userData) return socket.disconnect(true)
+    if (!exists) return socket.disconnect(true)
 
-    socket.data = userData
-
-    socket.use(async (ev, next) => {
-      debugSockets && console.debug('RX Socket Event:', ...ev)
-      await gameSocketMiddleware(socket, next)
+    debugSockets && socket.use(async (ev, next) => {
+      console.debug('RX Socket Event:', io.path(), getSessionId(socket.request), ...ev)
+      next()
     })
 
-    socket.on('nextRound', async (round) => {
-      const newRound = await nextRound(socket.data.gameId as string, round)
-      io.emit('updateRound', newRound)
+    socket.on('nextRound', async (gameId, round) => {
+      const newRound = await nextRound(gameId, round)
+        .catch((err) => console.error('Error nextRound',gameId,round, err))
+      newRound != null && io.emit('updateRound', newRound)
     })
     
-    socket.on('setName', async (name) => {
+    socket.on('setName', async (playerId, name) => {
       if (!name) return;
-      await renamePlayer(socket.data.playerId as string, name)
-      io.emit('updateName', socket.data.playerId as string, name)
+      const player = await renamePlayer(playerId, name)
+        .catch((err) => console.error('Error renamePlayer',playerId,name, err))
+      player != null && io.emit('updateName', player.id, player.name)
     })
     
-    socket.on('pickCard', async (gameCardId, callback) => {
-      const pick = await pickCard(socket.data.playerId as string, gameCardId)
-      if (pick == null) return callback()
-      io.emit('updatePick', socket.data.playerId as string, pick)
-      callback(pick)
+    socket.on('pickCard', async (playerId, gameCardId, callback) => {
+      const player = await pickCard(playerId, gameCardId)
+        .catch((err) => console.error('Error pickCard',playerId,gameCardId, err))
+      if (player == null) return callback(undefined)
+
+      io.emit('updatePick', player.id, player.pick)
+      callback(player.pick)
     })
-
+    
     socket.on('setStatus', async (playerId, status, callback) => {
-      const player = await setStatus(playerId, status === 'join' ? socket.data.sessionId : null)
-      if (!player?.id) return callback()
+      const sessionId = status === 'join' && getSessionId(socket.request)
+      if (sessionId == null) {
+        console.error('Attempting to connect player w/o sessionId')
+        return callback(undefined)
+      }
 
-      if (player?.sessionId && player?.id) socket.data.playerId = player.id
+      const player = await setStatus(playerId, sessionId || null)
+        .catch((err) => console.error('Error setStatus',status,playerId, err))
+      if (!player?.id) return callback(undefined)
+
       io.emit('updateSlot', player?.id || playerId, player?.sessionId || null)
       callback(player)
     })
 
     socket.on('getPack', async (packId, callback) => {
       const gameCardIds = await getPack(packId)
+        .catch((err) => console.error('Error getPack',packId, err))
       callback(gameCardIds)
     })
 
     socket.on('swapBoards', async (gameCardId, toBoard, callback) => {
-      const { id, board } = await swapCard(gameCardId, toBoard)
-      callback(id, board)
+      const card = await swapCard(gameCardId, toBoard)
+        .catch((err) => console.error('Error swapBoards',gameCardId,toBoard, err))
+      callback(card?.id, card?.board)
     })
 
-    socket.on('setLands', async (lands, callback) => {
-      const newLands = await updateLands(socket.data.playerId as string, lands)
+    socket.on('setLands', async (playerId, lands, callback) => {
+      const newLands = await updateLands(playerId, lands)
+        .catch((err) => console.error('Error setLands',playerId,lands, err))
       callback(newLands)
     })
 
-    debugSockets && console.debug('Connected', socket.data)
+    debugSockets && console.debug('New Connection', io.path(), sessionId)
   })
-}
-
-const gameSocketMiddleware: GameMiddleware = async (socket, next) => {
-
-  if (!socket.data?.gameId) {
-    console.error('Connection is missing data', socket.data)
-    return socket.disconnect(true)
-  }
-
-  return next()
 }

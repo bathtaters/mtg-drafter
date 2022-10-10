@@ -33,7 +33,7 @@ export namespace Socket {
   type RenamePlayer  = (name: string) => void
   type NextRound     = () => void
   type PickCard      = (cardIdx: number) => void
-  type GetPack       = (packIdx?: number) => void
+  type GetPack       = (packId?: string) => void
   type SwapCard      = (gameCardId: GameCard['id'], toBoard: Board) => void
   type SetLands      = (lands: BasicLands) => void
   type SetStatus     = (playerId: Player['id'], status?: PlayerStatus) => void

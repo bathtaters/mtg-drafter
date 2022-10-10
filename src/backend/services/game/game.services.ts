@@ -37,50 +37,36 @@ export function nextRound(id: Game['id'], round: Game['round']) {
 }
 
 export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'], board: Board = "main") {
-  const notPicked = await prisma.gameCard.count({ where: { id: gameCardId, playerId: null }})
-  if (!notPicked) return undefined
+  const unPicked = await prisma.gameCard.count({ where: { id: gameCardId, playerId: null }})
+  if (!unPicked) return undefined
   
   const [ player ] = await prisma.$transaction([
     prisma.player.update({
       where: { id: playerId },
       data: { pick: { increment: 1 } },
-      select: { pick: true },
+      select: { id: true, pick: true },
     }),
     prisma.gameCard.update({
       where: { id: gameCardId },
       data: { playerId, board },
     }),
   ])
-  return player.pick
+  return player
 }
 
-export async function getPack(packId: Pack['id']) {
+export function getPack(packId: Pack['id']) {
   return prisma.gameCard.findMany({
     where: { packId, playerId: null },
     select: { id: true },
   }).then((cards) => cards.map(({ id }) => id))
 }
 
-export async function getGameAndPlayer(gameUrl: string | string[] | undefined, sessionId: string) {
+export async function gameExists(gameUrl: string | string[] | undefined) {
   if (!gameUrl || typeof gameUrl !== 'string') {
     console.error(`Fetch game/player: Invalid gameURL (${gameUrl})`)
-    return null
+    return false
   }
-
-  const gameId = await prisma.game.findUnique({ where: { url: gameUrl }, select: { id: true } })
-    .then((game) => game?.id)
-
-  if (!gameId) {
-    console.error(`Fetch game: GameURL not found (${gameUrl})`)
-    return null
-  }
-
-  const playerId = await prisma.player.findUnique({
-    where: { sessionId_gameId: { sessionId, gameId } },
-    select: { id: true }
-  }).then((player) => player?.id)
-
-  if (!playerId) return { gameId, gameUrl, sessionId }
-
-  return { gameId, playerId, gameUrl, sessionId }
+  const gameExists = await prisma.game.count({ where: { url: gameUrl } })
+  if (!gameExists) console.error(`Fetch game: GameURL not found (${gameUrl})`)
+  return !!gameExists
 }

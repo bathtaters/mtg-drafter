@@ -43,7 +43,7 @@ const Game: NextPage<ServerProps> = (props: InferGetServerSidePropsType<typeof g
             player={player as GameProps['player']}
             pack={pack} pickCard={pickCard} swapCard={swapCard}
             clickRoundBtn={isReady ? () => nextRound() : undefined}
-            loadingPack={loadingPack}
+            loadingPack={!!loadingPack}
           />
         }
       </Loader>
@@ -51,7 +51,7 @@ const Game: NextPage<ServerProps> = (props: InferGetServerSidePropsType<typeof g
 
     <Footer />
 
-    { loadingAll && <Overlay><Spinner /></Overlay> }
+    { !!loadingAll && <Overlay><Spinner /></Overlay> }
 
     {!!toggleLandModal &&
       <LandsModal

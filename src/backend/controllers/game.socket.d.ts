@@ -12,21 +12,19 @@ export interface GameServerToClient {
 }
 
 export interface GameClientToServer {
-  nextRound:  (round: Game['round']) => void;
-  setName:    (name: Player['name']) => void;
-  pickCard:   (gameCardId: GameCard['id'], callback: (pick?: Player['pick']) => void) => void;
+  nextRound:  (gameId: Game['id'], round: Game['round']) => void;
+  setName:    (playerId: Player['id'], name: Player['name']) => void;
+  pickCard:   (playerId: Player['id'], gameCardId: GameCard['id'], callback: (pick?: Player['pick']) => void) => void;
   setStatus:  (playerId: Player['id'], status: PlayerStatus, callback: (player?: PlayerFull | Player) => void) => void;
 
-  getPack:    (packId: Pack['id'], callback: (gameCardIds: GameCard['id'][]) => void) => void;
-  swapBoards: (gameCardId: GameCard['id'], toBoard: Board, callback: (gameCardId: GameCard['id'], toBoard: Board) => void) => void;
-  setLands:   (lands: BasicLands, callback: (lands: BasicLands) => void) => void;
+  getPack:    (packId: Pack['id'], callback: (gameCardIds: GameCard['id'][] | void) => void) => void;
+  swapBoards: (gameCardId: GameCard['id'], toBoard: Board, callback: (gameCardId: GameCard['id'] | void, toBoard?: Board | void) => void) => void;
+  setLands:   (playerId: Player['id'], lands: BasicLands, callback: (lands: BasicLands | void) => void) => void;
 }
 
 export interface GameServerToServer {}
 
 export interface GameSocketData {
-  gameId:     string;
-  playerId:   string;
   gameUrl:    string;
   sessionId:  string;
 }
@@ -35,4 +33,4 @@ export type GameServer = Server<GameClientToServer, GameServerToClient, GameServ
 export type GameSocket = Socket<GameClientToServer, GameServerToClient, GameServerToServer, GameSocketData>
 export type GameClient = Client<GameServerToClient, GameClientToServer>
 
-export type GameMiddleware = (socket: GameSocket, next: (err?: Error) => void) => Promise<any>
+export type GameMiddleware = (ev: Event, next: (err?: Error) => void, socket: GameSocket, io: GameServer) => Promise<any>
