@@ -1,10 +1,23 @@
-import type { ReactNode } from "react"
+import type { HTMLProps, ReactNode } from "react"
+
+export const EmptyPlayerContainer = () => <div className="h-20" />
 
 export const HostBadge = () => <span className="badge badge-info badge-sm align-top ml-2">Host</span>
 
 const TitleDot = ({ isMini }: { isMini?: boolean }) => isMini ?
   <span className="w-0 -ml-1 text-2xs align-top opacity-60">•</span> :
   <span className="w-2 -ml-3 pr-3 text-xs align-middle opacity-60">•</span>
+
+
+// Player Name Editor
+export const PlayerNameWrapper = (props: HTMLProps<HTMLDivElement>) => <div className="h-8 w-full" {...props} />
+export const PlayerNameEditWrapper = (props: HTMLProps<HTMLDivElement>) => <div className="input-group w-full h-8" {...props} />
+export const PlayerNameEditBtn = (props: HTMLProps<HTMLInputElement>) => (
+  <input type="button" className="btn btn-primary btn-square btn-sm" {...props} />
+)
+export const PlayerNameTextBox = (props: HTMLProps<HTMLInputElement>) => (
+  <input type="text" className="input input-primary flex-grow h-auto p-2 text-lg sm:text-2xl" {...props} />
+)
 
 
 const themes = {
@@ -19,8 +32,6 @@ const themes = {
     'text-accent'
   ]
 }
-
-export const EmptyPlayerContainer = () => <div className="h-20" />
 
 export default function PlayerContainerStyle(
   { title, header, subtitle, children, isMini, showDot, disconnected, color }:
@@ -44,7 +55,7 @@ export default function PlayerContainerStyle(
           disconnected ? "opacity-60 italic" : ''} ${color ? themes[color][1] : ''
         }`}>
           {showDot && <TitleDot isMini={isMini} />}
-          <span className={isMini ? "ml-1" : "text-lg sm:text-2xl"}>{title}</span>
+          <span className={isMini ? "ml-1 flex-grow" : "text-lg sm:text-2xl flex-grow"}>{title}</span>
         </div>
 
         {subtitle && <div className={`stat-desc ${color ? themes[color][2] : ''}`}>{subtitle}</div>}

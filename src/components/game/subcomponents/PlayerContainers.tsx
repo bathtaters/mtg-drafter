@@ -1,6 +1,26 @@
 import type { Player } from "@prisma/client"
 import PlayerMenu from "./PlayerMenu"
-import PlayerContainerStyle, { EmptyPlayerContainer, ColorTheme, HostBadge } from "../styles/PlayerContainerStyle"
+import PlayerContainerStyle, {
+  EmptyPlayerContainer, ColorTheme, HostBadge,
+  PlayerNameWrapper, PlayerNameEditWrapper, PlayerNameEditBtn, PlayerNameTextBox,
+} from "../styles/PlayerContainerStyle"
+import useRenameController, { RenameProps } from "../services/name.controller"
+import { nameCharLimit } from "assets/constants"
+
+
+function PlayerNameEditor(props: RenameProps) {
+  const { value, isEditing, canSave, charLimit, handleSubmit, handleCancel, handleChange, enableEdit } = useRenameController(props)
+
+  return isEditing ?
+    <PlayerNameEditWrapper>
+      <PlayerNameTextBox value={value} onChange={handleChange} {...charLimit} />
+      <PlayerNameEditBtn value="S" onClick={handleSubmit} disabled={!canSave} />
+      <PlayerNameEditBtn value="X" onClick={handleCancel} />
+    </PlayerNameEditWrapper> :
+    <PlayerNameWrapper onClick={enableEdit}>{value}</PlayerNameWrapper>
+}
+
+
 
 export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost }: ContainerSmallProps) => (
   <PlayerContainerStyle title={player.name} isMini={true} disconnected={!player.sessionId} color={color} showDot={isHost}>
@@ -10,8 +30,9 @@ export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost }
 )
 
 
-export const PlayerContainerFull = ({ player, holding, maxPick, openLands, openHost, dropPlayer }: ContainerFullProps) => player ? (
-  <PlayerContainerStyle title={player.name} color="self" showDot={!!openHost}
+export const PlayerContainerFull = ({ player, holding, maxPick, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => player ? (
+  <PlayerContainerStyle color="self" showDot={!!openHost}
+    title={<PlayerNameEditor name={player.name || 'Player'} charLimit={nameCharLimit} onSubmit={renamePlayer} />}
     header={<span>You{!!openHost && <HostBadge />}</span>}
     subtitle={`Pick ${!player.pick || player.pick > maxPick ? '-' : player.pick} | Holding ${holding ?? '-'}`}
   >
@@ -30,6 +51,7 @@ interface ContainerFullProps extends ContainerProps {
   openLands:  (() => void) | null,
   openHost: (() => void) | null,
   dropPlayer: (() => void) | null,
+  renamePlayer: ((name: string) => void),
 }
 interface ContainerSmallProps extends ContainerProps {
   color: ColorTheme,

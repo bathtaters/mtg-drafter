@@ -11,13 +11,14 @@ type Props = {
   dropPlayer: (() => void) | null,
   openLands:  (() => void) | null,
   openHost:   (() => void) | null,
+  renamePlayer: ((name: string) => void),
 }
 
 
 const NoData = () => <Header left={<GameTitle title="Game Not Found" />} />
 
 
-export default function GameHeader({ game, players, playerIdx, holding, openLands, openHost, dropPlayer }: Props) {
+export default function GameHeader({ game, players, playerIdx, holding, openLands, openHost, dropPlayer, renamePlayer }: Props) {
   
   if (!game) return <NoData />
   
@@ -38,6 +39,7 @@ export default function GameHeader({ game, players, playerIdx, holding, openLand
               openLands={openLands}
               openHost={openHost}
               dropPlayer={dropPlayer}
+              renamePlayer={renamePlayer}
               maxPick={game.packSize}
             />}
         </LeftHeaderWrapper>
