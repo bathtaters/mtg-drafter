@@ -49,7 +49,7 @@ export default function GameHeader({ game, players, playerIdx, holding, openLand
 
               <PlayerContainerSmall
                 player={play} key={String(play.id)}
-                openHost={openHost}
+                isHost={game.hostId ? game.hostId === play.id : false}
                 color={idx === playerIdx ? 'self' : idx === oppIdx ? 'opp' : undefined }
                 holding={holding[idx]}
                 maxPick={game.packSize}
