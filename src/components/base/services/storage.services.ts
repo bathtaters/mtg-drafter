@@ -1,11 +1,10 @@
-import cardZoomLevels from "components/game/styles/cardZoomLevels"
+import { useCallback, useState } from "react"
+import { storageDefaults } from "assets/constants"
 
 const storagePrefix = 'mtg-drafter-'
-const storageDefaults = Object.freeze({
-  zoom: `${Math.round(cardZoomLevels.length * 3 / 4)}`,
-})
 
-type LocalKeys = keyof typeof storageDefaults
+
+export type LocalKeys = keyof typeof storageDefaults
 
 export const getLocalVar = <T = any>(key: LocalKeys): T => {
   const stored = localStorage.getItem(storagePrefix + key)
@@ -26,4 +25,16 @@ export function setDefaults() {
   Object.entries(storageDefaults).forEach(([key,val]) => {
     setLocalVar(key as LocalKeys, val, false)
   })
+}
+
+type SetValue<T> = (value: T) => void
+export function useLocalStorage<T = typeof storageDefaults[LocalKeys]>(key: LocalKeys): [ T, SetValue<T> ] {
+  const [ value, setValue ] = useState<T>(typeof window !== 'undefined' ? getLocalVar<T>(key) : storageDefaults[key] as T)
+  
+  const updateValue = useCallback((value: T) => {
+    setValue(value)
+    setLocalVar(key, value)
+  }, [])
+  
+  return [ value, updateValue ]
 }

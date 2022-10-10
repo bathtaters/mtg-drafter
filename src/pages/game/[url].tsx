@@ -38,7 +38,12 @@ const Game: NextPage<ServerProps> = (props: InferGetServerSidePropsType<typeof g
 
     <Footer />
 
-    {!!toggleLandModal && <LandsModal isOpen={landModal} setOpen={toggleLandModal} basics={player?.basics as BasicLands} onSubmit={setLands} /> }
+    {!!toggleLandModal &&
+      <LandsModal
+        isOpen={landModal} setOpen={toggleLandModal}
+        basics={player?.basics as BasicLands} onSubmit={setLands}
+        cards={player?.cards}
+      /> }
 
     {!!toggleHostModal && <HostModal isOpen={hostModal} setOpen={toggleHostModal} />}
   </>)

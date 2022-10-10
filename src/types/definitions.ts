@@ -1,5 +1,6 @@
-export type { CubeOptions } from "../backend/services/createGame.services"
+import type { Board } from "@prisma/client"
+export type { CubeOptions } from "backend/services/game/createGame"
 
-export type BasicLands = { w: number, u: number, b: number, r: number, g: number }
+export type BoardLands = { w: number, u: number, b: number, r: number, g: number }
 
-export type Board = "main" | "side"
+export type BasicLands = { [board in Board]: BoardLands }

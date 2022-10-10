@@ -1,43 +1,31 @@
-import type { Dispatch, SetStateAction } from "react"
-import type { BasicLands } from "types/definitions"
-import { useState } from "react"
+import type { MouseEventHandler, ReactNode } from "react"
 import ModalWrapper from "components/base/common/Modal"
-import { ColorInputWrapper, ColorsWrapper } from "../styles/GameMenuStyles"
-import { colorOrder } from "backend/utils/game/game.utils"
+import { ModalButton, ColorsWrapper, ColorInputWrapper, ColorLabels, ColorInput, AutoLandsWrapper, AutoLandsInput } from "../styles/GameMenuStyles"
+import { colorOrder } from "assets/constants"
+import useLandsModal, { LandsModalProps } from "../services/lands.controller"
 
 
-const ColorInput = ({ label, value, setValue }: InputProps) => (
-  <ColorInputWrapper label={label}>
-    <input
-      className="input input-bordered text-xl"
-      type="number" min={0} id={label+'Lands'}
-      defaultValue={setValue ? undefined : value}
-      value={setValue && value}
-      onChange={setValue && ((ev) => setValue(+ev.target.value))}
-    />
-  </ColorInputWrapper>
-)
-
-
-export default function LandsModal({ basics, isOpen, setOpen, onSubmit = () => {} }: Props) {
-  const [localLands, setLocalLands] = useState(basics)
-
-  const handleSave   = () => { onSubmit && onSubmit(localLands); setOpen((st) => !st) }
-  const handleCancel = () => { setLocalLands(basics);            setOpen((st) => !st) }
-
-  const handleChange = (color: string) => (value: number) => setLocalLands((lands: BasicLands) => ({ ...lands, [color]: value }))
+export default function LandsModal(props: LandsModalProps) {
+  const { localLands, landSums, mainChange, sideChange, handleSave, handleCancel, autoLandsProps } = useLandsModal(props)
 
   return (
-    <ModalWrapper isOpen={isOpen} title="Set Basic Lands"
+    <ModalWrapper isOpen={props.isOpen} title="Set Basic Lands" className="md:max-w-3xl"
       buttons={<>
-        <button type="button" className="btn btn-primary" onClick={handleSave}>Save</button>
-        <button type="button" className="btn" onClick={handleCancel}>Cancel</button>
+        <AutoLandsButton {...autoLandsProps}>Auto</AutoLandsButton>
+        <ModalButton onClick={handleSave} className="btn-primary">Save</ModalButton>
+        <ModalButton onClick={handleCancel}>Cancel</ModalButton>
       </>}
     >
       <ColorsWrapper>
+        <ColorLabels labels={['','Main','Side']} className="text-2xl items-end font-bold font-serif" />
+
         {(colorOrder).map((color) =>
-          <ColorInput label={color} value={localLands[color]} setValue={handleChange(color)} key={color} />)
+          <ColorColumn label={color} key={color}
+            main={localLands.main[color]} setMain={mainChange(color)}
+            side={localLands.side[color]} setSide={sideChange(color)}
+          />)
         }
+        <ColorLabels labels={landSums} className=" italic font-sans items-start" />
       </ColorsWrapper>
 
     </ModalWrapper>
@@ -45,11 +33,29 @@ export default function LandsModal({ basics, isOpen, setOpen, onSubmit = () => {
 }
 
 
-type InputProps = { label: string, value: number, setValue?: (value: number) => void }
+type ColorProps = { label: string, main: number, setMain?: NumSet, side: number, setSide?: NumSet }
 
-type Props = {
-  basics: BasicLands,
-  isOpen: boolean,
-  setOpen: Dispatch<SetStateAction<boolean>>,
-  onSubmit?: (basics: BasicLands) => void
+const ColorColumn = ({ label, main, setMain, side, setSide }: ColorProps) => (
+  <ColorInputWrapper label={label}>
+    <ColorInput value={main} setValue={setMain} />
+    <ColorInput value={side} setValue={setSide} />
+  </ColorInputWrapper>
+)
+
+
+type LandsProps = {
+  onClick: MouseEventHandler, children: ReactNode,
+  deckSize: number, setDeckSize: NumSet,
+  sideLands: number, setSideLands: NumSet,
 }
+
+const AutoLandsButton = ({ onClick, deckSize, setDeckSize, sideLands, setSideLands, children }: LandsProps) => (
+  <AutoLandsWrapper>
+    <ModalButton className="btn-accent" onClick={onClick}>{children}</ModalButton>
+    <AutoLandsInput label="Deck size"       value={deckSize}  onChange={(ev) =>  setDeckSize(+ev.currentTarget.value)} min="1" max="500" />
+    <AutoLandsInput label="Sideboard lands" value={sideLands} onChange={(ev) => setSideLands(+ev.currentTarget.value)} min="0" max="50" />
+  </AutoLandsWrapper>
+)
+
+
+type NumSet = (value: number) => void

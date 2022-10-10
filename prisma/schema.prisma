@@ -125,7 +125,7 @@ model Player {
   sessionId   String?
   pick        Int @default(0)
   cards       GameCard[]
-  basics      Json @default("{\"w\":0,\"u\":0,\"b\":0,\"r\":0,\"g\":0}")
+  basics      Json @default("{\"main\":{\"w\":0,\"u\":0,\"b\":0,\"r\":0,\"g\":0},\"side\":{\"w\":0,\"u\":0,\"b\":0,\"r\":0,\"g\":0}}")
 
   game        Game @relation("GamePlayers", fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   hostOf      Game? @relation("GameHost")

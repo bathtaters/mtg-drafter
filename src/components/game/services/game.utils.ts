@@ -35,3 +35,8 @@ export const getHolding = (game: Game | undefined, players: Player[]) => !game |
 export const filterPackIds = (pack: PackFull, ids: GameCard['id'][]): PackFull => ({
   ...pack, cards: pack.cards.filter(({ id }) => ids.includes(id))
 })
+
+export const sameValueObject = <T extends { [key: string]: any }> (keys: (keyof T)[], value: T[keyof T]): T =>
+  Object.fromEntries(keys.map((key) => [key, value])) as T
+
+export const getObjectSum = (obj: { [key: string]: number }) => Object.values(obj).reduce((sum, n) => sum + n, 0)
