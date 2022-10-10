@@ -1,6 +1,6 @@
 import type { Player } from "@prisma/client"
 import PlayerMenu from "./PlayerMenu"
-import PlayerContainerStyle, { EmptyPlayerContainer, ColorTheme } from "../styles/PlayerContainerStyle"
+import PlayerContainerStyle, { EmptyPlayerContainer, ColorTheme, HostBadge } from "../styles/PlayerContainerStyle"
 
 export const PlayerContainerSmall = ({ player, holding, maxPick, color, openHost }: ContainerSmallProps) => (
   <PlayerContainerStyle title={player.name} isMini={true} disconnected={!player.sessionId} color={color} showDot={!!openHost}>
@@ -12,7 +12,7 @@ export const PlayerContainerSmall = ({ player, holding, maxPick, color, openHost
 
 export const PlayerContainerFull = ({ player, holding, maxPick, openLands, openHost, dropPlayer }: ContainerFullProps) => player ? (
   <PlayerContainerStyle title={player.name} color="self" showDot={!!openHost}
-    header={`Player${openHost ? ' (Host)' : ''}`}
+    header={<span>You{!!openHost && <HostBadge />}</span>}
     subtitle={`Pick ${!player.pick || player.pick > maxPick ? '-' : player.pick} | Holding ${holding ?? '-'}`}
   >
     <PlayerMenu openLands={openLands} openHost={openHost} dropPlayer={dropPlayer} />

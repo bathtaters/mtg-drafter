@@ -1,7 +1,7 @@
 import type { ReactNode, MouseEvent, MouseEventHandler } from "react"
 import type { CardFull } from "../services/game"
 import CardDisplay from "./CardDisplay"
-import { CardContainerWrapper, CardsWrapper, NoCards, NoCardsPip } from "../styles/GameCardStyles"
+import { CardContainerWrapper, CardCounter, CardsWrapper, NoCards } from "../styles/GameCardStyles"
 
 type Props = {
   label: ReactNode,
@@ -17,7 +17,7 @@ type Props = {
 export default function CardContainer({ label, cards, open = true, children, onClick, onBgdClick, selectedIdx, cardWidth }: Props) {
   return (
     <CardContainerWrapper defaultOpen={open} 
-      title={<>{!cards && <NoCardsPip />}{label}{cards ? ` [${cards.length}]` : ''}</>}
+      title={<span>{label}{<CardCounter count={cards?.length} />}</span>}
       isPrimary={selectedIdx == null} onClick={onBgdClick}
     >
       {children}

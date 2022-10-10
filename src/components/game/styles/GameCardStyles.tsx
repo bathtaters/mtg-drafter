@@ -5,7 +5,9 @@ export const NoCardStyle = ({ children }:{ children: ReactNode }) => <div classN
 
 export const NoCards = () => <NoCardStyle>Awaiting next pack.</NoCardStyle>
 
-export const NoCardsPip = () => <span className="text-error font-bold">• </span>
+export const CardCounter = ({ count }: { count?: number }) => (
+  <span className="badge badge-outline badge-lg align-top ml-2">{count ?? '–'}</span>
+)
 
 
 export const CardContainerWrapper = ({ title, defaultOpen, isPrimary, children, onClick }: {

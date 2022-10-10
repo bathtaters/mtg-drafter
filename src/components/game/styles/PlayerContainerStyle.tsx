@@ -1,21 +1,22 @@
 import type { ReactNode } from "react"
 
+export const HostBadge = () => <span className="badge badge-info badge-sm align-top ml-2">Host</span>
 
 const TitleDot = ({ isMini }: { isMini?: boolean }) => isMini ?
-  <span className="w-0 -ml-1 text-2xs align-middle opacity-60">•</span> :
-  <span className="w-2 -ml-2 pr-2 text-xs align-middle opacity-60">•</span>
+  <span className="w-0 -ml-1 text-2xs align-top opacity-60">•</span> :
+  <span className="w-2 -ml-3 pr-3 text-xs align-middle opacity-60">•</span>
 
 
 const themes = {
   self: [
     'bg-primary-content',
     'text-primary',
-    'text-primary-focus'
+    'text-primary'
   ],
   opp: [
     'bg-accent-content',
     'text-accent',
-    'text-accent-focus'
+    'text-accent'
   ]
 }
 
@@ -30,7 +31,7 @@ export default function PlayerContainerStyle(
       <div className={`stat ${isMini ? 'py-0 px-2' : 'rounded-2xl'} ${color ? themes[color][0] : ''}`}>
         
         <div className={`stat-figure ${
-          isMini ? 'flex flex-col justify-center opacity-60' : '-mr-3 sm:mr-0'
+          isMini ? 'flex flex-col justify-center opacity-70' : '-mr-3 sm:mr-0'
         } ${color ? themes[color][2] : ''}`}>
           {children}
         </div>
@@ -43,7 +44,7 @@ export default function PlayerContainerStyle(
           disconnected ? "opacity-60 italic" : ''} ${color ? themes[color][1] : ''
         }`}>
           {showDot && <TitleDot isMini={isMini} />}
-          <span className={isMini ? '' : "text-lg sm:text-2xl"}>{title}</span>
+          <span className={isMini ? "ml-1" : "text-lg sm:text-2xl"}>{title}</span>
         </div>
 
         {subtitle && <div className={`stat-desc ${color ? themes[color][2] : ''}`}>{subtitle}</div>}
