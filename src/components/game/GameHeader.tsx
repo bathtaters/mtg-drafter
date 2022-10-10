@@ -8,18 +8,19 @@ import { getOppIdx, getRound, passingUp } from './services/game.utils'
 type Props = {
   game?: GameProps['options'], players: GameProps['players'],
   playerIdx: number, holding: number[],
-  openLands: (() => void) | null, openHost: (() => void) | null,
+  dropPlayer: (() => void) | null,
+  openLands:  (() => void) | null,
+  openHost:   (() => void) | null,
 }
 
 
-const NoData = () => <Header left={<GameTitle title="..." />} />
+const NoData = () => <Header left={<GameTitle title="Game Not Found" />} />
 
 
-export default function GameHeader({ game, players, playerIdx, holding, openLands, openHost }: Props) {
+export default function GameHeader({ game, players, playerIdx, holding, openLands, openHost, dropPlayer }: Props) {
   
   if (!game) return <NoData />
   
-  const isHost = !!players[playerIdx] && game.hostId === players[playerIdx].id
   const oppIdx = useMemo(() => getOppIdx(playerIdx, players.length), [playerIdx, players.length])
 
   return (
@@ -31,11 +32,12 @@ export default function GameHeader({ game, players, playerIdx, holding, openLand
               <RoundCounter>{getRound(game)}</RoundCounter>
             </div>
 
-            {players[playerIdx] && <PlayerContainerFull
+            {<PlayerContainerFull
               player={players[playerIdx]}
               holding={holding[playerIdx]}
               openLands={openLands}
               openHost={openHost}
+              dropPlayer={dropPlayer}
               maxPick={game.packSize}
             />}
         </LeftHeaderWrapper>
@@ -43,7 +45,7 @@ export default function GameHeader({ game, players, playerIdx, holding, openLand
       
       right={
         <PlayerContainersWrapper upArrow={passingUp(game)}>
-            { players.map((play, idx) =>
+            { players[playerIdx] && players.map((play, idx) =>
 
               <PlayerContainerSmall
                 player={play} key={String(play.id)}

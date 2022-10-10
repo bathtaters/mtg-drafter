@@ -1,6 +1,6 @@
 import type { Player } from "@prisma/client"
 import PlayerMenu from "./PlayerMenu"
-import PlayerContainerStyle, { ColorTheme } from "../styles/PlayerContainerStyle"
+import PlayerContainerStyle, { EmptyPlayerContainer, ColorTheme } from "../styles/PlayerContainerStyle"
 
 export const PlayerContainerSmall = ({ player, holding, maxPick, color, openHost }: ContainerSmallProps) => (
   <PlayerContainerStyle title={player.name} isMini={true} disconnected={!player.sessionId} color={color} showDot={!!openHost}>
@@ -10,14 +10,14 @@ export const PlayerContainerSmall = ({ player, holding, maxPick, color, openHost
 )
 
 
-export const PlayerContainerFull = ({ player, holding, maxPick, openLands, openHost }: ContainerFullProps) => (
+export const PlayerContainerFull = ({ player, holding, maxPick, openLands, openHost, dropPlayer }: ContainerFullProps) => player ? (
   <PlayerContainerStyle title={player.name} color="self" showDot={!!openHost}
     header={`Player${openHost ? ' (Host)' : ''}`}
     subtitle={`Pick ${!player.pick || player.pick > maxPick ? '-' : player.pick} | Holding ${holding ?? '-'}`}
   >
-    <PlayerMenu openLands={openLands} openHost={openHost} />
+    <PlayerMenu openLands={openLands} openHost={openHost} dropPlayer={dropPlayer} />
   </PlayerContainerStyle>
-)
+) : <EmptyPlayerContainer />
 
 
 interface ContainerProps {
@@ -28,7 +28,8 @@ interface ContainerProps {
 }
 
 interface ContainerFullProps extends ContainerProps {
-  openLands: (() => void) | null,
+  openLands:  (() => void) | null,
+  dropPlayer: (() => void) | null,
 }
 interface ContainerSmallProps extends ContainerProps {
   color: ColorTheme

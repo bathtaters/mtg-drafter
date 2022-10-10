@@ -15,6 +15,8 @@ export const passingUp = ({ round, roundCount }: { round: number, roundCount: nu
   round < 1 || round > roundCount ? undefined :
     round % 2 === 0
 
+export const getPlayerIdx = (players: Player[], player?: Player | null) => !player?.id ? -1 : players.findIndex(({ id }) => id === player.id)
+
 export const getNeighborIdx = (game: Game | undefined, playerCount: number, playerIdx: number) =>
   !game || playerIdx === -1 || playerCount <= 1 ? -1 : passingUp(game) ?
     (playerIdx - 1 + playerCount) % playerCount :
@@ -35,8 +37,3 @@ export const getHolding = (game: Game | undefined, players: Player[]) => !game |
 export const filterPackIds = (pack: PackFull, ids: GameCard['id'][]): PackFull => ({
   ...pack, cards: pack.cards.filter(({ id }) => ids.includes(id))
 })
-
-export const sameValueObject = <T extends { [key: string]: any }> (keys: (keyof T)[], value: T[keyof T]): T =>
-  Object.fromEntries(keys.map((key) => [key, value])) as T
-
-export const getObjectSum = (obj: { [key: string]: number }) => Object.values(obj).reduce((sum, n) => sum + n, 0)

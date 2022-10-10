@@ -1,16 +1,17 @@
 import type { Card, Game, Pack, GameCard, Player, Board } from '@prisma/client'
-import type { BasicLands } from 'types/definitions'
+import type { BasicLands, PlayerStatus } from 'types/definitions'
 
 export type CardFull = Card & { otherFaces: Card[] }
 export type GameCardFull = GameCard & { card: CardFull }
 export type PackFull = Pack & { cards: GameCardFull[] }
+export type PlayerFull = Player & { cards: GameCardFull[] }
 
 export interface ServerProps {
   options?: Game,
   players?: Player[],
+  playerSlots?: Player['id'][],
   packs?: PackFull[],
-  player?: Player & { cards: GameCardFull[] },
-  playerIdx?: number,
+  player?: PlayerFull | null,
   error?: string,
 }
 
@@ -25,6 +26,7 @@ export namespace Local {
   type SwapCard     = (gameCardId: GameCard['id'], board: Board) => void
   type SetLands     = (basics: BasicLands) => void
   type SetPack      = (pickableIds?: GameCard['id'][]) => void
+  type SetStatus    = (playerId: Player['id'], sessionId: Player['sessionId'], isSelf?: boolean) => void
 }
 
 export namespace Socket {
@@ -34,6 +36,7 @@ export namespace Socket {
   type GetPack       = (packIdx?: number) => void
   type SwapCard      = (gameCardId: GameCard['id'], toBoard: Board) => void
   type SetLands      = (lands: BasicLands) => void
+  type SetStatus     = (playerId: Player['id'], status?: PlayerStatus) => void
 }
 
 // Alias
@@ -43,3 +46,4 @@ export type PickCard      = Socket.PickCard
 export type GetPack       = Socket.GetPack
 export type SwapCard      = Socket.SwapCard
 export type SetLands      = Socket.SetLands
+export type SetStatus     = Socket.SetStatus

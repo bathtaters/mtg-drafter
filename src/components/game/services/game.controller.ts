@@ -3,8 +3,10 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import useSocket from 'components/base/services/socket.controller'
 import useLocalController from './local.controller'
-import { initGameSocket, useGameEmitters } from './socket.controller'
+import { getGameListeners, useGameEmitters } from './socket.controller'
 import { INVALID_PATH } from 'assets/constants'
+
+const fullMsg = 'This game is full, you can wait here or start a new one.'
 
 const socketEndpoint = (gameURL: any) => `/api/game/${typeof gameURL === 'string' ? gameURL : INVALID_PATH}/socket`
 
@@ -17,13 +19,14 @@ export default function useGameController(props: ServerProps) {
 
   const local = useLocalController(props)
 
-  const socket = useSocket(`/game/${gameURL}`, socketEndpoint(gameURL), initGameSocket(local))
-  const { renamePlayer, nextRound, pickCard, swapCard, setLands } = useGameEmitters(local, socket)
+  const socket = useSocket(`/game/${gameURL}`, socketEndpoint(gameURL), getGameListeners(local))
+  const { renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus } = useGameEmitters(local, socket)
   
   return {
     ...local,
     isConnected: socket.isConnected,
-    renamePlayer, nextRound, pickCard, swapCard, setLands,
+    loadingMessage: !local.player && !local.slots.length ? fullMsg : undefined,
+    renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus,
 
     landModal, hostModal,
     toggleLandModal: local.player?.basics ? () => setLandModal((o) => !o) : null,

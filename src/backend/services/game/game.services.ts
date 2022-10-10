@@ -71,7 +71,7 @@ export async function getGameAndPlayer(gameUrl: string | string[] | undefined, s
     .then((game) => game?.id)
 
   if (!gameId) {
-    console.error(`Fetch game/player: GameURL not found (${gameUrl})`)
+    console.error(`Fetch game: GameURL not found (${gameUrl})`)
     return null
   }
 
@@ -80,10 +80,7 @@ export async function getGameAndPlayer(gameUrl: string | string[] | undefined, s
     select: { id: true }
   }).then((player) => player?.id)
 
-  if (!playerId) {
-    console.error(`Fetch game/player: SessionID not found (${sessionId})`)
-    return null
-  }
+  if (!playerId) return { gameId, gameUrl, sessionId }
 
   return { gameId, playerId, gameUrl, sessionId }
 }

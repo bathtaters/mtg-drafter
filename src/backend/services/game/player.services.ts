@@ -2,17 +2,24 @@ import type { GameCard, Player, Board } from '@prisma/client'
 import type { BasicLands } from '../../../types/definitions'
 import prisma from '../../libs/db'
 
-export async function getPlayer(sessionId: Player['sessionId'], playerList: Player[]) {
-  const playerIdx = playerList ? playerList.findIndex(({ sessionId: sid }) => sessionId === sid) : -1
-  if (!playerList[playerIdx]?.id) return { playerIdx }
+export function getPlayer(sessionId: Player['sessionId'], playerList: Player[]) {
+  const id = playerList.find(({ sessionId: sid }) => sessionId === sid)?.id
+  if (!id) return null
 
-  const player = await prisma.player.findUnique({
-    where: { id: playerList[playerIdx].id },
-    include: {
+  return prisma.player.findUnique({
+    where: { id }, include: {
       cards: { include: { card: { include: { otherFaces: true } } } },
     }
   })
-  return { player, playerIdx }
+}
+
+export function setStatus(id: Player['id'], sessionId: Player['sessionId'] = null) {
+  return prisma.player.update({
+    where: { id }, data: { sessionId },
+    include: {
+      cards: !!sessionId && { include: { card: { include: { otherFaces: true } } } },
+    }
+  })
 }
 
 export function renamePlayer(id: Player['id'], newName: Player['name']) {

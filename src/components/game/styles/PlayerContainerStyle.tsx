@@ -19,10 +19,11 @@ const themes = {
   ]
 }
 
+export const EmptyPlayerContainer = () => <div className="h-20" />
 
 export default function PlayerContainerStyle(
   { title, header, subtitle, children, isMini, showDot, disconnected, color }:
-  { title: ReactNode, header?: ReactNode, subtitle?: ReactNode, children: ReactNode, isMini?: boolean, showDot: boolean, disconnected?: boolean, color: ColorTheme }
+  { title: ReactNode, header?: ReactNode, subtitle?: ReactNode, children?: ReactNode, isMini?: boolean, showDot?: boolean, disconnected?: boolean, color?: ColorTheme }
 ) {
   return (
     <div className={`stats shadow-sm shadow-black ${isMini ? 'rounded-lg' : 'col-span-2 overflow-visible'}`}>

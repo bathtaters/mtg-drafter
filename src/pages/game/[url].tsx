@@ -10,33 +10,48 @@ import HostModal from 'components/game/subcomponents/HostModal'
 import { BodyWrapperStyle, SetPageTitle } from 'components/base/styles/AppStyles'
 import { serverSideHandler } from 'backend/controllers/getGame.controller'
 import useGameController from 'components/game/services/game.controller'
+import PlayerJoin from 'components/game/PlayerJoin'
+import { enableDropping } from 'assets/constants'
+import Overlay from 'components/base/common/Overlay'
+import Spinner from 'components/base/common/Spinner'
 
 
 const Game: NextPage<ServerProps> = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const {
-    game, player, players, playerIdx, isConnected, loadingPack,
-    holding, isReady, pack, landModal, hostModal,
+    game, player, players, playerIdx, isConnected, loadingPack, loadingAll,
+    holding, isReady, pack, landModal, hostModal, slots, loadingMessage,
     toggleLandModal, toggleHostModal,
-    nextRound, pickCard, swapCard, setLands
+    nextRound, pickCard, swapCard, setLands, setStatus
   } = useGameController(props)
 
   return (<>
     <SetPageTitle title={game?.name || ""} />
-    <GameHeader game={game} players={players} playerIdx={playerIdx} holding={holding} openLands={toggleLandModal} openHost={toggleHostModal} />
+
+    <GameHeader
+      game={game} players={players} playerIdx={playerIdx} holding={holding}
+      openLands={toggleLandModal} openHost={toggleHostModal}
+      dropPlayer={enableDropping && player?.id ? () => setStatus(player.id, 'leave') : null}
+    />
     
     <BodyWrapperStyle>
-      <Loader data={isConnected} message={props.error}>
-        <GameLayout
-          game={game as GameProps['options']}
-          player={player as GameProps['player']}
-          pack={pack} pickCard={pickCard} swapCard={swapCard}
-          clickRoundBtn={isReady ? () => nextRound() : undefined}
-          loadingPack={loadingPack}
-        />
+      <Loader data={isConnected || game || 404} message={props.error || loadingMessage}>
+        { !player ?
+          <PlayerJoin slots={slots} players={players} selectPlayer={setStatus} /> :
+
+          <GameLayout
+            game={game as GameProps['options']}
+            player={player as GameProps['player']}
+            pack={pack} pickCard={pickCard} swapCard={swapCard}
+            clickRoundBtn={isReady ? () => nextRound() : undefined}
+            loadingPack={loadingPack}
+          />
+        }
       </Loader>
     </BodyWrapperStyle>
 
     <Footer />
+
+    { loadingAll && <Overlay><Spinner /></Overlay> }
 
     {!!toggleLandModal &&
       <LandsModal

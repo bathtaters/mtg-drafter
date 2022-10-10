@@ -14,3 +14,5 @@ export const storageDefaults = Object.freeze({
 export const MAX_GAME_CONN = 20
 
 export const debugSockets = false
+
+export const enableDropping = true

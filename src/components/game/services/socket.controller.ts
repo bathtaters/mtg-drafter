@@ -1,11 +1,11 @@
 import type { GameClient } from 'backend/controllers/game.socket.d'
 import type { LocalController } from './local.controller'
-import type { Socket } from './game'
+import type { PlayerFull, Socket } from './game'
 import { useEffect } from 'react'
 import { debugSockets } from 'assets/constants'
 
 
-export function initGameSocket({ renamePlayer, nextRound, otherPick }: LocalController) {
+export function getGameListeners({ renamePlayer, nextRound, otherPick, setStatus, player }: LocalController) {
   return (socket: GameClient) => {
 
     socket.on('updateName',  (playerId, name) => { 
@@ -19,6 +19,10 @@ export function initGameSocket({ renamePlayer, nextRound, otherPick }: LocalCont
     socket.on('updateRound', (round) => {
       debugSockets && console.debug('SOCKET','updateRound',round)
       nextRound(round)
+    })
+    socket.on('updateSlot', (playerId, sessionId) => {
+      debugSockets && console.debug('SOCKET','updateSlot',playerId,sessionId)
+      setStatus(playerId, sessionId, playerId === player?.id)
     })
 
     return () => {
@@ -87,7 +91,18 @@ export function useGameEmitters(local: LocalController, { socket, isConnected }:
     socket.emit('setLands', lands, (lands) => { local.setLands(lands) })
   }
 
-  return { renamePlayer, nextRound, pickCard, getPack, swapCard, setLands }
+  const setStatus: Socket.SetStatus = (playerId, status = 'join') => {
+    if (!socket || !isConnected) return console.error('Not connected to server')
+
+    local.setLoadingAll(true)
+    local.setStatus(playerId, status === 'join' ? '_temp' : null, true)
+    socket.emit('setStatus', playerId, status, (player) => {
+      if (player?.id && player.sessionId && 'cards' in player) local.updatePlayer(player)
+      local.setStatus(player?.id || playerId, player?.sessionId || null, true)
+    })
+  }
+
+  return { renamePlayer, nextRound, pickCard, getPack, swapCard, setLands, setStatus }
 }
 
 

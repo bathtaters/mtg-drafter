@@ -1,19 +1,21 @@
 import type { PackFull, ServerProps, Local } from './game'
 import { useCallback, useMemo, useState } from 'react'
-import { updateArrayIdx } from 'components/base/services/common.services'
-import { filterPackIds, getHolding, getNeighborIdx, getPackIdx } from './game.utils'
+import { spliceInPlace, updateArrayIdx } from 'components/base/services/common.services'
+import { filterPackIds, getHolding, getNeighborIdx, getPackIdx, getPlayerIdx } from './game.utils'
 
 
 export default function useLocalController(props: ServerProps) {
+  const [loadingAll,  setLoadingAll] = useState(false)
   const [loadingPack, setLoadingPack] = useState(false)
 
   const [ game,    updateGame    ] = useState(props.options)
   const [ player,  updatePlayer  ] = useState(props.player)
   const [ packs,   updatePacks   ] = useState(props.packs || [])
   const [ players, updatePlayers ] = useState(props.players || [])
+  const [ slots,   updateSlots   ] = useState(props.playerSlots || [])
 
-  const playerIdx = props.playerIdx ?? -1
-  const neighborIdx = useMemo(() => getNeighborIdx(game, players.length, playerIdx), [game?.round, players.length, props.playerIdx])
+  const playerIdx = useMemo(() => getPlayerIdx(players, player), [player?.id, players.length])
+  const neighborIdx = useMemo(() => getNeighborIdx(game, players.length, playerIdx), [game?.round, players.length, playerIdx])
   const packIdx = useMemo(() => getPackIdx(game, players, playerIdx, neighborIdx), [game?.round, player?.pick, players[neighborIdx]?.pick])
 
   const [ pack, setPack ] = useState<PackFull | undefined>(packs[packIdx])
@@ -79,10 +81,21 @@ export default function useLocalController(props: ServerProps) {
     setLoadingPack(false)
   }, [packs, packIdx])
 
+
+  const setStatus: Local.SetStatus = useCallback((playerId, sessionId, isSelf = false) => {
+    updateSlots((s) => sessionId ? spliceInPlace(s, (pid) => pid === playerId) : s.concat(playerId))
+    updatePlayers((list) => list && updateArrayIdx(list,
+      ({ id }) => id === playerId, (p) => ({ ...p, sessionId })
+    ))
+    if (isSelf) updatePlayer((p) => p && sessionId ? ({ ...p, sessionId }) : undefined)
+    setLoadingAll(false)
+  }, [])
+
+
   return {
-    loadingPack, setLoadingPack,
-    game, player, players, playerIdx, holding, isReady, pack, packIdx, packs,
-    renamePlayer, nextRound, otherPick, pickCard, swapCard, setLands, setNextPack,
+    loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer,
+    game, player, players, playerIdx, holding, isReady, pack, packIdx, packs, slots,
+    renamePlayer, nextRound, otherPick, pickCard, swapCard, setLands, setNextPack, setStatus,
   }
 }
 

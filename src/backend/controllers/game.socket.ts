@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import type { GameServer, GameMiddleware } from './game.socket.d'
 import { getReqSessionId } from '../../components/base/services/sessionId.services'
 import { getGameAndPlayer, getPack, nextRound, pickCard } from '../services/game/game.services'
-import { renamePlayer, swapCard, updateLands } from '../services/game/player.services'
+import { renamePlayer, setStatus, swapCard, updateLands } from '../services/game/player.services'
 import { debugSockets, MAX_GAME_CONN } from 'assets/constants'
 
 export default async function gameSockets(io: GameServer, req: NextApiRequest, res: NextApiResponse) {
@@ -40,6 +40,15 @@ export default async function gameSockets(io: GameServer, req: NextApiRequest, r
       callback(pick)
     })
 
+    socket.on('setStatus', async (playerId, status, callback) => {
+      const player = await setStatus(playerId, status === 'join' ? socket.data.sessionId : null)
+      if (!player?.id) return callback()
+
+      if (player?.sessionId && player?.id) socket.data.playerId = player.id
+      io.emit('updateSlot', player?.id || playerId, player?.sessionId || null)
+      callback(player)
+    })
+
     socket.on('getPack', async (packId, callback) => {
       const gameCardIds = await getPack(packId)
       callback(gameCardIds)
@@ -61,7 +70,7 @@ export default async function gameSockets(io: GameServer, req: NextApiRequest, r
 
 const gameSocketMiddleware: GameMiddleware = async (socket, next) => {
 
-  if (!socket.data?.gameId || !socket.data.playerId) {
+  if (!socket.data?.gameId) {
     console.error('Connection is missing data', socket.data)
     return socket.disconnect(true)
   }
