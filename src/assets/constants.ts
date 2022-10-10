@@ -10,3 +10,7 @@ export const storageDefaults = Object.freeze({
   deckSize: 40,
   sideboardLands: 5,
 })
+
+export const MAX_GAME_CONN = 20
+
+export const debugSockets = false

@@ -2,21 +2,22 @@ import type { GameClient } from 'backend/controllers/game.socket.d'
 import type { LocalController } from './local.controller'
 import type { Socket } from './game'
 import { useEffect } from 'react'
+import { debugSockets } from 'assets/constants'
 
 
 export function initGameSocket({ renamePlayer, nextRound, otherPick }: LocalController) {
   return (socket: GameClient) => {
 
     socket.on('updateName',  (playerId, name) => { 
-      // console.debug('SOCKET RES','updateName',playerId,name)
+      debugSockets && console.debug('SOCKET','updateName',playerId,name)
       name && renamePlayer(playerId, name)
     })
     socket.on('updatePick',  (playerId, pick) => {
-      // console.debug('SOCKET RES','updatePick',playerId,pick)
+      debugSockets && console.debug('SOCKET','updatePick',playerId,pick)
       otherPick(playerId, pick)
     })
     socket.on('updateRound', (round) => {
-      // console.debug('SOCKET RES','updateRound',round)
+      debugSockets && console.debug('SOCKET','updateRound',round)
       nextRound(round)
     })
 
@@ -30,7 +31,6 @@ export function initGameSocket({ renamePlayer, nextRound, otherPick }: LocalCont
 
 
 export function useGameEmitters(local: LocalController, { socket, isConnected }: { socket: GameClient | null, isConnected: boolean }) {
-  
   
   const renamePlayer: Socket.RenamePlayer = (name) => {
     if (!socket || !isConnected) return console.error('Not connected to server')

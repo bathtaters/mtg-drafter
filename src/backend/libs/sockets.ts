@@ -1,15 +1,20 @@
 import type { NextApiResponse } from 'next'
 import type { Socket } from 'net'
 import { Server, ServerOptions } from 'socket.io'
+import { debugSockets } from 'assets/constants'
 
 export function initSocketServer<S extends Server = Server, T = any>(path: string, res: SocketResponse, initServer: (io: S) => T) {
   if (res.socket.server.io && res.socket.server.io.path() === path)
-    return console.log('Socket already open at',path)
+    return debugSockets ? console.debug('Socket already open at',path) : undefined
 
   const io = new Server(res.socket.server, { path })
   res.socket.server.io = io
 
-  console.log('New socket opened at',path)
+  debugSockets && io.on('connect', (socket) => {
+    socket.on('disconnect', () => console.debug('Socket closed at',path,socket.id))
+    console.debug('New socket opened at',path,socket.id)
+  })
+  
   return initServer(res.socket.server.io as S)
 }
 

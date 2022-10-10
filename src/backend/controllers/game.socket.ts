@@ -3,19 +3,22 @@ import type { GameServer, GameMiddleware } from './game.socket.d'
 import { getReqSessionId } from '../../components/base/services/sessionId.services'
 import { getGameAndPlayer, getPack, nextRound, pickCard } from '../services/game/game.services'
 import { renamePlayer, swapCard, updateLands } from '../services/game/player.services'
-
+import { debugSockets, MAX_GAME_CONN } from 'assets/constants'
 
 export default async function gameSockets(io: GameServer, req: NextApiRequest, res: NextApiResponse) {
 
   const userData = await getGameAndPlayer(req.query.url, getReqSessionId(req, res))
   if (!userData) return 400
 
+  io.setMaxListeners(MAX_GAME_CONN)
+
   io.on("connect", (socket) => {
-    
+    if (!userData) return socket.disconnect(true)
+
     socket.data = userData
 
     socket.use(async (ev, next) => {
-      // console.debug('RX Socket Event:', ...ev)
+      debugSockets && console.debug('RX Socket Event:', ...ev)
       await gameSocketMiddleware(socket, next)
     })
 
@@ -52,7 +55,7 @@ export default async function gameSockets(io: GameServer, req: NextApiRequest, r
       callback(newLands)
     })
 
-    // console.debug('Connected', socket.data)
+    debugSockets && console.debug('Connected', socket.data)
   })
 }
 
