@@ -131,7 +131,8 @@ model Player {
   hostOf      Game? @relation("GameHost")
   gameId      String
 
-  @@unique([sessionId, gameId])
+  @@unique([gameId, sessionId])
+  @@index([gameId, sessionId])
 }
 
 model Pack {
