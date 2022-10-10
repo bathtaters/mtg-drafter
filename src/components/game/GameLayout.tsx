@@ -24,7 +24,7 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, pickCard
     selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard, cardWidth, setCardWidth
   } = usePickController(pickCard, swapCard, pack)
 
-  if (game.round < 1) return (
+  if (game.round < 1 || !player) return (
     <GameLayoutWrapper>
       { clickRoundBtn && <RoundButton onClick={clickRoundBtn} label="start" /> }
       <NoCardStyle>Waiting for draft to start.</NoCardStyle>

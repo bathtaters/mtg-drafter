@@ -8,7 +8,7 @@ export const LeftHeaderWrapper = ({ children }: { children: ReactNode }) => (
 export const GameTitle = ({ title }: { title: string }) => <h1 className="font-serif">{title || "New Draft"}</h1>
 
 export const RoundCounter = ({ children }: { children: ReactNode }) => (
-  <div className="ml-2">{children}</div>
+  <div className="ml-2 mt-2">{children}</div>
 )
 
 

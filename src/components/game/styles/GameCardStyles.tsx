@@ -1,7 +1,7 @@
 import type { MouseEventHandler, ReactNode } from "react"
 import CollapseContainer from "components/base/common/Collapse"
 
-export const NoCardStyle = ({ children }:{ children: ReactNode }) => <div className="italic opacity-60">{children}</div>
+export const NoCardStyle = ({ children }:{ children: ReactNode }) => <div className="italic opacity-60 my-12">{children}</div>
 
 export const NoCards = () => <NoCardStyle>Awaiting next pack.</NoCardStyle>
 
@@ -38,7 +38,7 @@ export const CardWrapper = ({ isSelected, onClick, className, children }: { isSe
 
 export const PickCardButton = ({ disabled, onClick }: { disabled?: boolean, onClick?: MouseEventHandler }) => (
   <div className="flex justify-center w-full mb-4">
-    <button type="button" className="btn btn-secondary btn-lg w-60 h-18" onClick={onClick} disabled={disabled}>
+    <button type="button" className="btn btn-secondary btn-lg w-60 h-18 mb-4" onClick={onClick} disabled={disabled}>
       Pick Card
     </button>
   </div>
