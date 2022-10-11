@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import useSocket from 'components/base/services/socket.controller'
 import useLocalController from './local.controller'
 import { getGameListeners, useGameEmitters } from './socket.controller'
+import downloadDeck from './downloadDeck.controller'
 import { socketEndpoint } from 'assets/urls'
 
 const fullMsg = 'This game is full, you can wait here or start a new one.'
@@ -19,6 +20,8 @@ export default function useGameController(props: ServerProps) {
 
   const socket = useSocket(`/game/${gameURL}`, socketEndpoint(gameURL), getGameListeners(local))
   const { renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus } = useGameEmitters(local, socket)
+
+  const saveDeck = !local.player?.cards || !local.game ? null : () => { downloadDeck(local as Parameters<typeof downloadDeck>['0']) }
   
   return {
     ...local,
@@ -26,7 +29,7 @@ export default function useGameController(props: ServerProps) {
     loadingMessage: !local.player && !local.slots.length ? fullMsg : undefined,
     renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus,
 
-    landModal, hostModal,
+    landModal, hostModal, saveDeck,
     toggleLandModal: local.player?.basics ? () => setLandModal((o) => !o) : null,
     toggleHostModal: !local.game?.hostId || local.player?.id === local.game?.hostId ? (() => setHostModal((o) => !o)) : null,
   }

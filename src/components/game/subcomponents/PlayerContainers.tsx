@@ -30,13 +30,13 @@ export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost }
 )
 
 
-export const PlayerContainerFull = ({ player, holding, maxPick, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => player ? (
+export const PlayerContainerFull = ({ player, holding, maxPick, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => player ? (
   <PlayerContainerStyle color="self" showDot={!!openHost}
     title={<PlayerNameEditor name={player.name || 'Player'} charLimit={nameCharLimit} onSubmit={renamePlayer} />}
     header={<span>You{!!openHost && <HostBadge />}</span>}
     subtitle={`Pick ${!player.pick || player.pick > maxPick ? '-' : player.pick} | Holding ${holding ?? '-'}`}
   >
-    <PlayerMenu openLands={openLands} openHost={openHost} dropPlayer={dropPlayer} />
+    <PlayerMenu saveDeck={saveDeck} openLands={openLands} openHost={openHost} dropPlayer={dropPlayer} />
   </PlayerContainerStyle>
 ) : <EmptyPlayerContainer />
 
@@ -48,6 +48,7 @@ interface ContainerProps {
 }
 
 interface ContainerFullProps extends ContainerProps {
+  saveDeck:  (() => void) | null,
   openLands:  (() => void) | null,
   openHost: (() => void) | null,
   dropPlayer: (() => void) | null,

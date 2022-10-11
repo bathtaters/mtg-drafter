@@ -1,4 +1,4 @@
-import type { GameProps } from "./services/game"
+import type { GameCardFull, GameProps } from "./services/game"
 import { useMemo } from "react"
 import Header from "components/base/Header"
 import { PlayerContainerFull, PlayerContainerSmall } from "./subcomponents/PlayerContainers"
@@ -7,7 +7,9 @@ import { getOppIdx, getRound, passingUp } from './services/game.utils'
 
 type Props = {
   game?: GameProps['options'], players: GameProps['players'],
+  playerCards?: GameCardFull[],
   playerIdx: number, holding: number[],
+  saveDeck:   (() => void) | null,
   dropPlayer: (() => void) | null,
   openLands:  (() => void) | null,
   openHost:   (() => void) | null,
@@ -18,7 +20,7 @@ type Props = {
 const NoData = () => <Header left={<GameTitle title="Game Not Found" />} />
 
 
-export default function GameHeader({ game, players, playerIdx, holding, openLands, openHost, dropPlayer, renamePlayer }: Props) {
+export default function GameHeader({ game, players, playerIdx, holding, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
   
   if (!game) return <NoData />
   
@@ -36,6 +38,7 @@ export default function GameHeader({ game, players, playerIdx, holding, openLand
             {<PlayerContainerFull
               player={players[playerIdx]}
               holding={holding[playerIdx]}
+              saveDeck={saveDeck}
               openLands={openLands}
               openHost={openHost}
               dropPlayer={dropPlayer}

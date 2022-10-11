@@ -20,7 +20,7 @@ const Game: NextPage<ServerProps> = (props: InferGetServerSidePropsType<typeof g
   const {
     game, player, players, playerIdx, isConnected, loadingPack, loadingAll,
     holding, isReady, pack, landModal, hostModal, slots, loadingMessage,
-    toggleLandModal, toggleHostModal, renamePlayer,
+    saveDeck, toggleLandModal, toggleHostModal, renamePlayer,
     nextRound, pickCard, swapCard, setLands, setStatus
   } = useGameController(props)
 
@@ -28,7 +28,7 @@ const Game: NextPage<ServerProps> = (props: InferGetServerSidePropsType<typeof g
     <SetPageTitle title={game?.name || ""} />
 
     <GameHeader
-      game={game} players={players} playerIdx={playerIdx} holding={holding}
+      game={game} players={players} playerIdx={playerIdx} holding={holding} saveDeck={saveDeck}
       openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer}
       dropPlayer={enableDropping && player?.id ? () => setStatus(player.id, 'leave') : null}
     />
