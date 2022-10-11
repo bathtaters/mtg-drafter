@@ -47,7 +47,7 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, pickCard
             pack &&
             <PickCardButton disabled={loadingPack || selectedCard < 0} onClick={clickPickButton} />}
 
-          { loadingPack && <Overlay className="absolute"><Spinner /></Overlay> }
+          { loadingPack && <Overlay className="absolute z-40"><Spinner /></Overlay> }
         </CardContainer>
       }
 
