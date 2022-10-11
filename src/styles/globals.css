@@ -25,3 +25,12 @@
   /* Fix focus styling on ghost buttons (Modal X button) */
   .btn.btn-ghost:focus-visible { @apply outline-none bg-gray-500/40; }
 }
+
+@layer utilities {
+  *::-webkit-scrollbar { @apply w-1; }
+  *::-webkit-scrollbar-track { @apply my-1 bg-transparent; }
+  *::-webkit-scrollbar-thumb { @apply rounded-full bg-base-content/80 hover:bg-base-content; }
+  .scrollbar-primary::-webkit-scrollbar-thumb   { @apply bg-primary-focus   hover:bg-primary;   }
+  .scrollbar-secondary::-webkit-scrollbar-thumb { @apply bg-secondary-focus hover:bg-secondary; }
+  .scrollbar-accent::-webkit-scrollbar-thumb    { @apply bg-accent-focus    hover:bg-accent;    }
+}

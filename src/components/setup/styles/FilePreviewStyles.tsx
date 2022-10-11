@@ -20,7 +20,18 @@ export const PreviewError = ({ error }: { error?: string }) => (
 )
 
 export const NotFoundList = ({ list }: { list?: string[] }) => !list?.length ? null :
-  <div className="">Cards not found: {list.join(', ')}</div>
+  <div className="py-1 text-base-content">
+    <div className="my-1">Not found:</div>
+    <div className="card card-bordered border-secondary scrollbar-secondary overflow-y-auto max-h-20 bg-base-100">
+      <div className="card-body px-2 py-1 gap-1 items-start text-left">
+        <ul className="not-italic list-disc list-inside marker:text-base-content/40">
+          {list.map((card,i) => 
+            <li key={i+card}>{card}</li>
+          )}
+        </ul>
+      </div>
+    </div>
+  </div>
 
 export const ClearButton = ({ label, type, ...props }: HTMLProps<HTMLButtonElement>) => (
   <button type="button" className="block w-1/2 btn btn-secondary btn-sm" {...props}>{label}</button>
