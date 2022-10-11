@@ -1,10 +1,9 @@
 import type { Card } from "@prisma/client"
-import type { CardFull } from "../services/game"
 import { symbolFix, splitLines, getBgdColor } from "../services/card.services"
 import styles from "./FauxCard.module.css"
 
 
-function Card({ card, isFoil }: { card: Card, isFoil?: boolean }) {
+export default function FauxCard({ card, isFoil }: { card: Card, isFoil?: boolean }) {
   const cardClass = `${styles.card} ${isFoil ? styles.foil : ''}`
   const bgdClass = `${styles[`cardBgd${isFoil ? 'Foil' : ''}`]} ${card.side ? styles[`side-${card.side}`] : ''}`
 
@@ -29,9 +28,6 @@ function Card({ card, isFoil }: { card: Card, isFoil?: boolean }) {
                 )}
               </div>
             </div>
-            {card.side &&
-              <div className={`${styles.genFooterDfc} ms ms-dfc-modal-${card.side == 'a' ? 'face' : 'back'}`} />
-            }
             {card.footer &&
               <div className={styles.genFooterNums}>{card.footer}</div>
             }
@@ -39,12 +35,5 @@ function Card({ card, isFoil }: { card: Card, isFoil?: boolean }) {
         </div>
       </div>
     </div>
-  )
-}
-
-export default function FauxCard({ card }: { card: CardFull }) {
-  // Add FLIP CARDS
-  return (
-    <Card card={card} />
   )
 }
