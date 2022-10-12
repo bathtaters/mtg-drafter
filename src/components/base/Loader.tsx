@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import errorMap, { GenericError } from './services/error.map'
 
-type Props = { data?: any, error?: any, message?: string, children: ReactNode }
+type Props = { data?: any, error?: any, message?: ReactNode, children: ReactNode }
 
 const TextWrapper = ({children}: {children: ReactNode}) => <div className="py-4 px-6">{children}</div>
 

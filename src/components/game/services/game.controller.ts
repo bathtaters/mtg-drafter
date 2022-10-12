@@ -6,8 +6,8 @@ import useLocalController from './local.controller'
 import { getGameListeners, useGameEmitters } from './socket.controller'
 import downloadDeck from './downloadDeck.controller'
 import { socketEndpoint } from 'assets/urls'
+import { FullGame } from 'assets/strings'
 
-const fullMsg = 'This game is full, you can wait here or start a new one.'
 
 export default function useGameController(props: ServerProps) {
   const router = useRouter()
@@ -26,7 +26,7 @@ export default function useGameController(props: ServerProps) {
   return {
     ...local,
     isConnected: socket.isConnected,
-    loadingMessage: !local.player && !local.slots.length ? fullMsg : undefined,
+    loadingMessage: !local.player && !local.slots.length ? FullGame : undefined,
     renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus,
 
     landModal, hostModal, saveDeck,
