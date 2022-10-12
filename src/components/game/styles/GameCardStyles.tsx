@@ -43,3 +43,11 @@ export const PickCardButton = ({ disabled, onClick }: { disabled?: boolean, onCl
     </button>
   </div>
 )
+
+
+export const FlipButton = ({ isBack, onClick }: { isBack?: boolean, onClick?: MouseEventHandler }) =>
+  <button type="button" onClick={onClick}
+    className={`absolute bottom-0 left-0 z-30 btn btn-circle btn-sm ${isBack ? 'bg-base-content text-base-100 hover:bg-base-content' : ''} p-0 m-0 pointer-events-auto`}
+  >
+    <i className={`ms ${isBack ? 'ms-untap' : 'ms-tap'} w-full`} />
+  </button>
