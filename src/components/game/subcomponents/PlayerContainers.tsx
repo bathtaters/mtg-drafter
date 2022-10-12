@@ -14,8 +14,8 @@ function PlayerNameEditor(props: RenameProps) {
   return isEditing ?
     <PlayerNameEditWrapper>
       <PlayerNameTextBox value={value} onChange={handleChange} {...charLimit} />
-      <PlayerNameEditBtn value="S" onClick={handleSubmit} disabled={!canSave} />
-      <PlayerNameEditBtn value="X" onClick={handleCancel} />
+      <PlayerNameEditBtn value="✕" className="btn-error"   onClick={handleCancel} />
+      <PlayerNameEditBtn value="✓" className="btn-success" onClick={handleSubmit} disabled={!canSave} />
     </PlayerNameEditWrapper> :
     <PlayerNameWrapper onClick={enableEdit}>{value}</PlayerNameWrapper>
 }

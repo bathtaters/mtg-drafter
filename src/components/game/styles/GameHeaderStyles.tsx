@@ -1,32 +1,32 @@
 import type { ReactNode } from "react"
 
 
-export const LeftHeaderWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="w-full mr-8 grid grid-cols-2 grid-flow-row items-center gap-4">{children}</div>
+export const GameHeaderWrapper = ({ children }: { children: ReactNode }) => (
+  <div className="w-full grid grid-cols-1 md:grid-cols-2 items-center gap-4">{children}</div>
 )
 
 export const GameTitle = ({ title }: { title: string }) => <h1 className="font-serif">{title || "New Draft"}</h1>
 
 export const RoundCounter = ({ children }: { children: ReactNode }) => (
-  <div className="ml-2 mt-2">{children}</div>
+  <div className="ml-2 mt-2 text-base-content/80">{children}</div>
 )
 
 
 
-const Arrow = ({ up, className }: { up?: boolean, className?: string }) => (
-  <svg viewBox="0 0 30 500" className={className}>
-    { typeof up === 'boolean' && <path d={up ? "M 0 0 L 30 40 L 15 40 L 15 500 L 0 500 L 0 0 Z" : "M 0 0 L 15 0 L 15 460 L 30 460 L 0 500 L 0 0 Z"} /> }
+const Arrow = ({ left, width = 1500, className }: { left?: boolean, width?: number, className?: string }) => (
+  <svg viewBox={`0 0 ${width} 30`} className={className}>
+    { typeof left === 'boolean' && <path d={left ? "M 0 30 L 10000 30 L 9960 0 L 9960 15 L 0 15 L 0 30 Z" : "M 0 30 L 10000 30 L 10000 15 L 40 15 L 40 0 L 0 30 Z"} /> }
   </svg>
 )
 
 export const PlayerContainersWrapper = ({ upArrow, children }: { upArrow?: boolean, children: ReactNode }) => (
-  <div className="flex max-h-48 w-full">
-    <div className="w-full overflow-y-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 m-1">
+  <div className="w-full md:col-span-2">
+    <Arrow left={upArrow} className="w-11/12 mb-1 mx-auto fill-base-content/50" />
+    <div className="w-full max-h-28 overflow-y-auto">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 m-1">
         {children}
       </div>
     </div>
-    <Arrow up={upArrow} className="h-48 w-2 ml-1 fill-base-content" />
   </div>
 )
 

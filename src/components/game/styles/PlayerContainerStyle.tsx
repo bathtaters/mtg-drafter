@@ -10,13 +10,13 @@ const TitleDot = ({ isMini }: { isMini?: boolean }) => isMini ?
 
 
 // Player Name Editor
-export const PlayerNameWrapper = (props: HTMLProps<HTMLDivElement>) => <div className="h-8 w-full" {...props} />
-export const PlayerNameEditWrapper = (props: HTMLProps<HTMLDivElement>) => <div className="input-group w-full h-8" {...props} />
+export const PlayerNameWrapper = (props: HTMLProps<HTMLDivElement>) => <div className="h-8" {...props} />
+export const PlayerNameEditWrapper = (props: HTMLProps<HTMLDivElement>) => <div className="input-group h-8 w-auto" {...props} />
 export const PlayerNameEditBtn = (props: HTMLProps<HTMLInputElement>) => (
-  <input type="button" className="btn btn-primary btn-square btn-sm" {...props} />
+  <input type="button" {...props} className={`btn btn-square ${props.className} btn-xs h-auto`} />
 )
 export const PlayerNameTextBox = (props: HTMLProps<HTMLInputElement>) => (
-  <input type="text" className="input input-primary flex-grow h-auto p-2 text-lg sm:text-2xl" {...props} />
+  <input type="text" className="input input-primary h-auto p-2 text-lg sm:text-2xl w-full" {...props} />
 )
 
 
@@ -24,12 +24,15 @@ const themes = {
   self: [
     'bg-primary-content',
     'text-primary',
-    'text-primary'
+    'text-primary',
+    'border border-primary',
   ],
   opp: [
-    'bg-accent-content',
-    'text-accent',
-    'text-accent'
+    'bg-accent-content/50',
+    //'text-accent',
+    '',
+    '',
+    '',
   ]
 }
 
@@ -38,7 +41,7 @@ export default function PlayerContainerStyle(
   { title: ReactNode, header?: ReactNode, subtitle?: ReactNode, children?: ReactNode, isMini?: boolean, showDot?: boolean, disconnected?: boolean, color?: ColorTheme }
 ) {
   return (
-    <div className={`stats shadow-sm shadow-black ${isMini ? 'rounded-lg' : 'col-span-2 overflow-visible'}`}>
+    <div className={`stats shadow-sm shadow-black ${isMini ? 'rounded-lg' : 'overflow-visible'} ${color ? themes[color][3] : ''}`}>
       <div className={`stat ${isMini ? 'py-0 px-2' : 'rounded-2xl'} ${color ? themes[color][0] : ''}`}>
         
         <div className={`stat-figure ${

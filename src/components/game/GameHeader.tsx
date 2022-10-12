@@ -2,7 +2,7 @@ import type { GameCardFull, GameProps } from "./services/game"
 import { useMemo } from "react"
 import Header from "components/base/Header"
 import { PlayerContainerFull, PlayerContainerSmall } from "./subcomponents/PlayerContainers"
-import { LeftHeaderWrapper, PlayerContainersWrapper, GameTitle, RoundCounter } from './styles/GameHeaderStyles'
+import { GameHeaderWrapper, PlayerContainersWrapper, GameTitle, RoundCounter } from './styles/GameHeaderStyles'
 import { getOppIdx, getRound, passingUp } from './services/game.utils'
 
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
 }
 
 
-const NoData = () => <Header left={<GameTitle title="Game Not Found" />} />
+const NoData = () => <Header><GameTitle title="Game Not Found" /></Header>
 
 
 export default function GameHeader({ game, players, playerIdx, holding, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
@@ -27,15 +27,14 @@ export default function GameHeader({ game, players, playerIdx, holding, saveDeck
   const oppIdx = useMemo(() => getOppIdx(playerIdx, players.length), [playerIdx, players.length])
 
   return (
-    <Header
-      left={
-        <LeftHeaderWrapper>
-            <div className="col-span-2">
+    <Header>
+        <GameHeaderWrapper>
+            <div>
               <GameTitle title={game.name} />
               <RoundCounter>{getRound(game)}</RoundCounter>
             </div>
 
-            {<PlayerContainerFull
+            <PlayerContainerFull
               player={players[playerIdx]}
               holding={holding[playerIdx]}
               saveDeck={saveDeck}
@@ -44,25 +43,22 @@ export default function GameHeader({ game, players, playerIdx, holding, saveDeck
               dropPlayer={dropPlayer}
               renamePlayer={renamePlayer}
               maxPick={game.packSize}
-            />}
-        </LeftHeaderWrapper>
-      }
+            />
       
-      right={
-        <PlayerContainersWrapper upArrow={passingUp(game)}>
-            { players[playerIdx] && players.map((play, idx) =>
+          <PlayerContainersWrapper upArrow={passingUp(game)}>
+              { players[playerIdx] && players.map((play, idx) =>
 
-              <PlayerContainerSmall
-                player={play} key={String(play.id)}
-                isHost={game.hostId ? game.hostId === play.id : false}
-                color={idx === playerIdx ? 'self' : idx === oppIdx ? 'opp' : undefined }
-                holding={holding[idx]}
-                maxPick={game.packSize}
-              />
-              
-            )}
-        </PlayerContainersWrapper>
-      }
-    />
+                <PlayerContainerSmall
+                  player={play} key={String(play.id)}
+                  isHost={game.hostId ? game.hostId === play.id : false}
+                  color={idx === playerIdx ? 'self' : idx === oppIdx ? 'opp' : undefined }
+                  holding={holding[idx]}
+                  maxPick={game.packSize}
+                />
+                
+              )}
+          </PlayerContainersWrapper>
+        </GameHeaderWrapper>
+    </Header>
   )
 }

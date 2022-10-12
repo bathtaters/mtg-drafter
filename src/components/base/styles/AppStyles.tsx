@@ -17,16 +17,6 @@ export const HeaderWrapperStyle = ({ children }: Children) => (
   </div>
 )
 
-export const HeaderTitleStyle = ({ children }: Children) => (
-  <header className="navbar-center font-serif">
-    {children}
-  </header>
-)
-
-export const HeaderPartStyle = ({ side, children }: { side: "left" | "right", children: ReactNode }) => (
-  <div className={side === "left" ? "navbar-start" : "navbar-end"}>{children}</div>
-)
-
 export const BodyWrapperStyle = ({ children }: Children) => (
   <main className="flex-grow w-full max-w-7xl m-auto p-2">{children}</main>
 )
