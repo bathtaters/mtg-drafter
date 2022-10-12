@@ -6,7 +6,7 @@ import useLandsModal, { LandsModalProps } from "../services/lands.controller"
 
 
 export default function LandsModal(props: LandsModalProps) {
-  const { localLands, landSums, mainChange, sideChange, handleSave, handleCancel, autoLandsProps } = useLandsModal(props)
+  const { localLands, landSums, landChange, handleSave, handleCancel, autoLandsProps } = useLandsModal(props)
 
   return (
     <ModalWrapper isOpen={props.isOpen} title="Set Basic Lands" className="md:max-w-3xl"
@@ -21,11 +21,11 @@ export default function LandsModal(props: LandsModalProps) {
 
         {(colorOrder).map((color) =>
           <ColorColumn label={color} key={color}
-            main={localLands.main[color]} setMain={mainChange(color)}
-            side={localLands.side[color]} setSide={sideChange(color)}
+            main={localLands.main[color]} setMain={landChange('main',color)}
+            side={localLands.side[color]} setSide={landChange('side',color)}
           />)
         }
-        <ColorLabels labels={landSums} className=" italic font-sans items-start" />
+        <ColorLabels labels={landSums} className="italic font-sans items-start" />
       </ColorsWrapper>
 
     </ModalWrapper>
@@ -33,7 +33,7 @@ export default function LandsModal(props: LandsModalProps) {
 }
 
 
-type ColorProps = { label: string, main: number, setMain?: NumSet, side: number, setSide?: NumSet }
+type ColorProps = { label: string, main: number, setMain: NumSet, side: number, setSide: NumSet }
 
 const ColorColumn = ({ label, main, setMain, side, setSide }: ColorProps) => (
   <ColorInputWrapper label={label}>

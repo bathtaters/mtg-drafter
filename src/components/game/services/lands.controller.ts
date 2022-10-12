@@ -1,10 +1,11 @@
 import type { Dispatch, SetStateAction } from "react"
-import type { BasicLands } from "types/definitions"
+import type { BasicLands, BoardLands } from "types/definitions"
 import type { GameCardFull } from "./game"
 import { useState } from "react"
 import getAutoLands from "./autoLands"
 import { getObjectSum } from "components/base/services/common.services"
 import { useLocalStorage } from "components/base/services/storage.services"
+import { Board } from "@prisma/client"
 
 
 export default function useLandsModal({ basics, cards, setOpen, onSubmit = () => {} }: LandsModalProps) {
@@ -29,9 +30,17 @@ export default function useLandsModal({ basics, cards, setOpen, onSubmit = () =>
     setOpen((st) => !st)
   }
 
+  const landChange = (board: Board, color: keyof BoardLands) => (value: number) => {
+    setLocalLands((lands) => ({
+      ...lands, [board]: {
+        ...lands[board], [color]: value
+      }
+    }))
+  }
+
   
   return {
-    localLands, handleSave, handleCancel,
+    localLands, handleSave, handleCancel, landChange,
 
     autoLandsProps: {
       onClick: setAutoLands,
@@ -40,9 +49,6 @@ export default function useLandsModal({ basics, cards, setOpen, onSubmit = () =>
     },
 
     landSums: ['', getObjectSum(localLands.main), getObjectSum(localLands.side)],
-
-    mainChange: (color: string) => (value: number) => setLocalLands((lands: BasicLands) => ({ ...lands, [color]: value })),
-    sideChange: (color: string) => (value: number) => setLocalLands((lands: BasicLands) => ({ ...lands, [color]: value })),
   }
 }
 
