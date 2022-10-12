@@ -24,8 +24,8 @@ function PlayerNameEditor(props: RenameProps) {
 
 export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost }: ContainerSmallProps) => (
   <PlayerContainerStyle title={player.name} isMini={true} disconnected={!player.sessionId} color={color} showDot={isHost}>
-    <div className="text-xs mt-0.5">Pick {!player.pick || player.pick > maxPick ? '-' : player.pick}</div>
-    <div className="text-2xs">Holding {holding ?? '-'}</div>
+    <div className="text-xs mt-0.5 whitespace-nowrap">Pick {!player.pick || player.pick > maxPick ? '-' : player.pick}</div>
+    <div className="text-2xs whitespace-nowrap">Holding {holding ?? '-'}</div>
   </PlayerContainerStyle>
 )
 

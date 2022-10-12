@@ -27,7 +27,7 @@
 }
 
 @layer utilities {
-  *::-webkit-scrollbar { @apply w-1; }
+  *::-webkit-scrollbar { @apply w-1 h-1; }
   *::-webkit-scrollbar-track { @apply my-1 bg-transparent; }
   *::-webkit-scrollbar-thumb { @apply rounded-full bg-base-content/80 hover:bg-base-content; }
   .scrollbar-primary::-webkit-scrollbar-thumb   { @apply bg-primary-focus   hover:bg-primary;   }

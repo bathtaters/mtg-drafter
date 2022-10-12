@@ -25,7 +25,7 @@ export const storageDefaults = Object.freeze({
   sideboardLands: 5,
 })
 
-export const nameCharLimit = { minLength: 2, maxLength: 32 }
+export const nameCharLimit = { minLength: 1, maxLength: 22 }
 
 export const MAX_GAME_CONN = 20
 
