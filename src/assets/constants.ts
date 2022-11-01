@@ -25,6 +25,14 @@ export const storageDefaults = Object.freeze({
   sideboardLands: 5,
 })
 
+export const shareGame = {
+  title: "MtG Drafter Game",
+  message: "Join the draft",
+  url: (gameUrl: string) => `http://192.168.0.179:3040/game/${gameUrl}`,
+  copyMsg: { message: "Copied link to clipboard", className: "alert-info" },
+  failMsg: { message: "Clipboard access disabled by browser", className: "alert-warning" },
+}
+
 export const nameCharLimit = { minLength: 1, maxLength: 22 }
 
 export const MAX_GAME_CONN = 20

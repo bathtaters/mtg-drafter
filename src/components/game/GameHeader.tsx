@@ -1,9 +1,11 @@
 import type { GameCardFull, GameProps } from "./services/game"
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Header from "components/base/Header"
 import { PlayerContainerFull, PlayerContainerSmall } from "./subcomponents/PlayerContainers"
 import { GameHeaderWrapper, PlayerContainersWrapper, GameTitle, RoundCounter } from './styles/GameHeaderStyles'
 import { getOppIdx, getRound, passingUp } from './services/game.utils'
+import { canShare, shareData } from "components/base/services/common.services"
+import { shareGame } from "assets/constants"
 
 type Props = {
   game?: GameProps['options'], players: GameProps['players'],
@@ -21,16 +23,20 @@ const NoData = () => <Header><GameTitle title="Game Not Found" /></Header>
 
 
 export default function GameHeader({ game, players, playerIdx, holding, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
+  const [ shareable, setShareable ] = useState(false)
+  useEffect(() => { setShareable(!!game && canShare()) }, [])
   
   if (!game) return <NoData />
   
   const oppIdx = useMemo(() => getOppIdx(playerIdx, players.length), [playerIdx, players.length])
 
+  const handleShare = shareable ? () => shareData(shareGame.message, shareGame.url(game.url), shareGame.title) : undefined
+
   return (
     <Header>
         <GameHeaderWrapper>
             <div>
-              <GameTitle title={game.name} />
+              <GameTitle title={game.name} onClick={handleShare} />
               <RoundCounter>{getRound(game)}</RoundCounter>
             </div>
 

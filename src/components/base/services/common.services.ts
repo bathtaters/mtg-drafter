@@ -14,3 +14,11 @@ export const sameValueObject = <T extends { [key: string]: any }> (keys: (keyof 
   Object.fromEntries(keys.map((key) => [key, value])) as T
 
 export const getObjectSum = (obj: { [key: string]: number }) => Object.values(obj).reduce((sum, n) => sum + n, 0)
+
+export const canShare = () => typeof window === 'undefined' ? false : Boolean(window.navigator.share || window.navigator.clipboard?.writeText)
+export async function shareData(text: string, url: string, title: string) {
+  if (window.navigator.share)
+    return window.navigator.share({ title, url, text }).catch(() => {})
+  else if (window.navigator.clipboard?.writeText)
+    return window.navigator.clipboard.writeText(url)
+}

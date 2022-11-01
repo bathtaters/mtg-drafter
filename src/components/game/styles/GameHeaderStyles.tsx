@@ -1,11 +1,21 @@
-import type { ReactNode } from "react"
+import { LinkIcon } from "components/svgs/Icons"
+import type { MouseEventHandler, ReactNode } from "react"
 
 
 export const GameHeaderWrapper = ({ children }: { children: ReactNode }) => (
   <div className="w-full grid grid-cols-1 md:grid-cols-2 items-center gap-4">{children}</div>
 )
 
-export const GameTitle = ({ title }: { title: string }) => <h1 className="font-serif">{title || "New Draft"}</h1>
+export const GameTitle = ({ title, onClick }: { title: string, onClick?: MouseEventHandler }) => (
+  <div>
+    <h1 className="font-serif inline">{title || "New Draft"}</h1>
+    {onClick &&
+      <a className="link align-top" onClick={onClick}>
+        <LinkIcon className="w-5 h-auto ml-2 fill-primary hover:fill-primary-focus inline-block" />
+      </a>
+    }
+  </div>
+)
 
 export const RoundCounter = ({ children }: { children: ReactNode }) => (
   <div className="ml-2 mt-2 text-base-content/80">{children}</div>
