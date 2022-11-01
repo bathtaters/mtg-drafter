@@ -40,7 +40,7 @@ const Game: NextPage<ServerProps> = (props: InferGetServerSidePropsType<typeof g
 
           <GameLayout
             game={game as GameProps['options']}
-            player={player as GameProps['player']}
+            player={player}
             pack={pack} pickCard={pickCard} swapCard={swapCard}
             clickRoundBtn={isReady ? () => nextRound() : undefined}
             loadingPack={!!loadingPack}

@@ -4,7 +4,7 @@ import type { BasicLands, PlayerStatus } from 'types/definitions'
 export type CardFull = Card & { otherFaces: Card[] }
 export type GameCardFull = GameCard & { card: CardFull }
 export type PackFull = Pack & { cards: GameCardFull[] }
-export type PlayerFull = Player & { cards: GameCardFull[] }
+export type PlayerFull = Player & { cards: GameCardFull[], basics: BasicLands }
 
 export interface ServerProps {
   options?: Game,

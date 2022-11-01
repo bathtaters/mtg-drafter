@@ -1,16 +1,15 @@
-import type { GameProps, PickCard, SwapCard } from './services/game'
+import type { GameProps, PickCard, PlayerFull, SwapCard } from './services/game'
 import CardContainer from "./subcomponents/CardContainer"
 import { NoCardStyle, PickCardButton } from "./styles/GameCardStyles"
 import { RoundButton, GameLayoutWrapper, Divider, CardZoomWrapper } from './styles/GameLayoutStyles'
 import usePickController from "./services/pick.controller"
 import Overlay from 'components/base/common/Overlay'
 import Spinner from 'components/base/common/Spinner'
-import RangeInput from 'components/base/common/RangeInput'
 import CardZoom from './subcomponents/CardZoom'
 
 type Props = {
   game: GameProps['options'],
-  player: GameProps['player'],
+  player: PlayerFull,
   pack?: GameProps['packs'][number],
   pickCard: PickCard,
   swapCard: SwapCard,
@@ -53,11 +52,17 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, pickCard
 
       <Divider />
 
-      <CardContainer label="Main" cards={player.cards.filter(({ board }) => board === 'main')} onClick={clickBoardCard('main')} cardWidth={cardWidth} />
+      <CardContainer
+        label="Main" lands={player.basics.main}
+        cards={player.cards.filter(({ board }) => board === 'main')}
+        onClick={clickBoardCard('main')} cardWidth={cardWidth} />
 
       <Divider />
 
-      <CardContainer label="Side" cards={player.cards.filter(({ board }) => board === 'side')} open={false} onClick={clickBoardCard('side')} cardWidth={cardWidth} />
+      <CardContainer
+        label="Side" lands={player.basics.side} open={false}
+        cards={player.cards.filter(({ board }) => board === 'side')}
+        onClick={clickBoardCard('side')} cardWidth={cardWidth} />
     </GameLayoutWrapper>
   )
 }
