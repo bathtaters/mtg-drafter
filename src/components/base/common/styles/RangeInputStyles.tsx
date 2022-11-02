@@ -30,7 +30,7 @@ export const RangeValueBox = ({ value }: { value: Value }) => (
 )
 
 export const RangeInputElem = (props: HTMLProps<HTMLInputElement>) => (
-  <input className="range range-secondary" {...props} type="range" />
+  <input className="range range-sm md:range-md range-secondary" {...props} type="range" />
 )
 
 export function RangeStepMarkers({ first, last, count }: { first?: string | number, last?: string | number, count: number }) {

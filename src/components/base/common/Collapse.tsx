@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
-type Props = {
+export type Props = {
   title: ReactNode,
   defaultOpen: boolean,
   children: ReactNode
@@ -14,6 +14,18 @@ export default function CollapseContainer({ title, defaultOpen, children, classN
       <input type="checkbox" defaultChecked={defaultOpen} /> 
       <div className={`collapse-title text-left ${titleClass}`}>{title}</div>
       <div className="collapse-content">{children}</div>
+    </div>
+  )
+}
+
+
+export function HorizontalCollapse({ title, defaultOpen, children, className = '', titleClass = '' }: Props) {
+  const [ open, setOpen ] = useState(defaultOpen)
+
+  return (
+    <div className="flex justify-end items-top">
+      <span className={`flex-grow ${className} ${open ? "" : "hidden"}`}>{children}</span>
+      <a className={`btn flex-shrink flex-grow-0 ${titleClass}`} onClick={() => setOpen((o) => !o)}>{title}</a>
     </div>
   )
 }

@@ -19,11 +19,6 @@ export const GameLayoutWrapper = ({ children }: { children: ReactNode }) => (
   <div className="flex flex-col text-center">{children}</div>
 )
 
-export const CardZoomWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="w-full p-2 flex justify-end"><div className="w-1/2 md:w-1/4">
-    {children}
-  </div></div>
-)
 
 export const Divider = () => <div className="divider" />
 

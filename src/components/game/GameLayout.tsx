@@ -1,11 +1,11 @@
 import type { GameProps, PickCard, PlayerFull, SwapCard } from './services/game'
 import CardContainer from "./subcomponents/CardContainer"
 import { NoCardStyle, PickCardButton } from "./styles/GameCardStyles"
-import { RoundButton, GameLayoutWrapper, Divider, CardZoomWrapper } from './styles/GameLayoutStyles'
+import { RoundButton, GameLayoutWrapper, Divider } from './styles/GameLayoutStyles'
 import usePickController from "./services/pick.controller"
 import Overlay from 'components/base/common/Overlay'
 import Spinner from 'components/base/common/Spinner'
-import CardZoom from './subcomponents/CardZoom'
+import CardToolbar from './subcomponents/CardToolbar'
 
 type Props = {
   game: GameProps['options'],
@@ -20,7 +20,7 @@ type Props = {
 export default function GameLayout({ game, player, pack, clickRoundBtn, pickCard, swapCard, loadingPack }: Props) {
 
   const {
-    selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard, cardWidth, setCardWidth
+    selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard, cardOptions, setCardOptions
   } = usePickController(pickCard, swapCard, pack)
 
   if (game.round < 1 || !player) return (
@@ -33,11 +33,11 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, pickCard
   return (
     <GameLayoutWrapper>
 
-      <CardZoomWrapper><CardZoom updateClass={setCardWidth} /></CardZoomWrapper>
+      <CardToolbar setCardOptions={setCardOptions} />
 
       {game.round <= game.roundCount &&
         <CardContainer
-          label="Pack" cardWidth={cardWidth}
+          label="Pack" cardOptions={cardOptions}
           cards={pack?.cards} selectedIdx={selectedCard}
           onClick={clickPackCard} onBgdClick={deselectCard}
         >
@@ -55,14 +55,14 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, pickCard
       <CardContainer
         label="Main" lands={player.basics.main}
         cards={player.cards.filter(({ board }) => board === 'main')}
-        onClick={clickBoardCard('main')} cardWidth={cardWidth} />
+        onClick={clickBoardCard('main')} cardOptions={cardOptions} />
 
       <Divider />
 
       <CardContainer
         label="Side" lands={player.basics.side} open={false}
         cards={player.cards.filter(({ board }) => board === 'side')}
-        onClick={clickBoardCard('side')} cardWidth={cardWidth} />
+        onClick={clickBoardCard('side')} cardOptions={cardOptions} />
     </GameLayoutWrapper>
   )
 }

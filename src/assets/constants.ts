@@ -23,6 +23,8 @@ export const storageDefaults = Object.freeze({
   zoom: Math.round(cardZoomLevels.length / 2),
   deckSize: 40,
   sideboardLands: 5,
+  showArt: true,
+  sortBy: 0,
 })
 
 export const shareGame = {

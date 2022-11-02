@@ -6,7 +6,7 @@ const rangeValueError = (min: any, max: any, step: any) => new Error(
   `RangeInput requires numeric value for min(${min})/max(${max})/step(${step})`
 )
 
-type Props = HTMLProps<HTMLInputElement> & { 
+export type Props = HTMLProps<HTMLInputElement> & { 
   wrapperClass?: string,
   setValue?: (value: string) => void,
 }

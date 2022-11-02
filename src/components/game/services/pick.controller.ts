@@ -1,15 +1,18 @@
 import type { MouseEvent } from "react"
 import type { GameCard, Board } from "@prisma/client"
 import type { PackFull, PickCard, SwapCard } from "./game"
+import type { SortKey } from "components/base/services/cardSort.services"
 import { useCallback, useRef, useState } from "react"
 
 const DBL_CLICK_DELAY = 500
+
+export type CardOptions = { width: string, showArt: boolean, sort?: SortKey }
 
 export default function usePickController(pickCard: PickCard, swapCard: SwapCard, pack?: PackFull) {
 
   const lastClick = useRef(-1)
   const [ selectedCard, setSelectedCard ] = useState(-1)
-  const [ cardWidth, setCardWidth ] = useState('')
+  const [ cardOptions, setCardOptions ] = useState<CardOptions>({ width: '', showArt: true, sort: undefined })
 
   const clickPickButton = useCallback(() => {
     if (!pack) return console.warn('Player attempting to pick without a pack')
@@ -35,5 +38,5 @@ export default function usePickController(pickCard: PickCard, swapCard: SwapCard
 
   const deselectCard = useCallback(() => { setSelectedCard(-1) }, [])
 
-  return { selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard, cardWidth, setCardWidth }
+  return { selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard, cardOptions, setCardOptions }
 }
