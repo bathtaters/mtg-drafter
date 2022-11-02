@@ -13,17 +13,22 @@ export const CardContainerWrapper = ({ title, defaultOpen, isPrimary, children, 
 )
 
 export const ContainerHeaderStyle = ({ children }: { children: ReactNode }) => (
-  <span className="flex justify-between">{children}</span>
+  <span className="flex justify-between items-center">{children}</span>
 )
 
-export const CardCounter = ({ count }: { count?: number }) => (
-  <span className="badge badge-outline badge-lg align-top ml-2">{count ?? '–'}</span>
+export const ContainerLabelStyle = ({ children }: { children: ReactNode }) => (
+  <span className="flex-shrink-0 flex items-center">{children}</span>
 )
 
-export const CounterContainerStyle = ({ children }: { children: ReactNode }) => (
-  <span className="flex justify-evenly gap-2">{children}</span>
+export const LandContainerStyle = ({ children }: { children: ReactNode }) => (
+  <span className="flex justify-evenly gap-0 md:gap-2">{children}</span>
 )
+
+export const CardCounter = ({ count }: { count?: string }) => (
+  <span className="badge badge-outline md:badge-lg align-top ml-2">{count ?? '–'}</span>
+)
+
 export const LandCounterStyle = ({ className = '', children }: { className?: string, children: ReactNode }) => (
-  <span className={`badge ${className} flex gap-1`}>{children}</span>
+  <span className={`badge badge-sm py-2 md:badge-lg ${className} flex gap-1`}>{children}</span>
 )
 
