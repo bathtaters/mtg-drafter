@@ -11,7 +11,15 @@ module.exports = {
       fontFamily: {
         'serif': ['EB Garamond', ...defaultTheme.fontFamily.sans],
         'sans': ['Inter', ...defaultTheme.fontFamily.sans],
-      }
+      },
+      colors: {
+        ms:  '#111',
+        msw: '#f0f2c0',
+        msu: '#b5cde3',
+        msb: '#aca29a',
+        msr: '#db8664',
+        msg: '#93b483',
+      },
     },
   },
   plugins: [require('daisyui')],

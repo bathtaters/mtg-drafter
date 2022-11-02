@@ -1,9 +1,14 @@
 export const colorClass: { [key: string]: string } = {
-  w: "text-amber-900 bg-yellow-100",
-  u: "text-blue-800 bg-indigo-400",
-  b: "text-gray-400 bg-slate-800",
-  r: "text-orange-900 bg-red-400",
-  g: "text-green-800 bg-emerald-400",
+  w: "text-ms bg-msw",
+  u: "text-ms bg-msu",
+  b: "text-ms bg-msb",
+  r: "text-ms bg-msr",
+  g: "text-ms bg-msg",
+  // w: "text-amber-900 bg-yellow-100",
+  // u: "text-blue-800 bg-indigo-400",
+  // b: "text-gray-400 bg-slate-800",
+  // r: "text-orange-900 bg-red-400",
+  // g: "text-green-800 bg-emerald-400",
 }
 
 export const colorPip: { [key: string]: string } = {
