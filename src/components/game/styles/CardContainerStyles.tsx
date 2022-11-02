@@ -24,8 +24,8 @@ export const LandContainerStyle = ({ children }: { children: ReactNode }) => (
   <span className="flex justify-evenly gap-0 md:gap-2">{children}</span>
 )
 
-export const CardCounter = ({ count }: { count?: string }) => (
-  <span className="badge badge-outline md:badge-lg align-top ml-2">{count ?? '–'}</span>
+export const CardCounter = ({ text }: { text: string }) => (
+  <span className="badge badge-outline md:badge-lg align-top ml-2">{text}</span>
 )
 
 export const LandCounterStyle = ({ className = '', children }: { className?: string, children: ReactNode }) => (
