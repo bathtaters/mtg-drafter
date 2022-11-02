@@ -34,16 +34,28 @@ export const ColorInput = ({ value, setValue }: { value: number, setValue: (valu
 )
 
 export const AutoLandsInput = ({ label, ...props }: HTMLProps<HTMLInputElement>) => (
-  <div className="w-12 md:w-16 tooltip tooltip-accent tooltip-top input input-bordered input-accent p-0" data-tip={label}>
-    <div className="overflow-hidden h-full">
-      <NumberInput {...props}
-        className="input bg-accent-content text-accent w-full h-full p-1 !rounded-none
-        text-center text-sm md:text-base"
-      />
-    </div>
-  </div>
+  <>
+    <span className="bg-accent col-span-2 px-0 mr-2 justify-self-end italic opacity-90">{label}</span>
+    <NumberInput {...props}
+      className="input input-accent bg-accent-focus/50 !rounded-md
+      w-full h-full p-1 text-sm md:text-base"
+    />
+  </>
 )
 
-export const AutoLandsWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="input-group mr-auto">{children}</div>
+export const AutoLandsWrapper = ({ button, children }: { button: ReactNode, children: ReactNode }) => (
+  <div className="input-group mr-auto">
+    {button}
+    <div className="dropdown">
+      <span />
+      <div tabIndex={0}
+        className="dropdown-content rounded-md bg-accent text-accent-content
+        w-36 md:w-40 p-2 ml-1 bottom-0 left-full
+        grid grid-cols-3 items-center gap-y-1"
+      >
+        {children}
+      </div>
+      <label tabIndex={0} className="btn btn-accent">▸</label>
+    </div>
+  </div>
 )

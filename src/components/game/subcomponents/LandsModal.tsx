@@ -50,10 +50,9 @@ type LandsProps = {
 }
 
 const AutoLandsButton = ({ onClick, deckSize, setDeckSize, sideLands, setSideLands, children }: LandsProps) => (
-  <AutoLandsWrapper>
-    <ModalButton className="btn-accent" onClick={onClick}>{children}</ModalButton>
-    <AutoLandsInput label="Deck size"       value={deckSize}  onChange={(ev) =>  setDeckSize(+ev.currentTarget.value)} min="1" max="500" />
-    <AutoLandsInput label="Sideboard lands" value={sideLands} onChange={(ev) => setSideLands(+ev.currentTarget.value)} min="0" max="50" />
+  <AutoLandsWrapper button={<ModalButton className="btn-accent" onClick={onClick}>{children}</ModalButton>}>
+    <AutoLandsInput label="Deck size" value={deckSize}  onChange={(ev) =>  setDeckSize(+ev.currentTarget.value)} min="1" max="500" />
+    <AutoLandsInput label="Sideboard" value={sideLands} onChange={(ev) => setSideLands(+ev.currentTarget.value)} min="0" max="50" />
   </AutoLandsWrapper>
 )
 
