@@ -12,7 +12,7 @@ type Props = {
 export default function IconToggle({ label, value, setValue, className, children }: Props) {
   return (
     <label className={`swap${value ? ' swap-active' : ''}${label ? ' tooltip' : ''} tooltip-secondary inline-grid ${className || ''}`} data-tip={label}>
-      <input type="checkbox" checked={value} onClick={() => setValue(!value)} />
+      <input type="checkbox" checked={value} onChange={(ev) => setValue(ev.target.checked)} />
       <div className="swap-on">{children[0]}</div>
       <div className="swap-off">{children[1]}</div>
     </label>
