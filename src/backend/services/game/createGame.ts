@@ -1,3 +1,4 @@
+import type { CubeOptions, GenericOptions } from 'types/setup'
 import prisma from '../../libs/db'
 import { createPacks, createPlayers, randomUrl } from '../../utils/game/game.utils'
 
@@ -40,23 +41,4 @@ async function newGame(options: GenericOptions) {
     })
   ])
   return url
-}
-
-
-// TYPES
-
-interface CommonOptions {
-  name: string,
-  playerCount: number,
-  roundCount: number,
-  hostSessionId?: string,
-}
-
-interface GenericOptions extends CommonOptions {
-  packs: string[][],
-}
-
-export interface CubeOptions extends CommonOptions {
-  packSize: number,
-  cardList: string[],
 }

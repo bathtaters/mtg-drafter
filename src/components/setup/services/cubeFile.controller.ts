@@ -1,4 +1,4 @@
-import type { CubeFile, UploadType } from "./setup"
+import type { CubeFile, UploadType } from "types/setup"
 import { useState, useCallback } from "react"
 import { upload, cubeListURL, fileID } from "./setup.utils"
 

@@ -1,9 +1,9 @@
 import FilePreview from "./subcomponents/FilePreview"
-import FileInput from "components/base/common/FileInput"
-import RangeInput from "components/base/common/RangeInput"
+import FileInput from "components/base/common/FormElements/FileInput"
+import RangeInput from "components/base/common/FormElements/RangeInput"
 import Spinner from "components/base/common/Spinner"
 import Overlay from "components/base/common/Overlay"
-import { FormWrapper, FieldWrapper, InputWrapper, FormTitle, SubmitButton, ErrorText } from "./SetupStyles" 
+import { FormWrapper, FieldWrapper, InputWrapper, FormTitle, SubmitButton, ErrorText } from "./styles/SetupStyles" 
 import useSetupController from "./services/setup.controller"
 import { fileType } from "./services/setup.utils"
 

@@ -1,4 +1,4 @@
-import type { CubeFile } from "../services/setup"
+import type { CubeFile } from "types/setup"
 import { PreviewContainer, PreviewWrapper, PreviewResult, PreviewError, NotFoundList, ClearButton } from "../styles/FilePreviewStyles"
 import TextPad from "components/svgs/TextPad"
 

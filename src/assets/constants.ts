@@ -1,5 +1,5 @@
-import type { BoardLands } from 'types/definitions'
-import cardZoomLevels from "components/game/styles/cardZoomLevels"
+import type { BoardLands } from 'types/game'
+import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
 
 export const colorOrder = ['w','u','b','r','g'] as Array<keyof BoardLands>,
 

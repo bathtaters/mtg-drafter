@@ -1,8 +1,7 @@
 import type { Event, Server, Socket } from 'socket.io'
 import type { Socket as Client } from 'socket.io-client'
 import type { Game, GameCard, Pack, Player } from '@prisma/client'
-import type { BasicLands, Board, PlayerStatus } from 'types/definitions'
-import type { PlayerFull } from 'components/game/services/game'
+import type { PlayerFull, BasicLands, Board, PlayerStatus } from 'types/game'
 
 export interface GameServerToClient {
   updateRound: (round: Game['round']) => void;

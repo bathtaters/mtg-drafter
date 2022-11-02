@@ -1,5 +1,5 @@
 import type { GameCard, Player, Board } from '@prisma/client'
-import type { BasicLands } from '../../../types/definitions'
+import type { BasicLands } from 'types/game'
 import prisma from '../../libs/db'
 
 export async function getPlayer(sessionId: Player['sessionId'], playerList: Player[]) {

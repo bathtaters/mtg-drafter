@@ -34,3 +34,5 @@ export const SetPageTitle = ({ title }: { title: string }) => (
     <meta property="og:title" content={`MtG Drafter - ${title}`} />
   </Head>
 )
+
+export const EmptyStyle = ({ children }:{ children: ReactNode }) => <div className="italic opacity-60 my-12">{children}</div>

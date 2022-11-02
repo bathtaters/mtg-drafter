@@ -1,4 +1,4 @@
-import type { GameOptions, CubeFile } from "./setup"
+import type { GameOptions, CubeFile } from "types/setup"
 import { useCallback, useState } from "react"
 import { useRouter } from "next/router"
 import { post, adaptOptions, newGameURL, gameURL } from "./setup.utils"

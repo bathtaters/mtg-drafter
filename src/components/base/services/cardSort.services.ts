@@ -15,7 +15,7 @@ const sortValue: { [algo in SortKey]: SortValue } = {
     colorOrderUpper.indexOf(card.colors[0]) :
     !card.colors.length ? 11 : 4 + card.colors.length,
 
-  type:   (card) => Math.max(...card.types.map((type) => typeOrder.indexOf(type))),
+  type:   (card) => Math.min(...card.types.map((type) => typeOrder.indexOf(type))),
 
   cost:   (card) => card.manaValue || 0,
 }

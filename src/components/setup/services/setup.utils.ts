@@ -1,5 +1,5 @@
 import type { CubeOptions } from "types/definitions"
-import type { GameOptions, CubeFile } from "./setup"
+import type { GameOptions, CubeFile } from "types/setup"
 
 export const defaultOptions: GameOptions = { name: "", players: "8", packs: "3", packSize: "15" }
 

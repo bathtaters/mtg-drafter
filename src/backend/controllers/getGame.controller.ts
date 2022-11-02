@@ -1,5 +1,5 @@
 import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next'
-import type { ServerProps } from 'components/game/services/game'
+import type { ServerProps } from 'types/game'
 import { getGame } from '../services/game/game.services'
 import { getPlayer } from '../services/game/player.services'
 import { getCtxSessionId, getReqSessionId } from 'components/base/services/sessionId.services'

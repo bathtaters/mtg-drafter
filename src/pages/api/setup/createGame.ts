@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { newCubeGame, CubeOptions } from 'backend/services/game/createGame'
+import type { CubeOptions } from 'types/setup'
+import { newCubeGame } from 'backend/services/game/createGame'
 import { getReqSessionId } from 'components/base/services/sessionId.services'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<{ url: string }>) {
