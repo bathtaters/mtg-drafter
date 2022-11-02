@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { storageDefaults } from "assets/constants"
 
 const storagePrefix = 'mtg-drafter-'
@@ -29,7 +29,9 @@ export function setDefaults() {
 
 type SetValue<T> = (value: T) => void
 export function useLocalStorage<T = typeof storageDefaults[LocalKeys]>(key: LocalKeys): [ T, SetValue<T> ] {
-  const [ value, setValue ] = useState<T>(typeof window !== 'undefined' ? getLocalVar<T>(key) : storageDefaults[key] as T)
+  const [ value, setValue ] = useState<T>(storageDefaults[key] as T)
+
+  useEffect(() => { if (typeof window !== 'undefined') setValue(getLocalVar<T>(key)) }, [])
   
   const updateValue = useCallback((value: T) => {
     setValue(value)
