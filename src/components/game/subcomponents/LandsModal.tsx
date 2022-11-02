@@ -37,8 +37,8 @@ type ColorProps = { label: string, main: number, setMain: NumSet, side: number, 
 
 const ColorColumn = ({ label, main, setMain, side, setSide }: ColorProps) => (
   <ColorInputWrapper label={label}>
-    <ColorInput value={main} setValue={setMain} />
-    <ColorInput value={side} setValue={setSide} />
+    <ColorInput label={label} value={main} setValue={setMain} />
+    <ColorInput label={label} value={side} setValue={setSide} />
   </ColorInputWrapper>
 )
 

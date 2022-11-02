@@ -25,9 +25,9 @@ export const ColorLabels = ({ labels, className }: { labels: ReactNode[], classN
   </div>
 )
 
-export const ColorInput = ({ value, setValue }: { value: number, setValue: (value: number) => void}) => (
+export const ColorInput = ({ label, value, setValue }: { label: string, value: number, setValue: (value: number) => void}) => (
   <NumberInput
-    className="input input-bordered text-sm md:text-xl h-12"
+    className={`input border-t border-t-base-300/30 ${colorClass[label]} text-sm md:text-xl h-12`}
     value={value} min="0"
     onChange={(ev) => setValue(+ev.currentTarget.value)}
   />
