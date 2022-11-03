@@ -24,7 +24,7 @@ export function HorizontalCollapse({ title, defaultOpen, children, className = '
 
   return (
     <div className="flex justify-end items-top">
-      <span className={`flex-grow ${className} ${open ? "" : "hidden"}`}>{children}</span>
+      <span className={`flex-grow transition-transform origin-top-right ${className} ${open ? "mb-4" : "scale-x-0"}`}>{children}</span>
       <a className={`btn flex-shrink flex-grow-0 ${titleClass}`} onClick={() => setOpen((o) => !o)}>{title}</a>
     </div>
   )
