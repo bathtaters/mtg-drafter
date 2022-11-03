@@ -1,5 +1,5 @@
 import IconToggle from "components/base/common/FormElements/IconToggle"
-import { CardToolbarStyle, ToolbarCollapse, ToolbarSelector, ToolbarEye, ToolbarRange, CardZoomStyle } from "./CardToolbarStyles"
+import { CardToolbarStyle, ToolbarCollapse, ToolbarButton, ToolbarSort, ToolbarEye, ToolbarRange, CardZoomStyle } from "./CardToolbarStyles"
 import useToolbar, { sortList, ToolbarProps } from "./toolbar.controller"
 import cardZoomLevels from "./cardZoomLevels"
 
@@ -9,12 +9,12 @@ export default function CardToolbar(props: ToolbarProps) {
   const { art, sort, zoom, setArt, setSort, setZoom } = useToolbar(props)
 
   return (
-    <ToolbarCollapse title="..." defaultOpen={false}>
+    <ToolbarCollapse title={<ToolbarButton />} defaultOpen={false}>
       <CardToolbarStyle>
 
-        <ToolbarSelector label="Sort cards" selected={sort} setSelected={setSort}>
+        <ToolbarSort label="Sort cards" selected={sort} setSelected={setSort}>
           {sortList}
-        </ToolbarSelector>
+        </ToolbarSort>
 
         <CardZoomStyle>
           <IconToggle label="Card art" value={art} setValue={setArt}>
