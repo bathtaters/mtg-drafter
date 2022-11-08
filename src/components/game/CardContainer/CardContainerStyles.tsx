@@ -23,8 +23,8 @@ export const ContainerLabelStyle = ({ children }: { children: ReactNode }) => (
   <span className="flex-shrink-0 flex items-center">{children}</span>
 )
 
-export const LandContainerStyle = ({ children }: { children: ReactNode }) => (
-  <span className="flex justify-evenly gap-0 md:gap-2">{children}</span>
+export const LandContainerStyle = ({ onClick, children }: { onClick?: MouseEventHandler, children: ReactNode }) => (
+  <button type="button" onClick={onClick} className="relative z-20 flex justify-evenly gap-0 md:gap-2">{children}</button>
 )
 
 export const CardCounter = ({ text }: { text: string }) => (
@@ -34,6 +34,8 @@ export const CardCounter = ({ text }: { text: string }) => (
 export const LandCounterStyle = ({ className = '', children }: { className?: string, children: ReactNode }) => (
   <span className={`badge badge-sm py-2 md:badge-lg ${className} flex gap-1`}>{children}</span>
 )
+
+export const LandButton = () => <span className="btn btn-circle btn-sm btn-outline"><i className="ms ms-land text-base" /></span>
 
 export const CardsWrapper = ({ children }: { children: ReactNode }) => (
   <div className="flex gap-4 flex-wrap justify-center">{children}</div>

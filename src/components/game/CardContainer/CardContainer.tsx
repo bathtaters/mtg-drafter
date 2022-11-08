@@ -13,14 +13,15 @@ type Props = {
   children?: ReactNode,
   onClick?: (id: string, idx: number, event: MouseEvent) => void,
   onBgdClick?: MouseEventHandler,
+  onLandClick?: MouseEventHandler,
   selectedIdx?: number,
   cardOptions: CardOptions,
 }
 
-export default function CardContainer({ label, cards, lands, open = true, children, onClick, onBgdClick, selectedIdx, cardOptions }: Props) {
+export default function CardContainer({ label, cards, lands, open = true, children, onClick, onBgdClick, onLandClick, selectedIdx, cardOptions }: Props) {
   return (
     <CardContainerWrapper defaultOpen={open} 
-      title={<ContainerHeader label={label} count={cards?.length} lands={lands} />}
+      title={<ContainerHeader label={label} count={cards?.length} lands={lands} onLandClick={onLandClick} />}
       isPrimary={selectedIdx == null} onClick={onBgdClick}
     >
       {children}

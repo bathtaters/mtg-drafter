@@ -40,6 +40,7 @@ export default function Game(props: ServerProps) {
             player={player}
             pack={pack} pickCard={pickCard} swapCard={swapCard}
             clickRoundBtn={isReady ? () => nextRound() : undefined}
+            onLandClick={toggleLandModal || undefined}
             loadingPack={!!loadingPack}
           />
         }

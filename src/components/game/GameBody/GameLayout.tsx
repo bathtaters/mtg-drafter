@@ -1,3 +1,4 @@
+import type { MouseEventHandler } from 'react'
 import type { GameProps, PickCard, PlayerFull, SwapCard } from 'types/game'
 import Overlay from 'components/base/common/Overlay'
 import Spinner from 'components/base/common/Spinner'
@@ -14,10 +15,11 @@ type Props = {
   pickCard: PickCard,
   swapCard: SwapCard,
   clickRoundBtn?: () => void,
+  onLandClick?: MouseEventHandler,
   loadingPack: boolean,
 }
 
-export default function GameLayout({ game, player, pack, clickRoundBtn, pickCard, swapCard, loadingPack }: Props) {
+export default function GameLayout({ game, player, pack, clickRoundBtn, onLandClick, pickCard, swapCard, loadingPack }: Props) {
 
   const {
     selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard, cardOptions, setCardOptions
@@ -53,16 +55,16 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, pickCard
       <Divider />
 
       <CardContainer
-        label="Main" lands={player.basics.main}
+        label="Main" lands={player.basics.main} cardOptions={cardOptions}
         cards={player.cards.filter(({ board }) => board === 'main')}
-        onClick={clickBoardCard('main')} cardOptions={cardOptions} />
+        onClick={clickBoardCard('main')} onLandClick={onLandClick} />
 
       <Divider />
 
       <CardContainer
-        label="Side" lands={player.basics.side} open={false}
-        cards={player.cards.filter(({ board }) => board === 'side')}
-        onClick={clickBoardCard('side')} cardOptions={cardOptions} />
+        label="Side" lands={player.basics.side} cardOptions={cardOptions}
+        cards={player.cards.filter(({ board }) => board === 'side')} open={false}
+        onClick={clickBoardCard('side')} onLandClick={onLandClick} />
     </GameLayoutWrapper>
   )
 }
