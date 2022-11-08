@@ -43,7 +43,7 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, pickCard
         >
           { clickRoundBtn ?
             <RoundButton onClick={clickRoundBtn} label={game.round === game.roundCount ? 'end' : 'next'} /> :
-            pack &&
+            pack && !!pack.cards.length &&
             <PickCardButton disabled={loadingPack || selectedCard < 0} onClick={clickPickButton} />}
 
           { loadingPack && <Overlay className="absolute z-40"><Spinner /></Overlay> }

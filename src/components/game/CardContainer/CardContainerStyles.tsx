@@ -3,6 +3,7 @@ import CollapseContainer from "components/base/common/Collapse"
 import { EmptyStyle } from "components/base/styles/AppStyles"
 
 export const NoCards = () => <EmptyStyle>Awaiting next pack.</EmptyStyle>
+export const NoPacks = () => <EmptyStyle>Awaiting next round.</EmptyStyle>
 
 export const CardContainerWrapper = ({ title, defaultOpen, isPrimary, children, onClick }: {
    title: ReactNode, defaultOpen: boolean, isPrimary: boolean, children: ReactNode, onClick?: MouseEventHandler
