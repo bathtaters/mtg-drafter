@@ -40,35 +40,35 @@ export function getGameListeners({ updateGame, updatePlayer, renamePlayer, nextR
 }
 
 
-export function useGameEmitters(local: LocalController, { socket, isConnected }: { socket: GameClient | null, isConnected: boolean }) {
+export function useGameEmitters(local: LocalController, { socket }: { socket: GameClient | null }) {
   
   const renamePlayer: Socket.RenamePlayer = (name, playerId) => {
-    if (!socket || !isConnected) return console.error('Not connected to server')
-    if (!local.player) return console.error('Player not loaded')
+    if (!socket?.connected) return console.error('Error renaming player: Not connected to server')
+    if (!local.player) return console.error('Error renaming player: Player not loaded')
 
     name && local.renamePlayer(playerId || local.player.id, name)
     socket.emit('setName', playerId || local.player.id, name)
   }
 
   const setTitle: Socket.SetTitle = (title) => {
-    if (!socket || !isConnected) return console.error('Not connected to server')
-    if (!local.game) return console.error('Game not loaded')
+    if (!socket?.connected) return console.error('Error renaming game: Not connected to server')
+    if (!local.game) return console.error('Error renaming game: Game not loaded')
 
     title && local.updateGame((game) => game && ({ ...game, name: title }))
     socket.emit('setTitle', local.game.id, title)
   }
 
   const nextRound: Socket.NextRound = () => {
-    if (!socket || !isConnected) return console.error('Not connected to server')
-    if (!local.game) return console.error('Game not loaded')
+    if (!socket?.connected) return console.error('Error fetching next round: Not connected to server')
+    if (!local.game) return console.error('Error fetching next round: Game not loaded')
 
     local.setLoadingPack((v) => v + 1)
     socket.emit('nextRound', local.game.id, local.game.round + 1)
   }
 
   const pickCard: Socket.PickCard = (cardIdx) => {
-    if (!socket || !isConnected || !local.player) return console.error('Not connected to server')
-    if (!local.pack) return console.error('Player does not have a pack')
+    if (!socket?.connected || !local.player) return console.error('Error picking card: Not connected to server')
+    if (!local.pack) return console.error('Error picking card: Player does not have a pack')
 
     local.setLoadingPack((v) => v + 1)
     const gameCardId = local.pack.cards[cardIdx].id
@@ -79,8 +79,8 @@ export function useGameEmitters(local: LocalController, { socket, isConnected }:
   }
 
   const getPack: Socket.GetPack = (packId) => {
-    if (!socket || !isConnected) return console.error('Not connected to server')
-    if (!packId) return console.error('Pack not available')
+    if (!socket?.connected) return console.error('Error fetching pack: Not connected to server')
+    if (!packId) return console.error('Error fetching pack: Pack not available')
 
     local.setLoadingPack((v) => v + 1)
     socket.emit('getPack', packId, (pickableIds) => {
@@ -88,13 +88,14 @@ export function useGameEmitters(local: LocalController, { socket, isConnected }:
     })
   }
   useEffect(() => {
+    if (!socket?.connected) return;
     const packId = local.packs[local.packIdx]?.id
     packId ? getPack(packId) : local.setNextPack(undefined)
-  }, [local.packIdx, local.player?.pick])
+  }, [local.packIdx, local.player?.pick, socket?.connected])
 
 
   const swapCard: Socket.SwapCard = (cardId, board) => {
-    if (!socket || !isConnected) return console.error('Not connected to server')
+    if (!socket?.connected) return console.error('Error moving card: Not connected to server')
 
     local.swapCard(cardId, board)
     socket.emit('swapBoards', cardId, board, (cardId, board) => {
@@ -104,7 +105,7 @@ export function useGameEmitters(local: LocalController, { socket, isConnected }:
   }
 
   const setLands: Socket.SetLands = (lands) => {
-    if (!socket || !isConnected || !local.player) return console.error('Not connected to server')
+    if (!socket?.connected || !local.player) return console.error('Error saving lands: Not connected to server')
 
     local.setLands(lands)
     socket.emit('setLands', local.player.id, lands, (lands) => {
@@ -114,7 +115,7 @@ export function useGameEmitters(local: LocalController, { socket, isConnected }:
   }
 
   const setStatus: Socket.SetStatus = (playerId, status = 'join') => {
-    if (!socket || !isConnected) return console.error('Not connected to server')
+    if (!socket?.connected) return console.error('Error updating player: Not connected to server')
 
     local.setLoadingAll((v) => v + 1)
     socket.emit('setStatus', playerId, status, (player) => {
