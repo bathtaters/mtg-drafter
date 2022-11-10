@@ -1,4 +1,4 @@
-import { ChangeEventHandler, useCallback, useEffect, useState } from "react"
+import { ChangeEventHandler, KeyboardEventHandler, useCallback, useEffect, useState } from "react"
 
 export type EditorProps = {
   value: string,
@@ -31,9 +31,19 @@ export default function useTextEditor({ value, onSubmit, minLength, maxLength }:
   
   const enableEdit = useCallback(() => setEditing(true), [])
 
+  const handleKeypress: KeyboardEventHandler = (e) => {
+    e.preventDefault()
+    switch (e.key) {
+      case 'Esc':
+      case 'Escape': return handleCancel()
+      case 'Enter': return handleSubmit()
+    }
+  }
+
   return {
     text, isEditing, charLimit: { minLength, maxLength },
     canSave: text.length >= (minLength || 1),
-    handleChange, handleSubmit, handleCancel, enableEdit,
+    handleChange, handleKeypress,
+    handleSubmit, handleCancel, enableEdit,
   }
 }
