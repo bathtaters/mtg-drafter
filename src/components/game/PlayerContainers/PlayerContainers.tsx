@@ -1,29 +1,11 @@
 import type { Player } from "@prisma/client"
 import PlayerMenu from "./PlayerMenu"
-import PlayerContainerStyle, {
-  EmptyPlayerContainer, ColorTheme, HostBadge,
-  PlayerNameWrapper, PlayerNameEditWrapper, PlayerNameEditBtn, PlayerNameTextBox,
-} from "./PlayerContainerStyle"
-import useRenameController, { RenameProps } from "./name.controller"
+import PlayerContainerStyle, { EmptyPlayerContainer, ColorTheme, HostBadge, PlayerNameEditor } from "./PlayerContainerStyle"
 import { nameCharLimit } from "assets/constants"
 
 
-function PlayerNameEditor(props: RenameProps) {
-  const { value, isEditing, canSave, charLimit, handleSubmit, handleCancel, handleChange, enableEdit } = useRenameController(props)
-
-  return isEditing ?
-    <PlayerNameEditWrapper>
-      <PlayerNameTextBox value={value} onChange={handleChange} {...charLimit} />
-      <PlayerNameEditBtn value="✕" className="btn-error"   onClick={handleCancel} />
-      <PlayerNameEditBtn value="✓" className="btn-success" onClick={handleSubmit} disabled={!canSave} />
-    </PlayerNameEditWrapper> :
-    <PlayerNameWrapper onClick={enableEdit}>{value}</PlayerNameWrapper>
-}
-
-
-
 export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost }: ContainerSmallProps) => (
-  <PlayerContainerStyle title={player.name} isMini={true} disconnected={!player.sessionId} color={color} showDot={isHost}>
+  <PlayerContainerStyle title={player.name} isMini={true} disconnected={!player.sessionId} color={color} isHost={isHost}>
     <div className="text-xs mt-0.5 whitespace-nowrap">Pick {!player.pick || player.pick > maxPick ? '-' : player.pick}</div>
     <div className="text-2xs whitespace-nowrap">Holding {holding ?? '-'}</div>
   </PlayerContainerStyle>
@@ -31,8 +13,8 @@ export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost }
 
 
 export const PlayerContainerFull = ({ player, holding, maxPick, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => player ? (
-  <PlayerContainerStyle color="self" showDot={!!openHost}
-    title={<PlayerNameEditor name={player.name || 'Player'} charLimit={nameCharLimit} onSubmit={renamePlayer} />}
+  <PlayerContainerStyle color="self" isHost={!!openHost}
+    title={<PlayerNameEditor value={player.name || 'Player'} {...nameCharLimit} onSubmit={renamePlayer} />}
     header={<span>You{!!openHost && <HostBadge />}</span>}
     subtitle={`Pick ${!player.pick || player.pick > maxPick ? '-' : player.pick} | Holding ${holding ?? '-'}`}
   >
