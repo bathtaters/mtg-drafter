@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import type { GameServer } from './game.socket.d'
 import { parseCookies } from 'nookies'
 import { getReqSessionId } from 'components/base/services/sessionId.services'
-import { gameExists, getPack, nextRound, pickCard } from '../services/game/game.services'
+import { gameExists, getPack, nextRound, pickCard, renameGame } from '../services/game/game.services'
 import { renamePlayer, setStatus, swapCard, updateLands } from '../services/game/player.services'
 import { debugSockets, MAX_GAME_CONN } from 'assets/constants'
 import { IncomingMessage } from 'http'
@@ -23,6 +23,13 @@ export default async function gameSockets(io: GameServer, req: NextApiRequest, r
     debugSockets && socket.use(async (ev, next) => {
       console.debug('RX Socket Event:', io.path(), getSessionId(socket.request), ...ev)
       next()
+    })
+
+    socket.on('setTitle', async (gameId, title) => {
+      if (!title) return;
+      const newTitle = await renameGame(gameId, title)
+        .catch((err) => console.error('Error renameGame',gameId,title,err))
+      newTitle != null && io.emit('updateTitle', newTitle)
     })
 
     socket.on('nextRound', async (gameId, round) => {

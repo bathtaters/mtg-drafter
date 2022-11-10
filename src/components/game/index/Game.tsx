@@ -17,7 +17,7 @@ export default function Game(props: ServerProps) {
   const {
     game, player, players, playerIdx, isConnected, loadingPack, loadingAll,
     holding, isReady, pack, landModal, hostModal, slots, loadingMessage,
-    saveDeck, toggleLandModal, toggleHostModal, renamePlayer,
+    saveDeck, toggleLandModal, toggleHostModal, renamePlayer, setTitle,
     nextRound, pickCard, swapCard, setLands, setStatus
   } = useGameController(props)
 
@@ -58,6 +58,12 @@ export default function Game(props: ServerProps) {
         cards={player?.cards}
       /> }
 
-    {!!toggleHostModal && <HostModal isOpen={hostModal} setOpen={toggleHostModal} />}
+    {!!toggleHostModal &&
+      <HostModal
+        isOpen={hostModal} setOpen={toggleHostModal}
+        title={game?.name} setTitle={setTitle}
+        players={players} renamePlayer={renamePlayer}
+        hostId={game?.hostId || null} setStatus={setStatus}
+    />}
   </>)
 }

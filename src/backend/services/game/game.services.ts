@@ -20,7 +20,8 @@ export function getGame(url: Game['url']) {
 }
 
 export function renameGame(id: Game['id'], newName: Game['name']) {
-  return prisma.game.update({ where: { id }, data: { name: newName } })
+  return prisma.game.update({ where: { id }, data: { name: newName }, select: { name: true } })
+    .then(({ name }) => name)
 }
 
 export function nextRound(id: Game['id'], round: Game['round']) {

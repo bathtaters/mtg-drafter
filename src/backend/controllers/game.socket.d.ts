@@ -4,6 +4,7 @@ import type { Game, GameCard, Pack, Player } from '@prisma/client'
 import type { PlayerFull, BasicLands, Board, PlayerStatus } from 'types/game'
 
 export interface GameServerToClient {
+  updateTitle: (title: Game['name']) => void;
   updateRound: (round: Game['round']) => void;
   updatePick:  (playerId: Player['id'], pick: Player['pick']) => void;
   updateName:  (playerId: Player['id'], name: Player['name']) => void;
@@ -11,6 +12,7 @@ export interface GameServerToClient {
 }
 
 export interface GameClientToServer {
+  setTitle:   (gameId: Game['id'], title: Game['name']) => void;
   nextRound:  (gameId: Game['id'], round: Game['round']) => void;
   setName:    (playerId: Player['id'], name: Player['name']) => void;
   pickCard:   (playerId: Player['id'], gameCardId: GameCard['id'], callback: (pick?: Player['pick']) => void) => void;

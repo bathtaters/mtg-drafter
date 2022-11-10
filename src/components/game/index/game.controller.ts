@@ -19,7 +19,7 @@ export default function useGameController(props: ServerProps) {
   const local = useLocalController(props)
 
   const socket = useSocket(`/game/${gameURL}`, socketEndpoint(gameURL), getGameListeners(local))
-  const { renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus } = useGameEmitters(local, socket)
+  const { renamePlayer, setTitle, nextRound, pickCard, swapCard, setLands, setStatus } = useGameEmitters(local, socket)
 
   const saveDeck = !local.player?.cards || !local.game ? null : () => { downloadDeck(local as Parameters<typeof downloadDeck>['0']) }
   
@@ -27,7 +27,7 @@ export default function useGameController(props: ServerProps) {
     ...local,
     isConnected: socket.isConnected,
     loadingMessage: !local.player && !local.slots.length ? FullGame : undefined,
-    renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus,
+    renamePlayer, setTitle, nextRound, pickCard, swapCard, setLands, setStatus,
 
     landModal, hostModal, saveDeck,
     toggleLandModal: local.player?.basics ? () => setLandModal((o) => !o) : null,

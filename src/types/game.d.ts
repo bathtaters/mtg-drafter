@@ -12,14 +12,25 @@ export type PlayerFull = Player & { cards: GameCardFull[], basics: BasicLands }
 export type PlayerStatus = "join" | "leave"
 export type CardOptions = { width: string, showArt: boolean, sort?: SortKey }
 
-export interface ServerProps {
-  options?: Game,
-  players?: Player[],
-  playerSlots?: Player['id'][],
-  packs?: PackFull[],
-  player?: PlayerFull | null,
-  error?: string,
+interface ServerSuccess {
+  options: Game,
+  players: Player[],
+  playerSlots: Player['id'][],
+  packs: PackFull[],
+  player: PlayerFull | null,
+  sessionId: string,
+  error?: never,
 }
+interface ServerFail {
+  error: string,
+  options?: never,
+  players?: never,
+  playerSlots?: never,
+  packs?: never,
+  player?: never,
+  sessionId?: never,
+}
+export type ServerProps = ServerSuccess | ServerFail
 
 export type GameProps = Omit<Required<ServerProps>, 'error'>
 
@@ -36,10 +47,11 @@ export namespace Local {
 }
 
 export namespace Socket {
-  type RenamePlayer  = (name: string) => void
+  type RenamePlayer  = (name: Player['name'], playerId?: Player['id']) => void
+  type SetTitle      = (title: Game['name']) => void
   type NextRound     = () => void
   type PickCard      = (cardIdx: number) => void
-  type GetPack       = (packId?: string) => void
+  type GetPack       = (packId?: Pack['id']) => void
   type SwapCard      = (gameCardId: GameCard['id'], toBoard: Board) => void
   type SetLands      = (lands: BasicLands) => void
   type SetStatus     = (playerId: Player['id'], status?: PlayerStatus) => void
@@ -47,6 +59,7 @@ export namespace Socket {
 
 // Alias
 export type RenamePlayer  = Socket.RenamePlayer
+export type SetTitle      = Socket.SetTitle
 export type NextRound     = Socket.NextRound
 export type PickCard      = Socket.PickCard
 export type GetPack       = Socket.GetPack

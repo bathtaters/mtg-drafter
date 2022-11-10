@@ -84,19 +84,20 @@ export default function useLocalController(props: ServerProps) {
   }, [packs, packIdx])
 
 
-  const setStatus: Local.SetStatus = useCallback((playerId, sessionId, isSelf = false) => {
+  const setStatus: Local.SetStatus = useCallback((playerId, sessionId) => {
     updateSlots((s) => sessionId ? spliceInPlace(s, (pid) => pid === playerId) : s.concat(playerId))
     updatePlayers((list) => list && updateArrayIdx(list,
       ({ id }) => id === playerId, (p) => ({ ...p, sessionId })
     ))
-    if (isSelf) updatePlayer((p) => p && sessionId ? ({ ...p, sessionId }) : undefined)
+    updatePlayer((p) => p?.id !== playerId ? p : sessionId ? ({ ...p, sessionId }) : undefined)
     setLoadingAll((v) => v && v - 1)
   }, [])
 
 
   return {
-    loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer,
+    loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer, updateGame,
     game, player, players, playerIdx, holding, isReady, pack, packIdx, packs, slots,
+    sessionId: props.sessionId,
     renamePlayer, nextRound, otherPick, pickCard, swapCard, setLands, setNextPack, setStatus,
   }
 }
