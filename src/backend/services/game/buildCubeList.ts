@@ -1,6 +1,6 @@
 import type { Card } from '@prisma/client'
 import prisma from '../../libs/db'
-import { normalizeName } from '../../utils/db/fetchDb.utils'
+import { normalizeName } from '../../utils/db/card.utils'
 
 
 const getBestMatch = (cards: Card[]) => {
