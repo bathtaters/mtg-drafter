@@ -12,7 +12,7 @@ export type PlayerFull = Player & { cards: GameCardFull[], basics: BasicLands }
 export type PlayerStatus = "join" | "leave"
 export type CardOptions = { width: string, showArt: boolean, sort?: SortKey }
 
-interface ServerSuccess {
+export interface ServerSuccess {
   options: Game,
   players: Player[],
   playerSlots: Player['id'][],
@@ -21,7 +21,7 @@ interface ServerSuccess {
   sessionId: string,
   error?: never,
 }
-interface ServerFail {
+export interface ServerFail {
   error: string,
   options?: never,
   players?: never,
