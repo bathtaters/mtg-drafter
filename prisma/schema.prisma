@@ -97,9 +97,9 @@ model Card {
   monoColor   Color?
   
   // Image data
+  img           String?
   scryfallId    String?
   multiverseId  String?
-  noGath        Boolean
   preferredArt  Boolean @default(false)
 
   // Double-faced card data
