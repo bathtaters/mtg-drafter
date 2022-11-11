@@ -8,6 +8,8 @@ export const
   gameURL = (gameIdentifier: string) => `/game/${gameIdentifier}`,
   socketEndpoint = (gameURL: any) => `/api/game/${typeof gameURL === 'string' ? gameURL : INVALID_PATH}/socket`
 
-export const // Image URLs
-  gathererUrl = (multiverseId: string) => `https://gatherer.wizards.com/Handlers/Image.ashx?type=card&multiverseid=${multiverseId}`,
-  scryfallUrl = (scryfallId: string, isBack = false) => `https://api.scryfall.com/cards/${scryfallId}?format=image${isBack ? '&face=back' : ''}`
+export const // DB Sources
+  // setsDbUrl = 'https://mtgjson.com/api/v5/AllPrintings.json',
+  cardDbUrl = 'https://mtgjson.com/api/v5/AllIdentifiers.json',
+  imageDbUrl = 'https://api.scryfall.com/bulk-data/default-cards',
+  preferredDbUrl = 'https://api.scryfall.com/bulk-data/oracle-cards'

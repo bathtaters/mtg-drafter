@@ -6,7 +6,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'gatherer.wizards.com',
+        hostname: 'cards.scryfall.io',
       },
     ],
   },

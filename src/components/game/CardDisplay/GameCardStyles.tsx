@@ -3,7 +3,7 @@ import type { MouseEventHandler, ReactNode } from "react"
 export const CardWrapper = ({ isSelected, onClick, className, children }: { isSelected?: boolean, onClick?: MouseEventHandler, className: string, children: ReactNode }) => (
   <span
     onClick={onClick}
-    className={`flex justify-center items-center relative rounded-xl${
+    className={`flex justify-center items-center relative rounded-[5%]${
       isSelected ? " outline outline-secondary outline-4 outline-offset-2" : ""
     } ${className}`}
   >
