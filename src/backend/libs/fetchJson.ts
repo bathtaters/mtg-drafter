@@ -30,9 +30,9 @@ export default function fetchJson<Data = any>(url: string, onData: FetchCB<Data>
         });
 
         // Handle close/error
-        jsonPipe.on('close', () => { isClosed = true })
-        jsonPipe.on('end',   () => { isClosed = true })
-        jsonPipe.on('drain', () => { isClosed = true })
+        jsonPipe.on('close', () => { isClosed = true; if (!threads) resolve(count) })
+        jsonPipe.on('end',   () => { isClosed = true; if (!threads) resolve(count) })
+        jsonPipe.on('drain', () => { isClosed = true; if (!threads) resolve(count) })
         
         jsonPipe.on('error', (err) => reject(err))
 
