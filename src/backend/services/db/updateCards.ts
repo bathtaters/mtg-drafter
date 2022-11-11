@@ -2,12 +2,12 @@ import type { Prisma } from '@prisma/client'
 import prisma from '../../libs/db'
 import fetchJson from '../../libs/fetchJson'
 import batchCallback from '../../libs/batcher'
-import { adaptCardToDb, adaptCardToConnect, JsonCard } from '../../utils/db/fetchDb.utils'
+import { adaptCardToDb, adaptCardToConnect, JsonCard } from '../../utils/db/card.utils'
 
 const downloadThreads = 1000, createBatch = 5000, enableLog = true
 
 
-export async function updateCards(url: string = 'https://mtgjson.com/api/v5/AllIdentifiers.json', fullUpdate?: boolean) {
+export default async function updateCards(url: string, fullUpdate?: boolean) {
   let connectOps: Prisma.CardUpdateArgs[] = []
 
 
@@ -67,6 +67,3 @@ export async function updateCards(url: string = 'https://mtgjson.com/api/v5/AllI
 
   enableLog && console.timeEnd('Second Pass')
 }
-
-
-// https://mtgjson.com/api/v5/AllPrintings.json - sets

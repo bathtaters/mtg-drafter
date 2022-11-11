@@ -1,11 +1,12 @@
-import { Color, Prisma, PrismaClient, Rarity, Side } from '@prisma/client'
 import prisma from '../src/backend/libs/db'
-import { updateCards } from '../src/backend/services/db/updateDb.services'
-
-const updateDbCards = () => updateCards(undefined, false)
+import updateCards from '../src/backend/services/db/updateCards'
+import updateImages from '../src/backend/services/db/updateImages'
+import { cardDbUrl, imageDbUrl, preferredDbUrl } from '../src/assets/urls'
 
 async function main() {
-  await updateDbCards()
+  await updateCards(cardDbUrl, false)
+  await updateImages(imageDbUrl, preferredDbUrl, false)
+  console.log('DONE')
 }
 
 main()

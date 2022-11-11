@@ -3,8 +3,6 @@ import type { Card } from 'mtggraphql'
 
 export const normalizeName = (name: string) => name.replace(/\s\/\/\s.+$/,'').toLowerCase()
 
-// --- CARDS --- \\
-
 // Pass 1
 export const adaptCardToDb = ({
   uuid, name, setCode, manaCost, type, text,
@@ -16,7 +14,6 @@ export const adaptCardToDb = ({
   
   name: name || 'N/A',
   types: types || [], 
-  noGath: !identifiers?.multiverseId || hasContentWarning || false,
 
   normalName: !side || side === 'a' ? normalizeName(asciiName || name || 'N/A') : null,
 
