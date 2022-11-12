@@ -9,22 +9,52 @@ const catchSql = (err: any) => {
   return new Promise((res) => { setTimeout(() => res(0), sleepOnFail) })
 }
 
-export function createMultiUpdate<T extends { [key: string]: any }>(tableName: Prisma.ModelName, whereKey: keyof T & string, updateKey: keyof T & string): (updateObj: T[], prisma: PrismaClient) => PrismaPromise<number>
-export function createMultiUpdate<T extends { [key: string]: any }>(tableName: Prisma.ModelName, whereKey: keyof T & string, updateKey: keyof T & string, prisma: PrismaClient): (updateObj: T[]) => PrismaPromise<number>
-export function createMultiUpdate<T extends { [key: string]: any }>(tableName: Prisma.ModelName, whereKey: keyof T & string, updateKey: keyof T & string, prisma?: PrismaClient) {
-  checkInjection([tableName, whereKey, updateKey], 'updateImages')
+type KeyArr<T> = (keyof T & string)[]
+type Obj = { [key: string]: any }
+
+export function createMultiUpdate<T extends Obj>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>): (updateObj: T[], prisma: PrismaClient) => PrismaPromise<number>
+export function createMultiUpdate<T extends Obj>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>, prisma: PrismaClient): (updateObj: T[]) => PrismaPromise<number>
+export function createMultiUpdate<T extends Obj>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>, prisma?: PrismaClient) {
+  checkInjection([tableName, ...whereKeys, ...updateKeys], 'updateImages')
 
   let
     table  = addQuotes.test(tableName) ? `"${tableName}"` : tableName,
-    where  = addQuotes.test(whereKey)  ? `"${whereKey}"`  : whereKey,
-    update = addQuotes.test(updateKey) ? `"${updateKey}"` : updateKey
+    wheres  = whereKeys.map((whereKey)   => addQuotes.test(whereKey)  ? `"${whereKey}"`  : whereKey),
+    updates = updateKeys.map((updateKey) => addQuotes.test(updateKey) ? `"${updateKey}"` : updateKey)
 
-  const cmd = (updateObj: T[]) => 
-    `UPDATE ${table} SET ${update} = (CASE ${
-      updateObj.map((_,i) => `WHEN ${where} = $${i*2 + 1} THEN $${i*2 + 2}`).join(' ')
-    } END) WHERE ${where} IN (${updateObj.map((_,i) => `$${i*2 + 1}`).join(',')})`
+  const cmd = (updateObj: T[]) => `UPDATE ${table} SET ${
 
-  const args = (updateObj: T[]) => updateObj.flatMap((val) => [val[whereKey], val[updateKey]])
+    // Each UpdateKey
+    updates.map((update, u) => `${update} = (CASE ${
+
+      // Each Object
+      updateObj.map((obj, i) => `WHEN ${
+
+        // Each WhereKey
+        wheres.map((where, w) => obj[whereKeys[w]] != null &&
+          `${where}${typeof obj[whereKeys[w]] === 'string' ? '::STRING' : ''} = $${1 + i + w * updateObj.length}`
+        ).filter(Boolean).join(' AND ')
+
+      } THEN ${ 
+        
+        // UpdateValue
+        obj[updateKeys[u]] == null ? 'NULL' : `$${
+          1 + i + (wheres.length + u) * updateObj.length
+        }`
+      }`).join(' ')
+
+    } END)`).join(', ')
+
+  // WhereKey[0] only
+  } WHERE ${wheres[0]} IN (${
+
+    // Each Object
+    updateObj.map((obj,i) => obj[whereKeys[0]] != null && `$${1 + i}`).filter(Boolean).join(',')
+  })`
+
+  const args = (updateObj: T[]) => whereKeys.concat(updateKeys).flatMap(
+    (key) => updateObj.map((obj) => obj[key] == null ? 'NULL' : obj[key])
+  )
 
   
 
@@ -32,7 +62,11 @@ export function createMultiUpdate<T extends { [key: string]: any }>(tableName: P
     (updateObj: T[], prisma: PrismaClient) => prisma.$executeRawUnsafe(cmd(updateObj), ...args(updateObj)).catch(catchSql)
 }
 
-
+// FILL IN VALS TO TEXT (For debug output)
+// const sql = (text: string, vals: any[]) => {
+//   for (let i=vals.length; i > 0; i--) { text = text.replaceAll(`$${i}`, JSON.stringify(vals[i-1])) }
+//   return text
+// }
 
 // Injection Checking
 
