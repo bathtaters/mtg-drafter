@@ -2,7 +2,7 @@ import type { GameProps } from "types/game"
 import { useEffect, useMemo, useState } from "react"
 import { canShare, shareData } from "components/base/services/common.services"
 import { shareGame } from "assets/constants"
-import { getOppIdx, getRound, passingUp } from "../shared/game.utils"
+import { getOppIdx, getRound, passingRight } from "../shared/game.utils"
 
 
 export default function useGameHeader(game: GameProps['options'] | undefined, players: GameProps['players'], playerIdx: number) {
@@ -16,6 +16,6 @@ export default function useGameHeader(game: GameProps['options'] | undefined, pl
   return {
     oppIdx, handleShare,
     round: game ? getRound(game) : 'Awaiting',
-    isUp: game && passingUp(game),
+    isRight: game && passingRight(game),
   }
 }

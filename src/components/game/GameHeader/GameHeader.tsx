@@ -18,7 +18,7 @@ type Props = {
 
 export default function GameHeader({ game, players, playerIdx, holding, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
 
-  const { oppIdx, handleShare, round, isUp } = useGameHeader(game, players, playerIdx)
+  const { oppIdx, handleShare, round, isRight } = useGameHeader(game, players, playerIdx)
   
   if (!game) return <Header><GameTitle title="Game Not Found" /></Header>
 
@@ -41,7 +41,7 @@ export default function GameHeader({ game, players, playerIdx, holding, saveDeck
               maxPick={game.packSize}
             />
       
-          <PlayerContainersWrapper upArrow={isUp}>
+          <PlayerContainersWrapper rightArrow={isRight}>
               { players[playerIdx] && players.map((play, idx) =>
 
                 <PlayerContainerSmall

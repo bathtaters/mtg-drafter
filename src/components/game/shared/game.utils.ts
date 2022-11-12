@@ -11,14 +11,14 @@ export const getOppIdx = (playerIdx: number, playerCount: number) => {
   return (playerIdx + f) % (2 * f);
 }
 
-export const passingUp = ({ round, roundCount }: { round: number, roundCount: number }) =>
+export const passingRight = ({ round, roundCount }: { round: number, roundCount: number }) =>
   round < 1 || round > roundCount ? undefined :
     round % 2 === 0
 
 export const getPlayerIdx = (players: Player[], player?: Player | null) => !player?.id ? -1 : players.findIndex(({ id }) => id === player.id)
 
 export const getNeighborIdx = (game: Game | undefined, playerCount: number, playerIdx: number) =>
-  !game || playerIdx === -1 || playerCount <= 1 ? -1 : passingUp(game) ?
+  !game || playerIdx === -1 || playerCount <= 1 ? -1 : passingRight(game) ?
     (playerIdx - 1 + playerCount) % playerCount :
     (playerIdx + 1) % playerCount
 
