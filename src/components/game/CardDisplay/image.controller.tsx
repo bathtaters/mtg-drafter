@@ -15,7 +15,7 @@ export default function useCardImage(card: CardFull, showImages = true) {
 
   useEffect(() => {
     setImages([card, ...card.otherFaces].map(({ img }) => showImages && !!img &&
-      <Image src={img} className="absolute top-0 bottom-0 left-0 right-0 z-20 rounded-[5%]" layout="fill" />
+      <Image src={img} className="absolute top-0 bottom-0 left-0 right-0 z-20 rounded-[5%]" layout="fill" priority={true} />
     ))
   }, [])
 
