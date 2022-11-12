@@ -20,7 +20,10 @@ export default function batchCallback<Data = any>(flushCount: number, callback: 
   }
 
   return {
-    append, flush,
+    flush,
+    append: async (...dataArray: Data[]) => {
+      for (const data of dataArray) { await append(data) }
+    },
     run: async (dataArray: Data[]) => {
       for (const data of dataArray) { await append(data) }
       await flush()
