@@ -9,11 +9,8 @@ const getBestMatch = (cards: Card[]) => {
   
   let result = cards.find(({ preferredArt }) => preferredArt)
   if (result) return result
-
-  result = cards.find(({ noGath }) => !noGath)
-  if (result) return result
   
-  result = cards.find(({ scryfallId }) => scryfallId)
+  result = cards.find(({ img }) => img)
   if (result) return result
 
   return cards[0]
