@@ -1,17 +1,15 @@
-import { Card, Prisma, PrismaClient } from '@prisma/client'
 import type { Card as ScryfallCard } from '../../../types/scryfall'
 import prisma from '../../libs/db'
 import batchCallback from '../../libs/batcher'
 import fetchJson from '../../libs/fetchJson'
-import { fetchBulkUrl, adaptScryfallToImage } from '../../utils/db/image.utils'
+import { fetchBulkUrl, adaptScryfallToImage, ImageData } from '../../utils/db/image.utils'
 import { createMultiUpdate } from '../../utils/db/db.utils'
 
 
 
 const downloadThreads = 1000, imageBatch = 5000, enableLog = true
 
-type ImageUpdate = Pick<Card, "scryfallId"|"img">
-const multiUpdate = createMultiUpdate<ImageUpdate>('Card', 'scryfallId', 'img', prisma)
+const multiUpdate = createMultiUpdate<ImageData>('Card', ['scryfallId', 'side'], ['img'], prisma)
 
 
 export default async function updateImages(imgJsonUrl: string, preferredJsonUrl: string, fullUpdate?: boolean) {
@@ -42,13 +40,12 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
   enableLog && console.time('Image URIs')
 
   let count = 0
-  const batch = batchCallback(imageBatch, (data: ImageUpdate[]) => multiUpdate(data).then((c) => { count += c }))
+  const batch = batchCallback(imageBatch, (data: ImageData[]) => multiUpdate(data).then((c) => { count += c }))
 
   await fetchJson<ScryfallCard>(imgUrl, async (data) => {
     if (missingImgs && !missingImgs.includes(data.id)) return;
 
-    const updateArgs = adaptScryfallToImage(data)
-    if (updateArgs.img) await batch.append(updateArgs)
+    await batch.append(...adaptScryfallToImage(data).filter(({ img }) => img))
 
   }, { jsonPath: '*', maxThreads: downloadThreads })
 
