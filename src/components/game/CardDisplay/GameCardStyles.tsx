@@ -21,10 +21,11 @@ export const SwapButton = ({ board, onClick }: { board: ContainerType, onClick?:
     {board === 'Main' ? 'Side' : 'Main'}
   </button>
 
+
 export const FlipButton = ({ isBack, onClick }: { isBack?: boolean, onClick?: MouseEventHandler }) =>
   <button type="button" onClick={onClick} className={
       `hidden group-hover:flex absolute top-[3.5em] right-[0.75em] z-30
-      btn btn-circle w-[2em] h-[2em] text-[1.5em] p-0 m-0 ${
+      btn btn-circle w-[2em] h-[2em] text-[1.5em] p-0 m-0 min-h-0 ${
         isBack ? 'bg-base-content text-base-100 hover:bg-base-content' : ''
       } pointer-events-auto opacity-50 hover:opacity-90`
   }>
