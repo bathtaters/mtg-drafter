@@ -1,12 +1,12 @@
 import type { ReactNode, MouseEvent, MouseEventHandler } from "react"
 import type { CardFull, CardOptions, BoardLands } from "types/game"
-import CardDisplay from "../CardDisplay/CardDisplay"
+import CardDisplay, { ContainerType } from "../CardDisplay/CardDisplay"
 import ContainerHeader from "./CardContainerHeader"
 import { CardContainerWrapper, CardsWrapper, NoCards, NoPacks } from "./CardContainerStyles"
 import { packSort, sortKeys } from "components/base/services/cardSort.services"
 
 type Props = {
-  label: ReactNode,
+  label: ContainerType,
   cards?: { id: string, card: CardFull }[],
   lands?: BoardLands,
   open?: boolean,
@@ -35,6 +35,7 @@ export default function CardContainer({ label, cards, lands, open = true, childr
               className={cardOptions.width}
               onClick={onClick && ((ev) => onClick(id, idx, ev))}
               isSelected={selectedIdx === idx}
+              container={label}
             />
           )
         }
