@@ -41,7 +41,7 @@ export default function PlayerContainerStyle(
 
         {header && <div className="stat-title text-xs sm:text-base">{header}</div>}
         
-        <div className={`stat-value ${
+        <div className={`stat-value font-medium ${
           isMini ? 'row-span-3 self-center text-base flex items-center' : 'flex items-center'
         } ${
           disconnected ? "opacity-60 italic" : ''} ${color ? themes[color][1] : ''
