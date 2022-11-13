@@ -1,5 +1,6 @@
 import type { Card } from "@prisma/client"
-import styles from "./FauxCard.module.css"
+import type { ColorLower } from "types/game"
+import { bgdClass } from "components/base/styles/manaIcons"
 
 
 // Special codes { 'BRACE CODE': 'mana.css code'  }
@@ -9,7 +10,7 @@ const specials: { [key: string]: string } = {
 
 const braceRegex = /\{(.{1,3})\}/g
 const symbolTag = (symbol: string, shadow?: boolean) => 
-  `<span class="ms ms-cost ${styles.manaFix}${shadow ? ` ms-shadow ${styles.manaFixShadow}` : ''} ms-${symbol}"></span>`
+  `<span class="ms ms-cost text-[0.8em]${shadow ? ` ms-shadow my-auto mx-[0.07em]` : ''} ms-${symbol}"></span>`
 
 export const symbolFix = (text: string | null, shadow?: boolean) => !text ? '' :
   text.replaceAll(braceRegex, (_, symb) => {
@@ -19,8 +20,6 @@ export const symbolFix = (text: string | null, shadow?: boolean) => !text ? '' :
 
 export const splitLines = (text: string | null) => !text ? [] : text.split('\n')
 
-export const getBgdColor = (card: Card) => 
-  card.colors.length == 1 ? styles[`bgd${card.colors[0]}`] :
-  card.colors.length ? styles.bgdMulti :
-  card.types.includes('Land') ? styles.bgdLand :
-    styles.bgdNone
+export const getBgdColor = ({ colors, types }: Card) => 
+  colors.length == 1 ? bgdClass[colors[0].toLowerCase() as ColorLower] :
+  colors.length ? bgdClass.multi : types.includes('Land') ? bgdClass.land : bgdClass.none

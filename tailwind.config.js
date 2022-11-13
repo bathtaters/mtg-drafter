@@ -24,7 +24,31 @@ module.exports = {
         'msr-focus': '#ab5634',
         msg: '#93b483',
         'msg-focus': '#638453',
+
+        mythic: '#a52a2a',
+        rare: '#ffd700',
+        uncommon: '#d3d3d3',
+        common: '#000',
+
+        bgw: '#e2ddc6',
+        bgu: '#26a0cd',
+        bgb: '#354541',
+        bgr: '#d66049',
+        bgg: '#3d7753',
+        bgc: '#afada2',
+        bgmulti: '#c3b070',
+        bgland: '#b19277',
       },
+
+      // Rendered Card Custom Styles
+      backgroundImage: { foil: 'linear-gradient(45deg, #c0fff0 20%, #b0c0f0 36%, #ffd0d0 52%, #ffffc0 67%, #ffafaf 80%)' },
+      borderRadius: { card: '5%' },
+      gridTemplateRows: { card: '10% 25% 9% 50% 6%' },
+      gridTemplateColumns: { card: '77% 23%' },
+      boxShadow: {
+        top: '0 0 0.15em 0 rgba(0,0,0,0.388)',
+        inset: 'inset 0.2em 0.2em 1em -0.2em rgba(0,0,0,0.388)',
+      }
     },
   },
   plugins: [require('daisyui')],

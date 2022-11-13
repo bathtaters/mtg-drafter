@@ -1,16 +1,21 @@
 import type { MouseEventHandler, ReactNode } from "react"
 import type { ContainerType } from "./CardDisplay"
 
-export const CardWrapper = ({ isSelected, onClick, className, children }: { isSelected?: boolean, onClick?: MouseEventHandler, className: string, children: ReactNode }) => (
+export const CardWrapper = ({ isSelected, isFoil, onClick, className, children }: { isSelected?: boolean, isFoil?: boolean, onClick?: MouseEventHandler, className: string, children: ReactNode }) => (
   <span
     onClick={onClick}
-    className={`flex justify-center items-center relative group rounded-[5%]${
+    className={`flex justify-center items-center relative group rounded-card${
       isSelected ? " outline outline-secondary outline-4 outline-offset-2" : ""
     } ${className}`}
   >
-    <div className="pointer-events-none select-none relative w-full h-full">{children}</div>
+    <div className="pointer-events-none select-none relative w-full h-full">
+      {isFoil && <div className="absolute w-full h-full z-50 bg-foil opacity-70 mix-blend-multiply" />}
+      {children}
+    </div>
   </span>
 )
+
+export const imgStyle = "absolute top-0 bottom-0 left-0 right-0 z-20 rounded-card"
 
 export const SwapButton = ({ board, onClick }: { board: ContainerType, onClick?: MouseEventHandler }) =>
   <button type="button" onClick={onClick} className={

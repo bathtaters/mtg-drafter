@@ -1,7 +1,9 @@
 import type { Card, Game, Pack, GameCard, Player, Board } from '@prisma/client'
 import type { SortKey } from "components/base/services/cardSort.services"
 
-export type BoardLands = { w: number, u: number, b: number, r: number, g: number }
+export type ColorLower = "w" | "u" | "b" | "r" | "g"
+
+export type BoardLands = Record<ColorLower, number>
 export type BasicLands = { [board in Board]: BoardLands }
 
 export type CardFull = Card & { otherFaces: Card[] }

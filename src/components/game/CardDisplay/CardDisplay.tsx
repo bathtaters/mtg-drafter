@@ -1,6 +1,6 @@
 import type { MouseEventHandler } from "react"
 import type { CardFull } from "types/game"
-import FauxCard from "./FauxCard"
+import RenderedCard from "./RenderedCard"
 import { CardWrapper, FlipButton, SwapButton } from "./GameCardStyles"
 import useCardImage from "./image.controller"
 
@@ -14,7 +14,7 @@ export default function CardDisplay({ card, isSelected, container, showImage, on
   return (
     <CardWrapper isSelected={isSelected} onClick={!isBoard ? onClick : undefined} className={className}>
       {showImage && images[sideIdx < 0 ? 0 : sideIdx]}
-      <FauxCard card={cardFace} />
+      <RenderedCard card={cardFace} />
       {sideIdx >= 0 && <FlipButton onClick={handleFlip} isBack={sideIdx > 0} />}
       {isBoard && <SwapButton board={container} onClick={onClick} />}
     </CardWrapper>

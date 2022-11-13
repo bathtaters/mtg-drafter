@@ -26,6 +26,11 @@
   .btn.btn-ghost:focus-visible { @apply outline-none bg-gray-500/40; }
 }
 
+@layer components {
+  .text-shadow { text-shadow: 0.03em 0.03em 0.05em rgba(0,0,0,0.231); }
+  .icon-shadow { text-shadow: 0.03em 0.03em 0.01em rgba(0,0,0,0.439); }
+}
+
 @layer utilities {
   *::-webkit-scrollbar { @apply w-1 h-1; }
   *::-webkit-scrollbar-track { @apply my-1 bg-transparent; }
