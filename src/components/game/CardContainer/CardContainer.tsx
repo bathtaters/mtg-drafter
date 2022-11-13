@@ -1,6 +1,6 @@
 import type { ReactNode, MouseEvent, MouseEventHandler } from "react"
 import type { CardFull, CardOptions, BoardLands } from "types/game"
-import CardDisplay, { ContainerType } from "../CardDisplay/CardDisplay"
+import Card, { ContainerType } from "../Card/Card"
 import ContainerHeader from "./CardContainerHeader"
 import { CardContainerWrapper, CardsWrapper, NoCards, NoPacks } from "./CardContainerStyles"
 import { packSort, sortKeys } from "components/base/services/cardSort.services"
@@ -29,7 +29,7 @@ export default function CardContainer({ label, cards, lands, open = true, childr
       <CardsWrapper>
         {!cards ? <NoCards /> : !cards.length ? <NoPacks /> :
           cards.sort((a,b) => packSort[cardOptions.sort ?? sortKeys[0]](a.card, b.card)).map(({ id, card }, idx) => 
-            <CardDisplay
+            <Card
               card={card} key={id}
               showImage={cardOptions.showArt}
               className={cardOptions.width}

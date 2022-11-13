@@ -1,5 +1,5 @@
 import type { MouseEventHandler, ReactNode } from "react"
-import type { ContainerType } from "./CardDisplay"
+import type { ContainerType } from "./Card"
 
 export const CardWrapper = ({ isSelected, isFoil, onClick, className, children }: { isSelected?: boolean, isFoil?: boolean, onClick?: MouseEventHandler, className: string, children: ReactNode }) => (
   <span

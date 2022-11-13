@@ -1,6 +1,6 @@
 import type { MouseEventHandler } from "react"
 import type { CardFull } from "types/game"
-import RenderedCard from "./RenderedCard"
+import RenderedCard from "./RenderedCard/RenderedCard"
 import { CardWrapper, FlipButton, SwapButton } from "./GameCardStyles"
 import useCardImage from "./image.controller"
 
