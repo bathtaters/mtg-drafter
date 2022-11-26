@@ -7,7 +7,7 @@ export default function Setup() {
   return (<>
     <SetPageTitle title="Create Game" />
 
-    <Header><h1>Create New Draft</h1></Header>
+    <Header><h1 className="font-serif">Create New Draft</h1></Header>
     
     <BodyWrapperStyle>
       <SetupForm />
