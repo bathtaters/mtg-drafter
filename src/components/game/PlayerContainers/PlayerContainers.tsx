@@ -1,6 +1,8 @@
 import type { Player } from "@prisma/client"
+import { useState } from "react"
 import PlayerMenu from "./PlayerMenu"
-import PlayerContainerStyle, { EmptyPlayerContainer, ColorTheme, HostBadge, PlayerNameEditor } from "./PlayerContainerStyle"
+import PlayerContainerStyle, { ColorTheme } from "./PlayerContainerStyle"
+import { EmptyPlayerContainer, HostBadge, PlayerNameEditor } from "./PlayerContainerElemStyles"
 import { nameCharLimit } from "assets/constants"
 
 
@@ -12,15 +14,28 @@ export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost }
 )
 
 
-export const PlayerContainerFull = ({ player, holding, maxPick, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => player ? (
-  <PlayerContainerStyle color="self" isHost={!!openHost}
-    title={<PlayerNameEditor value={player.name || 'Player'} {...nameCharLimit} onSubmit={renamePlayer} />}
-    header={<span>You{!!openHost && <HostBadge />}</span>}
-    subtitle={`Pick ${!player.pick || player.pick > maxPick ? '-' : player.pick} | Holding ${holding ?? '-'}`}
-  >
-    <PlayerMenu saveDeck={saveDeck} openLands={openLands} openHost={openHost} dropPlayer={dropPlayer} />
-  </PlayerContainerStyle>
-) : <EmptyPlayerContainer />
+export const PlayerContainerFull = ({ player, holding, maxPick, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => {
+  const [ editingName, setEditingName ] = useState(false)
+  
+  if (!player) return <EmptyPlayerContainer />
+  
+  return (
+    <PlayerContainerStyle color="self" isHost={!!openHost}
+      title={<PlayerNameEditor
+        value={player.name || 'Player'} {...nameCharLimit}
+        isEditing={editingName} setEditing={setEditingName} onSubmit={renamePlayer}
+      />}
+      header={<span>You{!!openHost && <HostBadge />}</span>}
+      subtitle={`Pick ${!player.pick || player.pick > maxPick ? '-' : player.pick} | Holding ${holding ?? '-'}`}
+    >
+      <PlayerMenu
+        saveDeck={saveDeck} openLands={openLands}
+        editName={editingName ? undefined : () => setEditingName(true)}
+        openHost={openHost} dropPlayer={dropPlayer}
+      />
+    </PlayerContainerStyle>
+  )
+}
 
 
 interface ContainerProps {
@@ -30,10 +45,10 @@ interface ContainerProps {
 }
 
 interface ContainerFullProps extends ContainerProps {
-  saveDeck:  (() => void) | null,
-  openLands:  (() => void) | null,
-  openHost: (() => void) | null,
-  dropPlayer: (() => void) | null,
+  saveDeck?:  (() => void),
+  openLands?:  (() => void)
+  openHost?: (() => void),
+  dropPlayer?: (() => void),
   renamePlayer: ((name: string) => void),
 }
 interface ContainerSmallProps extends ContainerProps {
