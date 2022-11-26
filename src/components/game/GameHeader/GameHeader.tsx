@@ -2,16 +2,17 @@ import type { GameCardFull, GameProps } from "types/game"
 import Header from "components/base/Header"
 import { PlayerContainerFull, PlayerContainerSmall } from "../PlayerContainers/PlayerContainers"
 import { GameHeaderWrapper, PlayerContainersWrapper, GameTitle, RoundCounter } from './GameHeaderStyles'
-import useGameHeader from "./header.controller"
+import useGameHeader, { getPlayerColor } from "./header.controller"
+
 
 type Props = {
   game?: GameProps['options'], players: GameProps['players'],
   playerCards?: GameCardFull[],
   playerIdx: number, holding: number[],
-  saveDeck:   (() => void) | null,
-  dropPlayer: (() => void) | null,
-  openLands:  (() => void) | null,
-  openHost:   (() => void) | null,
+  saveDeck?:   (() => void),
+  dropPlayer?: (() => void),
+  openLands?:  (() => void),
+  openHost?:   (() => void),
   renamePlayer: ((name: string) => void),
 }
 
@@ -47,7 +48,7 @@ export default function GameHeader({ game, players, playerIdx, holding, saveDeck
                 <PlayerContainerSmall
                   player={play} key={String(play.id)}
                   isHost={game.hostId ? game.hostId === play.id : false}
-                  color={idx === playerIdx ? 'self' : idx === oppIdx ? 'opp' : undefined }
+                  color={getPlayerColor(idx, playerIdx, oppIdx, game)}
                   holding={holding[idx]}
                   maxPick={game.packSize}
                 />
