@@ -15,7 +15,12 @@ export const CardWrapper = ({ isSelected, isFoil, onClick, className, children }
   </span>
 )
 
-export const imgStyle = "absolute top-0 bottom-0 left-0 right-0 z-20 rounded-card"
+export const ImgWrapper = ({ rotate, children }: { rotate: boolean, children: ReactNode }) => (
+  <div className={"absolute top-0 bottom-0 left-0 right-0 z-20 rounded-card overflow-hidden"+(rotate ? " rotate-180" : "")}>
+    {children}
+  </div>
+)
+
 
 export const SwapButton = ({ board, onClick }: { board: ContainerType, onClick?: MouseEventHandler }) =>
   <button type="button" onClick={onClick} className={
