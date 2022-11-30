@@ -4,11 +4,13 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { fetcher } from 'components/base/services/fetch.services'
 import useSocket from 'components/base/services/socket.controller'
+import { useFocusEffect } from 'components/base/services/common.services'
 import useLocalController from './services/local.controller'
 import { getGameListeners, useGameEmitters } from './services/socket.controller'
 import downloadDeck from './services/downloadDeck.controller'
 import { gameAPI, socketEndpoint } from 'assets/urls'
 import { FullGame } from 'assets/strings'
+import { refreshOnRefocusDelay } from 'assets/constants'
 
 
 export const reloadData = async ({ game, updateLocal }: Pick<LocalController, "game"|"updateLocal">) => {
@@ -34,6 +36,8 @@ export default function useGameController(props: ServerProps) {
 
   const saveDeck = !local.player?.cards || !local.game ? null : () => { downloadDeck(local as Parameters<typeof downloadDeck>['0']) }
   
+  useFocusEffect((focus) => { focus && reloadData(local) }, [local.game?.id], refreshOnRefocusDelay)
+
   return {
     ...local,
     isConnected: socket.isConnected,

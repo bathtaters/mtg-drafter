@@ -37,6 +37,8 @@ export const shareGame = {
 
 export const nameCharLimit = { minLength: 1, maxLength: 22 }
 
+export const refreshOnRefocusDelay = 3 * 60 * 1000
+
 export const MAX_GAME_CONN = 20
 
 export const debugSockets = false

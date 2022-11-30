@@ -1,3 +1,5 @@
+import { DependencyList, useEffect, useRef } from 'react'
+
 export const updateArrayIdx = <T>(array: T[], find: ((entry: T, idx: number) => boolean) | number, newVal: ((entry: T, idx: number) => T)) => {
   const idx = typeof find === 'number' ? find : array.findIndex(find)
   if (idx === -1) return array
@@ -21,4 +23,25 @@ export async function shareData(text: string, url: string, title: string) {
     return window.navigator.share({ title, url, text }).catch(() => {})
   else if (window.navigator.clipboard?.writeText)
     return window.navigator.clipboard.writeText(url)
+}
+
+export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependencies?: DependencyList, minimumDelay: number = 0) {
+  const timestamp = useRef(new Date().getTime())
+  const handleEvent = (isFocused: boolean) => {
+    const now = new Date().getTime()
+    if (now - timestamp.current >= minimumDelay) onFocus(isFocused)
+    timestamp.current = now
+  }
+
+  useEffect(() => {
+    const handleFocus = () => handleEvent(true)
+    const handleBlur  = () => handleEvent(false)
+
+    window.addEventListener("focus", handleFocus)
+    window.addEventListener("blur",  handleBlur)
+    return () => {
+      window.removeEventListener("focus", handleFocus)
+      window.removeEventListener("blur",  handleBlur)
+    }
+  }, dependencies)
 }
