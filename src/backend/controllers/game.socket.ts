@@ -3,7 +3,7 @@ import type { IncomingMessage } from 'http'
 import type { GameServer } from './game.socket.d'
 import { parseCookies } from 'nookies'
 import { getReqSessionId } from 'components/base/services/sessionId.services'
-import { gameExists, getPack, nextRound, pickCard, renameGame } from '../services/game/game.services'
+import { gameExists, nextRound, pickCard, renameGame } from '../services/game/game.services'
 import { renamePlayer, setStatus, swapCard, updateLands } from '../services/game/player.services'
 import { debugSockets, MAX_GAME_CONN } from 'assets/constants'
 
@@ -15,8 +15,6 @@ export default async function gameSockets(io: GameServer, req: NextApiRequest, r
   const exists = await gameExists(req.query.url)
   if (!exists) return 400
 
-  io.setMaxListeners(MAX_GAME_CONN)
-  
   io.on("connect", (socket) => {
     if (!exists) return socket.disconnect(true)
 
@@ -24,6 +22,8 @@ export default async function gameSockets(io: GameServer, req: NextApiRequest, r
       console.debug('RX Socket Event:', io.path(), getSessionId(socket.request), ...ev)
       next()
     })
+
+    socket.setMaxListeners(MAX_GAME_CONN)
 
     socket.on('setTitle', async (gameId, title) => {
       if (!title) return;
@@ -50,7 +50,7 @@ export default async function gameSockets(io: GameServer, req: NextApiRequest, r
         .catch((err) => console.error('Error pickCard',playerId,gameCardId, err))
       if (player == null) return callback(undefined)
 
-      io.emit('updatePick', player.id, player.pick)
+      io.emit('updatePick', player.id, player.pick, player.passingToId)
       callback(player.pick)
     })
     
@@ -67,12 +67,6 @@ export default async function gameSockets(io: GameServer, req: NextApiRequest, r
 
       io.emit('updateSlot', player?.id || playerId, player?.sessionId || null)
       callback(player)
-    })
-
-    socket.on('getPack', async (packId, callback) => {
-      const gameCardIds = await getPack(packId)
-        .catch((err) => console.error('Error getPack',packId, err))
-      callback(gameCardIds)
     })
 
     socket.on('swapBoards', async (gameCardId, toBoard, callback) => {

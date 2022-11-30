@@ -6,6 +6,7 @@ export const
   newGameURL = '/api/setup/createGame',
   cubeListURL = "/api/setup/checkList",
   gameURL = (gameIdentifier: string) => `/game/${gameIdentifier}`,
+  gameAPI = (gameURL: any) => `/api/game/${typeof gameURL === 'string' ? gameURL : INVALID_PATH}/all`,
   socketEndpoint = (gameURL: any) => `/api/game/${typeof gameURL === 'string' ? gameURL : INVALID_PATH}/socket`
 
 export const // DB Sources

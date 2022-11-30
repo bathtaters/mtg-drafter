@@ -6,7 +6,7 @@ import type { PlayerFull, BasicLands, Board, PlayerStatus } from 'types/game'
 export interface GameServerToClient {
   updateTitle: (title: Game['name']) => void;
   updateRound: (round: Game['round']) => void;
-  updatePick:  (playerId: Player['id'], pick: Player['pick']) => void;
+  updatePick:  (playerId: Player['id'], pick: Player['pick'], passingToId?: Player['id']) => void;
   updateName:  (playerId: Player['id'], name: Player['name']) => void;
   updateSlot:  (playerId: Player['id'], sessionId: Player['sessionId']) => void;
 }
@@ -18,7 +18,6 @@ export interface GameClientToServer {
   pickCard:   (playerId: Player['id'], gameCardId: GameCard['id'], callback: (pick?: Player['pick']) => void) => void;
   setStatus:  (playerId: Player['id'], status: PlayerStatus, callback: (player?: PlayerFull | Player) => void) => void;
 
-  getPack:    (packId: Pack['id'], callback: (gameCardIds: GameCard['id'][] | void) => void) => void;
   swapBoards: (gameCardId: GameCard['id'], toBoard: Board, callback: (gameCardId: GameCard['id'] | void, toBoard?: Board | void) => void) => void;
   setLands:   (playerId: Player['id'], lands: BasicLands, callback: (lands: BasicLands | void) => void) => void;
 }

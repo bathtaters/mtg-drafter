@@ -1,4 +1,5 @@
-import type { Game, GameCard, Player, Board, Pack } from '@prisma/client'
+import type { Game, GameCard, Player, Board } from '@prisma/client'
+import { getNextPlayerId } from '../../utils/game/game.utils'
 import prisma from '../../libs/db'
 
 export function getGame(url: Game['url']) {
@@ -45,21 +46,21 @@ export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'
     prisma.player.update({
       where: { id: playerId },
       data: { pick: { increment: 1 } },
-      select: { id: true, pick: true },
+      select: { id: true, pick: true, gameId: true },
     }),
     prisma.gameCard.update({
       where: { id: gameCardId },
       data: { playerId, board },
     }),
   ])
-  return player
-}
 
-export function getPack(packId: Pack['id']) {
-  return prisma.gameCard.findMany({
-    where: { packId, playerId: null },
-    select: { id: true },
-  }).then((cards) => cards.map(({ id }) => id))
+  const game = await prisma.game.findUnique({
+    where: { id: player.gameId },
+    select: { round: true, roundCount: true, players: { select: { id: true } } },
+  })
+  if (!game) return console.error('Error picking card: Card pick registered, but game not found')
+
+  return { ...player, passingToId: getNextPlayerId(playerId, game) }
 }
 
 export async function gameExists(gameUrl: string | string[] | undefined) {

@@ -40,11 +40,9 @@ export type GameProps = Omit<Required<ServerProps>, 'error'>
 export namespace Local {
   type NextRound    = (round: Game['round']) => void
   type RenamePlayer = (playerId: Player['id'], name: Player['name']) => void
-  type OtherPick    = (playerId: Player['id'], pick: Player['pick']) => void
-  type PickCard     = (pick: Player['pick'], gameCard: GameCard['id'], board?: Board) => void
+  type PickCard     = (playerId: Player['id'], pick: Player['pick'], passingToId?: Player['id']) => void
   type SwapCard     = (gameCardId: GameCard['id'], board: Board) => void
   type SetLands     = (basics: BasicLands) => void
-  type SetPack      = (pickableIds?: GameCard['id'][]) => void
   type SetStatus    = (playerId: Player['id'], sessionId: Player['sessionId'], isSelf?: boolean) => void
 }
 
@@ -53,7 +51,6 @@ export namespace Socket {
   type SetTitle      = (title: Game['name']) => void
   type NextRound     = () => void
   type PickCard      = (cardIdx: number) => void
-  type GetPack       = (packId?: Pack['id']) => void
   type SwapCard      = (gameCardId: GameCard['id'], toBoard: Board) => void
   type SetLands      = (lands: BasicLands) => void
   type SetStatus     = (playerId: Player['id'], status?: PlayerStatus) => void
@@ -64,7 +61,6 @@ export type RenamePlayer  = Socket.RenamePlayer
 export type SetTitle      = Socket.SetTitle
 export type NextRound     = Socket.NextRound
 export type PickCard      = Socket.PickCard
-export type GetPack       = Socket.GetPack
 export type SwapCard      = Socket.SwapCard
 export type SetLands      = Socket.SetLands
 export type SetStatus     = Socket.SetStatus

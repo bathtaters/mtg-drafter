@@ -1,8 +1,8 @@
 import io, { Socket } from 'socket.io-client'
-import { useState, useEffect, useRef, useCallback, EffectCallback, MutableRefObject } from 'react'
+import { useState, useEffect, useRef, useCallback, EffectCallback, MutableRefObject, DependencyList } from 'react'
 import { debugSockets } from 'assets/constants'
 
-export default function useSocket<S extends Socket = Socket>(path: string, endpoint: string, onConnect: (socket: S) => ReturnType<EffectCallback>) {
+export default function useSocket<S extends Socket = Socket>(path: string, endpoint: string, onConnect: (socket: S) => ReturnType<EffectCallback>, dependencies: DependencyList = []) {
   const socket = useRef<S | null>(null)
   const destructor = useRef<ReturnType<EffectCallback>>()
   const [ isConnected, setConnected ] = useState<boolean>(false)
@@ -14,7 +14,7 @@ export default function useSocket<S extends Socket = Socket>(path: string, endpo
   }, [socket.current?.connected])
 
 
-  const disconnectFromSocket = () => {
+  const disconnectFromSocket = useCallback(() => {
     if (!socket.current) return setConnected(false)
       
     if (destructor.current) destructor.current()
@@ -23,10 +23,10 @@ export default function useSocket<S extends Socket = Socket>(path: string, endpo
     socket.current.off('disconnect', connectListener)
     socket.current = null
     destructor.current = undefined
-  }
+  }, [])
 
 
-  const connectToSocket = async () => {
+  const connectToSocket = useCallback(async () => {
     const res = await fetch(endpoint)
     disconnectFromSocket()
   
@@ -39,13 +39,13 @@ export default function useSocket<S extends Socket = Socket>(path: string, endpo
     }
     
     if (socket.current) destructor.current = onConnect(socket.current)
-  }
+  }, [disconnectFromSocket])
 
 
   useEffect(() => {
     if (typeof window !== 'undefined') connectToSocket()
     return disconnectFromSocket
-  }, [])
+  }, [connectToSocket, disconnectFromSocket, ...dependencies])
 
   return { isConnected, socket: socket.current, reconnect: connectToSocket }
 }
