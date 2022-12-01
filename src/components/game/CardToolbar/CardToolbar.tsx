@@ -17,13 +17,13 @@ export default function CardToolbar(props: ToolbarProps) {
         </ToolbarSort>
 
         <CardZoomStyle>
+          <ToolbarRange aria-label="Card size" value={zoom} setValue={setZoom} min={0} max={cardZoomLevels.length - 1} />
+
           <IconToggle label="Card art" value={art} setValue={setArt}>
             <ToolbarEye open={true} />
             <ToolbarEye open={false} />
           </IconToggle>
-
-          <ToolbarRange aria-label="Card size" value={zoom} setValue={setZoom} min={0} max={cardZoomLevels.length - 1} />
-
+          
         </CardZoomStyle>
       </CardToolbarStyle>
     </ToolbarCollapse>

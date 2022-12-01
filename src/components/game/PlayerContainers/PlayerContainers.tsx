@@ -4,6 +4,7 @@ import PlayerMenu from "./PlayerMenu"
 import PlayerContainerStyle, { ColorTheme } from "./PlayerContainerStyle"
 import { EmptyPlayerContainer, HostBadge, PlayerNameEditor } from "./PlayerContainerElemStyles"
 import { nameCharLimit } from "assets/constants"
+import UserIcon from "components/svgs/UserIcon"
 
 
 export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost }: ContainerSmallProps) => (
@@ -25,7 +26,7 @@ export const PlayerContainerFull = ({ player, holding, maxPick, saveDeck, openLa
         value={player.name || 'Player'} {...nameCharLimit}
         isEditing={editingName} setEditing={setEditingName} onSubmit={renamePlayer}
       />}
-      header={<span>You{!!openHost && <HostBadge />}</span>}
+      header={<span><UserIcon className="fill-current h-4 sm:h-5 inline-block" />{!!openHost && <HostBadge />}</span>}
       subtitle={`Pick ${!player.pick || player.pick > maxPick ? '-' : player.pick} | Holding ${holding ?? '-'}`}
     >
       <PlayerMenu

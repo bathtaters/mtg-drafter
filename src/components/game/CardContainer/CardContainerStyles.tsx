@@ -1,6 +1,15 @@
 import type { MouseEventHandler, ReactNode } from "react"
 import CollapseContainer from "components/base/common/Collapse"
 import { EmptyStyle } from "components/base/styles/AppStyles"
+import { ContainerType } from "../Card/Card"
+import PackIcon from "components/svgs/PackIcon"
+import DeckIcon from "components/svgs/DeckIcon"
+
+export const containerIcon: Record<ContainerType, ReactNode> = {
+  Pack: <PackIcon className="h-7 fill-current mr-2 hidden sm:block" />,
+  Main: <DeckIcon className="h-7 fill-primary-content stroke-primary mr-2 hidden sm:block" />,
+  Side: <DeckIcon className="h-7 fill-primary stroke-primary-content opacity-70 mr-2 hidden sm:block" />,
+}
 
 export const NoCards = () => <EmptyStyle>Awaiting next pack.</EmptyStyle>
 export const NoPacks = () => <EmptyStyle>Awaiting next round.</EmptyStyle>
