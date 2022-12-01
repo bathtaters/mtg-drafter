@@ -16,7 +16,7 @@ export const PlayerWrapper = ({ children }: { children: ReactNode }) => (
 )
 
 export const PlayerButton = ({ onClick, label }: { onClick?: MouseEventHandler<HTMLButtonElement>, label: ReactNode }) => (
-  <button type="button" className="btn btn-lg btn-secondary w-full text-xl font-thin normal-case" onClick={onClick}>
+  <button type="button" className="btn btn-lg btn-secondary w-full text-xl font-light normal-case" onClick={onClick}>
     {label}
   </button>
 )
