@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { HostMarker } from "./PlayerContainerElemStyles"
+import { HostMarker, UserMarker } from "./PlayerContainerElemStyles"
 
 const themes = {
   self: [
@@ -38,7 +38,7 @@ export default function PlayerContainerStyle(
         } ${
           disconnected ? "opacity-60 italic" : ''} ${color ? themes[color][1] : ''
         }`}>
-          {isMini && isHost && <HostMarker />}
+          {isMini && color === 'self' ? <UserMarker /> : isHost && <HostMarker />}
           <span className={isMini ? "ml-1 flex-grow" : "text-lg sm:text-2xl flex-grow -ml-2 mb-1"}>{title}</span>
         </div>
 
