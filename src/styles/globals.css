@@ -22,15 +22,18 @@
 
   .btn { @apply font-sans; }
 
-  .tabs-boxed .tab-primary   { @apply text-primary   hover:text-primary   }
-  .tabs-boxed .tab-secondary { @apply text-secondary hover:text-secondary }
-  .tabs-boxed .tab-accent    { @apply text-accent    hover:text-accent    }
-  .tabs-boxed .tab-active.tab-primary   { @apply bg-primary   text-primary-content   hover:text-primary-content   }
-  .tabs-boxed .tab-active.tab-secondary { @apply bg-secondary text-secondary-content hover:text-secondary-content }
-  .tabs-boxed .tab-active.tab-accent    { @apply bg-accent    text-accent-content    hover:text-accent-content    }
+  .tabs-boxed .tab-primary   { @apply text-primary   hover:text-primary;   }
+  .tabs-boxed .tab-secondary { @apply text-secondary hover:text-secondary; }
+  .tabs-boxed .tab-accent    { @apply text-accent    hover:text-accent;    }
+  .tabs-boxed .tab-active.tab-primary   { @apply bg-primary   text-primary-content   hover:text-primary-content;   }
+  .tabs-boxed .tab-active.tab-secondary { @apply bg-secondary text-secondary-content hover:text-secondary-content; }
+  .tabs-boxed .tab-active.tab-accent    { @apply bg-accent    text-accent-content    hover:text-accent-content;    }
 
   /* Fix focus styling on ghost buttons (Modal X button) */
   .btn.btn-ghost:focus-visible { @apply outline-none bg-gray-500/40; }
+
+  /* Fix combining tooltip w/ btn */
+  .tooltip.btn { @apply before:normal-case before:font-normal before:content-[attr(data-tip)]; }
 }
 
 @layer components {
