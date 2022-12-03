@@ -1,5 +1,10 @@
 import { DependencyList, useEffect, useRef } from 'react'
 
+export const titleCase = (camelCase: string) => camelCase
+  .replace(/([A-Z])/g, (match) => ` ${match}`)
+  .replace(/^./, (match) => match.toUpperCase())
+  .trim()
+
 export const updateArrayIdx = <T>(array: T[], find: ((entry: T, idx: number) => boolean) | number, newVal: ((entry: T, idx: number) => T)) => {
   const idx = typeof find === 'number' ? find : array.findIndex(find)
   if (idx === -1) return array
