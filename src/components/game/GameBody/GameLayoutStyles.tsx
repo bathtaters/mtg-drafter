@@ -5,7 +5,7 @@ import DeckIcon from "components/svgs/DeckIcon"
 import { titleCase } from "components/base/services/common.services"
 
 export const containerIcon: Record<TabLabels, ReactNode> = {
-  pack: <PackIcon className="h-7 fill-secondary-focus mr-2 hidden sm:block" />,
+  pack: <PackIcon className="h-7 fill-secondary-content stroke-secondary-focus mr-2 hidden sm:block" />,
   main: <DeckIcon className="h-7 fill-primary-content stroke-primary-focus mr-2 hidden sm:block" />,
   side: <DeckIcon className="h-7 fill-primary-focus stroke-primary-content opacity-70 mr-2 hidden sm:block" />,
 }
