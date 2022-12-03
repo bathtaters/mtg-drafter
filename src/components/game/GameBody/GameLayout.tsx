@@ -24,8 +24,9 @@ type Props = {
 export default function GameLayout({ game, player, pack, clickRoundBtn, onLandClick, pickCard, swapCard, loadingPack }: Props) {
 
   const {
-    selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard, cardOptions, setCardOptions, selectedTab, selectTab
-  } = usePickController(pickCard, swapCard, pack)
+    selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
+    cardOptions, setCardOptions, selectedTab, selectTab, hidePack,
+  } = usePickController(pickCard, swapCard, pack, game)
   
   if (game.round < 1 || !player) return (
     <GameLayoutWrapper>
@@ -36,7 +37,7 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, onLandCl
 
   return (
     <GameLayoutWrapper>
-      <ContainerTabs pack={pack?.cards} player={player} selectedTab={selectedTab} selectTab={selectTab} />
+      <ContainerTabs pack={pack?.cards} player={player} selectedTab={selectedTab} selectTab={selectTab} hidePack={hidePack} />
 
       <CardToolbar setCardOptions={setCardOptions} />
 

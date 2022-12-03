@@ -1,14 +1,15 @@
-import type { MouseEvent } from "react"
-import type { GameCard, Board } from "@prisma/client"
+import { MouseEvent, useEffect } from "react"
+import type { GameCard, Board, Game } from "@prisma/client"
 import type { CardOptions, PackFull, PickCard, SwapCard, TabLabels } from "types/game"
 import { useCallback, useRef, useState } from "react"
 
 const DBL_CLICK_DELAY = 500
 
-export default function usePickController(pickCard: PickCard, swapCard: SwapCard, pack?: PackFull) {
+export default function usePickController(pickCard: PickCard, swapCard: SwapCard, pack?: PackFull, game?: Game) {
+  const hidePack = !game || game.round > game.roundCount || game.round < 1
 
   const lastClick = useRef(-1)
-  const [ selectedTab,  selectTab       ] = useState<TabLabels>('pack')
+  const [ selectedTab,  selectTab       ] = useState<TabLabels>(hidePack ? 'main' : 'pack')
   const [ selectedCard, setSelectedCard ] = useState(-1)
   const [ cardOptions,  setCardOptions  ] = useState<CardOptions>({ width: '', showArt: true, sort: undefined })
 
@@ -36,9 +37,12 @@ export default function usePickController(pickCard: PickCard, swapCard: SwapCard
 
   const deselectCard = useCallback(() => { setSelectedCard(-1) }, [])
 
+  useEffect(() => { if (hidePack && selectedTab === 'pack') selectTab('main') }, [hidePack])
+
   return {
-    selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
+    selectedCard, deselectCard,
+    clickPickButton, clickPackCard, clickBoardCard,
     cardOptions, setCardOptions,
-    selectedTab, selectTab,
+    selectedTab, selectTab, hidePack,
   }
 }

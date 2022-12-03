@@ -9,14 +9,17 @@ type Props = {
   pack?: GameCard[],
   player: PlayerFull,
   selectedTab: TabLabels,
-  selectTab: (tab: TabLabels) => void
+  selectTab: (tab: TabLabels) => void,
+  hidePack?: boolean,
 }
 
 
-export default function ContainerTabs({ pack, player, selectedTab, selectTab }: Props) {
+export default function ContainerTabs({ pack, player, selectedTab, selectTab, hidePack }: Props) {
+  const tabs = hidePack ? TabLabels.slice(1) : TabLabels
+
   return (
     <TabsWrapper>
-      {TabLabels.map((label) =>
+      {tabs.map((label) =>
         <TabStyle
           key={label} label={label}
           isSelected={selectedTab === label}
