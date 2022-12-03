@@ -16,11 +16,11 @@ export const HostBadge = () => <span className="badge badge-info badge-sm align-
 
 export const UserHeader = ({ isHost }: { isHost: boolean }) => (
   <span>
-    <UserIcon className="fill-current h-4 sm:h-5 inline-block ml-1" />{isHost && <HostBadge />}
+    <UserIcon className="fill-current h-4 sm:h-5 inline-block" />{isHost && <HostBadge />}
   </span>
 )
 
-export const FullStatsWrapper = ({ children }: { children: ReactNode }) => <div className="flex items-center gap-1 px-1">{children}</div>
+export const FullStatsWrapper = ({ children }: { children: ReactNode }) => <div className="flex items-center gap-1 px-0.5">{children}</div>
 export const FullStatsDivider = () => <span className="px-1">|</span>
 
 export const StatsStyle = ({ type, isMini, count }: { type: keyof typeof statsIcon, isMini?: boolean, count?: number }) => {

@@ -37,7 +37,7 @@ export default function PlayerContainerStyle(
         } ${
           disconnected ? "opacity-60 italic" : ''} ${color ? themes[color][1] : ''
         }`}>
-          {isMini && color === 'self' ? <UserMarker /> : isHost ? <HostMarker /> : <span className="w-1" />}
+          {!isMini ? null : color === 'self' ? <UserMarker /> : isHost ? <HostMarker /> : <span className="w-1" />}
           <span className={isMini ? "ml-1 flex-grow truncate" : "text-lg sm:text-2xl flex-grow -ml-2 mb-1"}>{title}</span>
         </div>
 
