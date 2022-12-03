@@ -1,8 +1,9 @@
 import type { ReactNode, MouseEventHandler } from "react"
-import type { TabLabels } from "types/game"
+import type { GameStatus, TabLabels } from "types/game"
 import PackIcon from "components/svgs/PackIcon"
 import DeckIcon from "components/svgs/DeckIcon"
 import { titleCase } from "components/base/services/common.services"
+import { hostButtonLabel } from "assets/strings"
 
 export const containerIcon: Record<TabLabels, ReactNode> = {
   pack: <PackIcon className="h-7 fill-secondary-content stroke-secondary-focus mr-2 hidden sm:block" />,
@@ -10,11 +11,6 @@ export const containerIcon: Record<TabLabels, ReactNode> = {
   side: <DeckIcon className="h-7 fill-primary-focus stroke-primary-content opacity-70 mr-2 hidden sm:block" />,
 }
 
-const buttonLabel: { [label in RoundButtonLabel]: string } = {
-  start: 'Start Game',
-  next:  'Next Round',
-  end:   'End Game',
-}
 
 export const TabsWrapper = ({ children }: { children: ReactNode }) => <div className="tabs tabs-boxed justify-center gap-2 mb-6 bg-transparent">{children}</div>
 
@@ -47,10 +43,10 @@ export const PickCardButton = ({ disabled, onClick }: { disabled?: boolean, onCl
 )
 
 
-export const RoundButton = ({ label, onClick }: { onClick: MouseEventHandler, label: RoundButtonLabel }) => (
+export const RoundButton = ({ label, onClick }: { onClick: MouseEventHandler, label: GameStatus }) => (
   <div className="w-full text-center my-4">
     <button type="button" onClick={onClick} className="btn btn-secondary btn-xl text-xl h-16 w-48 m-auto">
-      {buttonLabel[label] || buttonLabel.next}
+      {hostButtonLabel[label]}
     </button>
   </div>
 )
@@ -59,5 +55,3 @@ export const RoundButton = ({ label, onClick }: { onClick: MouseEventHandler, la
 export const GameLayoutWrapper = ({ children }: { children: ReactNode }) => (
   <div className="flex flex-col text-center min-h-screen relative">{children}</div>
 )
-
-export type RoundButtonLabel = "start" | "next" | "end"

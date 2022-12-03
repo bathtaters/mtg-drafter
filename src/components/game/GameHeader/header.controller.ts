@@ -3,7 +3,7 @@ import type { ColorTheme } from "../PlayerContainers/PlayerContainerStyle"
 import { useEffect, useMemo, useState } from "react"
 import { canShare, shareData } from "components/base/services/common.services"
 import { shareGame } from "assets/constants"
-import { getOppIdx, getRound, passingRight } from "../shared/game.utils"
+import { getGameStatus, getOppIdx, passingRight } from "../shared/game.utils"
 
 export const getPlayerColor = (curr: number, player: number, opp: number | undefined, game: GameProps['options']): ColorTheme => (
   curr === player ? 'self' : game && game.round > game.roundCount && curr === opp ? 'opp' : undefined 
@@ -19,7 +19,7 @@ export default function useGameHeader(game: GameProps['options'] | undefined, pl
 
   return {
     oppIdx, handleShare,
-    round: game ? getRound(game) : 'Awaiting',
+    gameStatus: getGameStatus(game),
     isRight: game && passingRight(game),
   }
 }

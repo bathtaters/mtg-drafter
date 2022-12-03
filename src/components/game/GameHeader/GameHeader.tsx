@@ -3,6 +3,7 @@ import Header from "components/base/Header"
 import { PlayerContainerFull, PlayerContainerSmall } from "../PlayerContainers/PlayerContainers"
 import { GameHeaderWrapper, PlayerContainersWrapper, GameTitle, RoundCounter } from './GameHeaderStyles'
 import useGameHeader, { getPlayerColor } from "./header.controller"
+import { roundCounter } from "assets/strings"
 
 
 type Props = {
@@ -19,7 +20,7 @@ type Props = {
 
 export default function GameHeader({ game, players, playerIdx, holding, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
 
-  const { oppIdx, handleShare, round, isRight } = useGameHeader(game, players, playerIdx)
+  const { oppIdx, handleShare, gameStatus, isRight } = useGameHeader(game, players, playerIdx)
   
   if (!game) return <Header><GameTitle title="Game Not Found" /></Header>
 
@@ -28,7 +29,7 @@ export default function GameHeader({ game, players, playerIdx, holding, saveDeck
         <GameHeaderWrapper>
             <div>
               <GameTitle title={game.name} onClick={handleShare} />
-              <RoundCounter>{round}</RoundCounter>
+              <RoundCounter status={gameStatus} label={roundCounter(gameStatus, game)} />
             </div>
 
             <PlayerContainerFull

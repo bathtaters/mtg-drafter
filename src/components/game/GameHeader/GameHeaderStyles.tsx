@@ -1,5 +1,13 @@
 import type { MouseEventHandler, ReactNode } from "react"
+import type { GameStatus } from "types/game"
 import LinkIcon from "components/svgs/LinkIcon"
+import PackIcon from "components/svgs/PackIcon"
+
+const statusIcon: { [status in GameStatus]: ReactNode } = {
+  'start':  <span     className="inline-block mr-2 opacity-80 text-base sm:text-2xl fill-base-content ms ms-dfc-day"   />,
+  'end':    <span     className="inline-block mr-2 opacity-80 text-base sm:text-2xl fill-base-content ms ms-dfc-night" />,
+  'active': <PackIcon className="inline-block mr-2 opacity-80 h-6 sm:h-8 fill-base-100 stroke-base-content" />,
+}
 
 
 export const GameHeaderWrapper = ({ children }: { children: ReactNode }) => (
@@ -17,8 +25,11 @@ export const GameTitle = ({ title, onClick }: { title: string, onClick?: MouseEv
   </div>
 )
 
-export const RoundCounter = ({ children }: { children: ReactNode }) => (
-  <div className="ml-2 mt-2 text-base-content/80">{children}</div>
+export const RoundCounter = ({ label, status }: { label: ReactNode, status: GameStatus }) => (
+  <div className="ml-1 mt-2 text-base-content/80 flex items-center">
+    {statusIcon[status]}
+    <span>{label}</span>
+  </div>
 )
 
 

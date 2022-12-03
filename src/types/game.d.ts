@@ -3,6 +3,8 @@ import type { SortKey } from "components/base/services/cardSort.services"
 
 export type ColorLower = "w" | "u" | "b" | "r" | "g"
 
+export type GameStatus = "start" | "active" | "end"
+
 export const TabLabels = ['pack', 'main', 'side'] as const
 export type TabLabels = (typeof TabLabels)[number]
 

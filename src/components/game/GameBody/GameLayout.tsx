@@ -8,7 +8,7 @@ import { PickCardButton, RoundButton, GameLayoutWrapper } from './GameLayoutStyl
 import { EmptyStyle } from 'components/base/styles/AppStyles'
 import usePickController from "./pick.controller"
 import ContainerTabs from './ContainerTabs'
-import { getBoard } from '../shared/game.utils'
+import { getBoard, getGameStatus } from '../shared/game.utils'
 
 type Props = {
   game: GameProps['options'],
@@ -48,7 +48,7 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, onLandCl
           onClick={clickPackCard} onBgdClick={deselectCard}
         >
           { clickRoundBtn ?
-            <RoundButton onClick={clickRoundBtn} label={game.round === game.roundCount ? 'end' : 'next'} /> :
+            <RoundButton onClick={clickRoundBtn} label={getGameStatus(game)} /> :
             <PickCardButton disabled={loadingPack || !pack || !pack.cards.length || selectedCard < 0} onClick={clickPickButton} />}
 
           { loadingPack && <Overlay className="absolute z-40"><Spinner /></Overlay> }
