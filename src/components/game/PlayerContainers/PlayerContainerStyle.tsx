@@ -10,7 +10,6 @@ const themes = {
   ],
   opp: [
     'bg-accent-content/50',
-    //'text-accent',
     '',
     '',
     '',
@@ -22,11 +21,11 @@ export default function PlayerContainerStyle(
   { title: ReactNode, header?: ReactNode, subtitle?: ReactNode, children?: ReactNode, isMini?: boolean, isHost?: boolean, disconnected?: boolean, color?: ColorTheme }
 ) {
   return (
-    <div className={`stats shadow-sm shadow-black ${isMini ? 'rounded-lg' : 'overflow-visible'} ${color ? themes[color][3] : ''}`}>
-      <div className={`stat ${isMini ? 'py-0 px-2' : 'rounded-2xl'} ${color ? themes[color][0] : ''}`}>
+    <div className={`stats shadow-sm shadow-black ${isMini ? 'rounded-lg overflow-hidden' : 'overflow-visible'} ${color ? themes[color][3] : ''}`}>
+      <div className={`stat ${isMini ? 'p-0 gap-0' : 'rounded-2xl'} ${color ? themes[color][0] : ''}`}>
         
         <div className={`stat-figure ${
-          isMini ? 'flex flex-col justify-center opacity-70' : '-mr-3 sm:mr-0'
+          isMini ? 'grid grid-cols-2 grid-rows-2 gap-x-1 opacity-70' : '-mr-3 sm:mr-0'
         } ${color ? themes[color][2] : ''}`}>
           {children}
         </div>
@@ -34,12 +33,12 @@ export default function PlayerContainerStyle(
         {header && <div className="stat-title text-xs sm:text-base">{header}</div>}
         
         <div className={`stat-value font-medium ${
-          isMini ? 'row-span-3 self-center text-base flex items-center' : 'flex items-center'
+          isMini ? 'row-span-3 self-center text-base flex items-center overflow-hidden' : 'flex items-center'
         } ${
           disconnected ? "opacity-60 italic" : ''} ${color ? themes[color][1] : ''
         }`}>
-          {isMini && color === 'self' ? <UserMarker /> : isHost && <HostMarker />}
-          <span className={isMini ? "ml-1 flex-grow" : "text-lg sm:text-2xl flex-grow -ml-2 mb-1"}>{title}</span>
+          {isMini && color === 'self' ? <UserMarker /> : isHost ? <HostMarker /> : <span className="w-1" />}
+          <span className={isMini ? "ml-1 flex-grow truncate" : "text-lg sm:text-2xl flex-grow -ml-2 mb-1"}>{title}</span>
         </div>
 
         {subtitle && <div className={`stat-desc ${color ? themes[color][2] : ''}`}>{subtitle}</div>}

@@ -2,14 +2,14 @@ import type { Player } from "@prisma/client"
 import { useState } from "react"
 import PlayerMenu from "./PlayerMenu"
 import PlayerContainerStyle, { ColorTheme } from "./PlayerContainerStyle"
-import { EmptyPlayerContainer, PickStyle, HoldingStyle, PlayerNameEditor, UserHeader } from "./PlayerContainerElemStyles"
+import { EmptyPlayerContainer, StatsStyle, PlayerNameEditor, UserHeader, FullStatsWrapper, FullStatsDivider } from "./PlayerContainerElemStyles"
 import { nameCharLimit } from "assets/constants"
 
 
 export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost }: ContainerSmallProps) => (
   <PlayerContainerStyle title={player.name} isMini={true} disconnected={!player.sessionId} color={color} isHost={isHost}>
-    <PickStyle count={!player.pick || player.pick > maxPick ? undefined : player.pick} />
-    <HoldingStyle count={holding} />
+    <StatsStyle isMini={true} type="pick"    count={!player.pick || player.pick > maxPick ? undefined : player.pick} />
+    <StatsStyle isMini={true} type="holding" count={holding} />
   </PlayerContainerStyle>
 )
 
@@ -29,7 +29,11 @@ export const PlayerContainerFull = ({ player, holding, maxPick, saveDeck, openLa
 
       header={<UserHeader isHost={!!openHost} />}
 
-      subtitle={`Pick ${!player.pick || player.pick > maxPick ? '-' : player.pick} | Holding ${holding ?? '-'}`}
+      subtitle={<FullStatsWrapper>
+        <StatsStyle type="pick" count={!player.pick || player.pick > maxPick ? undefined : player.pick} />
+        <FullStatsDivider />
+        <StatsStyle type="holding" count={holding} />
+      </FullStatsWrapper>}
     >
 
       <PlayerMenu
