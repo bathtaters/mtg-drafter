@@ -6,13 +6,13 @@ type Style = (props: { html?: string, className?: string, children?: ReactNode }
 // MAIN WRAPPERS \\
 
 export const Border: Style = ({ children }) => (
-  <div className="w-full h-full absolute flex bg-black text-black rounded-[4%]">{children}</div>
+  <div className="w-full h-full absolute flex bg-black text-black rounded-card">{children}</div>
 )
 
 export const Layout: Style = ({ className = '', children }) => (
   <div className={
     `grid grid-rows-card grid-cols-card grid-flow-col place-items-stretch
-    w-[92%] h-[94%] m-auto p-[2%] rounded-[3%] font-serif ${className}`
+    w-[92%] h-[94%] m-auto p-[2%] font-serif ${className}`
   }>{children}</div>
 )
 
