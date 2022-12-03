@@ -1,6 +1,6 @@
 import type { MouseEvent } from "react"
 import type { GameCard, Board } from "@prisma/client"
-import type { CardOptions, PackFull, PickCard, SwapCard } from "types/game"
+import type { CardOptions, PackFull, PickCard, SwapCard, TabLabels } from "types/game"
 import { useCallback, useRef, useState } from "react"
 
 const DBL_CLICK_DELAY = 500
@@ -8,8 +8,9 @@ const DBL_CLICK_DELAY = 500
 export default function usePickController(pickCard: PickCard, swapCard: SwapCard, pack?: PackFull) {
 
   const lastClick = useRef(-1)
+  const [ selectedTab,  selectTab       ] = useState<TabLabels>('pack')
   const [ selectedCard, setSelectedCard ] = useState(-1)
-  const [ cardOptions, setCardOptions ] = useState<CardOptions>({ width: '', showArt: true, sort: undefined })
+  const [ cardOptions,  setCardOptions  ] = useState<CardOptions>({ width: '', showArt: true, sort: undefined })
 
   const clickPickButton = useCallback(() => {
     if (!pack) return console.warn('Player attempting to pick without a pack')
@@ -35,5 +36,9 @@ export default function usePickController(pickCard: PickCard, swapCard: SwapCard
 
   const deselectCard = useCallback(() => { setSelectedCard(-1) }, [])
 
-  return { selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard, cardOptions, setCardOptions }
+  return {
+    selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
+    cardOptions, setCardOptions,
+    selectedTab, selectTab,
+  }
 }

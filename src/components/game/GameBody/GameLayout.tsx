@@ -4,9 +4,11 @@ import Overlay from 'components/base/common/Overlay'
 import Spinner from 'components/base/common/Spinner'
 import CardContainer from "../CardContainer/CardContainer"
 import CardToolbar from '../CardToolbar/CardToolbar'
-import { PickCardButton, RoundButton, GameLayoutWrapper, Divider } from './GameLayoutStyles'
+import { PickCardButton, RoundButton, GameLayoutWrapper } from './GameLayoutStyles'
 import { EmptyStyle } from 'components/base/styles/AppStyles'
 import usePickController from "./pick.controller"
+import ContainerTabs from './ContainerTabs'
+import { getBoard } from '../shared/game.utils'
 
 type Props = {
   game: GameProps['options'],
@@ -22,9 +24,9 @@ type Props = {
 export default function GameLayout({ game, player, pack, clickRoundBtn, onLandClick, pickCard, swapCard, loadingPack }: Props) {
 
   const {
-    selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard, cardOptions, setCardOptions
+    selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard, cardOptions, setCardOptions, selectedTab, selectTab
   } = usePickController(pickCard, swapCard, pack)
-
+  
   if (game.round < 1 || !player) return (
     <GameLayoutWrapper>
       { clickRoundBtn && <RoundButton onClick={clickRoundBtn} label="start" /> }
@@ -34,37 +36,28 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, onLandCl
 
   return (
     <GameLayoutWrapper>
+      <ContainerTabs pack={pack?.cards} player={player} selectedTab={selectedTab} selectTab={selectTab} />
 
       <CardToolbar setCardOptions={setCardOptions} />
 
-      {game.round <= game.roundCount &&
+      {selectedTab === 'pack' ?
         <CardContainer
-          label="Pack" cardOptions={cardOptions}
+          label="pack" cardOptions={cardOptions} loading={loadingPack}
           cards={pack?.cards} selectedIdx={selectedCard}
           onClick={clickPackCard} onBgdClick={deselectCard}
         >
           { clickRoundBtn ?
             <RoundButton onClick={clickRoundBtn} label={game.round === game.roundCount ? 'end' : 'next'} /> :
-            pack && !!pack.cards.length &&
-            <PickCardButton disabled={loadingPack || selectedCard < 0} onClick={clickPickButton} />}
+            <PickCardButton disabled={loadingPack || !pack || !pack.cards.length || selectedCard < 0} onClick={clickPickButton} />}
 
           { loadingPack && <Overlay className="absolute z-40"><Spinner /></Overlay> }
         </CardContainer>
+        :
+        <CardContainer
+          label={selectedTab} lands={player.basics[selectedTab]} cardOptions={cardOptions}
+          cards={getBoard(player.cards, selectedTab)}
+          onClick={clickBoardCard(selectedTab)} onLandClick={onLandClick} />
       }
-
-      <Divider />
-
-      <CardContainer
-        label="Main" lands={player.basics.main} cardOptions={cardOptions}
-        cards={player.cards.filter(({ board }) => board === 'main')}
-        onClick={clickBoardCard('main')} onLandClick={onLandClick} />
-
-      <Divider />
-
-      <CardContainer
-        label="Side" lands={player.basics.side} cardOptions={cardOptions}
-        cards={player.cards.filter(({ board }) => board === 'side')} open={false}
-        onClick={clickBoardCard('side')} onLandClick={onLandClick} />
     </GameLayoutWrapper>
   )
 }

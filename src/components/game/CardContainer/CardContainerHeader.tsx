@@ -1,11 +1,11 @@
-import type { MouseEventHandler } from "react"
-import type { BoardLands, ColorLower } from "types/game"
-import type { ContainerType } from "../Card/Card"
-import { CardCounter, ContainerHeaderStyle, containerIcon, ContainerLabelStyle, LandButton, LandContainerStyle, LandCounterStyle } from "./CardContainerStyles"
+import type { MouseEventHandler, ReactNode } from "react"
+import type { BoardLands, ColorLower, TabLabels } from "types/game"
+import { CardCounter, ContainerHeaderStyle, ContainerLabelStyle, LandButton, LandContainerStyle, LandCounterStyle } from "./CardContainerStyles"
 import { colorClass, colorPip, hoverClass } from "components/base/styles/manaIcons"
 import { colorOrder } from "assets/constants"
 import { cardCounter } from "assets/strings"
-import { getObjectSum } from "components/base/services/common.services"
+import { getObjectSum, titleCase } from "components/base/services/common.services"
+import { containerIcon } from "../GameBody/GameLayoutStyles"
 
 const LandCounter = ({ color, count }: { color: ColorLower, count: number }) => !count ? null : (
   <LandCounterStyle className={`${colorClass[color]} ${hoverClass[color]} border-solid border-1`}>
@@ -14,13 +14,15 @@ const LandCounter = ({ color, count }: { color: ColorLower, count: number }) => 
   </LandCounterStyle>
 )
 
-export default function ContainerHeader({ label, count, lands, onLandClick }: { label: ContainerType, count?: number, lands?: BoardLands, onLandClick?: MouseEventHandler }) {
+export default function ContainerHeader({ label, count, children = <div />, lands, onLandClick }: { label: TabLabels, count?: number, children?: ReactNode, lands?: BoardLands, onLandClick?: MouseEventHandler }) {
   return (
     <ContainerHeaderStyle>
-      <ContainerLabelStyle>{containerIcon[label]}{label}{<CardCounter text={cardCounter(count, lands)} />}</ContainerLabelStyle>
+      <ContainerLabelStyle>{containerIcon[label]}{titleCase(label)}{<CardCounter text={cardCounter(count, lands)} />}</ContainerLabelStyle>
+      {children}
       <LandContainerStyle onClick={onLandClick}>
-        { lands && colorOrder.map((c) => <LandCounter key={c} color={c} count={lands[c]} />)}
-        { lands && !getObjectSum(lands) && <LandButton />}
+        { !lands ? "" : !getObjectSum(lands) ? <LandButton /> :
+            colorOrder.map((c) => <LandCounter key={c} color={c} count={lands[c]} />)
+        }
       </LandContainerStyle>
     </ContainerHeaderStyle>
   )
