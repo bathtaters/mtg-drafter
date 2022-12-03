@@ -1,3 +1,4 @@
+import type { Player } from '@prisma/client'
 import type { ServerProps, ServerSuccess } from 'types/game'
 import type { LocalController } from './services/local.controller'
 import { useState } from 'react'
@@ -10,7 +11,7 @@ import { getGameListeners, useGameEmitters } from './services/socket.controller'
 import downloadDeck from './services/downloadDeck.controller'
 import { gameAPI, socketEndpoint } from 'assets/urls'
 import { FullGame } from 'assets/strings'
-import { refreshOnRefocusDelay } from 'assets/constants'
+import { enableDropping, refreshOnRefocusDelay } from 'assets/constants'
 
 
 export const reloadData = async ({ game, updateLocal }: Pick<LocalController, "game"|"updateLocal">) => {
@@ -34,7 +35,7 @@ export default function useGameController(props: ServerProps) {
 
   const { renamePlayer, setTitle, nextRound, pickCard, swapCard, setLands, setStatus } = useGameEmitters(local, socket)
 
-  const saveDeck = !local.player?.cards || !local.game ? null : () => { downloadDeck(local as Parameters<typeof downloadDeck>['0']) }
+  const saveDeck = !local.player?.cards || !local.game ? undefined : () => { downloadDeck(local as Parameters<typeof downloadDeck>['0']) }
   
   useFocusEffect((focus) => { focus && reloadData(local) }, [local.game?.id], refreshOnRefocusDelay)
 
@@ -45,7 +46,8 @@ export default function useGameController(props: ServerProps) {
     renamePlayer, setTitle, nextRound, pickCard, swapCard, setLands, setStatus,
 
     landModal, hostModal, saveDeck,
-    toggleLandModal: local.player?.basics ? () => setLandModal((o) => !o) : null,
-    toggleHostModal: !local.game?.hostId || local.player?.id === local.game?.hostId ? (() => setHostModal((o) => !o)) : null,
+    toggleLandModal: local.player?.basics ? () => setLandModal((o) => !o) : undefined,
+    toggleHostModal: !local.game?.hostId || local.player?.id === local.game?.hostId ? (() => setHostModal((o) => !o)) : undefined,
+    dropPlayer: enableDropping && local.player ? () => setStatus((local.player as Player).id, 'leave') : undefined
   }
 }

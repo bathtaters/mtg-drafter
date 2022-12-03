@@ -10,7 +10,6 @@ import Loader from 'components/base/Loader'
 import Footer from 'components/base/Footer'
 import { BodyWrapperStyle, SetPageTitle } from 'components/base/styles/AppStyles'
 import useGameController from 'components/game/index/game.controller'
-import { enableDropping } from 'assets/constants'
 
 
 export default function Game(props: ServerProps) {
@@ -18,7 +17,7 @@ export default function Game(props: ServerProps) {
     game, player, players, playerIdx, isConnected, loadingPack, loadingAll,
     holding, isReady, pack, landModal, hostModal, slots, loadingMessage,
     saveDeck, toggleLandModal, toggleHostModal, renamePlayer, setTitle,
-    nextRound, pickCard, swapCard, setLands, setStatus
+    nextRound, pickCard, swapCard, setLands, setStatus, dropPlayer,
   } = useGameController(props)
 
   return (<>
@@ -26,8 +25,7 @@ export default function Game(props: ServerProps) {
 
     <GameHeader
       game={game} players={players} playerIdx={playerIdx} holding={holding} saveDeck={saveDeck}
-      openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer}
-      dropPlayer={enableDropping && player?.id ? () => setStatus(player.id, 'leave') : null}
+      openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer} dropPlayer={dropPlayer}
     />
     
     <BodyWrapperStyle>
@@ -40,7 +38,7 @@ export default function Game(props: ServerProps) {
             player={player}
             pack={pack} pickCard={pickCard} swapCard={swapCard}
             clickRoundBtn={isReady ? () => nextRound() : undefined}
-            onLandClick={toggleLandModal || undefined}
+            onLandClick={toggleLandModal}
             loadingPack={!!loadingPack}
           />
         }
