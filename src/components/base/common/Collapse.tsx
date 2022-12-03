@@ -1,9 +1,10 @@
 import { ReactNode, useState } from "react";
+import IconToggle from "./FormElements/IconToggle";
 
 export type Props = {
-  button: ReactNode,
+  button: ReactNode | [ReactNode, ReactNode],
   defaultOpen: boolean,
-  children: ReactNode
+  children: ReactNode,
   className?: string,
   buttonClass?: string,
 }
@@ -12,7 +13,11 @@ export default function CollapseContainer({ button, defaultOpen, children, class
   const [ open, setOpen ] = useState(defaultOpen)
 
   return (<>
-    <button type="button" className={`btn z-10 ${buttonClass}`} onClick={() => setOpen((o) => !o)}>{button}</button>
+    { Array.isArray(button) && button.length === 2 ?
+      <IconToggle value={open} setValue={setOpen} className={`btn z-10 ${buttonClass}`}>{button}</IconToggle>
+      :
+      <button type="button" className={`btn z-10 ${buttonClass}`} onClick={() => setOpen((o) => !o)}>{button}</button>
+    }
     <div className={`collapse ${className} ${open ? 'collapse-open' : 'collapse-close'} z-0`}>
       <div className="collapse-content relative overflow-visible">{children}</div>
     </div>
