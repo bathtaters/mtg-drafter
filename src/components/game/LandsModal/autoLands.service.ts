@@ -1,6 +1,7 @@
 import type { BasicLands, BoardLands, GameCardFull } from "types/game"
 import { colorOrder } from "assets/constants"
 import { sameValueObject } from "components/base/services/common.services"
+import { getBoard } from "../shared/game.utils"
 
 const pipRegEx = /{([^}]+)}/g // pip format: {<color>}
 
@@ -10,7 +11,7 @@ const landAlogrithm = (colorPips: number, totalPips: number, landsNeeded: number
 
 
 export default function getAutoLands(playerCards: GameCardFull[], deckSize: number, sideboardCount: number) {
-  const mainDeck = playerCards.filter(({ board }) => board === 'main')
+  const mainDeck = getBoard(playerCards, 'main')
 
   const landCount = deckSize - mainDeck.length
   if (landCount < 1) return console.error('Auto Lands: mainboard is larger than',deckSize)

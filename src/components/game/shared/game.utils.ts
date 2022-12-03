@@ -1,5 +1,7 @@
-import type { Game, Player } from "@prisma/client"
+import type { Game, Player, GameCard, Board } from "@prisma/client"
 import type { PackFull } from "types/game"
+
+export const getBoard = <C extends GameCard>(playerCards: C[], board: Board) => playerCards.filter(({ board: cardBoard }) => board === cardBoard)
 
 export const getRound = ({ round, roundCount }: { round: number, roundCount: number }) =>
   round > roundCount ? 'Finished' : round <= 0 ? 'Awaiting' : 
