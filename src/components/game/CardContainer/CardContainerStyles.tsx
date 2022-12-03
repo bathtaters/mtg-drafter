@@ -28,7 +28,9 @@ export const ContainerLabelStyle = ({ children }: { children: ReactNode }) => (
 )
 
 export const LandContainerStyle = ({ onClick, children }: { onClick?: MouseEventHandler, children: ReactNode }) => (
-  <button type="button" onClick={onClick} className="relative z-20 flex justify-end gap-0 md:gap-2">{children}</button>
+  <div className="ml-auto">
+    <button type="button" onClick={onClick} className="relative z-20 flex justify-end gap-0 md:gap-2">{children}</button>
+  </div>
 )
 
 export const CardCounter = ({ text = '–' }: { text?: string }) => (
