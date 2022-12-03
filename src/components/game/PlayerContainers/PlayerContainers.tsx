@@ -2,15 +2,14 @@ import type { Player } from "@prisma/client"
 import { useState } from "react"
 import PlayerMenu from "./PlayerMenu"
 import PlayerContainerStyle, { ColorTheme } from "./PlayerContainerStyle"
-import { EmptyPlayerContainer, HostBadge, PlayerNameEditor } from "./PlayerContainerElemStyles"
+import { EmptyPlayerContainer, PickStyle, HoldingStyle, PlayerNameEditor, UserHeader } from "./PlayerContainerElemStyles"
 import { nameCharLimit } from "assets/constants"
-import UserIcon from "components/svgs/UserIcon"
 
 
 export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost }: ContainerSmallProps) => (
   <PlayerContainerStyle title={player.name} isMini={true} disconnected={!player.sessionId} color={color} isHost={isHost}>
-    <div className="text-xs mt-0.5 whitespace-nowrap">Pick {!player.pick || player.pick > maxPick ? '-' : player.pick}</div>
-    <div className="text-2xs whitespace-nowrap">Holding {holding ?? '-'}</div>
+    <PickStyle count={!player.pick || player.pick > maxPick ? undefined : player.pick} />
+    <HoldingStyle count={holding} />
   </PlayerContainerStyle>
 )
 
@@ -22,18 +21,23 @@ export const PlayerContainerFull = ({ player, holding, maxPick, saveDeck, openLa
   
   return (
     <PlayerContainerStyle color="self" isHost={!!openHost}
+
       title={<PlayerNameEditor
         value={player.name || 'Player'} {...nameCharLimit}
         isEditing={editingName} setEditing={setEditingName} onSubmit={renamePlayer}
       />}
-      header={<span><UserIcon className="fill-current h-4 sm:h-5 inline-block" />{!!openHost && <HostBadge />}</span>}
+
+      header={<UserHeader isHost={!!openHost} />}
+
       subtitle={`Pick ${!player.pick || player.pick > maxPick ? '-' : player.pick} | Holding ${holding ?? '-'}`}
     >
+
       <PlayerMenu
         saveDeck={saveDeck} openLands={openLands}
         editName={editingName ? undefined : () => setEditingName(true)}
         openHost={openHost} dropPlayer={dropPlayer}
       />
+      
     </PlayerContainerStyle>
   )
 }
