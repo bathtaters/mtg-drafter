@@ -11,18 +11,18 @@ type Props = {
   lands?: BoardLands,
   loading?: boolean,
   children?: ReactNode,
-  onClick?: (id: string, idx: number, event: MouseEvent) => void,
+  onClick?: (id: string, event: MouseEvent) => void,
   onBgdClick?: MouseEventHandler,
   onLandClick?: MouseEventHandler,
-  selectedIdx?: number,
+  selectedId?: string,
   cardOptions: CardOptions,
 }
 
-export default function CardContainer({ label, cards, lands, loading, children, onClick, onBgdClick, onLandClick, selectedIdx, cardOptions }: Props) {
+export default function CardContainer({ label, cards, lands, loading, children, onClick, onBgdClick, onLandClick, selectedId, cardOptions }: Props) {
   return (
     <CardContainerWrapper 
       title={<ContainerHeader label={label} count={cards?.length} lands={lands} onLandClick={onLandClick}>{children}</ContainerHeader>}
-      isPrimary={selectedIdx == null} onClick={onBgdClick}
+      isPrimary={label !== 'pack'} onClick={onBgdClick}
     >
       <CardsWrapper>
         {loading ? <LoadingPack /> : !cards ? <NoPack /> : !cards.length ? (label === 'pack' ? <EmptyPack /> : <EmptyBoard />) :
@@ -31,8 +31,8 @@ export default function CardContainer({ label, cards, lands, loading, children, 
               card={card} key={id}
               showImage={cardOptions.showArt}
               className={cardOptions.width}
-              onClick={onClick && ((ev) => onClick(id, idx, ev))}
-              isSelected={selectedIdx === idx}
+              onClick={onClick && ((ev) => onClick(id, ev))}
+              isSelected={selectedId === id}
               container={label}
             />
           )

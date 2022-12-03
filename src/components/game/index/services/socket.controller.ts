@@ -68,17 +68,15 @@ export function useGameEmitters(local: LocalController, { socket }: { socket: Ga
     socket.emit('nextRound', local.game.id, local.game.round + 1)
   }, [socket?.connected, local.game?.round])
 
-  const pickCard: Socket.PickCard = useCallback((cardIdx) => {
+  const pickCard: Socket.PickCard = useCallback((gameCardId) => {
     if (!socket?.connected || !local.player) return console.error('Error picking card: Not connected to server')
-    if (!local.pack) return console.error('Error picking card: Player does not have a pack')
     
     local.setLoadingPack((v) => v + 1)
-    const gameCardId = local.pack.cards[cardIdx].id
     socket.emit('pickCard', local.player.id, gameCardId, (pick) => {
       if (typeof pick !== 'number') console.error('Error picking: Failed to pick card')
       return reloadData(local).finally(() => local.setLoadingPack((v) => v && v - 1))
     })
-  }, [socket?.connected, local.game?.id, local.pack?.id])
+  }, [socket?.connected, local.game?.id])
 
   const swapCard: Socket.SwapCard = useCallback((cardId, board) => {
     if (!socket?.connected) return console.error('Error moving card: Not connected to server')

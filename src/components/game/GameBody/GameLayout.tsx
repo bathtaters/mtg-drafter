@@ -44,12 +44,12 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, onLandCl
       {selectedTab === 'pack' ?
         <CardContainer
           label="pack" cardOptions={cardOptions} loading={loadingPack}
-          cards={pack?.cards} selectedIdx={selectedCard}
+          cards={pack?.cards} selectedId={selectedCard}
           onClick={clickPackCard} onBgdClick={deselectCard}
         >
           { clickRoundBtn ?
             <RoundButton onClick={clickRoundBtn} label={getGameStatus(game)} /> :
-            <PickCardButton disabled={loadingPack || !pack || !pack.cards.length || selectedCard < 0} onClick={clickPickButton} />}
+            <PickCardButton disabled={loadingPack || !pack || !pack.cards.length || !selectedCard} onClick={clickPickButton} />}
 
           { loadingPack && <Overlay className="absolute z-40"><Spinner /></Overlay> }
         </CardContainer>
