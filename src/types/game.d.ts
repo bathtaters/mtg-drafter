@@ -3,8 +3,11 @@ import type { SortKey } from "components/base/services/cardSort.services"
 
 export type ColorLower = "w" | "u" | "b" | "r" | "g"
 
+export const TabLabels = ['pack', 'main', 'side'] as const
+export type TabLabels = (typeof TabLabels)[number]
+
 export type BoardLands = Record<ColorLower, number>
-export type BasicLands = { [board in Board]: BoardLands }
+export type BasicLands = { [board in Board]: BoardLands } & { pack: never }
 
 export type CardFull = Card & { otherFaces: Card[] }
 export type GameCardFull = GameCard & { card: CardFull }

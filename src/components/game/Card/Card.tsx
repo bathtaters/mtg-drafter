@@ -1,11 +1,17 @@
 import type { MouseEventHandler } from "react"
-import type { CardFull } from "types/game"
+import type { CardFull, TabLabels } from "types/game"
 import RenderedCard from "./RenderedCard/RenderedCard"
 import { CardWrapper, FlipButton, ImgWrapper, SwapButton } from "./GameCardStyles"
 import useCardImage from "./image.controller"
 
-export type ContainerType = "Main"|"Side"|"Pack"
-type Props = { card: CardFull, isSelected?: boolean, container: ContainerType, showImage?: boolean, onClick?: MouseEventHandler, className?: string }
+type Props = {
+  card: CardFull,
+  container: TabLabels,
+  isSelected?: boolean,
+  showImage?: boolean,
+  onClick?: MouseEventHandler,
+  className?: string,
+}
 
 export default function CardDisplay({ card, isSelected, container, showImage, onClick, className = '' }: Props) {
   const { images, sideIdx, cardFace, handleFlip, isRotated } = useCardImage(card)
