@@ -6,7 +6,7 @@ import IconToggle, { Props as ToggleProps } from "components/base/common/FormEle
 import ArtIcon from "components/svgs/ArtIcon"
 import EyeIcon from "components/svgs/EyeIcon"
 import SortIcon from "components/svgs/SortIcon"
-import CardSettingsIcon from "components/svgs/CardSettingsIcon"
+import CardIcon from "components/svgs/CardIcon"
 
 export const ToolbarContainer = ({ children }: { children: ReactNode }) => (
   <div className="w-full p-2 flex justify-between">{children}</div>
@@ -17,8 +17,8 @@ export const ToolbarCollapse = (props: CollapseProps) => (
 )
 
 export const ToolbarButton = [
-  <CardSettingsIcon showX={true}  className="h-8 fill-secondary text-secondary-content" />,
-  <CardSettingsIcon showX={false} className="h-8 fill-secondary-content text-secondary" />,
+  <CardIcon innerIcon="X"    className="h-8 fill-secondary text-secondary-content" />,
+  <CardIcon innerIcon="gear" className="h-8 fill-secondary-content text-secondary" />,
 ]
 
 
