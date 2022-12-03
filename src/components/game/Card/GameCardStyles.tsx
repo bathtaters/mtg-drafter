@@ -1,5 +1,6 @@
+import type { Board } from "@prisma/client"
 import type { MouseEventHandler, ReactNode } from "react"
-import type { TabLabels } from "types/game"
+import DeckIcon from "components/svgs/DeckIcon"
 
 export const CardWrapper = ({ isSelected, isFoil, onClick, className, children }: { isSelected?: boolean, isFoil?: boolean, onClick?: MouseEventHandler, className: string, children: ReactNode }) => (
   <span
@@ -22,13 +23,15 @@ export const ImgWrapper = ({ rotate, children }: { rotate: boolean, children: Re
 )
 
 
-export const SwapButton = ({ board, onClick }: { board: TabLabels, onClick?: MouseEventHandler }) =>
+export const SwapButton = ({ board, onClick }: { board: Board, onClick?: MouseEventHandler }) =>
   <button type="button" onClick={onClick} className={
       `hidden group-hover:flex absolute top-[5em] left-[0.75em] z-30
-      btn font-serif w-[4.5em] h-[3em] text-[1em] p-0 m-0 min-h-0
+      btn justify-center items-center gap-[0.5em] p-0 m-0 
+      font-serif w-[5em] h-[3em] text-[1em] min-h-0
       pointer-events-auto opacity-50 hover:opacity-90`
   }>
-    {board === 'main' ? 'Side' : 'Main'}
+    <span className="normal-case">{board === 'main' ? 'Side' : 'Main'}</span>
+    <DeckIcon className={`h-[2em] inline ${board === 'main' ? "fill-base-content stroke-base-300" : "fill-base-300 stroke-base-content"}`} />
   </button>
 
 
