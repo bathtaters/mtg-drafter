@@ -25,9 +25,9 @@ export const GameTitle = ({ title, onClick }: { title: string, onClick?: MouseEv
   </div>
 )
 
-export const RoundCounter = ({ label, status }: { label: ReactNode, status: GameStatus }) => (
+export const RoundCounter = ({ label, status }: { label: ReactNode, status?: GameStatus }) => (
   <div className="ml-1 mt-2 text-base-content/80 flex items-center">
-    {statusIcon[status]}
+    {status && statusIcon[status]}
     <span>{label}</span>
   </div>
 )

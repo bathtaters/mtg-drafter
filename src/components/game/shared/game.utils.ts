@@ -3,7 +3,8 @@ import type { GameStatus, PackFull } from "types/game"
 
 export const getBoard = <C extends GameCard>(playerCards: C[], board: Board) => playerCards.filter(({ board: cardBoard }) => board === cardBoard)
 
-export const getGameStatus = (game?: Game): GameStatus => !game || game.round < 1 ? 'start' : game.round > game.roundCount ? 'end' : 'active'
+export const getGameStatus = (game?: Game): GameStatus | undefined => !game ? undefined :
+  game.round < 1 ? 'start' : game.round > game.roundCount ? 'end' : 'active'
 
 export const getOppIdx = (playerIdx: number, playerCount: number) => {
   const f = Math.floor(playerCount / 2);

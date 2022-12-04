@@ -5,6 +5,7 @@ import { getObjectSum } from "components/base/services/common.services"
 export const FullGame = <p>This game is full, you can wait for an opening or <a href="/" className="link link-primary">start a new one</a>.</p>
 
 export const roundCounter = (status?: GameStatus, game?: Game) =>
+  !status ? 'Waiting Room' :
   status === 'active' ? `Pack ${game?.round ?? '–'} of ${game?.roundCount ?? '–'}` :
   status === 'end' ? 'Finished' : 'Awaiting'
 

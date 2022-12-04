@@ -19,7 +19,7 @@ export default function useGameHeader(game: GameProps['options'] | undefined, pl
 
   return {
     oppIdx, handleShare,
-    gameStatus: getGameStatus(game),
+    gameStatus: players[playerIdx] ? getGameStatus(game) : undefined,
     isRight: game && passingRight(game),
   }
 }

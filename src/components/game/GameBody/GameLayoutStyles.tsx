@@ -43,10 +43,10 @@ export const PickCardButton = ({ disabled, onClick }: { disabled?: boolean, onCl
 )
 
 
-export const RoundButton = ({ label, onClick }: { onClick: MouseEventHandler, label: GameStatus }) => (
+export const RoundButton = ({ label, onClick }: { onClick: MouseEventHandler, label?: GameStatus }) => (
   <div className="w-full text-center my-4">
     <button type="button" onClick={onClick} className="btn btn-secondary btn-xl text-xl h-16 w-48 m-auto">
-      {hostButtonLabel[label]}
+      {label && hostButtonLabel[label]}
     </button>
   </div>
 )

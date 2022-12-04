@@ -29,7 +29,7 @@ export default function GameHeader({ game, players, playerIdx, holding, saveDeck
         <GameHeaderWrapper>
             <div>
               <GameTitle title={game.name} onClick={handleShare} />
-              <RoundCounter status={gameStatus} label={roundCounter(gameStatus, game)} />
+              <RoundCounter status={gameStatus} label={players[playerIdx] ? roundCounter(gameStatus, game) : "Waiting Room"} />
             </div>
 
             <PlayerContainerFull
