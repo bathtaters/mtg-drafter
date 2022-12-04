@@ -1,4 +1,5 @@
 import type { MouseEventHandler, ReactNode } from "react"
+import UserIcon from "components/svgs/UserIcon"
 
 export const PlayerJoinContainer = ({ title, children }: { title: ReactNode, children: ReactNode }) => (
   <div className="w-full flex flex-col justify-center items-center gap-4">
@@ -16,7 +17,8 @@ export const PlayerWrapper = ({ children }: { children: ReactNode }) => (
 )
 
 export const PlayerButton = ({ onClick, label }: { onClick?: MouseEventHandler<HTMLButtonElement>, label: ReactNode }) => (
-  <button type="button" className="btn btn-lg btn-secondary w-full text-xl font-light normal-case" onClick={onClick}>
+  <button type="button" className="btn btn-lg btn-secondary w-full text-xl font-light normal-case relative" onClick={onClick}>
+    <UserIcon className="h-10 fill-current absolute left-2" />
     {label}
   </button>
 )
