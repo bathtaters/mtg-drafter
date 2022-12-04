@@ -15,7 +15,7 @@ import useGameController from 'components/game/index/game.controller'
 export default function Game(props: ServerProps) {
   const {
     game, player, players, playerIdx, isConnected, loadingPack, loadingAll,
-    holding, isReady, pack, landModal, hostModal, slots, loadingMessage,
+    holding, isReady, pack, landModal, hostModal, slots,
     saveDeck, toggleLandModal, toggleHostModal, renamePlayer, setTitle,
     nextRound, pickCard, swapCard, setLands, setStatus, dropPlayer,
   } = useGameController(props)
@@ -29,7 +29,7 @@ export default function Game(props: ServerProps) {
     />
     
     <BodyWrapperStyle>
-      <Loader data={isConnected || game || 404} message={props.error || loadingMessage}>
+      <Loader data={isConnected || game || 404} message={props.error}>
         { !player ?
           <PlayerJoin slots={slots} players={players} selectPlayer={setStatus} /> :
 

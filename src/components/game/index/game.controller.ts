@@ -42,7 +42,6 @@ export default function useGameController(props: ServerProps) {
   return {
     ...local,
     isConnected: socket.isConnected,
-    loadingMessage: !local.player && !local.slots.length ? FullGame : undefined,
     renamePlayer, setTitle, nextRound, pickCard, swapCard, setLands, setStatus,
 
     landModal, hostModal, saveDeck,
