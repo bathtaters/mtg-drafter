@@ -2,11 +2,9 @@ import type { ErrResponse, ListResponse } from "pages/api/setup/checkList"
 import z from "backend/libs/validation"
 import { commonOptions, cubeOptions } from "./setup.validation"
 
-const commonOptionsObj = z.object(commonOptions)
-
 export type CubeOptions = z.infer<typeof cubeOptions>
 
-export interface GenericOptions extends z.infer<typeof commonOptionsObj> {
+export interface GenericOptions extends z.infer<typeof commonOptions> {
   packs: string[][],
 }
 
