@@ -20,12 +20,12 @@ async function getGameProps(url: string | string[] | undefined, sessionId: strin
 }
 
 export function serverSideHandler(ctx: GetServerSidePropsContext) {
-  const url = validation.url.parse(ctx.query)
+  const url = validation.url.parse(ctx.query.url)
   return getGameProps(url, getCtxSessionId(ctx))
 }
 
 export async function apiHandler(req: NextApiRequest, res: NextApiResponse<ServerSuccess>) {
-  const url = validation.url.parse(req.query)
+  const url = validation.url.parse(req.query.url)
   const props = await getGameProps(url, getReqSessionId(req, res), true)
   if (props.error) {
     console.error('Error with game',url,'player',getReqSessionId(req,res),props.error)
