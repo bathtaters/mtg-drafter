@@ -1,7 +1,9 @@
 import type { GameOptions, CubeFile } from "types/setup"
 import { useCallback, useState } from "react"
 import { useRouter } from "next/router"
-import { post, adaptOptions, newGameURL, gameURL } from "./setup.utils"
+import { post } from 'components/base/services/fetch.services'
+import { adaptOptions } from "./setup.utils"
+import { gameURL, newGameURL } from 'assets/urls'
 
 
 export default function useCreateGame() {

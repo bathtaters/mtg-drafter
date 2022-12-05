@@ -1,10 +1,5 @@
-import type { CubeOptions } from "types/definitions"
+import type { CubeOptions } from "types/setup"
 import type { GameOptions, CubeFile } from "types/setup"
-
-export const defaultOptions: GameOptions = { name: "", players: "8", packs: "3", packSize: "15" }
-
-export const fileID = "cubeFile"
-export const fileType = "text/plain"
 
 export const adaptOptions = ({ name, players, packs, packSize }: GameOptions, file: CubeFile): CubeOptions => ({
   name,
@@ -13,6 +8,3 @@ export const adaptOptions = ({ name, players, packs, packSize }: GameOptions, fi
   packSize: +packSize,
   cardList: file.data?.accepted || []
 })
-
-export { gameURL, newGameURL, cubeListURL } from '../../../assets/urls'
-export { upload, post } from '../../base/services/fetch.services'

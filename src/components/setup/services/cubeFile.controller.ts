@@ -1,6 +1,8 @@
 import type { CubeFile, UploadType } from "types/setup"
 import { useState, useCallback } from "react"
-import { upload, cubeListURL, fileID } from "./setup.utils"
+import { upload } from "components/base/services/fetch.services"
+import { fileSettings } from "assets/constants"
+import { cubeListURL } from "assets/urls"
 
 
 export default function useCubeFile() {
@@ -13,7 +15,7 @@ export default function useCubeFile() {
 
     setLoading(true)
     
-    return upload<UploadType>(cubeListURL, file, fileID).then((data) => {
+    return upload<UploadType>(cubeListURL, file, fileSettings.id).then((data) => {
       
       if (typeof data !== 'object') data = { error: `Return Code: ${data}` }
       
