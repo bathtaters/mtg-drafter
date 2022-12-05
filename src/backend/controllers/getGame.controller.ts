@@ -3,6 +3,7 @@ import type { ServerProps, PlayerFull, ServerSuccess } from 'types/game'
 import { getGame } from '../services/game/game.services'
 import { getPlayer } from '../services/game/player.services'
 import { getCtxSessionId, getReqSessionId } from 'components/base/services/sessionId.services'
+import validation from 'types/game.validation'
 
 async function getGameProps(url: string | string[] | undefined, sessionId: string, throwOnNoPlayer: boolean = false): Promise<ServerProps> {
   if (!url || Array.isArray(url)) return { error: `Invalid URL: ${url}` }
@@ -19,13 +20,15 @@ async function getGameProps(url: string | string[] | undefined, sessionId: strin
 }
 
 export function serverSideHandler(ctx: GetServerSidePropsContext) {
-  return getGameProps(ctx.query.url, getCtxSessionId(ctx))
+  const url = validation.url.parse(ctx.query)
+  return getGameProps(url, getCtxSessionId(ctx))
 }
 
 export async function apiHandler(req: NextApiRequest, res: NextApiResponse<ServerSuccess>) {
-  const props = await getGameProps(req.query.url, getReqSessionId(req, res), true)
+  const url = validation.url.parse(req.query)
+  const props = await getGameProps(url, getReqSessionId(req, res), true)
   if (props.error) {
-    console.error('Error with game',req.query.url,'player',getReqSessionId(req,res),props.error)
+    console.error('Error with game',url,'player',getReqSessionId(req,res),props.error)
     return res.status(400).end()
   }
 

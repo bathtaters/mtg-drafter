@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSingleUpload } from 'backend/libs/upload'
 import buildCubeList from 'backend/services/game/buildCubeList'
+import { cubeFileOptions } from 'types/setup.validation'
 
 export type ListResponse = Awaited<ReturnType<typeof buildCubeList>>
 export type ErrResponse = { error: string }
@@ -13,6 +14,9 @@ const splitLines = (file: string) => file.split(/\s*(?:\r?\n|\r)\s*/g).filter(Bo
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ListResponse | ErrResponse>) {
   try {
+    // Validate file
+    cubeFileOptions.parse(req.body)
+
     // Get file
     const file = await getSingleUpload(req)
     if (!file) throw new Error('File not found')

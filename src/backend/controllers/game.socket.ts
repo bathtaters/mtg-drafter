@@ -1,10 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import type { IncomingMessage } from 'http'
 import type { GameServer } from './game.socket.d'
+import type { BasicLands } from 'types/game'
 import { parseCookies } from 'nookies'
 import { getReqSessionId } from 'components/base/services/sessionId.services'
 import { gameExists, nextRound, pickCard, renameGame } from '../services/game/game.services'
 import { renamePlayer, setStatus, swapCard, updateLands } from '../services/game/player.services'
+import validation from 'types/game.validation'
 import { debugSockets, MAX_GAME_CONN } from 'assets/constants'
 
 const getSessionId = (req: IncomingMessage) => parseCookies({ req }).sessionId
@@ -26,59 +28,107 @@ export default async function gameSockets(io: GameServer, req: NextApiRequest, r
     socket.setMaxListeners(MAX_GAME_CONN)
 
     socket.on('setTitle', async (gameId, title) => {
-      if (!title) return;
-      const newTitle = await renameGame(gameId, title)
-        .catch((err) => console.error('Error renameGame',gameId,title,err))
-      newTitle != null && io.emit('updateTitle', newTitle)
+      try {
+        gameId = validation.id.parse(gameId)
+        title = validation.name.parse(title)
+        if (!title) throw new Error('No title provided')
+  
+        const newTitle = await renameGame(gameId, title)
+        newTitle != null && io.emit('updateTitle', newTitle)
+
+      } catch (err: any) {
+        socket.emit('error', `Error changing title: ${err.message || 'Unknown'}`)
+      }
     })
 
     socket.on('nextRound', async (gameId, round) => {
-      const newRound = await nextRound(gameId, round)
-        .catch((err) => console.error('Error nextRound',gameId,round, err))
-      newRound != null && io.emit('updateRound', newRound)
+      try {
+        gameId = validation.id.parse(gameId)
+        round = validation.round.parse(round)
+
+        const newRound = await nextRound(gameId, round)
+        newRound != null && io.emit('updateRound', newRound)
+
+      } catch (err: any) {
+        socket.emit('error', `Error changing rounds: ${err.message || 'Unknown'}`)
+      }
     })
     
     socket.on('setName', async (playerId, name) => {
-      if (!name) return;
-      const player = await renamePlayer(playerId, name)
-        .catch((err) => console.error('Error renamePlayer',playerId,name, err))
-      player != null && io.emit('updateName', player.id, player.name)
+      try {
+        playerId = validation.id.parse(playerId)
+        name = validation.name.parse(name)
+        if (!name) throw new Error('No name provided')
+        
+        const player = await renamePlayer(playerId, name)
+        player != null && io.emit('updateName', player.id, player.name)
+
+      } catch (err: any) {
+        socket.emit('error', `Error changing name: ${err.message || 'Unknown'}`)
+      }
     })
     
     socket.on('pickCard', async (playerId, gameCardId, callback) => {
-      const player = await pickCard(playerId, gameCardId)
-        .catch((err) => console.error('Error pickCard',playerId,gameCardId, err))
-      if (player == null) return callback(undefined)
+      try {
+        playerId = validation.id.parse(playerId)
+        gameCardId = validation.id.parse(gameCardId)
 
-      io.emit('updatePick', player.id, player.pick, player.passingToId)
-      callback(player.pick)
+        const player = await pickCard(playerId, gameCardId)
+        if (player == null) throw new Error('Player not found')
+
+        io.emit('updatePick', player.id, player.pick, player.passingToId)
+        callback(player.pick)
+
+      } catch (err: any) {
+        socket.emit('error', `Error picking card: ${err.message || 'Unknown'}`)
+        callback(undefined)
+      }
     })
     
     socket.on('setStatus', async (playerId, status, callback) => {
-      const sessionId = status === 'join' && getSessionId(socket.request)
-      if (sessionId == null) {
-        console.error('Attempting to connect player w/o sessionId')
-        return callback(undefined)
+      try {
+        playerId = validation.id.parse(playerId)
+        status = validation.status.parse(status)
+        
+        const sessionId = status === 'join' && getSessionId(socket.request)
+        if (sessionId == null) throw new Error('Missing user identity')
+
+        const player = await setStatus(playerId, sessionId || null)
+        if (!player?.id) throw new Error('Player not found')
+
+        io.emit('updateSlot', player?.id || playerId, player?.sessionId || null)
+        callback(player)
+
+      } catch (err: any) {
+        socket.emit('error', `Unable to ${status || 'set status'}: ${err.message || 'Unknown'}`)
+        callback(undefined)
       }
-
-      const player = await setStatus(playerId, sessionId || null)
-        .catch((err) => console.error('Error setStatus',status,playerId, err))
-      if (!player?.id) return callback(undefined)
-
-      io.emit('updateSlot', player?.id || playerId, player?.sessionId || null)
-      callback(player)
     })
 
     socket.on('swapBoards', async (gameCardId, toBoard, callback) => {
-      const card = await swapCard(gameCardId, toBoard)
-        .catch((err) => console.error('Error swapBoards',gameCardId,toBoard, err))
-      callback(card?.id, card?.board)
+      try {
+        gameCardId = validation.id.parse(gameCardId)
+        toBoard = validation.board.parse(toBoard)
+        
+        const card = await swapCard(gameCardId, toBoard)
+        callback(card?.id, card?.board)
+
+      } catch (err: any) {
+        socket.emit('error', `Error updating card position: ${err.message || 'Unknown'}`)
+      }
     })
 
     socket.on('setLands', async (playerId, lands, callback) => {
-      const newLands = await updateLands(playerId, lands)
-        .catch((err) => console.error('Error setLands',playerId,lands, err))
-      callback(newLands)
+      try {
+        playerId = validation.id.parse(playerId)
+        lands = validation.basics.parse(lands) as BasicLands
+        
+        const newLands = await updateLands(playerId, lands)
+        callback(newLands)
+        
+      } catch (err: any) {
+        socket.emit('error', `Error setting basic lands: ${err.message || 'Unknown'}`)
+      }
     })
 
     debugSockets && console.debug('New Connection', io.path(), sessionId)

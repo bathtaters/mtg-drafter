@@ -1,13 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import type { CubeOptions } from 'types/setup'
 import { newCubeGame } from 'backend/services/game/createGame'
 import { getReqSessionId } from 'components/base/services/sessionId.services'
+import { cubeOptions } from 'types/setup.validation'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<{ url: string }>) {
-  // TO DO: VALIDATE BODY
-  const data = { ...JSON.parse(req.body), hostSessionId: getReqSessionId(req, res) } as CubeOptions
-  
-  const url = await newCubeGame(data)
-  res.status(200).json({ url })
-  
+export default async function handler(req: NextApiRequest, res: NextApiResponse<{ url: string }|{ message: string }>) {
+  try {
+    const body = cubeOptions.parse(req.body)
+    const url = await newCubeGame(body, getReqSessionId(req, res))
+    res.status(200).json({ url })
+
+  } catch (err: any) {
+    console.error('Error creating game', err)
+    return res.status(400).json({ message: err.message || 'Unknown Error' })
+  }
 }

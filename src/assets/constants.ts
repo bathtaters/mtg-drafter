@@ -1,6 +1,8 @@
 import type { BoardLands } from 'types/game'
 import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
 
+// MtG library
+
 export const colorOrder = ['w','u','b','r','g'] as Array<keyof BoardLands>,
 
   rarityOrder = ["bonus","special","mythic","rare","uncommon","common","none"],
@@ -19,6 +21,8 @@ export const colorOrder = ['w','u','b','r','g'] as Array<keyof BoardLands>,
     g: 'Forest',
   }
 
+//  Local settings
+
 export const storageDefaults = Object.freeze({
   zoom: Math.round(cardZoomLevels.length / 2),
   deckSize: 40,
@@ -26,6 +30,8 @@ export const storageDefaults = Object.freeze({
   showArt: true,
   sortBy: 0,
 })
+
+// Sharing settings
 
 export const shareGame = {
   title: "MtG Drafter Game",
@@ -35,7 +41,23 @@ export const shareGame = {
   failMsg: { message: "Clipboard access disabled by browser", className: "alert-warning" },
 }
 
-export const nameCharLimit = { minLength: 1, maxLength: 22 }
+// Setup validation
+
+export const
+  setupLimits = {
+    name:     { minLength: 1, maxLength: 22 },
+    players:  { min: 1, max: 12 },
+    packs:    { min: 1, max: 5  },
+    packSize: { min: 1, max: 20 },
+  }, 
+
+  setupDefaults = { name: "", players: "8", packs: "3", packSize: "15" },
+
+  fileSettings = { id: "cubeFile", type: "text/plain", maxSize: 10 * 1024 * 1024 /* = 10 MB */, },
+
+  urlLength = 9
+
+// Advanced Tweaks + Debug Settings
 
 export const refreshOnRefocusDelay = 3 * 60 * 1000
 

@@ -1,19 +1,13 @@
 import type { ErrResponse, ListResponse } from "pages/api/setup/checkList"
+import z from "backend/libs/validation"
+import { commonOptions, cubeOptions } from "./setup.validation"
 
-interface CommonOptions {
-  name: string,
-  playerCount: number,
-  roundCount: number,
-  hostSessionId?: string,
-}
+const commonOptionsObj = z.object(commonOptions)
 
-export interface GenericOptions extends CommonOptions {
+export type CubeOptions = z.infer<typeof cubeOptions>
+
+export interface GenericOptions extends z.infer<typeof commonOptionsObj> {
   packs: string[][],
-}
-
-export interface CubeOptions extends CommonOptions {
-  packSize: number,
-  cardList: string[],
 }
 
 export type GameOptions = {

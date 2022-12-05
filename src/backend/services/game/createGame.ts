@@ -2,14 +2,14 @@ import type { CubeOptions, GenericOptions } from 'types/setup'
 import prisma from '../../libs/db'
 import { createPacks, createPlayers, randomUrl } from '../../utils/game/game.utils'
 
-export async function newCubeGame({ packSize, cardList, ...options }: CubeOptions) {
-  return newGame({ ...options, packs: createPacks(cardList, options.playerCount * options.roundCount, packSize) })
+export async function newCubeGame({ packSize, cardList, ...options }: CubeOptions, hostSessionId?: string) {
+  return newGame({ ...options, packs: createPacks(cardList, options.playerCount * options.roundCount, packSize) }, hostSessionId)
 }
 
 
 // Generic Creator
 
-async function newGame(options: GenericOptions) {
+async function newGame(options: GenericOptions, sessionId?: string) {
 
   const { id, url } = await prisma.game.create({ data: {
     name: options.name,
@@ -25,7 +25,7 @@ async function newGame(options: GenericOptions) {
     })) },
   }})
   
-  if (!options.hostSessionId) return url
+  if (!sessionId) return url
   const host = await prisma.player.findFirst({ where: { gameId: id }})
   if (!host) return url
   
@@ -33,7 +33,7 @@ async function newGame(options: GenericOptions) {
   await prisma.$transaction([
     prisma.player.update({
       where: { id: host.id },
-      data: { sessionId: options.hostSessionId }
+      data: { sessionId }
     }),
     prisma.game.update({
       where: { id },
