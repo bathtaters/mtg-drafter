@@ -3,7 +3,7 @@ import { useState } from "react"
 import PlayerMenu from "./PlayerMenu"
 import PlayerContainerStyle, { ColorTheme } from "./PlayerContainerStyle"
 import { EmptyPlayerContainer, StatsStyle, PlayerNameEditor, UserHeader, FullStatsWrapper, FullStatsDivider } from "./PlayerContainerElemStyles"
-import { nameCharLimit } from "assets/constants"
+import { setupLimits } from "assets/constants"
 
 
 export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost }: ContainerSmallProps) => (
@@ -23,7 +23,7 @@ export const PlayerContainerFull = ({ player, holding, maxPick, saveDeck, openLa
     <PlayerContainerStyle color="self" isHost={!!openHost}
 
       title={<PlayerNameEditor
-        value={player.name || 'Player'} {...nameCharLimit}
+        value={player.name || 'Player'} {...setupLimits.name}
         isEditing={editingName} setEditing={setEditingName} onSubmit={renamePlayer}
       />}
 

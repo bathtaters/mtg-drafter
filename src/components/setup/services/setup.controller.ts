@@ -1,11 +1,11 @@
 import { useState, useCallback, FormEventHandler } from "react"
 import useCreateGame from "./createGame.controller"
 import useCubeFile from "./cubeFile.controller"
-import { defaultOptions } from "./setup.utils"
+import { setupDefaults } from "assets/constants"
 
 
 export default function useSetupController() {
-  const [ options, setOptions ] = useState(defaultOptions)
+  const [ options, setOptions ] = useState(setupDefaults)
   const { file, setFile, loading: fileLoading } = useCubeFile()
 
   const setName     = useCallback((value: string) => setOptions((curr) => ({ ...curr, name: value     })), [setOptions])

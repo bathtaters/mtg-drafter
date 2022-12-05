@@ -2,6 +2,7 @@ import type { Game, Player } from '@prisma/client'
 import { nanoid } from 'nanoid'
 import { gameUrlRegEx } from 'assets/urls'
 import { getNeighborIdx } from 'components/game/shared/game.utils'
+import { urlLength } from 'assets/constants'
 
 export const parseGameURL = (url: string) => (url.match(gameUrlRegEx) || [])[1]
 
@@ -22,7 +23,7 @@ export function createPacks(cards: string[], packCount: number, packSize: number
 
 export const createPlayers = (playerCount: number) => [...Array(playerCount)].map((_,idx) => ({ name: `Player ${idx + 1}` }))
 
-export const randomUrl = () => nanoid(9)
+export const randomUrl = () => nanoid(urlLength)
 
 export const getNextPlayerId = (playerId: Player['id'], game?: Pick<Game, "round"|"roundCount"> & { players: Array<{ id: Player['id'] }> }) => {
   if (!game || game.players.length <= 1) return undefined
