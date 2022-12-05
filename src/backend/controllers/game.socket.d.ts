@@ -1,7 +1,7 @@
 import type { Event, Server, Socket } from 'socket.io'
 import type { Socket as Client } from 'socket.io-client'
-import type { Game, GameCard, Pack, Player } from '@prisma/client'
-import type { PlayerFull, BasicLands, Board, PlayerStatus } from 'types/game'
+import type { Game, GameCard, Pack, Player, PlayerStatus } from '@prisma/client'
+import type { PlayerFull, BasicLands, Board } from 'types/game'
 
 export interface GameServerToClient {
   updateTitle: (title: Game['name']) => void;
@@ -9,6 +9,7 @@ export interface GameServerToClient {
   updatePick:  (playerId: Player['id'], pick: Player['pick'], passingToId?: Player['id']) => void;
   updateName:  (playerId: Player['id'], name: Player['name']) => void;
   updateSlot:  (playerId: Player['id'], sessionId: Player['sessionId']) => void;
+  error:       (message: string) => void;
 }
 
 export interface GameClientToServer {
@@ -24,13 +25,8 @@ export interface GameClientToServer {
 
 export interface GameServerToServer {}
 
-export interface GameSocketData {
-  gameUrl:    string;
-  sessionId:  string;
-}
-
-export type GameServer = Server<GameClientToServer, GameServerToClient, GameServerToServer, GameSocketData>
-export type GameSocket = Socket<GameClientToServer, GameServerToClient, GameServerToServer, GameSocketData>
+export type GameServer = Server<GameClientToServer, GameServerToClient, GameServerToServer>
+export type GameSocket = Socket<GameClientToServer, GameServerToClient, GameServerToServer>
 export type GameClient = Client<GameServerToClient, GameClientToServer>
 
 export type GameMiddleware = (ev: Event, next: (err?: Error) => void, socket: GameSocket, io: GameServer) => Promise<any>

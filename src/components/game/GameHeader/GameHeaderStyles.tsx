@@ -1,5 +1,5 @@
 import type { MouseEventHandler, ReactNode } from "react"
-import type { GameStatus } from "types/game"
+import type { GameStatus } from "@prisma/client"
 import LinkIcon from "components/svgs/LinkIcon"
 import PackIcon from "components/svgs/PackIcon"
 

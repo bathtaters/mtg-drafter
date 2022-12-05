@@ -1,6 +1,6 @@
 import { MouseEvent, useEffect } from "react"
-import type { GameCard, Board, Game } from "@prisma/client"
-import type { CardOptions, PackFull, PickCard, SwapCard, TabLabels } from "types/game"
+import type { GameCard, Board, Game, TabLabels } from "@prisma/client"
+import type { CardOptions, PackFull, PickCard, SwapCard } from "types/game"
 import { useCallback, useRef, useState } from "react"
 
 const DBL_CLICK_DELAY = 500

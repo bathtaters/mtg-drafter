@@ -12,11 +12,6 @@ datasource db {
 
 // Enums
 
-enum Board {
-  main
-  side
-}
-
 enum Color {
   W
   U
@@ -40,6 +35,28 @@ enum Side {
   c
   d
   e
+}
+
+enum Board {
+  main
+  side
+}
+
+enum TabLabels {
+  pack
+  main
+  side
+}
+
+enum GameStatus {
+  start
+  active
+  end
+}
+
+enum PlayerStatus {
+  join
+  leave
 }
 
 enum DataType {
@@ -66,7 +83,7 @@ model Settings {
 }
 
 model Game {
-  id          String @id @default(uuid())
+  id          String @id @default(cuid())
   name        String
   url         String @unique
 
@@ -157,4 +174,11 @@ model GameCard {
   cardId    String
   packId    String
   playerId  String?
+}
+
+model Enums {
+  id           String @id
+  TabLabels    TabLabels
+  GameStatus   GameStatus
+  PlayerStatus PlayerStatus
 }

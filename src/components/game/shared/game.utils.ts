@@ -1,5 +1,5 @@
-import type { Game, Player, GameCard, Board } from "@prisma/client"
-import type { GameStatus, PackFull } from "types/game"
+import type { Game, Player, GameCard, Board, GameStatus } from "@prisma/client"
+import type { PackFull } from "types/game"
 
 export const getBoard = <C extends GameCard>(playerCards: C[], board: Board) => playerCards.filter(({ board: cardBoard }) => board === cardBoard)
 

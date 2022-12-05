@@ -1,6 +1,6 @@
 import type { MouseEventHandler } from "react"
-import type { CardFull, TabLabels } from "types/game"
-import { Board } from "@prisma/client"
+import type { CardFull } from "types/game"
+import { Board, TabLabels } from "@prisma/client"
 import RenderedCard from "./RenderedCard/RenderedCard"
 import { CardWrapper, FlipButton, ImgWrapper, SwapButton } from "./GameCardStyles"
 import useCardImage from "./image.controller"

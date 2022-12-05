@@ -1,23 +1,17 @@
-import type { Card, Game, Pack, GameCard, Player, Board } from '@prisma/client'
+import type { Card, Game, Pack, GameCard, Player, Board, Color, PlayerStatus } from "@prisma/client"
 import type { SortKey } from "components/base/services/cardSort.services"
+import z from "backend/libs/validation"
+import { boardLands } from "./game.validation"
 
-export type ColorLower = "w" | "u" | "b" | "r" | "g"
+export type CardOptions = { width: string, showArt: boolean, sort?: SortKey }
 
-export type GameStatus = "start" | "active" | "end"
-
-export const TabLabels = ['pack', 'main', 'side'] as const
-export type TabLabels = (typeof TabLabels)[number]
-
-export type BoardLands = Record<ColorLower, number>
+export type BoardLands = z.infer<typeof boardLands>
 export type BasicLands = { [board in Board]: BoardLands } & { pack: never }
 
 export type CardFull = Card & { otherFaces: Card[] }
 export type GameCardFull = GameCard & { card: CardFull }
 export type PackFull = Pack & { cards: GameCardFull[] }
 export type PlayerFull = Player & { cards: GameCardFull[], basics: BasicLands }
-
-export type PlayerStatus = "join" | "leave"
-export type CardOptions = { width: string, showArt: boolean, sort?: SortKey }
 
 export interface ServerSuccess {
   options: Game,

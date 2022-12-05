@@ -1,6 +1,5 @@
-import type { GameCard } from '@prisma/client'
 import type { PlayerFull } from 'types/game.d'
-import { TabLabels } from 'types/game.d'
+import { GameCard, TabLabels } from '@prisma/client'
 import { TabsWrapper, TabStyle } from './GameLayoutStyles'
 import { getBoard } from '../shared/game.utils'
 import { cardCounter } from 'assets/strings'
@@ -13,9 +12,11 @@ type Props = {
   hidePack?: boolean,
 }
 
+const allLabels = Object.values(TabLabels)
+const labelsMinusPack = allLabels.slice(1)
 
 export default function ContainerTabs({ pack, player, selectedTab, selectTab, hidePack }: Props) {
-  const tabs = hidePack ? TabLabels.slice(1) : TabLabels
+  const tabs = hidePack ? labelsMinusPack : allLabels
 
   return (
     <TabsWrapper>

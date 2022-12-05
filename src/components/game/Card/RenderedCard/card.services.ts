@@ -1,5 +1,4 @@
-import type { Card } from "@prisma/client"
-import type { ColorLower } from "types/game"
+import type { Card, Color } from "@prisma/client"
 import { bgdClass } from "components/base/styles/manaIcons"
 
 
@@ -21,5 +20,5 @@ export const symbolFix = (text: string | null, shadow?: boolean) => !text ? '' :
 export const splitLines = (text: string | null) => !text ? [] : text.split('\n')
 
 export const getBgdColor = ({ colors, types }: Card) => 
-  colors.length == 1 ? bgdClass[colors[0].toLowerCase() as ColorLower] :
+  colors.length == 1 ? bgdClass[colors[0].toLowerCase() as Lowercase<Color>] :
   colors.length ? bgdClass.multi : types.includes('Land') ? bgdClass.land : bgdClass.none

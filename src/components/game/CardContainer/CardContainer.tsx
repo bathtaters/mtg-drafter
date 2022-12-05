@@ -1,5 +1,6 @@
 import type { ReactNode, MouseEvent, MouseEventHandler } from "react"
-import type { CardFull, CardOptions, BoardLands, TabLabels } from "types/game"
+import type { TabLabels } from "@prisma/client"
+import type { CardFull, CardOptions, BoardLands } from "types/game"
 import Card from "../Card/Card"
 import ContainerHeader from "./CardContainerHeader"
 import { CardContainerWrapper, CardsWrapper, NoPack, EmptyPack, EmptyBoard, LoadingPack } from "./CardContainerStyles"

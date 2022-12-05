@@ -1,5 +1,6 @@
 import type { MouseEventHandler, ReactNode } from "react"
-import type { BoardLands, ColorLower, TabLabels } from "types/game"
+import type { Color, TabLabels } from "@prisma/client"
+import type { BoardLands } from "types/game"
 import { CardCounter, ContainerHeaderStyle, ContainerLabelStyle, LandButton, LandContainerStyle, LandCounterStyle } from "./CardContainerStyles"
 import { colorClass, colorPip, hoverClass } from "components/base/styles/manaIcons"
 import { colorOrder } from "assets/constants"
@@ -7,7 +8,7 @@ import { cardCounter } from "assets/strings"
 import { getObjectSum, titleCase } from "components/base/services/common.services"
 import { containerIcon } from "../GameBody/GameLayoutStyles"
 
-const LandCounter = ({ color, count }: { color: ColorLower, count: number }) => !count ? null : (
+const LandCounter = ({ color, count }: { color: Lowercase<Color>, count: number }) => !count ? null : (
   <LandCounterStyle className={`${colorClass[color]} ${hoverClass[color]} border-solid border-1`}>
     <span className={colorPip[color]} />
     <span>{count}</span>

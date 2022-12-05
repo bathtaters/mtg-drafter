@@ -1,5 +1,5 @@
-import type { Game } from "@prisma/client"
-import type { BoardLands, GameStatus } from "types/game"
+import type { Game, GameStatus } from "@prisma/client"
+import type { BoardLands } from "types/game"
 import { getObjectSum } from "components/base/services/common.services"
 
 export const FullGame = () => <p className="opacity-70 italic">

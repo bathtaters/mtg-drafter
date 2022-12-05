@@ -1,7 +1,6 @@
-import { Rarity } from "@prisma/client"
-import { ColorLower } from "types/game"
+import { Color, Rarity } from "@prisma/client"
 
-export const colorClass: Record<ColorLower, string> = {
+export const colorClass: Record<Lowercase<Color>, string> = {
   w: "text-ms bg-msw",
   u: "text-ms bg-msu",
   b: "text-ms bg-msb",
@@ -9,7 +8,7 @@ export const colorClass: Record<ColorLower, string> = {
   g: "text-ms bg-msg",
 }
 
-export const hoverClass: Record<ColorLower, string> = {
+export const hoverClass: Record<Lowercase<Color>, string> = {
   w: "hover:text-msw hover:bg-ms border-msw",
   u: "hover:text-msu hover:bg-ms border-msu",
   b: "hover:text-msb hover:bg-ms border-msb",
@@ -17,7 +16,7 @@ export const hoverClass: Record<ColorLower, string> = {
   g: "hover:text-msg hover:bg-ms border-msg",
 }
 
-export const colorPip: Record<ColorLower, string> = {
+export const colorPip: Record<Lowercase<Color>, string> = {
   w: "ms ms-w",
   u: "ms ms-u",
   b: "ms ms-b",
@@ -25,7 +24,7 @@ export const colorPip: Record<ColorLower, string> = {
   g: "ms ms-g",
 }
 
-export const bgdClass: Record<ColorLower|"none"|"multi"|"land", string> = {
+export const bgdClass: Record<Lowercase<Color>|"none"|"multi"|"land", string> = {
   w: 'bg-bgw',
   u: 'bg-bgu',
   b: 'bg-bgb',
