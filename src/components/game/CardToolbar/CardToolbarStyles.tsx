@@ -17,8 +17,8 @@ export const ToolbarCollapse = (props: CollapseProps) => (
 )
 
 export const ToolbarButton = [
-  <CardIcon innerIcon="X"    className="h-8 fill-secondary text-secondary-content" />,
-  <CardIcon innerIcon="gear" className="h-8 fill-secondary-content text-secondary" />,
+  <CardIcon key="open"  innerIcon="X"    className="h-8 fill-secondary text-secondary-content" />,
+  <CardIcon key="close" innerIcon="gear" className="h-8 fill-secondary-content text-secondary" />,
 ]
 
 
