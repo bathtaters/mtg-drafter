@@ -26,7 +26,7 @@ export default function useToolbar({ setCardOptions }: ToolbarProps) {
 
     window.addEventListener('resize', limitWidth)
     return () => window.removeEventListener('resize', limitWidth)
-  }, [zoom])
+  }, [zoom, setTempZoom])
 
   useEffect(() => { setCardOptions((opt) => ({ ...opt, showArt: art })) }, [art])
   useEffect(() => { setCardOptions((opt) => ({ ...opt, sort: sortKeys[sort] })) }, [sort])
