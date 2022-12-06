@@ -1,3 +1,5 @@
+export const matchWidth = /w-\[([0-9\.]+)rem\]/
+
 const cardZoomLevels = [
   'w-[11.45rem] h-[16rem] text-[0.69rem]',
   'w-[12.89rem] h-[18rem] text-[0.78rem]',
