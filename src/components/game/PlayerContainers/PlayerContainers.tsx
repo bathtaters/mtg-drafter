@@ -14,7 +14,7 @@ export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost }
 )
 
 
-export const PlayerContainerFull = ({ player, holding, maxPick, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => {
+export const PlayerContainerFull = ({ player, holding, maxPick, isConnected, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => {
   const [ editingName, setEditingName ] = useState(false)
   
   if (!player) return <EmptyPlayerContainer />
@@ -27,7 +27,7 @@ export const PlayerContainerFull = ({ player, holding, maxPick, saveDeck, openLa
         isEditing={editingName} setEditing={setEditingName} onSubmit={renamePlayer}
       />}
 
-      header={<UserHeader isHost={!!openHost} />}
+      header={<UserHeader isHost={!!openHost} isConnected={isConnected} />}
 
       subtitle={<FullStatsWrapper>
         <StatsStyle type="pick" count={!player.pick || player.pick > maxPick ? undefined : player.pick} />
@@ -54,6 +54,7 @@ interface ContainerProps {
 }
 
 interface ContainerFullProps extends ContainerProps {
+  isConnected: boolean
   saveDeck?:  (() => void),
   openLands?:  (() => void)
   openHost?: (() => void),

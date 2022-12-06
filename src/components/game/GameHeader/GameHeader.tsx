@@ -10,6 +10,7 @@ type Props = {
   game?: GameProps['options'], players: GameProps['players'],
   playerCards?: GameCardFull[],
   playerIdx: number, holding: number[],
+  isConnected: boolean,
   saveDeck?:   (() => void),
   dropPlayer?: (() => void),
   openLands?:  (() => void),
@@ -18,7 +19,7 @@ type Props = {
 }
 
 
-export default function GameHeader({ game, players, playerIdx, holding, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
+export default function GameHeader({ game, players, playerIdx, holding, isConnected, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
 
   const { oppIdx, handleShare, gameStatus, isRight, packSize } = useGameHeader(game, players, playerIdx)
   
@@ -35,6 +36,7 @@ export default function GameHeader({ game, players, playerIdx, holding, saveDeck
             <PlayerContainerFull
               player={players[playerIdx]}
               holding={holding[playerIdx]}
+              isConnected={isConnected}
               saveDeck={saveDeck}
               openLands={openLands}
               openHost={openHost}

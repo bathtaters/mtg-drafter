@@ -30,12 +30,12 @@ export default function PlayerContainerStyle(
           {children}
         </div>
 
-        {header && <div className="stat-title text-xs sm:text-base">{header}</div>}
+        {header && <div className="stat-title text-xs sm:text-base opacity-80">{header}</div>}
         
         <div className={`stat-value font-medium ${
           isMini ? 'row-span-3 self-center text-base flex items-center overflow-hidden' : 'flex items-center'
         } ${
-          disconnected ? "opacity-60 italic" : ''} ${color ? themes[color][1] : ''
+          disconnected && isMini ? "opacity-60 italic" : ''} ${color ? themes[color][1] : ''
         }`}>
           {!isMini ? null : color === 'self' ? <UserMarker /> : isHost ? <HostMarker /> : <span className="w-1" />}
           <span className={isMini ? "ml-1 flex-grow truncate" : "text-lg sm:text-2xl flex-grow -ml-2 mb-1"}>{title}</span>

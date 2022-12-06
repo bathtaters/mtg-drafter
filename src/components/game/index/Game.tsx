@@ -25,7 +25,7 @@ export default function Game(props: ServerProps) {
     <SetPageTitle title={game?.name || ""} />
 
     <GameHeader
-      game={game} players={players} playerIdx={playerIdx} holding={holding} saveDeck={saveDeck}
+      game={game} players={players} playerIdx={playerIdx} holding={holding} isConnected={isConnected} saveDeck={saveDeck}
       openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer} dropPlayer={dropPlayer}
     />
     

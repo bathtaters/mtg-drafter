@@ -14,9 +14,9 @@ export const UserMarker = () => <UserIcon className="fill-current opacity-70 h-2
 
 export const HostBadge = () => <span className="badge badge-info badge-sm align-top ml-2"><HostMarker />&nbsp;Host</span>
 
-export const UserHeader = ({ isHost }: { isHost: boolean }) => (
+export const UserHeader = ({ isConnected, isHost }: { isConnected: boolean, isHost: boolean }) => (
   <span>
-    <UserIcon className="fill-current h-4 sm:h-5 inline-block" />{isHost && <HostBadge />}
+    <UserIcon className={`${isConnected ? "fill-success" : "fill-error"} h-4 sm:h-5 inline-block`} />{isHost && <HostBadge />}
   </span>
 )
 
