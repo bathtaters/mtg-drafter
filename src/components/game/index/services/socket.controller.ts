@@ -1,3 +1,4 @@
+import type { Game } from '@prisma/client'
 import type { GameClient } from 'backend/controllers/game.socket.d'
 import type { LocalController } from './local.controller'
 import type { Socket } from 'types/game'
@@ -62,11 +63,11 @@ export function useGameEmitters(local: LocalController, { socket }: { socket: Ga
 
   const nextRound: Socket.NextRound = useCallback(() => {
     if (!socket?.connected) return console.error('Error fetching next round: Not connected to server')
-    if (!local.game) return console.error('Error fetching next round: Game not loaded')
+    if (!local.game || !('round' in local.game)) return console.error('Error fetching next round: Game not loaded')
 
     local.setLoadingPack((v) => v + 1)
     socket.emit('nextRound', local.game.id, local.game.round + 1)
-  }, [socket?.connected, local.game?.round])
+  }, [socket?.connected, (local.game as Game)?.round])
 
   const pickCard: Socket.PickCard = useCallback((gameCardId) => {
     if (!socket?.connected || !local.player) return console.error('Error picking card: Not connected to server')

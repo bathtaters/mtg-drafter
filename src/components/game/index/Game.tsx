@@ -1,3 +1,4 @@
+import type { Game } from '@prisma/client'
 import type { ServerProps, GameProps, BasicLands } from 'types/game'
 import GameHeader from 'components/game/GameHeader/GameHeader'
 import PlayerJoin from 'components/game/PlayerJoin/PlayerJoin'
@@ -61,7 +62,7 @@ export default function Game(props: ServerProps) {
         isOpen={hostModal} setOpen={toggleHostModal}
         title={game?.name} setTitle={setTitle}
         players={players} renamePlayer={renamePlayer}
-        hostId={game?.hostId || null} setStatus={setStatus}
+        hostId={(game as Game).hostId} setStatus={setStatus}
     />}
   </>)
 }
