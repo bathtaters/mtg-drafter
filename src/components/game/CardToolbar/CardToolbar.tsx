@@ -1,5 +1,6 @@
 import { ToolbarContainer, ToolbarCollapse, ToolbarButton, CardSort, ArtToggle, ArtSize, CardArtWrapper } from "./CardToolbarStyles"
-import useToolbar, { sortList, ToolbarProps } from "./toolbar.controller"
+import useToolbar, { ToolbarProps } from "./toolbar.controller"
+import { sortList } from "./toolbar.utils"
 import cardZoomLevels from "./cardZoomLevels"
 
 
