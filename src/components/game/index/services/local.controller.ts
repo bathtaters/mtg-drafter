@@ -83,12 +83,17 @@ export default function useLocalController(props: ServerProps) {
     updatePack(filterPackIds(newPack))
   }, [])
 
+  const reload = useCallback(() => {
+    setLoadingAll((v) => v + 1)
+    reloadData({ game, updateLocal }).finally(() => setLoadingAll((v) => v && v - 1))
+  }, [game?.url, updateLocal])
+
 
   return {
     loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer, updateGame, updateLocal,
     game, player, players, playerIdx, holding, isHost, isReady, pack, packs, slots,
     sessionId: props.sessionId,
-    renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus,
+    renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus, reload,
   }
 }
 

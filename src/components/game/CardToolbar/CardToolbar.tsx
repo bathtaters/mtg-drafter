@@ -1,4 +1,4 @@
-import { ToolbarContainer, ToolbarCollapse, ToolbarButton, CardSort, ArtToggle, ArtSize, CardArtWrapper } from "./CardToolbarStyles"
+import { ToolbarContainer, ToolbarCollapse, ToolbarButton, CardSort, ArtToggle, ArtSize, CardArtWrapper, ReloadButton } from "./CardToolbarStyles"
 import useToolbar, { ToolbarProps } from "./toolbar.controller"
 import { sortList } from "./toolbar.utils"
 import cardZoomLevels from "./cardZoomLevels"
@@ -8,7 +8,9 @@ export default function CardToolbar(props: ToolbarProps) {
 
   const { art, sort, zoom, setArt, setSort, setZoom } = useToolbar(props)
 
-  return (
+  return (<>
+    {props.clickReload && <ReloadButton onClick={props.clickReload} />}
+
     <ToolbarCollapse button={ToolbarButton} defaultOpen={false}>
       <ToolbarContainer>
 
@@ -24,6 +26,6 @@ export default function CardToolbar(props: ToolbarProps) {
         </CardArtWrapper>
       </ToolbarContainer>
     </ToolbarCollapse>
-  )
+  </>)
 }
 

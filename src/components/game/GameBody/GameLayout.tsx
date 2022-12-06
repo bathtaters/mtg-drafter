@@ -19,10 +19,11 @@ type Props = {
   swapCard: SwapCard,
   clickRoundBtn?: () => void,
   onLandClick?: MouseEventHandler,
+  clickReload?: () => void,
   loadingPack: boolean,
 }
 
-export default function GameLayout({ game, player, pack, clickRoundBtn, onLandClick, pickCard, swapCard, loadingPack }: Props) {
+export default function GameLayout({ game, player, pack, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, loadingPack }: Props) {
 
   const {
     selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
@@ -40,7 +41,7 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, onLandCl
     <GameLayoutWrapper>
       <ContainerTabs pack={pack?.cards} player={player} selectedTab={selectedTab} selectTab={selectTab} hidePack={hidePack} />
 
-      <CardToolbar setCardOptions={setCardOptions} />
+      <CardToolbar setCardOptions={setCardOptions} clickReload={clickReload} />
 
       {selectedTab === 'pack' ?
         <CardContainer

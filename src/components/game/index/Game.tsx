@@ -18,7 +18,7 @@ export default function Game(props: ServerProps) {
     game, player, players, playerIdx, isConnected, loadingPack, loadingAll,
     holding, isReady, pack, landModal, hostModal, slots,
     saveDeck, toggleLandModal, toggleHostModal, renamePlayer, setTitle,
-    nextRound, pickCard, swapCard, setLands, setStatus, dropPlayer,
+    nextRound, pickCard, swapCard, setLands, setStatus, dropPlayer, reload,
   } = useGameController(props)
 
   return (<>
@@ -40,6 +40,7 @@ export default function Game(props: ServerProps) {
             pack={pack} pickCard={pickCard} swapCard={swapCard}
             clickRoundBtn={isReady ? () => nextRound() : undefined}
             onLandClick={toggleLandModal}
+            clickReload={reload}
             loadingPack={!!loadingPack}
           />
         }

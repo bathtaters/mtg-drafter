@@ -5,7 +5,7 @@ import { sortKeys } from "components/base/services/cardSort.services"
 import cardZoomLevels from "./cardZoomLevels"
 import { zoomToPixels, warn } from "./toolbar.utils"
 
-export type ToolbarProps = { setCardOptions: Dispatch<SetStateAction<CardOptions>> }
+export type ToolbarProps = { setCardOptions: Dispatch<SetStateAction<CardOptions>>, clickReload?: () => void }
 
 export default function useToolbar({ setCardOptions }: ToolbarProps) {
   

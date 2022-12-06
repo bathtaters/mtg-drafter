@@ -1,8 +1,9 @@
-import type { ReactNode } from "react"
+import type { ButtonHTMLAttributes, ReactNode } from "react"
 import CollapseContainer, { Props as CollapseProps } from "components/base/common/Collapse"
 import Selector, { Props as SelectorProps } from "components/base/common/FormElements/Selector"
 import RangeInput, { Props as RangeProps } from "components/base/common/FormElements/RangeInput"
 import IconToggle, { Props as ToggleProps } from "components/base/common/FormElements/IconToggle"
+import ReloadIcon from "components/svgs/ReloadIcon"
 import ArtIcon from "components/svgs/ArtIcon"
 import EyeIcon from "components/svgs/EyeIcon"
 import SortIcon from "components/svgs/SortIcon"
@@ -14,6 +15,12 @@ export const ToolbarContainer = ({ children }: { children: ReactNode }) => (
 
 export const ToolbarCollapse = (props: CollapseProps) => (
   <CollapseContainer className="-mt-7 pt-7" buttonClass="absolute right-0 top-4 p-2 btn-ghost swap-rotate" {...props} />
+)
+
+export const ReloadButton = (props: ButtonHTMLAttributes<HTMLButtonElement>) => (
+  <button {...props} type="button" className="absolute left-0 top-4 btn btn-circle btn-secondary btn-sm">
+    <ReloadIcon className="w-5 fill-current" />
+  </button>
 )
 
 export const ToolbarButton = [

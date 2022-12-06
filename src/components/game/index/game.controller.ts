@@ -46,6 +46,7 @@ export default function useGameController(props: ServerProps) {
     landModal, hostModal, saveDeck,
     toggleLandModal: local.player?.basics ? () => setLandModal((o) => !o) : undefined,
     toggleHostModal: local.isHost ? (() => setHostModal((o) => !o)) : undefined,
-    dropPlayer: enableDropping && local.player ? () => setStatus((local.player as Player).id, 'leave') : undefined
+    dropPlayer: enableDropping && local.player ? () => setStatus((local.player as Player).id, 'leave') : undefined,
+    reload: local.game?.url ? local.reload : undefined,
   }
 }
