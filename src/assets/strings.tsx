@@ -1,9 +1,10 @@
 import type { Game, GameStatus } from "@prisma/client"
 import type { BoardLands } from "types/game"
+import Link from "next/link"
 import { getObjectSum } from "components/base/services/common.services"
 
 export const FullGame = () => <p className="opacity-70 italic">
-  Wait here for an opening or <a href="/" className="link link-primary">start a new one</a>.
+  Wait here for an opening or <Link href="/"><a className="link link-primary link-hover">start a new one</a></Link>.
 </p>
 
 export const roundCounter = (status?: GameStatus, game?: Game) =>
