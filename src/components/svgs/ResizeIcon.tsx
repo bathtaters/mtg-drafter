@@ -1,7 +1,7 @@
 export default function ResizeIcon({ className }: { className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 240" className={className}>
-      <g fill="none" stroke-width="8">
+      <g fill="none" strokeWidth="8">
         <rect rx="4" height="230" width="150" y="5" x="10" stroke-dasharray="17,10" />
         <rect rx="4" height="115" width="75" y="120" x="10"/>
       </g>

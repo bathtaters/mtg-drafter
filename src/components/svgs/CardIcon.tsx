@@ -1,7 +1,7 @@
 export default function CardIcon({ innerIcon, className }: { innerIcon?: "X"|"gear", className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 125 160" className={className}>
-      <rect className="stroke-current" stroke-width="6" x="5" y="5" width="115" height="150" rx="10"/>
+      <rect className="stroke-current" strokeWidth="6" x="5" y="5" width="115" height="150" rx="10"/>
       { innerIcon === 'X' ?
         <path className="fill-current" d="m37.39822,40.82525l-14.07297,14.07297l7.1862,7.1862l17.76587,18.0653l-17.76587,17.76587l-7.1862,6.88677
           l14.07297,14.37239l7.1862,-7.1862l18.0653,-18.0653l17.76587,18.0653l6.88677,7.1862l14.37239,-14.37239l-7.1862,-6.88677l-18.0653,-17.76587
