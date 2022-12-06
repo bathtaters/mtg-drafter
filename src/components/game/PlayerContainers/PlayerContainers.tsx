@@ -6,15 +6,17 @@ import { EmptyPlayerContainer, StatsStyle, PlayerNameEditor, UserHeader, FullSta
 import { setupLimits } from "assets/constants"
 
 
-export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost }: ContainerSmallProps) => (
+export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost, hideStats }: ContainerSmallProps) => (
   <PlayerContainerStyle title={player.name} isMini={true} disconnected={!player.sessionId} color={color} isHost={isHost}>
-    <StatsStyle isMini={true} type="pick"    count={!player.pick || player.pick > maxPick ? undefined : player.pick} />
-    <StatsStyle isMini={true} type="holding" count={holding} />
+    { hideStats ? <StatsStyle /> : <>
+      <StatsStyle isMini={true} type="pick"    count={!player.pick || player.pick > maxPick ? undefined : player.pick} />
+      <StatsStyle isMini={true} type="holding" count={holding} />
+    </>}
   </PlayerContainerStyle>
 )
 
 
-export const PlayerContainerFull = ({ player, holding, maxPick, isConnected, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => {
+export const PlayerContainerFull = ({ player, holding, maxPick, isConnected, hideStats, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => {
   const [ editingName, setEditingName ] = useState(false)
   
   if (!player) return <EmptyPlayerContainer />
@@ -29,11 +31,11 @@ export const PlayerContainerFull = ({ player, holding, maxPick, isConnected, sav
 
       header={<UserHeader isHost={!!openHost} isConnected={isConnected} />}
 
-      subtitle={<FullStatsWrapper>
-        <StatsStyle type="pick" count={!player.pick || player.pick > maxPick ? undefined : player.pick} />
+      subtitle={<FullStatsWrapper>{ hideStats ? <span /> : <>
+        <StatsStyle type="pick" count={hideStats || !player.pick || player.pick > maxPick ? undefined : player.pick} />
         <FullStatsDivider />
-        <StatsStyle type="holding" count={holding} />
-      </FullStatsWrapper>}
+        <StatsStyle type="holding" count={hideStats ? undefined : holding} />
+      </>}</FullStatsWrapper>}
     >
 
       <PlayerMenu
@@ -51,6 +53,7 @@ interface ContainerProps {
   player: Player,
   maxPick: number,
   holding?: number,
+  hideStats: boolean,
 }
 
 interface ContainerFullProps extends ContainerProps {

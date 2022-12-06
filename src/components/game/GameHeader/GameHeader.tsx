@@ -43,6 +43,7 @@ export default function GameHeader({ game, players, playerIdx, holding, isConnec
               dropPlayer={dropPlayer}
               renamePlayer={renamePlayer}
               maxPick={packSize}
+              hideStats={gameStatus === 'end' || gameStatus === 'start'}
             />
       
           <PlayerContainersWrapper rightArrow={isRight}>
@@ -54,6 +55,7 @@ export default function GameHeader({ game, players, playerIdx, holding, isConnec
                   color={getPlayerColor(idx, playerIdx, oppIdx, game)}
                   holding={holding[idx]}
                   maxPick={packSize}
+                  hideStats={gameStatus === 'end' || gameStatus === 'start'}
                 />
                 
               )}

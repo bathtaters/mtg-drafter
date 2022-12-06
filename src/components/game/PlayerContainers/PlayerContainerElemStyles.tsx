@@ -23,7 +23,9 @@ export const UserHeader = ({ isConnected, isHost }: { isConnected: boolean, isHo
 export const FullStatsWrapper = ({ children }: { children: ReactNode }) => <div className="flex items-center gap-1 px-0.5">{children}</div>
 export const FullStatsDivider = () => <span className="px-1">|</span>
 
-export const StatsStyle = ({ type, isMini, count }: { type: keyof typeof statsIcon, isMini?: boolean, count?: number }) => {
+export const StatsStyle = ({ type, isMini, count }: { type?: keyof typeof statsIcon, isMini?: boolean, count?: number }) => {
+  if (!type) return <div className="h-5" />
+  
   const Icon = statsIcon[type]
 
   return isMini ? (<>
