@@ -10,7 +10,6 @@ import useLocalController from './services/local.controller'
 import { getGameListeners, useGameEmitters } from './services/socket.controller'
 import downloadDeck from './services/downloadDeck.controller'
 import { gameAPI, socketEndpoint } from 'assets/urls'
-import { FullGame } from 'assets/strings'
 import { enableDropping, refreshOnRefocusDelay } from 'assets/constants'
 
 
@@ -46,7 +45,7 @@ export default function useGameController(props: ServerProps) {
 
     landModal, hostModal, saveDeck,
     toggleLandModal: local.player?.basics ? () => setLandModal((o) => !o) : undefined,
-    toggleHostModal: !local.game?.hostId || local.player?.id === local.game?.hostId ? (() => setHostModal((o) => !o)) : undefined,
+    toggleHostModal: local.isHost ? (() => setHostModal((o) => !o)) : undefined,
     dropPlayer: enableDropping && local.player ? () => setStatus((local.player as Player).id, 'leave') : undefined
   }
 }

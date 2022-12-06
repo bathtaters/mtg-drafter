@@ -32,3 +32,5 @@ export const getNextPlayerId = (playerId: Player['id'], game?: Pick<Game, "round
   
   return game.players[getNeighborIdx(game, game.players.length, playerIdx, true)]?.id
 }
+
+export const unregGameAdapter = ({ id, name, url }: Game) => ({ id, name, url })

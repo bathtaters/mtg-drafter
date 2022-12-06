@@ -1,7 +1,7 @@
 import type { PackFull, ServerProps, Local } from 'types/game'
 import { useCallback, useMemo, useState } from 'react'
 import { spliceInPlace, updateArrayIdx } from 'components/base/services/common.services'
-import { canAdvance, filterPackIds, getHolding, getNeighborIdx, getPackIdx, getPlayerIdx } from '../../shared/game.utils'
+import { canAdvance, filterPackIds, getHolding, getPackIdx, getPlayerIdx, getSlots, playerIsHost } from '../../shared/game.utils'
 import { reloadData } from '../game.controller'
 
 
@@ -13,18 +13,19 @@ export default function useLocalController(props: ServerProps) {
   const [ player,  updatePlayer  ] = useState(props.player || undefined)
   const [ packs,   updatePacks   ] = useState(props.packs || [])
   const [ players, updatePlayers ] = useState(props.players || [])
-  const [ slots,   updateSlots   ] = useState(props.playerSlots || [])
+  const [ slots,   updateSlots   ] = useState(getSlots(props.players))
   const [ pack,    updatePack    ] = useState<PackFull | undefined>()
   
-  const holding = getHolding(game, players)
+  const isHost = playerIsHost(player, game)
+  const holding = getHolding(players, game)
   const playerIdx = useMemo(() => getPlayerIdx(players, player), [player?.id, players.length])
-  const isReady = canAdvance(game, player, players, holding)
+  const isReady = isHost && canAdvance(game, players, holding)
 
   const nextRound: Local.NextRound = useCallback((round) => {
     updateGame((g) => g && ({ ...g, round }))
     updatePlayers((list) => list.map((p) => ({ ...p, pick: 1 })))
     updatePlayer((p) => p && ({ ...p, pick: 1 }))
-    game?.hostId && game.hostId === player?.id && setLoadingPack((v) => v && v - 1)
+    isHost && setLoadingPack((v) => v && v - 1)
   }, [])
 
 
@@ -74,18 +75,18 @@ export default function useLocalController(props: ServerProps) {
 
     updateGame(data.options)
     updatePlayer(data.player || undefined)
-    updatePacks(data.packs)
+    updatePacks(data.packs || [])
     updatePlayers(data.players)
-    updateSlots(data.playerSlots)
+    updateSlots(getSlots(data.players))
 
-    const newPack = data.packs[getPackIdx(data.options, data.players, data.player)] as PackFull | undefined
+    const newPack = data.packs?.[getPackIdx(data.options, data.players, data.player)] as PackFull | undefined
     updatePack(filterPackIds(newPack))
   }, [])
 
 
   return {
     loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer, updateGame, updateLocal,
-    game, player, players, playerIdx, holding, isReady, pack, packs, slots,
+    game, player, players, playerIdx, holding, isHost, isReady, pack, packs, slots,
     sessionId: props.sessionId,
     renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus,
   }

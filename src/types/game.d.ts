@@ -16,9 +16,16 @@ export type PlayerFull = Player & { cards: GameCardFull[], basics: BasicLands }
 export interface ServerSuccess {
   options: Game,
   players: Player[],
-  playerSlots: Player['id'][],
   packs: PackFull[],
   player: PlayerFull | null,
+  sessionId: string,
+  error?: never,
+}
+export interface ServerUnreg {
+  options: Pick<Game,"id"|"name"|"url">,
+  players: Player[],
+  packs?: never,
+  player?: never,
   sessionId: string,
   error?: never,
 }
@@ -26,12 +33,11 @@ export interface ServerFail {
   error: string,
   options?: never,
   players?: never,
-  playerSlots?: never,
   packs?: never,
   player?: never,
   sessionId?: never,
 }
-export type ServerProps = ServerSuccess | ServerFail
+export type ServerProps = ServerSuccess | ServerFail | ServerUnreg
 
 export type GameProps = Omit<Required<ServerProps>, 'error'>
 
