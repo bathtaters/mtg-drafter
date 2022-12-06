@@ -13,7 +13,7 @@ export default function SetupForm() {
 
   return (
     <FormWrapper onSubmit={submitForm}>
-      <FormTitle placeholder="New Draft" value={options.name} setValue={setName} />
+      <FormTitle placeholder="Game Title" value={options.name} setValue={setName} />
 
       <InputWrapper>
         <FieldWrapper label="Options">

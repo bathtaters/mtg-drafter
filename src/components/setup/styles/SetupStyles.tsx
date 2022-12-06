@@ -36,6 +36,7 @@ export const FormTitle = ({ placeholder, value, setValue }: { placeholder: strin
       value={setValue ? value : undefined}
       defaultValue={setValue ? undefined : value}
       onChange={setValue ? (ev) => setValue(ev.target.value) : undefined}
+      required={true}
     />
   </div>
 )
