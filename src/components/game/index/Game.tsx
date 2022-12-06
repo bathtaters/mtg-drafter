@@ -30,12 +30,12 @@ export default function Game(props: ServerProps) {
     />
     
     <BodyWrapperStyle>
-      <Loader data={isConnected || game || 404} message={props.error}>
+      <Loader data={isConnected || (game && 'round' in game) || 404} message={props.error}>
         { !player ?
           <PlayerJoin slots={slots} players={players} selectPlayer={setStatus} /> :
 
           <GameLayout
-            game={game as GameProps['options']}
+            game={game as Game}
             player={player}
             pack={pack} pickCard={pickCard} swapCard={swapCard}
             clickRoundBtn={isReady ? () => nextRound() : undefined}

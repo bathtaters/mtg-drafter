@@ -1,4 +1,5 @@
 import type { MouseEventHandler } from 'react'
+import type { Game } from '@prisma/client'
 import type { GameProps, PickCard, PlayerFull, SwapCard } from 'types/game'
 import Overlay from 'components/base/common/Overlay'
 import Spinner from 'components/base/common/Spinner'
@@ -11,7 +12,7 @@ import ContainerTabs from './ContainerTabs'
 import { getBoard, getGameStatus } from '../shared/game.utils'
 
 type Props = {
-  game: GameProps['options'],
+  game: Game,
   player: PlayerFull,
   pack?: GameProps['packs'][number],
   pickCard: PickCard,

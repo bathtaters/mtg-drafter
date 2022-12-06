@@ -67,7 +67,7 @@ export default function useLocalController(props: ServerProps) {
       ({ id }) => id === playerId, (p) => ({ ...p, sessionId })
     ))
     updatePlayer((p) => p?.id !== playerId ? p : sessionId ? ({ ...p, sessionId }) : undefined)
-    setLoadingAll((v) => v && v - 1)
+    if (!sessionId) setLoadingAll((v) => v && v - 1)
   }, [])
     
   const updateLocal = useCallback((data: ServerProps) => {

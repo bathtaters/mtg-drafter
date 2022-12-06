@@ -20,7 +20,7 @@ type Props = {
 
 export default function GameHeader({ game, players, playerIdx, holding, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
 
-  const { oppIdx, handleShare, gameStatus, isRight } = useGameHeader(game, players, playerIdx)
+  const { oppIdx, handleShare, gameStatus, isRight, packSize } = useGameHeader(game, players, playerIdx)
   
   if (!game) return <Header><GameTitle title="Game Not Found" /></Header>
 
@@ -29,7 +29,7 @@ export default function GameHeader({ game, players, playerIdx, holding, saveDeck
         <GameHeaderWrapper>
             <div>
               <GameTitle title={game.name} onClick={handleShare} />
-              <RoundCounter status={gameStatus} label={players[playerIdx] ? roundCounter(gameStatus, game) : "Waiting Room"} />
+              <RoundCounter status={gameStatus} label={players[playerIdx] && 'packSize' in game ? roundCounter(gameStatus, game) : "Waiting Room"} />
             </div>
 
             <PlayerContainerFull
@@ -40,7 +40,7 @@ export default function GameHeader({ game, players, playerIdx, holding, saveDeck
               openHost={openHost}
               dropPlayer={dropPlayer}
               renamePlayer={renamePlayer}
-              maxPick={game.packSize}
+              maxPick={packSize}
             />
       
           <PlayerContainersWrapper rightArrow={isRight}>
@@ -48,10 +48,10 @@ export default function GameHeader({ game, players, playerIdx, holding, saveDeck
 
                 <PlayerContainerSmall
                   player={play} key={String(play.id)}
-                  isHost={game.hostId ? game.hostId === play.id : false}
+                  isHost={'hostId' in game ? game.hostId === play.id : false}
                   color={getPlayerColor(idx, playerIdx, oppIdx, game)}
                   holding={holding[idx]}
-                  maxPick={game.packSize}
+                  maxPick={packSize}
                 />
                 
               )}

@@ -3,8 +3,9 @@ import type { PackFull } from "types/game"
 
 export const getBoard = <C extends GameCard>(playerCards: C[], board: Board) => playerCards.filter(({ board: cardBoard }) => board === cardBoard)
 
-export const getGameStatus = (game?: Game): GameStatus | undefined => !game ? undefined :
-  game.round < 1 ? 'start' : game.round > game.roundCount ? 'end' : 'active'
+export const getGameStatus = (game?: Partial<Game>): GameStatus | undefined =>
+  typeof game?.round !== 'number' ? undefined :
+    game.round < 1 ? 'start' : game.round > (game.roundCount || 0) ? 'end' : 'active'
 
 export const getOppIdx = (playerIdx: number, playerCount: number) => {
   const f = Math.floor(playerCount / 2);
@@ -12,8 +13,8 @@ export const getOppIdx = (playerIdx: number, playerCount: number) => {
   return (playerIdx + f) % (2 * f);
 }
 
-export const passingRight = ({ round, roundCount }: { round?: number, roundCount?: number }) =>
-  typeof round !== 'number' || round < 1 || typeof roundCount !== 'number' || round > roundCount ? undefined :
+export const passingRight = ({ round, roundCount }: Partial<Game>) =>
+  typeof round !== 'number' || round < 1 || round > (roundCount || 0) ? undefined :
     round % 2 === 0
 
 export const getPlayerIdx = (players: Player[], player?: Player | null) => !player?.id ? -1 : players.findIndex(({ id }) => id === player.id)

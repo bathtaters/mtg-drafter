@@ -104,9 +104,9 @@ export function useGameEmitters(local: LocalController, { socket }: { socket: Ga
 
     local.setLoadingAll((v) => v + 1)
     socket.emit('setStatus', playerId, status, (player) => {
-      if (!player) return reloadData(local).finally(() => local.setLoadingAll((v) => v && v - 1))
-      if (player.id && player.sessionId && local.sessionId === player.sessionId && 'cards' in player) local.updatePlayer(player)
-      local.setStatus(player.id, player.sessionId || null)
+      reloadData(local).finally(() => local.setLoadingAll((v) => v && v - 1))
+      if (player?.id && player.sessionId && local.sessionId === player.sessionId && 'cards' in player) local.updatePlayer(player)
+      if (player) local.setStatus(player.id, player.sessionId || null)
     })
   }, [socket?.connected, local.game?.id, local.sessionId, local.setStatus])
 
