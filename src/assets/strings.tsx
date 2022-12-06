@@ -9,12 +9,13 @@ export const FullGame = () => <p className="opacity-70 italic">
 
 export const roundCounter = (status?: GameStatus, game?: Game) =>
   !status ? 'Waiting Room' :
-  status === 'active' ? `Pack ${game?.round ?? '–'} of ${game?.roundCount ?? '–'}` :
+  status === 'active' || status === 'last' ? `Pack ${game?.round ?? '–'} of ${game?.roundCount ?? '–'}` :
   status === 'end' ? 'Finished' : 'Starting Soon'
 
 export const hostButtonLabel: { [label in GameStatus]: string } = {
   start:  'Start Game',
   active: 'Next Round',
+  last:   'End Game',
   end:    'End Game',
 }
 

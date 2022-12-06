@@ -5,7 +5,8 @@ export const getBoard = <C extends GameCard>(playerCards: C[], board: Board) => 
 
 export const getGameStatus = (game?: Partial<Game>): GameStatus | undefined =>
   typeof game?.round !== 'number' ? undefined :
-    game.round < 1 ? 'start' : game.round > (game.roundCount || 0) ? 'end' : 'active'
+    game.round < 1 ? 'start' : game.round > (game.roundCount || 0) ? 'end' :
+    game.round === game.roundCount ? 'last' : 'active'
 
 export const getOppIdx = (playerIdx: number, playerCount: number) => {
   const f = Math.floor(playerCount / 2);

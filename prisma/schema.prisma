@@ -52,6 +52,7 @@ enum TabLabels {
 enum GameStatus {
   start
   active
+  last
   end
 }
 

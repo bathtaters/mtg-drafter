@@ -7,6 +7,7 @@ const statusIcon: { [status in GameStatus]: ReactNode } = {
   'start':  <span     className="inline-block mr-2 opacity-80 text-base sm:text-2xl fill-base-content ms ms-dfc-day"   />,
   'end':    <span     className="inline-block mr-2 opacity-80 text-base sm:text-2xl fill-base-content ms ms-dfc-night" />,
   'active': <PackIcon className="inline-block mr-2 opacity-80 h-6 sm:h-8 fill-base-100 stroke-base-content" />,
+  'last':   <PackIcon className="inline-block mr-2 opacity-80 h-6 sm:h-8 fill-base-100 stroke-base-content" />,
 }
 
 
