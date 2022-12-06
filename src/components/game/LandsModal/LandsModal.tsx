@@ -1,4 +1,5 @@
 import type { MouseEventHandler, ReactNode } from "react"
+import type { Color } from "@prisma/client"
 import ModalWrapper from "components/base/common/Modal"
 import { ModalButton, ColorsWrapper, ColorInputWrapper, ColorLabels, ColorInput, AutoLandsWrapper, AutoLandsInput } from "./GameMenuStyles"
 import useLandsModal, { LandsModalProps } from "./lands.controller"
@@ -33,7 +34,7 @@ export default function LandsModal(props: LandsModalProps) {
 }
 
 
-type ColorProps = { label: string, main: number, setMain: NumSet, side: number, setSide: NumSet }
+type ColorProps = { label: Lowercase<Color>, main: number, setMain: NumSet, side: number, setSide: NumSet }
 
 const ColorColumn = ({ label, main, setMain, side, setSide }: ColorProps) => (
   <ColorInputWrapper label={label}>

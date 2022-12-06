@@ -1,4 +1,5 @@
 import type { ReactNode, MouseEventHandler, HTMLProps } from "react"
+import type { Color } from "@prisma/client"
 import { colorClass, colorPip } from "components/base/styles/manaIcons"
 import NumberInput from "components/base/common/FormElements/NumberInput"
 
@@ -10,7 +11,7 @@ export function ColorsWrapper({ children }: { children: ReactNode }) {
   return <div className="grid grid-cols-5 md:grid-cols-7 gap-4">{children}</div>
 }
 
-export function ColorInputWrapper({ label, children }: { label: string, children: ReactNode }) {
+export function ColorInputWrapper({ label, children }: { label: Lowercase<Color>, children: ReactNode }) {
   return (
     <div className="input-group input-group-vertical">
       <label className={`text-center ms-3x py-1.5 h-12 ${colorPip[label]} ${colorClass[label]}`} aria-label={label.toUpperCase()} />
@@ -25,7 +26,7 @@ export const ColorLabels = ({ labels, className }: { labels: ReactNode[], classN
   </div>
 )
 
-export const ColorInput = ({ label, value, setValue }: { label: string, value: number, setValue: (value: number) => void}) => (
+export const ColorInput = ({ label, value, setValue }: { label: Lowercase<Color>, value: number, setValue: (value: number) => void}) => (
   <NumberInput
     className={`input border-t border-t-base-300/30 ${colorClass[label]} text-sm md:text-xl h-12`}
     value={value} min="0"
