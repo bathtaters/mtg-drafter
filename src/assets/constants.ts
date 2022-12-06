@@ -31,12 +31,10 @@ export const storageDefaults = Object.freeze({
   sortBy: 0,
 })
 
-// Sharing settings
-
 export const shareGame = {
   title: "MtG Drafter Game",
   message: "Join the draft",
-  url: (gameUrl: string) => `http://192.168.0.179:3040/game/${gameUrl}`,
+  url: (gameUrl: string) => `${window.location.origin}/game/${gameUrl}`,
   copyMsg: { message: "Copied link to clipboard", className: "alert-info" },
   failMsg: { message: "Clipboard access disabled by browser", className: "alert-warning" },
 }
