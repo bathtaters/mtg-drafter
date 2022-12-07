@@ -19,6 +19,7 @@ export default function Game(props: ServerProps) {
     holding, isReady, pack, landModal, hostModal, slots,
     saveDeck, toggleLandModal, toggleHostModal, renamePlayer, setTitle,
     nextRound, pickCard, swapCard, setLands, setStatus, dropPlayer, reload,
+    ErrorComponent, ToastComponent,
   } = useGameController(props)
 
   return (<>
@@ -30,7 +31,7 @@ export default function Game(props: ServerProps) {
     />
     
     <BodyWrapperStyle>
-      <Loader data={isConnected || (game && 'round' in game) || 404} message={props.error}>
+      <Loader data={(game && 'round' in game) || 404} message={props.error}>
         { !player ?
           <PlayerJoin slots={slots} players={players} selectPlayer={setStatus} /> :
 
@@ -49,7 +50,7 @@ export default function Game(props: ServerProps) {
 
     <Footer />
 
-    { !!loadingAll && <Overlay><Spinner /></Overlay> }
+    { (!!loadingAll || !isConnected) && <Overlay ><Spinner caption={loadingAll ? 'Loading...' : 'Connecting...'} /></Overlay> }
 
     {!!toggleLandModal &&
       <LandsModal
@@ -65,5 +66,8 @@ export default function Game(props: ServerProps) {
         players={players} renamePlayer={renamePlayer}
         hostId={(game as Game).hostId} setStatus={setStatus}
     />}
+
+    <ErrorComponent />
+    <ToastComponent />
   </>)
 }
