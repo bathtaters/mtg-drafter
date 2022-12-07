@@ -1,37 +1,39 @@
-import io, { Socket } from 'socket.io-client'
+import io, { ManagerOptions, Socket, SocketOptions } from 'socket.io-client'
 import { useState, useEffect, useRef, useCallback, EffectCallback, DependencyList } from 'react'
 import { debugSockets } from 'assets/constants'
-import exponentialRetry from './retry'
 
-const INC_DELAY = 5
-const MAX_DELAY = 10 ** 6
-
+const options: Partial<SocketOptions & ManagerOptions> = {
+  // transports: ["websocket", "polling"], // Causes handleUpgrade error
+  reconnectionDelayMax: 10 * 1000,
+  reconnectionAttempts: 10,
+}
 
 export default function useSocket<S extends Socket = Socket>(
   path: string, endpoint: string,
   onConnect: (socket: S) => ReturnType<EffectCallback>,
   dependencies: DependencyList = [],
-  autoReconnect: boolean = true,
+  onFail?: (error: { message: string, code?: number }) => void,
 ) {
   const socket = useRef<S | null>(null)
   const destructor = useRef<ReturnType<EffectCallback>>()
   const [ isConnected, setConnected ] = useState<boolean>(false)
 
 
-  const connectListener = useCallback(() => {
-    debugSockets && console.debug(`Socket ${socket.current?.connected ? 'connected' : 'disconnected'} at ${path} ${socket.current?.id || ''}`)
-    setConnected(socket.current?.connected || false)
-  }, [])
+  const updateIsConnected = useCallback(() => {
+    setConnected((c) => {
+      if (debugSockets && c === !socket.current?.connected) console.debug(`Socket connected at ${path} ${socket.current?.id || ''}`)
+      return !!socket.current?.connected
+    })
+  }, [debugSockets])
 
 
   const disconnectFromSocket = useCallback(() => {
     if (!socket.current) return setConnected(false)
       
     if (destructor.current) destructor.current()
-    socket.current.off('disconnect', attemptReconnect)
     socket.current.disconnect()
-    socket.current.off('connect', connectListener)
-    socket.current.off('disconnect', connectListener)
+    socket.current.io.off()
+    socket.current.off()
     socket.current = null
     destructor.current = undefined
   }, [])
@@ -41,34 +43,25 @@ export default function useSocket<S extends Socket = Socket>(
     const res = await fetch(endpoint)
     disconnectFromSocket()
   
-    socket.current = io({ path }).on('connect', connectListener).on('disconnect', connectListener) as S
+    socket.current = io({ path, ...options }).on('connect', updateIsConnected).on('disconnect', updateIsConnected) as S
+
+    onFail && socket.current.io.on('reconnect_failed', () => onFail({ message: 'Unable to re-establish connection to server' }))
   
     if (res.status !== 200 || !socket.current) {
       debugSockets && console.error('Error connecting sockets',res.statusText,res.status)
       disconnectFromSocket()
-      throw new Error('Unable to establish connection to server')
+      onFail && onFail({ message: 'Unable to establish connection to server', code: res.status })
     }
 
     destructor.current = onConnect(socket.current)
-    if (autoReconnect) socket.current.on('disconnect', attemptReconnect)
-    connectListener()
-  }, [])
-
-
-  const attemptReconnect = useCallback(() => {
-    debugSockets && console.debug('Attempting sockets reconnect...')
-    return exponentialRetry(connectToSocket, MAX_DELAY, INC_DELAY)().catch(() => {
-      disconnectFromSocket()
-      debugSockets && console.debug('Multiple sockets reconnection attempts failed.')
-      throw new Error('Unable to re-establish connection to server')
-    })
-  }, [])
+    updateIsConnected()
+  }, dependencies)
 
 
   useEffect(() => {
     if (typeof window !== 'undefined') connectToSocket()
     return disconnectFromSocket
-  }, [connectToSocket, disconnectFromSocket, ...dependencies])
+  }, [connectToSocket, disconnectFromSocket])
 
-  return { isConnected, socket: socket.current }
+  return { isConnected, socket: socket.current, reconnect: connectToSocket }
 }
