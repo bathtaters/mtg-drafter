@@ -22,7 +22,7 @@ export default function FileInput({ helperText, setFile, fileMimeType }: Props) 
     >
       <HelperText text={helperText} />
 
-      <TextPad className={textPadClass} />
+      <TextPad className={textPadClass} showArrow={true} />
 
       <InputWrapper label="Choose File">
         <InputElem accept={fileMimeType} required={true} onChange={fileChangeHandler} />

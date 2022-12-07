@@ -21,7 +21,7 @@ export default function FilePreview({ file, clearFile }: Props) {
         )}
       </PreviewWrapper>
 
-      <TextPad className="object-cover w-16 h-16 p-1 rounded-full bg-secondary fill-secondary-content" />
+      <TextPad showArrow={false} className="object-cover w-16 h-16 p-1 rounded-full bg-secondary fill-secondary-content" />
 
       <ClearButton label="Clear" onClick={clearFile} />
     </PreviewContainer>
