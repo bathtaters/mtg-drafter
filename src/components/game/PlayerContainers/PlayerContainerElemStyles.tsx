@@ -9,8 +9,8 @@ const statsIcon = { pick: CardIcon, holding: PackIcon }
 
 export const EmptyPlayerContainer = () => <div className="h-20" />
 
-export const HostMarker = () => <span className="-mr-0.5 mb-1 text-base sm:text-lg opacity-70"><div className="ms ms-planeswalker" /></span>
-export const UserMarker = () => <UserIcon className="fill-current opacity-70 h-2 sm:h-3 inline-block ml-0.5 sm:mr-px" />
+export const HostMarker = () => <span className="-mr-0.5 ml-0.5 mb-1 text-base sm:text-lg opacity-70"><div className="ms ms-planeswalker" /></span>
+export const UserMarker = () => <UserIcon className="fill-current opacity-70 h-2 sm:h-3 inline-block ml-1 sm:mr-px" />
 
 export const HostBadge = () => <span className="badge badge-info badge-sm align-top ml-2"><HostMarker />&nbsp;Host</span>
 
