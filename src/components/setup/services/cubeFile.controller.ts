@@ -1,6 +1,6 @@
 import type { CubeFile, UploadType } from "types/setup"
 import { useState, useCallback } from "react"
-import { upload } from "components/base/services/fetch.services"
+import { upload } from "components/base/libs/fetch"
 import { fileSettings } from "assets/constants"
 import { cubeListURL } from "assets/urls"
 

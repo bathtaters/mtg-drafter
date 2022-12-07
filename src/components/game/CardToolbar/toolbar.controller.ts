@@ -1,6 +1,6 @@
 import type { CardOptions } from "types/game"
 import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useState } from "react"
-import { useLocalStorage } from "components/base/services/storage.services"
+import { useLocalStorage } from "components/base/libs/storage"
 import { sortKeys } from "components/base/services/cardSort.services"
 import cardZoomLevels from "./cardZoomLevels"
 import { zoomToPixels, warn } from "./toolbar.utils"

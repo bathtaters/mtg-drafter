@@ -2,7 +2,7 @@ import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 
 import type { ServerProps, PlayerFull, ServerSuccess } from 'types/game'
 import { getGame } from '../services/game/game.services'
 import { getPlayer } from '../services/game/player.services'
-import { getCtxSessionId, getReqSessionId } from 'components/base/services/sessionId.services'
+import { getCtxSessionId, getReqSessionId } from 'components/base/libs/auth'
 import validation from 'types/game.validation'
 import { unregGameAdapter } from 'backend/utils/game/game.utils'
 

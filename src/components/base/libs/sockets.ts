@@ -1,7 +1,7 @@
 import io, { Socket } from 'socket.io-client'
 import { useState, useEffect, useRef, useCallback, EffectCallback, DependencyList } from 'react'
 import { debugSockets } from 'assets/constants'
-import exponentialRetry from './retrier'
+import exponentialRetry from './retry'
 
 const INC_DELAY = 5
 const MAX_DELAY = 10 ** 6

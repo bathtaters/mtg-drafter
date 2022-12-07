@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from "react"
 import type { BasicLands, BoardLands, GameCardFull } from "types/game"
 import type { Board } from "@prisma/client"
 import { useState } from "react"
-import { useLocalStorage } from "components/base/services/storage.services"
+import { useLocalStorage } from "components/base/libs/storage"
 import { getObjectSum } from "components/base/services/common.services"
 import getAutoLands from "./autoLands.service"
 
