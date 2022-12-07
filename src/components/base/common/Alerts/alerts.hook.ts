@@ -28,6 +28,7 @@ export default function useAlerts(initialAlert: { error?: ErrorAlert[], toast?: 
     clearToast: updateToasts.pop,
   }
 }
+export type AlertsReturn = ReturnType<typeof useAlerts>
 
 
 function useGenericAlert<Alert extends GenericAlert>(initialAlert: Alert[] = [], adapter: (alert: Alert) => Alert = withId) {

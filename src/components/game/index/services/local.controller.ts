@@ -3,9 +3,10 @@ import { useCallback, useMemo, useState } from 'react'
 import { spliceInPlace, updateArrayIdx } from 'components/base/services/common.services'
 import { canAdvance, filterPackIds, getHolding, getPackIdx, getPlayerIdx, getSlots, playerIsHost } from '../../shared/game.utils'
 import { reloadData } from '../game.controller'
+import { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 
 
-export default function useLocalController(props: ServerProps) {
+export default function useLocalController(props: ServerProps, throwError: AlertsReturn['newError'], notify: AlertsReturn['newToast']) {
   const [loadingAll,  setLoadingAll] = useState(0)
   const [loadingPack, setLoadingPack] = useState(1)
 
@@ -43,7 +44,7 @@ export default function useLocalController(props: ServerProps) {
     ))
     
     if (passingToId && player?.id === passingToId) updatePack((pack) => {
-      if (!pack) reloadData({ game, updateLocal })
+      if (!pack) reloadData({ game, updateLocal }, throwError)
       return pack
     })
   }, [game?.id, player?.id])
@@ -71,7 +72,7 @@ export default function useLocalController(props: ServerProps) {
   }, [])
     
   const updateLocal = useCallback((data: ServerProps) => {
-    if ('error' in data) return console.error('Error updating:',data.error)
+    if ('error' in data) throw new Error(`CAnnot updating data: ${data.error}`)
 
     updateGame(data.options)
     updatePlayer(data.player || undefined)
@@ -85,7 +86,7 @@ export default function useLocalController(props: ServerProps) {
 
   const reload = useCallback(() => {
     setLoadingAll((v) => v + 1)
-    reloadData({ game, updateLocal }).finally(() => setLoadingAll((v) => v && v - 1))
+    reloadData({ game, updateLocal }, throwError).finally(() => setLoadingAll((v) => v && v - 1))
   }, [game?.url, updateLocal])
 
 
