@@ -1,4 +1,7 @@
 import { ErrorIcon } from "components/svgs/AlertIcons"
+import DeckIcon from "components/svgs/DeckIcon"
+import PackIcon from "components/svgs/PackIcon"
+import UserIcon from "components/svgs/UserIcon"
 
 // WRAPPERS
 
@@ -25,6 +28,18 @@ export const ErrorText = ({ children }: { children?: React.ReactNode }) => child
 export const InputWrapper = ({ children }: { children: React.ReactNode }) => (
   <div className="grid grid-cols-1 p-4 gap-8 sm:grid-cols-2">{children}</div>
 )
+
+// LABELS
+
+export const PlayersLabel  = () => (<span className="flex items-center gap-2">
+  <UserIcon className="fill-current stroke-base-300 inline-block h-5 w-6" />Players
+</span>)
+export const PacksLabel    = () => (<span className="flex items-center gap-2">
+  <PackIcon className="fill-current stroke-base-300 inline-block h-7 w-6" />Packs
+</span>)
+export const PackSizeLabel = () => (<span className="flex items-center gap-2">
+  <DeckIcon className="fill-current stroke-base-300 inline-block h-6 w-6" />Pack Size
+</span>)
 
 // FORM ELEMENTS
 

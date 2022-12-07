@@ -3,7 +3,7 @@ import FileInput from "components/base/common/FormElements/FileInput"
 import RangeInput from "components/base/common/FormElements/RangeInput"
 import Spinner from "components/base/common/Spinner"
 import Overlay from "components/base/common/Overlay"
-import { FormWrapper, FieldWrapper, InputWrapper, FormTitle, SubmitButton, ErrorText } from "./styles/SetupStyles" 
+import { FormWrapper, FieldWrapper, InputWrapper, FormTitle, SubmitButton, ErrorText, PlayersLabel, PacksLabel, PackSizeLabel } from "./styles/SetupStyles" 
 import useSetupController from "./services/setup.controller"
 import { fileSettings, setupLimits } from "assets/constants"
 
@@ -13,13 +13,13 @@ export default function SetupForm() {
 
   return (
     <FormWrapper onSubmit={submitForm}>
-      <FormTitle placeholder="Game Title" value={options.name} setValue={setName} />
+      <FormTitle placeholder="Enter Title" value={options.name} setValue={setName} />
 
       <InputWrapper>
         <FieldWrapper label="Options">
-          <RangeInput label="Players"   value={options.players}  setValue={setPlayers}  {...setupLimits.players}  />
-          <RangeInput label="Packs"     value={options.packs}    setValue={setPacks}    {...setupLimits.packs}    />
-          <RangeInput label="Pack Size" value={options.packSize} setValue={setPackSize} {...setupLimits.packSize} />
+          <RangeInput caption={<PlayersLabel />}  value={options.players}  setValue={setPlayers}  {...setupLimits.players}  />
+          <RangeInput caption={<PacksLabel />}    value={options.packs}    setValue={setPacks}    {...setupLimits.packs}    />
+          <RangeInput caption={<PackSizeLabel />} value={options.packSize} setValue={setPackSize} {...setupLimits.packSize} />
         </FieldWrapper>
 
         <FieldWrapper label="Cube File">
@@ -33,7 +33,7 @@ export default function SetupForm() {
       </InputWrapper>
       
       <ErrorText>{error}</ErrorText>
-      <SubmitButton disabled={!file}>Start Draft</SubmitButton>
+      <SubmitButton disabled={!file || !options.name}>Start Draft ▶</SubmitButton>
 
       <Overlay hide={!gameLoading}><Spinner /></Overlay>
     </FormWrapper>
