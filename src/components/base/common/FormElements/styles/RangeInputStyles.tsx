@@ -2,7 +2,7 @@ import type { ReactNode, HTMLProps } from "react"
 
 type Value = HTMLProps<HTMLInputElement>['value']
 type ContainerProps = {
-  label?: string,
+  caption?: ReactNode,
   value: Value,
   tooltip?: string,
   className?: string,
@@ -11,11 +11,11 @@ type ContainerProps = {
 
 const MARKER_CHAR = '|'
 
-export const RangeContainer = ({ label, value, tooltip, className, children }: ContainerProps) => (
+export const RangeContainer = ({ caption, value, tooltip, className, children }: ContainerProps) => (
   <div className={`${className || "px-4 pb-4 w-full"}${tooltip ? ' tooltip tooltip-secondary' : ''}`} data-tip={tooltip}>
-    {label &&
+    {caption &&
       <label className="label">
-        <span className="label-text text-lg">{label}</span>
+        <span className="label-text text-lg">{caption}</span>
         <RangeValueBox value={value} />
       </label>
     }
