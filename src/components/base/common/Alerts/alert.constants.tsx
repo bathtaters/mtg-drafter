@@ -12,8 +12,8 @@ export const errorDefaults: Defaults<ErrorAlert> = {
 
 export const toastDefaults: Defaults<ToastAlert> = {
   theme: "info",
-  hideDelay: 15,
-  disableClick: true,
+  hideDelay: 5,
+  disableClick: false,
 }
 
 
