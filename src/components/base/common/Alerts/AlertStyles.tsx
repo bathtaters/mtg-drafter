@@ -43,7 +43,7 @@ export const errorButton = (label: ErrorButton, theme: AlertTheme, close: () => 
 
 export function ToastContainer({ children }: { children: ReactNode }) {
   return (
-    <div className="fixed bottom-0 left-0 w-full h-full pointer-events-none p-4 overflow-hidden flex flex-col-reverse gap-4 items-end">
+    <div className="fixed bottom-0 left-0 w-full h-full pointer-events-none p-4 overflow-hidden flex flex-col-reverse gap-4 items-end z-50">
       {children}
     </div>
   )
@@ -53,9 +53,9 @@ export function ToastStyle({ children, theme, onClick }: { children: ReactNode, 
 
   const Icon = alertIcons[theme]
   return (
-    <div className={`alert justify-start min-w-[50%] w-auto pointer-events-auto cursor-pointer opacity-75 flex-shrink flex-grow-0 ${colorClasses[theme]}`} onClick={onClick}>
+    <div className={`alert flex-row items-center justify-start min-w-[50%] w-auto pointer-events-auto cursor-pointer opacity-75 flex-shrink flex-grow-0 ${colorClasses[theme]}`} onClick={onClick}>
       <Icon />
-      <span>{children}</span>
+      <div className="!my-0">{children}</div>
     </div>
   )
 }
