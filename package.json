@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "ssl": "npx local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3041 --target 3040"
+    "ssl": "npx local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3041 --target 3040",
+    "update": "git pull && npm run build && pm2 restart mtg-drafter-next"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"commonjs\"} prisma/seed.ts"
