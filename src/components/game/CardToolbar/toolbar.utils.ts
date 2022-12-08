@@ -1,3 +1,4 @@
+import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import { sortKeys } from "components/base/services/cardSort.services"
 import cardZoomLevels, { matchWidth } from "./cardZoomLevels"
 
@@ -24,7 +25,7 @@ export const throttle = (delay: number) => {
 
 
 const throttledWarn = throttle(1000 * 10)
-export const warn = (msg: string) => throttledWarn(() => console.warn(msg))
+export const warn = (message: string, notify: AlertsReturn['newToast']) => throttledWarn(() => notify({ message, theme: 'warning' }))
 
 
 export const sortList = sortKeys.map((k) => k.charAt(0).toUpperCase() + k.slice(1))

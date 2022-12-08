@@ -1,13 +1,14 @@
 import type { CardOptions } from "types/game"
+import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { sortKeys } from "components/base/services/cardSort.services"
 import cardZoomLevels from "./cardZoomLevels"
 import { zoomToPixels, warn } from "./toolbar.utils"
 
-export type ToolbarProps = { setCardOptions: Dispatch<SetStateAction<CardOptions>>, clickReload?: () => void }
+export type ToolbarProps = { setCardOptions: Dispatch<SetStateAction<CardOptions>>, notify: AlertsReturn['newToast'], clickReload?: () => void }
 
-export default function useToolbar({ setCardOptions }: ToolbarProps) {
+export default function useToolbar({ setCardOptions, notify }: ToolbarProps) {
   
   const [ art,  setArt  ] = useLocalStorage<boolean>('showArt')
   const [ sort, setSort ] = useLocalStorage<number>('sortBy')
@@ -22,7 +23,7 @@ export default function useToolbar({ setCardOptions }: ToolbarProps) {
       setTempZoom(z)
       return true
     }
-    if (limitWidth()) warn('Zoom value limited by window width')
+    if (limitWidth()) warn('Zoom value limited by window width', notify)
 
     window.addEventListener('resize', limitWidth)
     return () => window.removeEventListener('resize', limitWidth)

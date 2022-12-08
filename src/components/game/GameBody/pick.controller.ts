@@ -1,11 +1,12 @@
-import { MouseEvent, useEffect } from "react"
+import type { MouseEvent } from "react"
 import type { GameCard, Board, Game, TabLabels } from "@prisma/client"
 import type { CardOptions, PackFull, PickCard, SwapCard } from "types/game"
-import { useCallback, useRef, useState } from "react"
+import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
+import { useCallback, useRef, useState, useEffect } from "react"
 
 const DBL_CLICK_DELAY = 500
 
-export default function usePickController(pickCard: PickCard, swapCard: SwapCard, pack?: PackFull, game?: Game) {
+export default function usePickController(pickCard: PickCard, swapCard: SwapCard, notify: AlertsReturn['newToast'], pack?: PackFull, game?: Game) {
   const hidePack = !game || game.round > game.roundCount || game.round < 1
 
   const lastClick = useRef(-1)
@@ -14,8 +15,8 @@ export default function usePickController(pickCard: PickCard, swapCard: SwapCard
   const [ cardOptions,  setCardOptions  ] = useState<CardOptions>({ width: '', showArt: true, sort: undefined })
 
   const clickPickButton = useCallback(() => {
-    if (!pack) return console.warn('Player attempting to pick without a pack')
-    if (!selectedCard) return console.warn('Player attempting to pick without a selected card')
+    if (!pack) return notify({ message: 'Cannot pick without a pack.', theme: 'error' })
+    if (!selectedCard) return notify({ message: 'Cannot pick before selecting a card.', theme: 'error' })
     pickCard(selectedCard)
     setSelectedCard(undefined)
   }, [selectedCard])

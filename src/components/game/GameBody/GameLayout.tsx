@@ -1,6 +1,7 @@
 import type { MouseEventHandler } from 'react'
 import type { Game } from '@prisma/client'
 import type { GameProps, PickCard, PlayerFull, SwapCard } from 'types/game'
+import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 import Overlay from 'components/base/common/Overlay'
 import Spinner from 'components/base/common/Spinner'
 import CardContainer from "../CardContainer/CardContainer"
@@ -21,14 +22,15 @@ type Props = {
   onLandClick?: MouseEventHandler,
   clickReload?: () => void,
   loadingPack: boolean,
+  notify: AlertsReturn['newToast'],
 }
 
-export default function GameLayout({ game, player, pack, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, loadingPack }: Props) {
+export default function GameLayout({ game, player, pack, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, loadingPack, notify }: Props) {
 
   const {
     selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
     cardOptions, setCardOptions, selectedTab, selectTab, hidePack,
-  } = usePickController(pickCard, swapCard, pack, game)
+  } = usePickController(pickCard, swapCard, notify, pack, game)
   
   if (game.round < 1 || !player) return (
     <GameLayoutWrapper>
@@ -41,7 +43,7 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, onLandCl
     <GameLayoutWrapper>
       <ContainerTabs pack={pack?.cards} player={player} selectedTab={selectedTab} selectTab={selectTab} hidePack={hidePack} />
 
-      <CardToolbar setCardOptions={setCardOptions} clickReload={clickReload} />
+      <CardToolbar setCardOptions={setCardOptions} clickReload={clickReload} notify={notify} />
 
       {selectedTab === 'pack' ?
         <CardContainer

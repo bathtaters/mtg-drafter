@@ -1,5 +1,5 @@
 import type { Game } from '@prisma/client'
-import type { ServerProps, GameProps, BasicLands } from 'types/game'
+import type { ServerProps, BasicLands } from 'types/game'
 import GameHeader from 'components/game/GameHeader/GameHeader'
 import PlayerJoin from 'components/game/PlayerJoin/PlayerJoin'
 import GameLayout from 'components/game/GameBody/GameLayout'
@@ -43,6 +43,7 @@ export default function Game(props: ServerProps) {
             onLandClick={toggleLandModal}
             clickReload={reload}
             loadingPack={!!loadingPack}
+            notify={newToast}
           />
         }
       </Loader>
