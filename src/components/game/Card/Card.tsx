@@ -20,7 +20,9 @@ export default function CardDisplay({ card, isSelected, container, showImage, on
 
   return (
     <CardWrapper isSelected={isSelected} onClick={!isBoard ? onClick : undefined} className={className}>
-      {showImage && <ImgWrapper rotate={isRotated}>{images[sideIdx < 0 ? 0 : sideIdx]}</ImgWrapper>}
+      {showImage && images.map((side, idx) => 
+        <ImgWrapper rotate={isRotated} isTop={sideIdx < 0 || idx === sideIdx} key={idx}>{side}</ImgWrapper>
+      )}
       <RenderedCard card={cardFace} />
       {sideIdx >= 0 && <FlipButton onClick={handleFlip} isBack={sideIdx > 0} />}
       {isBoard && <SwapButton board={container as Board} onClick={onClick} />}
