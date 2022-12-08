@@ -18,8 +18,8 @@ export default function useToolbar({ setCardOptions, notify }: ToolbarProps) {
     const limitWidth = () => {
       if (typeof window === 'undefined' || window.innerWidth > (zoomToPixels(zoom) || 0)) return false
 
-      let z = zoom
-      while (z-- && (zoomToPixels(z) || window.innerWidth) > window.innerWidth) {}
+      let z = zoom || 1
+      while (--z && (zoomToPixels(z) || window.innerWidth) > window.innerWidth) {}
       setTempZoom(z)
       return true
     }

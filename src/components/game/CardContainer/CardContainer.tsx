@@ -5,6 +5,7 @@ import Card from "../Card/Card"
 import ContainerHeader from "./CardContainerHeader"
 import { CardContainerWrapper, CardsWrapper, NoPack, EmptyPack, EmptyBoard, LoadingPack } from "./CardContainerStyles"
 import { packSort, sortKeys } from "components/base/services/cardSort.services"
+import cardZoomLevels from "../CardToolbar/cardZoomLevels"
 
 type Props = {
   label: TabLabels,
@@ -31,7 +32,7 @@ export default function CardContainer({ label, cards, lands, loading, children, 
             <Card
               card={card} key={id}
               showImage={cardOptions.showArt}
-              className={cardOptions.width}
+              className={cardOptions.width || cardZoomLevels[0]}
               onClick={onClick && ((ev) => onClick(id, ev))}
               isSelected={selectedId === id}
               container={label}
