@@ -55,7 +55,7 @@ export default function useGameController(props: ServerProps) {
     ...local,
     isConnected: socket.isConnected,
     renamePlayer, setTitle, nextRound, pickCard, swapCard, setLands, setStatus,
-    ErrorComponent, ToastComponent,
+    newError, newToast, ErrorComponent, ToastComponent,
 
     landModal, hostModal, saveDeck,
     toggleLandModal: local.player?.basics ? () => setLandModal((o) => !o) : undefined,

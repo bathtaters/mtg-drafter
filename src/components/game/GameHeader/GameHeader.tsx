@@ -1,4 +1,5 @@
 import type { GameCardFull, GameProps } from "types/game"
+import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import Header from "components/base/Header"
 import { PlayerContainerFull, PlayerContainerSmall } from "../PlayerContainers/PlayerContainers"
 import { GameHeaderWrapper, PlayerContainersWrapper, GameTitle, RoundCounter } from './GameHeaderStyles'
@@ -11,6 +12,7 @@ type Props = {
   playerCards?: GameCardFull[],
   playerIdx: number, holding: number[],
   isConnected: boolean,
+  notify: AlertsReturn['newToast'],
   saveDeck?:   (() => void),
   dropPlayer?: (() => void),
   openLands?:  (() => void),
@@ -19,9 +21,9 @@ type Props = {
 }
 
 
-export default function GameHeader({ game, players, playerIdx, holding, isConnected, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
+export default function GameHeader({ game, players, playerIdx, holding, isConnected, notify, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
 
-  const { oppIdx, handleShare, gameStatus, isRight, packSize } = useGameHeader(game, players, playerIdx)
+  const { oppIdx, handleShare, gameStatus, isRight, packSize } = useGameHeader(game, players, playerIdx, notify)
   
   if (!game) return <Header><GameTitle title="Game Not Found" /></Header>
 

@@ -19,7 +19,7 @@ export default function Game(props: ServerProps) {
     holding, isReady, pack, landModal, hostModal, slots,
     saveDeck, toggleLandModal, toggleHostModal, renamePlayer, setTitle,
     nextRound, pickCard, swapCard, setLands, setStatus, dropPlayer, reload,
-    ErrorComponent, ToastComponent,
+    newError, newToast, ErrorComponent, ToastComponent,
   } = useGameController(props)
 
   return (<>
@@ -27,7 +27,7 @@ export default function Game(props: ServerProps) {
 
     <GameHeader
       game={game} players={players} playerIdx={playerIdx} holding={holding} isConnected={isConnected} saveDeck={saveDeck}
-      openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer} dropPlayer={dropPlayer}
+      openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer} dropPlayer={dropPlayer} notify={newToast}
     />
     
     <BodyWrapperStyle>

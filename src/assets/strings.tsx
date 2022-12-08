@@ -1,5 +1,6 @@
 import type { Game, GameStatus } from "@prisma/client"
 import type { BoardLands } from "types/game"
+import type { ToastAlert } from "components/base/common/Alerts/alerts.d"
 import Link from "next/link"
 import { getObjectSum } from "components/base/services/common.services"
 
@@ -22,3 +23,9 @@ export const hostButtonLabel: { [label in GameStatus]: string } = {
 
 export const cardCounter = (count?: number, lands?: BoardLands) => typeof count !== 'number' || (!count && !lands) ? undefined :
   lands ? `${count} | ${getObjectSum(lands) + count}` : `${count}`
+
+export const sharingMessage: { [key: string]: ToastAlert} = {
+  copy: { message: 'Link copied to clipboard', theme: 'info' },
+  error: { message: 'Unable to share link', theme: 'error' },
+  unavailable: { message: 'Link sharing is not available in your browser', theme: 'error' },
+}
