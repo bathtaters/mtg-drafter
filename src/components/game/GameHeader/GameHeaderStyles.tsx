@@ -19,7 +19,7 @@ export const GameTitle = ({ title, onClick }: { title: string, onClick?: MouseEv
   <div>
     <h1 className="font-serif inline">{title || "New Draft"}</h1>
     {onClick &&
-      <a className="link align-top" onClick={onClick}>
+      <a className="link align-top tooltip tooltip-bottom tooltip-primary" onClick={onClick} data-tip="Copy Link">
         <LinkIcon className="w-5 h-auto ml-2 fill-primary hover:fill-primary-focus inline-block" />
       </a>
     }
