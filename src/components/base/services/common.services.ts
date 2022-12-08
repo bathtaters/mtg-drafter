@@ -25,8 +25,7 @@ export const getObjectSum = (obj: { [key: string]: number }) => Object.values(ob
 export const canShare = () => typeof window === 'undefined' ? false : Boolean(window.navigator.share || window.navigator.clipboard?.writeText)
 export async function shareData(text: string, url: string, title: string): Promise<"copy"|"share"|"error"|"unavailable"> {
   if (window.navigator.share)
-    return window.navigator.share({ title, url, text }).catch((err) => { console.error('Sharing error:',err); return err })
-      .then((isErr) => isErr ? 'error' : 'share')
+    return window.navigator.share({ title, url, text }).catch(() => true).then((isErr) => isErr ? 'error' : 'share')
   else if (window.navigator.clipboard?.writeText)
     return window.navigator.clipboard.writeText(url).then(() => 'copy')
   return 'unavailable'

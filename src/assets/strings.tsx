@@ -26,6 +26,6 @@ export const cardCounter = (count?: number, lands?: BoardLands) => typeof count 
 
 export const sharingMessage: { [key: string]: ToastAlert} = {
   copy: { message: 'Link copied to clipboard', theme: 'info' },
-  error: { message: 'Unable to share link', theme: 'error' },
+  error: { message: 'Unable to share link, refresh page then try again', theme: 'error' },
   unavailable: { message: 'Link sharing is not available in your browser', theme: 'error' },
 }
