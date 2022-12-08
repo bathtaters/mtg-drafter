@@ -1,13 +1,14 @@
 import type { Dispatch, SetStateAction } from "react"
 import type { BasicLands, BoardLands, GameCardFull } from "types/game"
 import type { Board } from "@prisma/client"
+import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import { useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { getObjectSum } from "components/base/services/common.services"
 import getAutoLands from "./autoLands.service"
 
 
-export default function useLandsModal({ basics, cards, setOpen, onSubmit = () => {} }: LandsModalProps) {
+export default function useLandsModal({ basics, cards, setOpen, onSubmit = () => {}, notify }: LandsModalProps) {
   const [localLands, setLocalLands] = useState(basics)
   const [deckSize,   setDeckSize  ] = useLocalStorage<number>('deckSize')
   const [sideLands,  setSideLands ] = useLocalStorage<number>('sideboardLands')
@@ -15,7 +16,7 @@ export default function useLandsModal({ basics, cards, setOpen, onSubmit = () =>
   const setAutoLands = () => {
     if (!cards) return;
     const lands = getAutoLands(cards, deckSize, sideLands)
-    if (!lands || !lands.main || !lands.side) return;
+    if (typeof lands === 'string') return notify({ message: lands, theme: 'warning' })
     setLocalLands(lands)
   }
 
@@ -56,5 +57,6 @@ export type LandsModalProps = {
   cards?: GameCardFull[],
   isOpen: boolean,
   setOpen: Dispatch<SetStateAction<boolean>>,
-  onSubmit?: (basics: BasicLands) => void
+  onSubmit?: (basics: BasicLands) => void,
+  notify: AlertsReturn['newToast'],
 }

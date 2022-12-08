@@ -14,7 +14,7 @@ export default function getAutoLands(playerCards: GameCardFull[], deckSize: numb
   const mainDeck = getBoard(playerCards, 'main')
 
   const landCount = deckSize - mainDeck.length
-  if (landCount < 1) return console.error('Auto Lands: mainboard is larger than',deckSize)
+  if (landCount < 1) return `Main-board (${mainDeck.length}) is larger than deck size (${deckSize}). Lands weren't updated.`
 
   let result = { main: {}, side: {} } as BasicLands
   const pips = countPips(mainDeck)

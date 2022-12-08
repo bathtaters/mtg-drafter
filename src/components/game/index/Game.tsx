@@ -56,7 +56,7 @@ export default function Game(props: ServerProps) {
       <LandsModal
         isOpen={landModal} setOpen={toggleLandModal}
         basics={player?.basics as BasicLands} onSubmit={setLands}
-        cards={player?.cards}
+        cards={player?.cards} notify={newToast}
       /> }
 
     {!!toggleHostModal &&
