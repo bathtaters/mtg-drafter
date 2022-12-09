@@ -3,6 +3,8 @@ import type { SortKey } from "components/base/services/cardSort.services"
 import z from "backend/libs/validation"
 import { boardLands } from "./game.validation"
 
+export type PartialGame = Pick<Game,"id"|"name"|"url">
+
 export type CardOptions = { width: string, showArt: boolean, sort?: SortKey }
 
 export type BoardLands = z.infer<typeof boardLands>
@@ -22,7 +24,7 @@ export interface ServerSuccess {
   error?: never,
 }
 export interface ServerUnreg {
-  options: Pick<Game,"id"|"name"|"url">,
+  options: PartialGame,
   players: Player[],
   packs?: never,
   player?: never,

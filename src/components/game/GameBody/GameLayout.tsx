@@ -1,6 +1,6 @@
 import type { MouseEventHandler } from 'react'
 import type { Game } from '@prisma/client'
-import type { GameProps, PickCard, PlayerFull, SwapCard } from 'types/game'
+import type { GameProps, PartialGame, PickCard, PlayerFull, SwapCard } from 'types/game'
 import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 import Overlay from 'components/base/common/Overlay'
 import Spinner from 'components/base/common/Spinner'
@@ -13,7 +13,7 @@ import ContainerTabs from './ContainerTabs'
 import { getBoard, getGameStatus } from '../shared/game.utils'
 
 type Props = {
-  game: Game,
+  game: Game | PartialGame,
   player: PlayerFull,
   pack?: GameProps['packs'][number],
   pickCard: PickCard,
@@ -32,10 +32,10 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, onLandCl
     cardOptions, setCardOptions, selectedTab, selectTab, hidePack,
   } = usePickController(pickCard, swapCard, notify, pack, game)
   
-  if (game.round < 1 || !player) return (
+  if (!('round' in game) || game.round < 1 || !player) return (
     <GameLayoutWrapper>
       { clickRoundBtn && <RoundButton onClick={clickRoundBtn} label="start" /> }
-      <EmptyStyle>Waiting for draft to start.</EmptyStyle>
+      <EmptyStyle>{'round' in game ? "Waiting for draft to start." : "Loading game..."}</EmptyStyle>
     </GameLayoutWrapper>
   )
 

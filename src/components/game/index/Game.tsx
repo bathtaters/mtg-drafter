@@ -1,5 +1,5 @@
 import type { Game } from '@prisma/client'
-import type { ServerProps, BasicLands } from 'types/game'
+import type { ServerProps, BasicLands, PartialGame } from 'types/game'
 import GameHeader from 'components/game/GameHeader/GameHeader'
 import PlayerJoin from 'components/game/PlayerJoin/PlayerJoin'
 import GameLayout from 'components/game/GameBody/GameLayout'
@@ -31,12 +31,12 @@ export default function Game(props: ServerProps) {
     />
     
     <BodyWrapperStyle>
-      <Loader data={(game && 'round' in game) || 404} message={props.error}>
+      <Loader data={game || 404} message={props.error}>
         { !player ?
           <PlayerJoin slots={slots} players={players} selectPlayer={setStatus} /> :
 
           <GameLayout
-            game={game as Game}
+            game={game as Game|PartialGame}
             player={player}
             pack={pack} pickCard={pickCard} swapCard={swapCard}
             clickRoundBtn={isReady ? () => nextRound() : undefined}
