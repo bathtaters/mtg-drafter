@@ -16,7 +16,7 @@ import { enableDropping, refreshOnRefocusDelay } from 'assets/constants'
 
 export const reloadData = async ({ game, updateLocal }: Pick<LocalController, "game"|"updateLocal">, throwError: AlertsReturn['newError'], reconnect?: () => Promise<void>) => {
   try {
-    if (!game?.url) throw new Error('Cannot update data: Missing game URL')
+    if (!game?.url) throw new Error('There is no game at this URL')
     const res = await fetcher<ServerSuccess>(gameAPI(game?.url))
     if (typeof res === 'number') throw new Error(`Cannot update data: HTTP error ${res}`)
     updateLocal(res)

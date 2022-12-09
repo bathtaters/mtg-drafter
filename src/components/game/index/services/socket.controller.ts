@@ -16,6 +16,7 @@ export function getGameListeners(
   onConnect?: () => void,
 ) {
   return (socket: GameClient) => {
+    if (!socket) return;
 
     socket.on('updateTitle',  (title) => { 
       debugSockets && console.debug('SOCKET','updateTitle',title)
@@ -45,6 +46,8 @@ export function getGameListeners(
     reloadData({ game, updateLocal }, throwError).finally(() => { setLoadingAll(0); setLoadingPack(0) })
 
     return () => {
+      if (!socket) return;
+
       onConnect && socket.off('connect', onConnect)
       socket.removeAllListeners('updateTitle')
       socket.removeAllListeners('updateName')
