@@ -5,6 +5,8 @@ export const titleCase = (camelCase: string) => camelCase
   .replace(/^./, (match) => match.toUpperCase())
   .trim()
 
+export const mod = (n: number, m: number) => ((n % m) + m) % m
+
 export const updateArrayIdx = <T>(array: T[], find: ((entry: T, idx: number) => boolean) | number, newVal: ((entry: T, idx: number) => T)) => {
   const idx = typeof find === 'number' ? find : array.findIndex(find)
   if (idx === -1) return array
