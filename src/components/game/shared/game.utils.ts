@@ -22,13 +22,13 @@ export const passingRight = ({ round, roundCount }: Partial<Game>) =>
 export const getPlayerIdx = (players: Pick<Player,"id">[], player?: Pick<Player,"id"> | null) => !player?.id ? -1 :
   players.findIndex(({ id }) => id === player.id)
 
-export const getNeighborIdx = (game: Partial<Game> | undefined, playerCount: number, playerIdx: number, invert = false) => {
+export const getNeighborIdx = (game: Partial<Game> | undefined, playerCount: number, playerIdx: number) => {
   if (!game || playerIdx === -1 || playerCount <= 1) return -1
   
   const passRight = passingRight(game)
   if (typeof passRight !== 'boolean') return -1
 
-  return passRight === invert ?
+  return passRight ?
     mod(playerIdx - 1, playerCount) :
     (playerIdx + 1) % playerCount
 }
@@ -48,11 +48,17 @@ export const getPackIdx = (game: Pick<Game,"round"|"roundCount"> | undefined, pl
   )
 }
 
-export const getHolding = (players: Player[], game?: Partial<Game>) => !game || !players.length ? [] :
-  players.map(({ pick }, i) =>
-    !pick || !game || typeof game.packSize !== 'number' || pick > game.packSize ? 0 : players.length === 1 ? 1 :
-    players[getNeighborIdx(game, players.length, i)].pick - pick + 1
-  )
+export const getHolding = (players: Pick<Player,"pick">[], game?: Partial<Game>) =>
+  !game || !players.length || typeof game.packSize !== 'number' ? [] :
+    players.map(({ pick }, i) => {
+      if (!pick || pick > (game.packSize as number)) return 0
+      if (players.length === 1) return 1
+
+      const neighborPick = players[getNeighborIdx(game, players.length, i)]?.pick
+      if (typeof neighborPick !== 'number') return 0
+
+      return Math.min(neighborPick, (game.packSize as number)) - pick + 1
+    })
 
 export const getSlots = (players?: Player[]) => players ? players.filter(({ sessionId }) => !sessionId).map(({ id }) => id) : []
 

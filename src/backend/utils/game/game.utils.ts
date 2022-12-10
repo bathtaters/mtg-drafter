@@ -30,7 +30,7 @@ export const getNextPlayerId = (playerId: Player['id'], game?: Pick<Game, "round
   const playerIdx = game.players.findIndex(({ id }) => playerId === id)
   if (playerIdx === -1) return undefined
   
-  return game.players[getNeighborIdx(game, game.players.length, playerIdx, true)]?.id
+  return game.players[getNeighborIdx(game, game.players.length, playerIdx)]?.id
 }
 
 export const unregGameAdapter = ({ id, name, url }: Game) => ({ id, name, url })
