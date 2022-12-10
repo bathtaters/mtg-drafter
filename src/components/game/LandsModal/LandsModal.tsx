@@ -10,7 +10,7 @@ export default function LandsModal(props: LandsModalProps) {
   const { localLands, landSums, landChange, handleSave, handleCancel, autoLandsProps } = useLandsModal(props)
 
   return (
-    <ModalWrapper isOpen={props.isOpen} title="Set Basic Lands" className="md:max-w-3xl"
+    <ModalWrapper isOpen={props.isOpen} title="Set Basic Lands" className="md:!max-w-3xl"
       buttons={<>
         <AutoLandsButton {...autoLandsProps}>Auto</AutoLandsButton>
         <ModalButton onClick={handleSave} className="btn-primary">Save</ModalButton>

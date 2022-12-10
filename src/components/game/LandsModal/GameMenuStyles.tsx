@@ -48,7 +48,6 @@ export const AutoLandsWrapper = ({ button, children }: { button: ReactNode, chil
   <div className="input-group mr-auto">
     {button}
     <div className="dropdown">
-      <span />
       <div tabIndex={0}
         className="dropdown-content rounded-md bg-accent text-accent-content
         w-36 md:w-40 p-2 ml-1 bottom-0 left-full
@@ -56,7 +55,7 @@ export const AutoLandsWrapper = ({ button, children }: { button: ReactNode, chil
       >
         {children}
       </div>
-      <label tabIndex={0} className="btn btn-accent">▸</label>
+      <label tabIndex={0} className="btn btn-accent rounded-l-none">▸</label>
     </div>
   </div>
 )
