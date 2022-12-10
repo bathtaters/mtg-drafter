@@ -2,7 +2,7 @@ import type { Card as ScryfallCard } from '../../../types/scryfall'
 import prisma from '../../libs/db'
 import batchCallback from '../../libs/batcher'
 import fetchJson from '../../libs/fetchJson'
-import { fetchBulkUrl, adaptScryfallToImage, ImageData } from '../../utils/db/image.utils'
+import { fetchBulkUrl, adaptScryfallToImage, ImageData, isPreferredArt } from '../../utils/db/image.utils'
 import { createMultiUpdate } from '../../utils/db/db.utils'
 
 
@@ -13,12 +13,10 @@ const multiUpdate = createMultiUpdate<ImageData>('Card', ['scryfallId', 'side'],
 
 
 export default async function updateImages(imgJsonUrl: string, preferredJsonUrl: string, fullUpdate?: boolean) {
-  
-  // FIRST PASS: GET IMAGES
 
   const imgUrl = await fetchBulkUrl(imgJsonUrl)
-  if (!imgUrl) return console.error('Unable to retrieve image url data')
-  enableLog && console.log('Retrieved ImageURI URL',imgUrl)
+  if (!imgUrl) return console.error('Unable to retrieve ImageURI data')
+  enableLog && console.log('Retrieved ImageURI data URL')
 
 
   let missingImgs: string[]
@@ -56,11 +54,9 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
 
 
 
-  // SECOND PASS: GET PREFERRED IMAGES
-
   const prefUrl = await fetchBulkUrl(preferredJsonUrl)
-  if (!prefUrl) return console.error('Unable to retrieve preferred art data')
-  enableLog && console.log('Retrieved Preferred Art URL',prefUrl)
+  if (!prefUrl) return console.error('Unable to retrieve Preferred Art data')
+  enableLog && console.log('Retrieved Preferred Art data URL')
 
   await prisma.card.updateMany({ data: { preferredArt: false } })
 
@@ -68,7 +64,9 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
   enableLog && console.time('Preferred Art')
 
   let preferred = [] as string[]
-  await fetchJson<ScryfallCard>(prefUrl, async ({ id }) => { preferred.push(id) }, { jsonPath: '*', maxThreads: downloadThreads })
+  await fetchJson<ScryfallCard>(prefUrl, async (card) => {
+    if (isPreferredArt(card)) preferred.push(card.id)
+  }, { jsonPath: '*', maxThreads: downloadThreads })
 
   enableLog && console.log('Downloaded',preferred.length,'Preferred Art IDs')
 
