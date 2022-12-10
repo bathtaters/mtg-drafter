@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import TextEditor, { Props as TextEditorProps } from "components/base/common/FormElements/TextEditor"
 import UserIcon from "components/svgs/UserIcon"
+import HostIcon from "components/svgs/HostIcon"
 import CardIcon from "components/svgs/CardIcon"
 import PackIcon from "components/svgs/PackIcon"
 import { titleCase } from "components/base/services/common.services"
@@ -9,10 +10,15 @@ const statsIcon = { pick: CardIcon, holding: PackIcon }
 
 export const EmptyPlayerContainer = () => <div className="h-20" />
 
-export const HostMarker = () => <span className="-mr-0.5 ml-0.5 mb-1 text-base sm:text-lg opacity-70"><div className="ms ms-planeswalker" /></span>
+export const HostMarker = () => <span className="-mr-0.5 ml-0.5 mb-1 text-base sm:text-lg opacity-70"><HostIcon /></span>
 export const UserMarker = () => <UserIcon className="fill-current opacity-70 h-2 sm:h-3 inline-block ml-1 sm:mr-px" />
 
-export const HostBadge = () => <span className="badge badge-info badge-sm align-top ml-2"><HostMarker />&nbsp;Host</span>
+export const HostBadge = () => (
+  <span className="badge badge-info badge-md align-top ml-2 pl-1">
+    <HostIcon className="opacity-70 text-lg" />
+    <span className="ml-0.5">Host</span>
+  </span>
+)
 
 export const UserHeader = ({ isConnected, isHost }: { isConnected: boolean, isHost: boolean }) => (
   <span>
