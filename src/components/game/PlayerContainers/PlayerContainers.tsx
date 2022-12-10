@@ -10,7 +10,7 @@ export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost, 
   <PlayerContainerStyle title={player.name} isMini={true} disconnected={!player.sessionId} color={color} isHost={isHost}>
     { hideStats ? <StatsStyle /> : <>
       <StatsStyle isMini={true} type="pick"    count={!player.pick || player.pick > maxPick ? undefined : player.pick} />
-      <StatsStyle isMini={true} type="holding" count={holding} />
+      <StatsStyle isMini={true} type="holding" count={typeof holding === 'number' ? Math.max(holding,0) : holding} />
     </>}
   </PlayerContainerStyle>
 )
@@ -34,7 +34,7 @@ export const PlayerContainerFull = ({ player, holding, maxPick, isConnected, hid
       subtitle={<FullStatsWrapper>{ hideStats ? <span /> : <>
         <StatsStyle type="pick" count={hideStats || !player.pick || player.pick > maxPick ? undefined : player.pick} />
         <FullStatsDivider />
-        <StatsStyle type="holding" count={hideStats ? undefined : holding} />
+        <StatsStyle type="holding" count={hideStats ? undefined : typeof holding === 'number' ? Math.max(holding,0) : holding} />
       </>}</FullStatsWrapper>}
     >
 
