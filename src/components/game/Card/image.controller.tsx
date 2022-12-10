@@ -33,8 +33,8 @@ export default function useCardImage(card: CardFull, showImages = true) {
   }
 
   useEffect(() => {
-    setImages([card, ...card.otherFaces].map(({ img }) => showImages && !!img &&
-      <Image src={img} layout="fill" priority={true} alt="" />
+    setImages([card, ...card.otherFaces].map(({ uuid, img }) => showImages && !!img &&
+      <Image key={uuid} src={img} layout="fill" priority={true} alt="" />
     ))
   }, [])
 
