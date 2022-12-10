@@ -25,7 +25,7 @@ describe('passingRight', () => {
     expect(passingRight({ round: 99, roundCount: 10 })).toBeUndefined()
   })
 })
-
+// a
 describe('getPlayerIdx', () => {
   it('finds player', () => {
     expect(getPlayerIdx(players, { id: 'B' })).toBe(1)
