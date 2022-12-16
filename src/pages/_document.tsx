@@ -19,8 +19,6 @@ function Document(props: DocumentProps) {
         <link rel="icon" href="/favicon.ico" />
 
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
-
-        <link href="//cdn.jsdelivr.net/npm/mana-font@latest/css/mana.min.css" rel="stylesheet" type="text/css" />
       </Head>
       <body>
         <Main />

@@ -3,11 +3,14 @@ import Head from 'next/head'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { AppWrapperStyle } from '../components/base/styles/AppStyles'
+
 import '../styles/globals.css'
+import 'mana-font/css/mana.min.css'
 
 import { Inter, EB_Garamond } from '@next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 const garamond = EB_Garamond({ subsets: ['latin'] })
+
 
 function App({ Component, pageProps }: AppProps) {
   return (
