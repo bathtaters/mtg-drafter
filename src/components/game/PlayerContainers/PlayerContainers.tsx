@@ -1,8 +1,8 @@
 import type { Player } from "@prisma/client"
-import { useState } from "react"
 import PlayerMenu from "./PlayerMenu"
 import PlayerContainerStyle, { ColorTheme } from "./PlayerContainerStyle"
 import { EmptyPlayerContainer, StatsStyle, PlayerNameEditor, UserHeader, FullStatsWrapper, FullStatsDivider } from "./PlayerContainerElemStyles"
+import usePlayerMenu from "./playerMenu.controller"
 import { setupLimits } from "assets/constants"
 
 
@@ -17,7 +17,7 @@ export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost, 
 
 
 export const PlayerContainerFull = ({ player, holding, maxPick, isConnected, hideStats, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => {
-  const [ editingName, setEditingName ] = useState(false)
+  const { showMenu, editingName, setEditingName, enableEdit, pickValue, holdingValue } = usePlayerMenu(player, maxPick, holding, hideStats)
   
   if (!player) return <EmptyPlayerContainer />
   
@@ -32,15 +32,15 @@ export const PlayerContainerFull = ({ player, holding, maxPick, isConnected, hid
       header={<UserHeader isHost={!!openHost} isConnected={isConnected} />}
 
       subtitle={<FullStatsWrapper>{ hideStats ? <span /> : <>
-        <StatsStyle type="pick" count={hideStats || !player.pick || player.pick > maxPick ? undefined : player.pick} />
+        <StatsStyle type="pick" count={pickValue} />
         <FullStatsDivider />
-        <StatsStyle type="holding" count={hideStats ? undefined : typeof holding === 'number' ? Math.max(holding,0) : holding} />
+        <StatsStyle type="holding" count={holdingValue} />
       </>}</FullStatsWrapper>}
     >
 
       <PlayerMenu
         saveDeck={saveDeck} openLands={openLands}
-        editName={editingName ? undefined : () => setEditingName(true)}
+        editName={enableEdit} forceShow={showMenu}
         openHost={openHost} dropPlayer={dropPlayer}
       />
       

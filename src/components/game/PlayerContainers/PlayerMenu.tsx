@@ -3,6 +3,7 @@ import { ExitIcon, ExportIcon, LandIcon, RenameIcon, ToolsIcon } from "component
 import { MenuItemStyle } from "./PlayerContainerElemStyles"
 
 type Props = {
+  forceShow?: boolean,
   saveDeck?:   (() => void),
   openLands?:  (() => void),
   editName?:   (() => void),
@@ -10,9 +11,9 @@ type Props = {
   dropPlayer?: (() => void),
 }
 
-export default function PlayerMenu({ saveDeck, openLands, editName, openHost, dropPlayer }: Props) {
+export default function PlayerMenu({ forceShow, saveDeck, openLands, editName, openHost, dropPlayer }: Props) {
   return (
-    <DropdownMenu label="☰">
+    <DropdownMenu label="☰" forceOpen={forceShow}>
       {!!saveDeck   && <li><a onClick={saveDeck  }><MenuItemStyle label="Export Deck" icon={<ExportIcon />} /></a></li> }
       {!!openLands  && <li><a onClick={openLands }><MenuItemStyle label="Set Lands"   icon={<LandIcon   />} /></a></li> }
       {<li className={editName ? "" : "disabled"}>
