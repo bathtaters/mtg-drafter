@@ -2,11 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { newCubeGame } from 'backend/services/game/createGame'
 import { getReqSessionId } from 'backend/libs/auth'
 import { cubeOptions } from 'types/setup.validation'
-import { fileSettings } from 'assets/constants'
-
-export const config = {
-  api: { bodyParser: { sizeLimit: fileSettings.maxSize + 1000 } }
-}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<{ url: string }|{ message: string }>) {
   try {
