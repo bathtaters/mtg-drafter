@@ -2,7 +2,7 @@ import type { ChangeEvent, ChangeEventHandler, HTMLProps } from "react"
 
 export default function NumberInput(props: HTMLProps<HTMLInputElement>) {
   return (
-    <input type="number" pattern="[0-9]*" inputMode="decimal" formNoValidate {...props} />
+    <input type="number" pattern="[0-9]*" inputMode="decimal" formNoValidate onFocus={(ev) => ev.target.select()} {...props} />
   )
 }
 

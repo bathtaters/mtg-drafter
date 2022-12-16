@@ -9,5 +9,6 @@ export const EditButton = (props: HTMLProps<HTMLInputElement>) => (
 )
 
 export const TextBox = (props: HTMLProps<HTMLInputElement>) => (
-  <input type="text" {...props} className={`input h-auto p-2 w-full ${props.className || ''}`} />
+  <input type="text" autoFocus={true} onFocus={(ev) => ev.target.select()}
+    {...props} className={`input h-auto p-2 w-full ${props.className || ''}`} />
 )
