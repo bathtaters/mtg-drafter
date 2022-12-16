@@ -6,9 +6,8 @@ import { AppWrapperStyle } from '../components/base/styles/AppStyles'
 import '../styles/globals.css'
 
 import { Inter, EB_Garamond } from '@next/font/google'
-const inter = Inter()
-const garamond = EB_Garamond()
-
+const inter = Inter({ subsets: ['latin'] })
+const garamond = EB_Garamond({ subsets: ['latin'] })
 
 function App({ Component, pageProps }: AppProps) {
   return (
