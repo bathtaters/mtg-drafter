@@ -1,7 +1,9 @@
 import useTextEditor, { EditorProps } from "./services/textEditor.controller"
 import { EditWrapper, StaticWrapper, TextBox, EditButton } from "./styles/TextEditorStyles"
 
-export default function TextEditor(props: EditorProps & { className?: string }) {
+export type Props = EditorProps & { className?: string }
+
+export default function TextEditor(props: Props) {
   const { text, isEditing, canSave, charLimit, handleSubmit, handleCancel, handleChange, handleKeypress, enableEdit } = useTextEditor(props)
 
   return isEditing ?
@@ -12,5 +14,3 @@ export default function TextEditor(props: EditorProps & { className?: string }) 
     </EditWrapper> :
     <StaticWrapper onClick={enableEdit}>{text}</StaticWrapper>
 }
-
-export type Props = EditorProps
