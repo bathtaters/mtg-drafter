@@ -9,8 +9,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'serif': ['EB Garamond', ...defaultTheme.fontFamily.sans],
-        'sans': ['Inter', ...defaultTheme.fontFamily.sans],
+        'serif': ['var(--font-garamond)', ...defaultTheme.fontFamily.sans],
+        'sans': ['var(--font-inter)', ...defaultTheme.fontFamily.sans],
       },
       colors: {
         ms:  '#111',

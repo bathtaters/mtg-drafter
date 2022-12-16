@@ -1,5 +1,6 @@
 import { Html, Head, Main, NextScript, DocumentProps } from 'next/document'
 
+
 function Document(props: DocumentProps) {
   return (
     <Html lang="en">
@@ -19,8 +20,6 @@ function Document(props: DocumentProps) {
 
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
 
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400..800&display=swap" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" />
         <link href="//cdn.jsdelivr.net/npm/mana-font@latest/css/mana.min.css" rel="stylesheet" type="text/css" />
       </Head>
       <body>
