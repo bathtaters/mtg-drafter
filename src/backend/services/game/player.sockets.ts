@@ -1,6 +1,6 @@
 import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
 import type { BasicLands } from 'types/game'
-import { getExisitingSessionId } from 'components/base/libs/auth'
+import { getExisitingSessionId } from 'backend/libs/auth'
 import { renamePlayer, setStatus, swapCard, updateLands } from './player.services'
 import validation from 'types/game.validation'
 
