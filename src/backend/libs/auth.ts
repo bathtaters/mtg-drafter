@@ -5,9 +5,10 @@ import { nanoid } from 'nanoid'
 import gameData from 'types/game.validation'
 
 const sessionIdKey = 'sessionId'
+const ONE_YEAR = 365 * 24 * 60 * 60 * 1000
+
 const cookieOptions = Object.freeze({
-  expires: new Date(2149563600000), // Expires in 2038 @ epoch
-  httpOnly: true,
+  expires: new Date(Date.now() + ONE_YEAR),
   sameSite: true,
   secure: process.env.NODE_ENV === 'production',
   path: '/',
@@ -21,18 +22,14 @@ const validateSessionId = (sessionId: string) => {
 
 export const getCtxSessionId = (ctx: GetServerSidePropsContext) => {
   let sessionId = validateSessionId(nookies.get(ctx).sessionId)
-  if (sessionId) return sessionId
-
-  sessionId = nanoid()
+  if (!sessionId) sessionId = nanoid()
   nookies.set(ctx, sessionIdKey, sessionId, cookieOptions)
   return sessionId
 }
 
 export const getReqSessionId = (req: NextApiRequest, res: NextApiResponse) => {
   let sessionId = validateSessionId(parseCookies({ req }).sessionId)
-  if (sessionId) return sessionId
-
-  sessionId = nanoid()
+  if (!sessionId) sessionId = nanoid()
   setCookie({ res }, sessionIdKey, sessionId, cookieOptions)
   return sessionId
 }
