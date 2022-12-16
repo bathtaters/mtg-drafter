@@ -5,7 +5,7 @@ import Link from "next/link"
 import { formatBytes, getObjectSum } from "components/base/services/common.services"
 
 export const FullGame = () => <p className="opacity-70 italic">
-  Wait here for an opening or <Link href="/"><a className="link link-primary link-hover">start a new one</a></Link>.
+  Wait here for an opening or <Link href="/" className="link link-primary link-hover">start a new one</Link>.
 </p>
 
 export const roundCounter = (status?: GameStatus, game?: Game) =>
