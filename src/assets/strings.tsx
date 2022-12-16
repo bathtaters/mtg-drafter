@@ -2,7 +2,7 @@ import type { Game, GameStatus } from "@prisma/client"
 import type { BoardLands } from "types/game"
 import type { ToastAlert } from "components/base/common/Alerts/alerts.d"
 import Link from "next/link"
-import { getObjectSum } from "components/base/services/common.services"
+import { formatBytes, getObjectSum } from "components/base/services/common.services"
 
 export const FullGame = () => <p className="opacity-70 italic">
   Wait here for an opening or <Link href="/"><a className="link link-primary link-hover">start a new one</a></Link>.
@@ -29,3 +29,5 @@ export const sharingMessage: { [key: string]: ToastAlert} = {
   error: { message: 'Unable to share link, refresh page then try again', theme: 'error' },
   unavailable: { message: 'Link sharing is not available in your browser', theme: 'error' },
 }
+
+export const maxSizeError = (size: number, maxSize: number) => `File exceeds ${formatBytes(maxSize)} limit (${formatBytes(size)})`

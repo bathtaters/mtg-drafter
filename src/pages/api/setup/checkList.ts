@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSingleUpload } from 'backend/libs/upload'
 import buildCubeList from 'backend/services/game/buildCubeList'
+import { fileSettings } from 'assets/constants'
 
 export type ListResponse = Awaited<ReturnType<typeof buildCubeList>>
 export type ErrResponse = { error: string }
@@ -15,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   try {
 
     // Get file
-    const file = await getSingleUpload(req)
+    const file = await getSingleUpload(req, fileSettings.maxSize)
     if (!file) throw new Error('File not found')
 
     // Get cards
@@ -26,6 +27,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
   } catch (err: any) {
     console.error('Error checking file', err)
-    return res.status(200).json({ error: err.message || 'Unknown Error' })
+    return res.status(200).json({ error: err.message || err || 'Unknown Error' })
   }
 }

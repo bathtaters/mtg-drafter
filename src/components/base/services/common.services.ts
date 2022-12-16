@@ -7,6 +7,13 @@ export const titleCase = (camelCase: string) => camelCase
 
 export const mod = (n: number, m: number) => ((n % m) + m) % m
 
+export const formatBytes = (bytes: number, decimals = 2) => {
+  if(!bytes) return "0 Bytes"
+  const c = 0 > decimals ? 0 : decimals, d = Math.floor(Math.log(bytes)/Math.log(1024))
+  return `${parseFloat((bytes/Math.pow(1024,d)).toFixed(c))} ${["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"][d]}`
+}
+
+
 export const updateArrayIdx = <T>(array: T[], find: ((entry: T, idx: number) => boolean) | number, newVal: ((entry: T, idx: number) => T)) => {
   const idx = typeof find === 'number' ? find : array.findIndex(find)
   if (idx === -1) return array

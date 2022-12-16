@@ -4,19 +4,23 @@ import { ReadStream } from 'fs'
 
 type UploadObject = { [field: string]: string }
 
-export default function getFileUploads(req: NextApiRequest) {
+export default function getFileUploads(req: NextApiRequest, limits?: busboy.Limits) {
   return new Promise<UploadObject>((resolve, reject) => {
-    const bb = busboy({ headers: req.headers })
+    const bb = busboy({ headers: req.headers, limits })
 
     let data: Buffer[] = []
     let files: UploadObject = {}
     
-    bb.on('file', (fieldname: string, file: ReadStream) => {
+    bb.on('file', (fieldname: string, file: ReadStream & { truncated?: boolean }) => {
       file.on('data', (chunk) => data.push(Buffer.from(chunk)))
       file.on('error', (err) => reject(err))
-      // file.on('end', () => resolve(Buffer.concat(data).toString('utf8')))
+      file.on('limit', () => reject(`${fieldname} filesize limit reached (${limits?.fileSize} bytes)`))
       file.on('end', () => files[fieldname] = Buffer.concat(data).toString('utf8'))
     })
+
+    bb.on('filesLimit',  () => reject( `Files limit reached (${limits?.files })`))
+    bb.on('fieldsLimit', () => reject(`Fields limit reached (${limits?.fields})`))
+    bb.on('partsLimit',  () => reject( `Parts limit reached (${limits?.parts })`))
 
     bb.on('finish', () => resolve(files))
 
@@ -24,18 +28,5 @@ export default function getFileUploads(req: NextApiRequest) {
   })
 }
 
-export function getSingleUpload(req: NextApiRequest) {
-  return new Promise<string>((resolve, reject) => {
-    const bb = busboy({ headers: req.headers })
-
-    let data: Buffer[] = []
-    
-    bb.on('file', (_: string, file: ReadStream) => {
-      file.on('data', (chunk) => data.push(Buffer.from(chunk)))
-      file.on('error', (err) => reject(err))
-      file.on('end', () => resolve(Buffer.concat(data).toString('utf8')))
-    })
-
-    req.pipe(bb)
-  })
-}
+export const getSingleUpload = (req: NextApiRequest, sizeLimit?: number) =>
+  getFileUploads(req, { files: 1, fileSize: sizeLimit }).then((files) => Object.values(files)[0])

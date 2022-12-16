@@ -3,6 +3,7 @@ import { useState, useCallback } from "react"
 import { upload } from "components/base/libs/fetch"
 import { fileSettings } from "assets/constants"
 import { cubeListURL } from "assets/urls"
+import { maxSizeError } from "assets/strings"
 
 
 export default function useCubeFile() {
@@ -12,6 +13,7 @@ export default function useCubeFile() {
 
   const setFile = useCallback((file: File | null) => {
     if (!file) return _setFile(null)
+    if (file.size > fileSettings.maxSize) return _setFile({ name: file.name, error: maxSizeError(file.size, fileSettings.maxSize) })
 
     setLoading(true)
     
