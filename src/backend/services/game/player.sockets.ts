@@ -7,7 +7,7 @@ import validation from 'types/game.validation'
 
 export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
     
-    socket.on('setName', async (playerId, name) => {
+    socket.on('setName', async (playerId, name, byHost) => {
       try {
         // Validation
         playerId = validation.id.parse(playerId)
@@ -15,7 +15,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
         if (!name) throw new Error('No name provided')
         
         // Update DB
-        const player = await renamePlayer(playerId, name)
+        const player = await renamePlayer(playerId, name, byHost)
         player != null && io.emit('updateName', player.id, player.name)
 
       // Handle Error
@@ -25,7 +25,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
     })
     
 
-    socket.on('setStatus', async (playerId, status, callback) => {
+    socket.on('setStatus', async (playerId, status, byHost, callback) => {
       try {
         // Validation
         playerId = validation.id.parse(playerId)
@@ -35,7 +35,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
         if (sessionId == null) throw new Error('Missing user identity')
 
         // Update DB
-        const player = await setStatus(playerId, sessionId || null)
+        const player = await setStatus(playerId, sessionId || null, byHost)
         if (!player?.id) throw new Error('Player not found')
 
         // Update Client(s)

@@ -61,12 +61,12 @@ export function getGameListeners(
 
 export function useGameEmitters(local: LocalController, { socket, reconnect }: { socket: GameClient | null, reconnect: () => Promise<void> }, throwError: AlertsReturn['newError']) {
   
-  const renamePlayer: Socket.RenamePlayer = useCallback((name, playerId) => {
+  const renamePlayer: Socket.RenamePlayer = useCallback((name, playerId, byHost = false) => {
     if (!socket?.connected) return throwError(formatError('Error renaming player: Not connected to server'))
     if (!local.player) return throwError(formatError('Error renaming player: Player not loaded'))
 
     name && local.renamePlayer(playerId || local.player.id, name)
-    socket.emit('setName', playerId || local.player.id, name)
+    socket.emit('setName', playerId || local.player.id, name, byHost)
   }, [socket?.connected, local.player?.id, local.renamePlayer])
 
 
@@ -121,11 +121,11 @@ export function useGameEmitters(local: LocalController, { socket, reconnect }: {
   }, [socket?.connected, local.player?.id, local.setLands])
 
 
-  const setStatus: Socket.SetStatus = useCallback((playerId, status = 'join') => {
+  const setStatus: Socket.SetStatus = useCallback((playerId, status = 'join', byHost = false) => {
     if (!socket?.connected) return throwError(formatError('Error updating player: Not connected to server'))
 
     local.setLoadingAll((v) => v + 1)
-    socket.emit('setStatus', playerId, status, (player) => {
+    socket.emit('setStatus', playerId, status, byHost, (player) => {
       reloadData(local, throwError).finally(() => local.setLoadingAll((v) => v && v - 1))
       if (player?.id && player.sessionId && local.sessionId === player.sessionId && 'cards' in player) local.updatePlayer(player)
       if (player) local.setStatus(player.id, player.sessionId || null)

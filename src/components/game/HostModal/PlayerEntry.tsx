@@ -14,8 +14,8 @@ export default function PlayerEntry({ player, isHost, renamePlayer, setStatus }:
 
   return (
     <PlayerWrapper>
-      <NameEditor value={player.name || ''} onSubmit={(name) => renamePlayer(name, player.id)} />
-      <DropButton onClick={btnLabel === 'Drop' ? () => setStatus(player.id, 'leave') : undefined} label={btnLabel} />
+      <NameEditor value={player.name || ''} onSubmit={(name) => renamePlayer(name, player.id, true)} />
+      <DropButton onClick={btnLabel === 'Drop' ? () => setStatus(player.id, 'leave', true) : undefined} label={btnLabel} />
     </PlayerWrapper>
   )
 }

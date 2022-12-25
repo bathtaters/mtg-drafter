@@ -1,4 +1,4 @@
-import type { Card, Game, Pack, GameCard, Player, Board, Color, PlayerStatus } from "@prisma/client"
+import type { Card, Game, Pack, GameCard, Player, Board, Color, PlayerStatus, LogEntry } from "@prisma/client"
 import type { SortKey } from "components/base/services/cardSort.services"
 import z from "backend/libs/validation"
 import { boardLands } from "./game.validation"
@@ -14,6 +14,8 @@ export type CardFull = Card & { otherFaces: Card[] }
 export type GameCardFull = GameCard & { card: CardFull }
 export type PackFull = Pack & { cards: GameCardFull[] }
 export type PlayerFull = Player & { cards: GameCardFull[], basics: BasicLands }
+
+export type LogFull = (LogEntry & { card: (GameCard & { card: Card }) | null })[]
 
 export interface ServerSuccess {
   options: Game,
@@ -54,13 +56,13 @@ export namespace Local {
 }
 
 export namespace Socket {
-  type RenamePlayer  = (name: Player['name'], playerId?: Player['id']) => void
+  type RenamePlayer  = (name: Player['name'], playerId?: Player['id'], byHost?: boolean) => void
   type SetTitle      = (title: Game['name']) => void
   type NextRound     = () => void
   type PickCard      = (gameCardId: GameCard['id']) => void
   type SwapCard      = (gameCardId: GameCard['id'], toBoard: Board) => void
   type SetLands      = (lands: BasicLands) => void
-  type SetStatus     = (playerId: Player['id'], status?: PlayerStatus) => void
+  type SetStatus     = (playerId: Player['id'], status?: PlayerStatus, byHost?: boolean) => void
 }
 
 // Alias

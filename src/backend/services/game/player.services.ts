@@ -13,17 +13,27 @@ export async function getPlayer(sessionId: Player['sessionId'], playerList: Play
   })
 }
 
-export function setStatus(id: Player['id'], sessionId: Player['sessionId'] = null) {
-  return prisma.player.update({
+export async function setStatus(id: Player['id'], sessionId: Player['sessionId'] = null, byHost: boolean = false) {
+  const player = await prisma.player.update({
     where: { id }, data: { sessionId },
     include: {
       cards: !!sessionId && { include: { card: { include: { otherFaces: true } } } },
     }
   })
+  await prisma.logEntry.create({ data: {
+    gameId: player.gameId,
+    playerId: id,
+    byHost,
+    action: sessionId ? 'join' : 'leave',
+    data: sessionId,
+  } })
+  return player
 }
 
-export function renamePlayer(id: Player['id'], newName: Player['name']) {
-  return prisma.player.update({ where: { id }, data: { name: newName }, select: { id: true, name: true }})
+export async function renamePlayer(id: Player['id'], newName: Player['name'], byHost: boolean = false) {
+  const player = await prisma.player.update({ where: { id }, data: { name: newName }, select: { id: true, name: true, gameId: true }})
+  await prisma.logEntry.create({ data: { gameId: player.gameId, playerId: id, byHost, action: 'rename', data: newName } })
+  return player
 }
 
 export function updateLands(id: Player['id'], lands: BasicLands) {

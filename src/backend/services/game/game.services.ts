@@ -20,28 +20,58 @@ export function getGame(url: Game['url']) {
   })
 }
 
+export function getGameLog(url: Game['url']) {
+  return prisma.game.findUnique({
+    where: { url },
+    include: {
+      players: true,
+      log: {
+        orderBy: { time: 'desc' },
+        include: { card: { include: { card: true } } }
+      }
+    }
+  })
+}
+
 export function renameGame(id: Game['id'], newName: Game['name']) {
-  return prisma.game.update({ where: { id }, data: { name: newName }, select: { name: true } })
-    .then(({ name }) => name)
+  return prisma.$transaction([
+    prisma.game.update({ where: { id }, data: { name: newName }, select: { name: true } }),
+    prisma.logEntry.create({ data: { gameId: id, byHost: true, action: 'settings', data: JSON.stringify({ name: newName }) } })
+  ]).then(([{ name }]) => name)
 }
 
 export function nextRound(id: Game['id'], round: Game['round']) {
-  return prisma.game.update({
-    where: { id },
-    data: {
-      round: round,
-      players: { updateMany: {
-        where: {}, data: { pick: 1 },
-      }},
-    },
-    select: { round: true }
-  }).then(({ round }) => round)
+  return prisma.$transaction([
+    prisma.game.update({
+      where: { id },
+      data: {
+        round: round,
+        players: { updateMany: {
+          where: {}, data: { pick: 1 },
+        }},
+      },
+      select: { round: true }
+    }),
+
+    prisma.logEntry.create({ data: { gameId: id, byHost: true, action: 'round', data: `${round}` } })
+  ]).then(([{ round }]) => round)
 }
 
 export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'], board: Board = "main") {
-  const unPicked = await prisma.gameCard.count({ where: { id: gameCardId, playerId: null }})
+  const unPicked = await prisma.gameCard.findFirst({
+    where: { id: gameCardId, playerId: null },
+    select: { pack: { select: {
+      game: { select: {
+        id: true,
+        round: true,
+        roundCount: true,
+        players: { select: { id: true } }
+      }}
+    }}}
+  })
   if (!unPicked) return undefined
-  
+
+  const game = unPicked.pack.game
   const [ player ] = await prisma.$transaction([
     prisma.player.update({
       where: { id: playerId },
@@ -53,12 +83,8 @@ export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'
       data: { playerId, board },
     }),
   ])
-
-  const game = await prisma.game.findUnique({
-    where: { id: player.gameId },
-    select: { round: true, roundCount: true, players: { select: { id: true } } },
-  })
-  if (!game) return console.error('Error picking card: Card pick registered, but game not found')
+  
+  await prisma.logEntry.create({ data: { gameId: game.id, playerId, cardId: gameCardId, action: 'pick', data: `${game.round}:${player.pick - 1}` } })
 
   return { ...player, passingToId: getNextPlayerId(playerId, game) }
 }

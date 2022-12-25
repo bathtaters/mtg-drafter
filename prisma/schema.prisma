@@ -61,6 +61,16 @@ enum PlayerStatus {
   leave
 }
 
+enum LogAction {
+  pick
+  join
+  leave
+  rename
+
+  round
+  settings
+}
+
 enum DataType {
   String
   Number
@@ -98,6 +108,8 @@ model Game {
   players     Player[] @relation("GamePlayers")
   host        Player? @relation("GameHost", fields: [hostId], references: [id])
   hostId      String? @unique
+
+  log         LogEntry[]
 }
 
 model Card {
@@ -149,6 +161,7 @@ model Player {
   game        Game @relation("GamePlayers", fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   hostOf      Game? @relation("GameHost")
   gameId      String
+  logEntries  LogEntry[]
 
   @@unique([gameId, sessionId])
   @@index([gameId, sessionId])
@@ -176,6 +189,23 @@ model GameCard {
   cardId    String
   packId    String
   playerId  String?
+  logEntries  LogEntry[]
+}
+
+model LogEntry {
+  id          String @id @default(cuid())
+  time        DateTime @default(now())
+  action      LogAction
+  data        String?
+  byHost      Boolean @default(false)
+
+  game        Game @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  player      Player? @relation(fields: [playerId], references: [id])
+  card        GameCard? @relation(fields: [cardId], references: [id])
+
+  gameId      String
+  playerId    String?
+  cardId      String?
 }
 
 model Enums {
@@ -183,4 +213,5 @@ model Enums {
   TabLabels    TabLabels
   GameStatus   GameStatus
   PlayerStatus PlayerStatus
+  LogAction    LogAction
 }
