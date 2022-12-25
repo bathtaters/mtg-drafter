@@ -6,7 +6,7 @@ const A_CHAR_CODE = 'a'.charCodeAt(0)
 
 export interface ImageData { scryfallId: string, side: Side | null, img: string | null }
 
-export const isPreferredArt = ({ set }: ScryfallCard) => set !== 'abro'
+export const isPreferredArt = ({ layout }: ScryfallCard) => layout !== 'art_series'
 
 export const adaptScryfallToImage = ({ id, image_uris, card_faces }: ScryfallCard): ImageData[] => !card_faces ?
   // Standard Card
