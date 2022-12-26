@@ -4,7 +4,7 @@ import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 import type { ErrorAlert } from 'components/base/common/Alerts/alerts.d'
 import type { LocalController } from './local.controller'
 import type { Socket } from 'types/game'
-import { useCallback } from 'react'
+import { Dispatch, SetStateAction, useCallback } from 'react'
 import { debugSockets } from 'assets/constants'
 import { reloadData } from '../game.controller'
 
@@ -14,31 +14,45 @@ export function getGameListeners(
   { updateLocal, updateGame, renamePlayer, nextRound, pickCard, setStatus, setLoadingAll, setLoadingPack, game }: LocalController,
   throwError: AlertsReturn['newError'],
   onConnect?: () => void,
+  refreshLog?: () => void,
+  checkHostModal?: Dispatch<SetStateAction<boolean>>,
 ) {
+  const updateLog = refreshLog && checkHostModal ? () => checkHostModal((isOpen) => {
+    if (isOpen) refreshLog()
+    return isOpen
+  }) : undefined
+
   return (socket: GameClient) => {
     if (!socket) return;
 
     socket.on('updateTitle',  (title) => { 
       debugSockets && console.debug('SOCKET','updateTitle',title)
       title && updateGame((game) => game && ({ ...game, name: title }))
+      updateLog && updateLog()
     })
     socket.on('updateName',  (playerId, name) => { 
       debugSockets && console.debug('SOCKET','updateName',playerId,name)
       name && renamePlayer(playerId, name)
+      updateLog && updateLog()
     })
     socket.on('updatePick',  (playerId, pick, passingToId) => {
       debugSockets && console.debug('SOCKET','updatePick',playerId,pick,passingToId)
       pickCard(playerId, pick, passingToId)
+      updateLog && updateLog()
     })
     socket.on('updateRound', (round) => {
       setLoadingAll((v) => v + 1)
       debugSockets && console.debug('SOCKET','updateRound',round)
       nextRound(round)
-      reloadData({ game, updateLocal }, throwError).finally(() => setLoadingAll((v) => v && v - 1))
+      reloadData({ game, updateLocal }, throwError).finally(() => {
+        setLoadingAll((v) => v && v - 1)
+        updateLog && updateLog()
+      })
     })
     socket.on('updateSlot', (playerId, sessionId) => {
       debugSockets && console.debug('SOCKET','updateSlot',playerId,sessionId)
       setStatus(playerId, sessionId)
+      updateLog && updateLog()
     })
 
     onConnect && socket.on('connect', onConnect)

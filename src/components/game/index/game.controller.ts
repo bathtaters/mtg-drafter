@@ -12,6 +12,7 @@ import { getGameListeners, useGameEmitters } from './services/socket.controller'
 import downloadDeck from './services/downloadDeck.controller'
 import { gameAPI, socketEndpoint } from 'assets/urls'
 import { enableDropping, refreshOnRefocusDelay } from 'assets/constants'
+import useGameLog from '../HostLog/log.controller'
 
 
 export const reloadData = async ({ game, updateLocal }: Pick<LocalController, "game"|"updateLocal">, throwError: AlertsReturn['newError'], reconnect?: () => Promise<void>) => {
@@ -37,11 +38,18 @@ export default function useGameController(props: ServerProps) {
   const [hostModal, setHostModal] = useState(false)
 
   const local = useLocalController(props, newError, newToast)
+  const gameLog = useGameLog(gameURL)
+  
+  const toggleLandModal = !local.player?.basics ? undefined : () => setLandModal((o) => !o)
+  const toggleHostModal = !local.isHost ? undefined : () => setHostModal((o) => {
+    if (!o) gameLog.refresh()
+    return !o
+  })
 
   const socket = useSocket(
     `/game/${gameURL}`,
-    socketEndpoint(gameURL), getGameListeners(local, newError, clearError),
-    [local.game?.id, local.player?.id],
+    socketEndpoint(gameURL), getGameListeners(local, newError, clearError, gameLog.refresh, setHostModal),
+    [local.game?.id, local.player?.id, gameLog.refresh],
     ({ message }) => newError({ title: 'Connection Error', message, button: 'Refresh' })
   )
 
@@ -52,14 +60,13 @@ export default function useGameController(props: ServerProps) {
   useFocusEffect((focus) => { focus && reloadData(local, newError, socket.reconnect) }, [local.game?.id, newError, socket.reconnect], refreshOnRefocusDelay)
 
   return {
-    ...local,
+    ...local, gameLog,
     isConnected: socket.isConnected,
     renamePlayer, setTitle, nextRound, pickCard, swapCard, setLands, setStatus,
     newError, newToast, ErrorComponent, ToastComponent,
 
     landModal, hostModal, saveDeck,
-    toggleLandModal: local.player?.basics ? () => setLandModal((o) => !o) : undefined,
-    toggleHostModal: local.isHost ? (() => setHostModal((o) => !o)) : undefined,
+    toggleLandModal, toggleHostModal,
     dropPlayer: enableDropping && local.player ? () => setStatus((local.player as Player).id, 'leave') : undefined,
     reload: local.game?.url ? local.reload : undefined,
   }
