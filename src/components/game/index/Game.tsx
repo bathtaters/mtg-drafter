@@ -5,6 +5,7 @@ import PlayerJoin from 'components/game/PlayerJoin/PlayerJoin'
 import GameLayout from 'components/game/GameBody/GameLayout'
 import LandsModal from 'components/game/LandsModal/LandsModal'
 import HostModal from 'components/game/HostModal/HostModal'
+import LogModal from '../LogModal/LogModal'
 import Overlay from 'components/base/common/Overlay'
 import Spinner from 'components/base/common/Spinner'
 import Loader from 'components/base/Loader'
@@ -16,8 +17,8 @@ import useGameController from 'components/game/index/game.controller'
 export default function Game(props: ServerProps) {
   const {
     game, player, players, playerIdx, isConnected, loadingPack, loadingAll,
-    holding, isReady, pack, landModal, hostModal, slots,
-    saveDeck, toggleLandModal, toggleHostModal, renamePlayer, setTitle,
+    holding, isReady, pack, landModal, hostModal, logModal, slots, gameLog,
+    saveDeck, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setTitle,
     nextRound, pickCard, swapCard, setLands, setStatus, dropPlayer, reload,
     newError, newToast, ErrorComponent, ToastComponent,
   } = useGameController(props)
@@ -53,6 +54,12 @@ export default function Game(props: ServerProps) {
 
     { (!!loadingAll || !isConnected) && <Overlay ><Spinner caption={loadingAll ? 'Loading...' : 'Connecting...'} /></Overlay> }
 
+    {!!toggleLogModal &&
+      <LogModal
+        isOpen={logModal} setOpen={toggleLogModal}
+        log={gameLog} players={players}
+      /> }
+
     {!!toggleLandModal &&
       <LandsModal
         isOpen={landModal} setOpen={toggleLandModal}
@@ -66,6 +73,7 @@ export default function Game(props: ServerProps) {
         title={game?.name} setTitle={setTitle}
         players={players} renamePlayer={renamePlayer}
         hostId={(game as Game).hostId} setStatus={setStatus}
+        setLog={toggleLogModal}
     />}
 
     <ErrorComponent />

@@ -6,6 +6,7 @@ import { boardLands } from "./game.validation"
 export type PartialGame = Pick<Game,"id"|"name"|"url">
 
 export type CardOptions = { width: string, showArt: boolean, sort?: SortKey }
+export type LogOptions = { hideHost: boolean, hidePrivate: boolean }
 
 export type BoardLands = z.infer<typeof boardLands>
 export type BasicLands = { [board in Board]: BoardLands } & { pack: never }

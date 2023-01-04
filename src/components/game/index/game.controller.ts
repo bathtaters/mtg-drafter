@@ -10,9 +10,9 @@ import { useFocusEffect } from 'components/base/services/common.services'
 import useLocalController from './services/local.controller'
 import { getGameListeners, useGameEmitters } from './services/socket.controller'
 import downloadDeck from './services/downloadDeck.controller'
+import useGameLog from '../LogModal/log.controller'
 import { gameAPI, socketEndpoint } from 'assets/urls'
 import { enableDropping, refreshOnRefocusDelay } from 'assets/constants'
-import useGameLog from '../HostLog/log.controller'
 
 
 export const reloadData = async ({ game, updateLocal }: Pick<LocalController, "game"|"updateLocal">, throwError: AlertsReturn['newError'], reconnect?: () => Promise<void>) => {
@@ -36,15 +36,17 @@ export default function useGameController(props: ServerProps) {
   const { ErrorComponent, ToastComponent, newError, newToast, clearError } = useAlerts()
   const [landModal, setLandModal] = useState(false)
   const [hostModal, setHostModal] = useState(false)
+  const [logModal,  setLogModal ] = useState(false)
 
   const local = useLocalController(props, newError, newToast)
-  const gameLog = useGameLog(gameURL)
+  const gameLog = useGameLog(gameURL, local.players)
   
   const toggleLandModal = !local.player?.basics ? undefined : () => setLandModal((o) => !o)
   const toggleHostModal = !local.isHost ? undefined : () => setHostModal((o) => {
     if (!o) gameLog.refresh()
     return !o
   })
+  const toggleLogModal = !local.isHost ? undefined : () => setLogModal((o) => !o)
 
   const socket = useSocket(
     `/game/${gameURL}`,
@@ -65,8 +67,8 @@ export default function useGameController(props: ServerProps) {
     renamePlayer, setTitle, nextRound, pickCard, swapCard, setLands, setStatus,
     newError, newToast, ErrorComponent, ToastComponent,
 
-    landModal, hostModal, saveDeck,
-    toggleLandModal, toggleHostModal,
+    landModal, hostModal, logModal, saveDeck,
+    toggleLandModal, toggleHostModal, toggleLogModal,
     dropPlayer: enableDropping && local.player ? () => setStatus((local.player as Player).id, 'leave') : undefined,
     reload: local.game?.url ? local.reload : undefined,
   }

@@ -1,4 +1,3 @@
-import type { Dispatch, SetStateAction } from "react"
 import type { Game, Player } from "@prisma/client"
 import type { Socket } from "types/game"
 import ModalWrapper, { ModalButton } from "components/base/common/Modal"
@@ -8,7 +7,8 @@ import { Divider, FieldWrapper, TitleEditor, PlayersContainer } from "./HostModa
 
 type Props = {
   isOpen: boolean,
-  setOpen: Dispatch<SetStateAction<boolean>>,
+  setOpen: () => void,
+  setLog?: () => void,
   title?: Game['name'],
   players: Player[],
   hostId: Game['hostId'],
@@ -18,11 +18,14 @@ type Props = {
 }
 
 
-export default function HostModal({ isOpen, setOpen, title, setTitle, players, renamePlayer, hostId, setStatus }: Props) {
+export default function HostModal({ isOpen, setOpen, setLog, title, setTitle, players, renamePlayer, hostId, setStatus }: Props) {
   return (
     <ModalWrapper isOpen={isOpen} setOpen={setOpen}
       title="Host Tools"
-      buttons={<ModalButton onClick={() => setOpen((st) => !st)}>Close</ModalButton>}
+      buttons={<>
+        { setLog && <ModalButton onClick={setLog}>View Log</ModalButton> }
+        <ModalButton onClick={setOpen}>Close</ModalButton>
+      </>}
     >
       <Loader data={title}>
 

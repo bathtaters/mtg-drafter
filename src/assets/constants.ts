@@ -1,4 +1,4 @@
-import type { BoardLands } from 'types/game'
+import type { BoardLands, LogOptions } from 'types/game'
 import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
 
 // MtG library
@@ -38,6 +38,8 @@ export const shareGame = {
   copyMsg: { message: "Copied link to clipboard", className: "alert-info" },
   failMsg: { message: "Clipboard access disabled by browser", className: "alert-warning" },
 }
+
+export const logOptions: LogOptions = { hideHost: false, hidePrivate: true }
 
 // Setup validation
 
