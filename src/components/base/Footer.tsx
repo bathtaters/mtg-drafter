@@ -1,28 +1,30 @@
+import type { ReactNode } from "react"
+import Link from "next/link"
+import { GitHubLogo, MtgJsonLogo } from "components/svgs/FooterLogos"
 import { FooterWrapperStyle } from "./styles/AppStyles"
 import pkg from "../../../package.json"
-import { GitHubLogo, MtgJsonLogo } from "components/svgs/FooterLogos"
-import Link from "next/link"
 
+const SiteLink = ({ href, className = '', children }: { href: string, className?: string, children?: ReactNode }) => (
+  <a href={href} className={`link link-primary link-hover ${className}`} target="_blank" rel="noopener noreferrer">{children}</a>
+)
 
 export default function Footer() {
   return (
     <FooterWrapperStyle>
       <div className="flex justify-center items-center gap-2">
-        <Link href="/" className="link link-primary link-hover">MtG Drafter v{pkg.version}</Link>
+        <Link href="/" title="Start New Game" className="link link-primary link-hover" target="_blank">
+          MtG Drafter v{pkg.version}
+        </Link>
         <span className="opacity-80">|</span>
-        <a
-          className="inline-flex items-center link link-primary link-hover"
-          href="https://github.com/bathtaters/mtg-drafter"
-          target="_blank" rel="noopener noreferrer"
-        >
+        <SiteLink href="https://github.com/bathtaters/mtg-drafter" className="inline-flex items-center">
           <GitHubLogo className="w-6 h-6 fill-current" />
           <p className="ml-2">GitHub Repo</p>
-        </a>
+        </SiteLink>
         <span className="opacity-80">|</span>
-        <a href="https://mtgjson.com" className="inline-flex items-center link link-primary link-hover">
+        <SiteLink href="https://mtgjson.com" className="inline-flex items-center">
           <MtgJsonLogo className="w-8 fill-current" />
           <p className="ml-2">Powered by MTGJSON</p>
-        </a>
+        </SiteLink>
       </div>
 
       <div className="text-2xs leading-tight font-thin opacity-80 italic">
