@@ -6,6 +6,12 @@ module.exports = {
     "./src/pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
   ],
+  safelist: [
+    { // Included from lib/colors.ts 
+      pattern: /(text|bg|border)-(blue|yellow|emerald|red|fuchsia|orange|cyan|lime|violet|pink|sky|amber|green|rose|purple|teal|indigo)-(700|500|200|400)/,
+      variants: ['hover'],
+    },
+  ],
   theme: {
     extend: {
       fontFamily: {
