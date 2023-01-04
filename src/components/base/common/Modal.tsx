@@ -1,4 +1,4 @@
-import type { Dispatch, ReactNode, SetStateAction } from "react";
+import type { Dispatch, ReactNode, SetStateAction, MouseEventHandler } from "react"
 
 type Props = {
   isOpen: boolean,
@@ -23,3 +23,7 @@ export default function ModalWrapper({ title, className, children, buttons, isOp
     </div>
   )
 }
+
+export const ModalButton = ({ onClick, className = '', children }: { onClick: MouseEventHandler, className?: string, children: ReactNode }) => (
+  <button type="button" className={`btn ${className}`} onClick={onClick}>{children}</button>
+)

@@ -5,11 +5,6 @@ import TextEditor, { Props as TextEditProps } from "components/base/common/FormE
 
 export const Divider = () => <div className="divider" />
 
-export const ModalButton = ({ value, onClick }: { value: ReactNode, onClick: MouseEventHandler }) => (
-  <button type="button" className="btn" onClick={onClick}>{value}</button>
-)
-
-
 // Game Editor
 
 export const FieldWrapper = ({ label, children }: { label: ReactNode, children: ReactNode }) => (

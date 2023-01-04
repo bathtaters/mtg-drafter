@@ -1,11 +1,7 @@
-import type { ReactNode, MouseEventHandler, HTMLProps } from "react"
+import type { ReactNode, HTMLProps } from "react"
 import type { Color } from "@prisma/client"
 import { colorClass, colorPip } from "components/base/styles/manaIcons"
 import NumberInput from "components/base/common/FormElements/NumberInput"
-
-export const ModalButton = ({ onClick, className = '', children }: { onClick: MouseEventHandler, className?: string, children: ReactNode }) => (
-  <button type="button" className={`btn ${className}`} onClick={onClick}>{children}</button>
-)
 
 export function ColorsWrapper({ children }: { children: ReactNode }) {
   return <div className="grid grid-cols-5 md:grid-cols-7 gap-4">{children}</div>

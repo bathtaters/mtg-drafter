@@ -1,7 +1,7 @@
 import type { MouseEventHandler, ReactNode } from "react"
 import type { Color } from "@prisma/client"
-import ModalWrapper from "components/base/common/Modal"
-import { ModalButton, ColorsWrapper, ColorInputWrapper, ColorLabels, ColorInput, AutoLandsWrapper, AutoLandsInput } from "./GameMenuStyles"
+import ModalWrapper, { ModalButton } from "components/base/common/Modal"
+import { ColorsWrapper, ColorInputWrapper, ColorLabels, ColorInput, AutoLandsWrapper, AutoLandsInput } from "./LandsModalStyles"
 import useLandsModal, { LandsModalProps } from "./lands.controller"
 import { colorOrder } from "assets/constants"
 
