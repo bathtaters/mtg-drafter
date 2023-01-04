@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-type Props = { label?: ReactNode, labelClass?: string, menuClass?: string, forceOpen?: boolean, children: ReactNode }
+type Props = { label?: ReactNode, labelClass?: string, menuClass?: string, forceOpen?: boolean | "click", children: ReactNode }
 
 export default function DropdownMenu({
   label = '↓',
@@ -9,7 +9,7 @@ export default function DropdownMenu({
   forceOpen, children
 }: Props) {
   return (
-    <div className={`dropdown dropdown-end ${typeof forceOpen !== 'boolean' ? 'dropdown-hover' : forceOpen ? 'dropdown-open' : ''}`}>
+    <div className={`dropdown dropdown-end ${forceOpen === 'click' ? '' : typeof forceOpen !== 'boolean' ? 'dropdown-hover' : forceOpen ? 'dropdown-open' : ''}`}>
       <label tabIndex={0} className={`btn ${labelClass}`}>
         {label}
       </label>
