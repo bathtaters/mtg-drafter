@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient, PrismaPromise } from '@prisma/client'
+import type { Prisma, PrismaClient, PrismaPromise } from '@prisma/client'
 
 const sleepOnFail = 1000 * 10
 

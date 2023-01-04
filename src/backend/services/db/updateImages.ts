@@ -19,18 +19,18 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
   enableLog && console.log('Retrieved ImageURI data URL')
 
 
-  let missingImgs: string[]
+  let missingImgs: string[] | undefined
   if (!fullUpdate) {
 
     missingImgs = await prisma.card.findMany({
-      where: { AND: [ { img: { equals: null } }, { scryfallId: { not: null } } ] },
+      where: { img: null, scryfallId: { not: null } },
       select: { scryfallId: true },
       distinct: 'scryfallId',
       
     }).then((c) => c.map(({ scryfallId }) => scryfallId as string))
 
-    enableLog && console.log('Found',missingImgs.length,'missing images')
-    if (!missingImgs.length) return
+    enableLog && console.log('Found',missingImgs?.length,'missing images')
+    if (!missingImgs?.length) return
   }
 
 
