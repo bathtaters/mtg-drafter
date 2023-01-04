@@ -25,10 +25,10 @@ export default function LogEntry({ entry, players, isFirst, isPrivate = false }:
       <EntryItem color={actionIdx}>{formatLogAction(action, data, byHost)}</EntryItem>
       <EntrySpace />
       
-      {!isPrivate && card && <EntryItem tip={`${card.cardId} ${card.id}`} below={isFirst}>"{card.card.name}"</EntryItem>}
+      {!isPrivate && card && <EntryItem tip={`${card.cardId} ${card.id}`} below={isFirst}>&quot;{card.card.name}&quot;</EntryItem>}
 
       {action === 'join' && data && <EntryItem tip={data || 'N/A'} below={isFirst}><CookieIcon className="w-5 fill-current" /></EntryItem>}
-      {action === 'rename' && data && <EntryItem>"{data || ''}"</EntryItem>}
+      {action === 'rename' && data && <EntryItem>&quot;{data || ''}&quot;</EntryItem>}
 
       {(action === 'rename' || action === 'join') && byHost && <EntrySpace />}
 
