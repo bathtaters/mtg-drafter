@@ -5,7 +5,7 @@ import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import { useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { getObjectSum } from "components/base/services/common.services"
-import getAutoLands from "./autoLands.service"
+import getAutoLands from "components/base/services/autoLands.service"
 
 
 export default function useLandsModal({ basics, cards, setOpen, onSubmit = () => {}, notify }: LandsModalProps) {
