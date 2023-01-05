@@ -2,6 +2,7 @@ import { getNeighborIdx, getPlayerIdx, passingRight, getPackIdx, getHolding } fr
 
 const players = [{ id: 'A' },{ id: 'B' },{ id: 'C' },{ id: 'D' }]
 
+it.todo('gameIsEnded')
 it.todo('getBoard')
 it.todo('getGameStatus')
 it.todo('getOppIdx')
