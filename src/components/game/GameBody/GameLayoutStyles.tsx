@@ -53,5 +53,5 @@ export const RoundButton = ({ label, onClick }: { onClick: MouseEventHandler, la
 
 
 export const GameLayoutWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="flex flex-col text-center min-h-screen relative">{children}</div>
+  <div className="flex flex-col text-center relative">{children}</div>
 )
