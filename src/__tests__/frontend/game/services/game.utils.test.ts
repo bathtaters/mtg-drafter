@@ -2,6 +2,15 @@ import { getNeighborIdx, getPlayerIdx, passingRight, getPackIdx, getHolding } fr
 
 const players = [{ id: 'A' },{ id: 'B' },{ id: 'C' },{ id: 'D' }]
 
+it.todo('getBoard')
+it.todo('getGameStatus')
+it.todo('getOppIdx')
+
+it.todo('getSlots')
+it.todo('playerIsHost')
+it.todo('canAdvance')
+it.todo('filterPackIds')
+
 describe('passingRight', () => {
   it('is right', () => {
     expect(passingRight({ round: 2, roundCount: 10 })).toBe(true)
