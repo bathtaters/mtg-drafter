@@ -2,11 +2,14 @@ import type { Game, Player, GameCard, Board, GameStatus } from "@prisma/client"
 import type { PackFull } from "types/game"
 import { mod } from "components/base/services/common.services"
 
+export const gameIsEnded = (game?: Partial<Game>): boolean =>
+  typeof game?.round === 'number' && game.round > (game.roundCount || 0)
+
 export const getBoard = <C extends GameCard>(playerCards: C[], board: Board) => playerCards.filter(({ board: cardBoard }) => board === cardBoard)
 
 export const getGameStatus = (game?: Partial<Game>): GameStatus | undefined =>
   typeof game?.round !== 'number' ? undefined :
-    game.round < 1 ? 'start' : game.round > (game.roundCount || 0) ? 'end' :
+    game.round < 1 ? 'start' : gameIsEnded(game) ? 'end' :
     game.round === game.roundCount ? 'last' : 'active'
 
 export const getOppIdx = (playerIdx: number, playerCount: number) => {

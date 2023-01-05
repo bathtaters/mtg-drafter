@@ -12,6 +12,7 @@ import Loader from 'components/base/Loader'
 import Footer from 'components/base/Footer'
 import { BodyWrapperStyle, SetPageTitle } from 'components/base/styles/AppStyles'
 import useGameController from 'components/game/index/game.controller'
+import { gameIsEnded } from '../shared/game.utils'
 
 
 export default function Game(props: ServerProps) {
@@ -57,7 +58,7 @@ export default function Game(props: ServerProps) {
     {!!toggleLogModal &&
       <LogModal
         isOpen={logModal} setOpen={toggleLogModal}
-        log={gameLog} players={players}
+        log={gameLog} players={players} gameEnded={gameIsEnded(game)}
       /> }
 
     {!!toggleLandModal &&

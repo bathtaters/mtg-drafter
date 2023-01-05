@@ -6,13 +6,13 @@ import { ToolbarWrapper, FilterDropdown, SettingsDropdown, SettingToggle } from 
 import { gameActionList, otherList, playerActionList } from "../log.utils"
 import { logOptionLabels } from "assets/strings"
 
-type Props = { log: GameLog, players: Player[] }
+type Props = { log: GameLog, players: Player[], gameEnded: boolean }
 
-export default function LogToolbar({ log, players }: Props) {
+export default function LogToolbar({ log, players, gameEnded }: Props) {
   return (
     <ToolbarWrapper>
       <SettingsDropdown>
-        {(Object.keys(log.options) as Array<keyof LogOptions>).map((key) =>
+        {(Object.keys(log.options) as Array<keyof LogOptions>).map((key) => (key !== 'hidePrivate' || gameEnded) &&
           <SettingToggle key={key} label={logOptionLabels[key]} value={!log.options[key]} setValue={(val) => log.setOptions((opt) => ({ ...opt, [key]: !val }))} />
         )}
       </SettingsDropdown>
