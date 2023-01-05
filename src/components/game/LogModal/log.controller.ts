@@ -2,19 +2,19 @@ import type { Game, Player } from "@prisma/client"
 import type { LogFull } from "types/game"
 import { useCallback, useMemo, useState } from "react"
 import { fetcher } from "components/base/libs/fetch"
-import { actionBase, additionalPlayers, filterLogs } from "./log.utils"
+import { allActions, otherPlayers, filterLogs } from "./log.utils"
 import { debounce } from "components/base/libs/utils"
 import { logOptions } from "assets/constants"
 
 const DEBOUNCE_DELAY = 500
 
 export default function useGameLog(url: Game['url'], playerData: Player[]) {
-  const playerBase = useMemo(() => playerData.map(({ id }) => id).concat(additionalPlayers), [playerData.length])
+  const allPlayers = useMemo(() => playerData.map(({ id }) => id).concat(otherPlayers), [playerData.length])
 
   const [ logs,    setLog     ] = useState<LogFull>()
   const [ error,   setError   ] = useState<string>()
-  const [ players, setPlayers ] = useState(playerBase)
-  const [ actions, setActions ] = useState(actionBase)
+  const [ players, setPlayers ] = useState(allPlayers)
+  const [ actions, setActions ] = useState(allActions)
   const [ options, setOptions ] = useState(logOptions)
 
   const refresh = useCallback(debounce(() => {
@@ -31,7 +31,7 @@ export default function useGameLog(url: Game['url'], playerData: Player[]) {
   
   return {
     list: filterLogs(logs, players, actions, options),
-    actionBase, playerBase,
+    allActions, allPlayers,
     error, refresh,
     players, setPlayers,
     actions, setActions,

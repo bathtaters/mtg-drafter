@@ -2,7 +2,7 @@ import type { Player } from "@prisma/client"
 import type { LogFull } from "types/game"
 import CookieIcon from "components/svgs/CookieIcon"
 import { EntryWrapper, EntryItem, EntrySpace } from "./LogModalStyles"
-import { actionBase } from "./log.utils"
+import { allActions } from "./log.utils"
 import { formatLogAction, logFullDate, logTimestamp } from "assets/strings"
 
 
@@ -10,7 +10,7 @@ export default function LogEntry({ entry, players, isFirst, isPrivate = false }:
   const { time, action, data, byHost, playerId, card, gameId } = entry
   
   const playerIdx = playerId ? players.findIndex(({ id }) => id === playerId) : -2
-  const actionIdx = actionBase.indexOf(action)
+  const actionIdx = allActions.indexOf(action)
 
   return(
     <EntryWrapper>

@@ -18,10 +18,10 @@ export default function LogToolbar({ log, players }: Props) {
       </SettingsDropdown>
 
       <FilterDropdown>
-        <LogFilter label="Actions" buttons={playerActionList} baseList={log.actionBase} selected={log.actions} setSelected={log.setActions} invert={true} hideAll={true} />
-        <LogFilter label=" "       buttons={gameActionList}   baseList={log.actionBase} selected={log.actions} setSelected={log.setActions} invert={true} offset={playerActionList.length}  />
-        <LogFilter label="Players" buttons={players}          baseList={log.playerBase} selected={log.players} setSelected={log.setPlayers} hideAll={true} />
-        <LogFilter label=""        buttons={otherList}        baseList={log.playerBase} selected={log.players} setSelected={log.setPlayers} invert={true}  />
+        <LogFilter label="Actions" buttons={playerActionList} baseList={log.allActions} selected={log.actions} setSelected={log.setActions} invert={true} hideAll={true} />
+        <LogFilter label=" "       buttons={gameActionList}   baseList={log.allActions} selected={log.actions} setSelected={log.setActions} invert={true} offset={playerActionList.length}  />
+        <LogFilter label="Players" buttons={players}          baseList={log.allPlayers} selected={log.players} setSelected={log.setPlayers} hideAll={true} />
+        <LogFilter label=""        buttons={otherList}        baseList={log.allPlayers} selected={log.players} setSelected={log.setPlayers} invert={true}  />
       </FilterDropdown>
     </ToolbarWrapper>
   )
