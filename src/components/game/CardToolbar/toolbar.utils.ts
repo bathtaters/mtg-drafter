@@ -1,7 +1,7 @@
 import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import { sortKeys } from "components/base/services/cardSort.services"
 import cardZoomLevels, { matchWidth } from "./cardZoomLevels"
-import { throttle } from "components/base/libs/utils"
+import { throttle } from "components/base/services/common.services"
 
 const remToPixel = (rem: string) => parseFloat(rem) * parseFloat(typeof window !== 'undefined' ? window.getComputedStyle(document.documentElement).fontSize : '16px')
 

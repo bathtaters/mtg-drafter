@@ -1,5 +1,3 @@
-import { DependencyList, useEffect, useRef } from 'react'
-
 export const titleCase = (camelCase: string) => camelCase
   .replace(/([A-Z])/g, (match) => ` ${match}`)
   .replace(/^./, (match) => match.toUpperCase())
@@ -31,32 +29,26 @@ export const sameValueObject = <T extends { [key: string]: any }> (keys: (keyof 
 
 export const getObjectSum = (obj: { [key: string]: number }) => Object.values(obj).reduce((sum, n) => sum + n, 0)
 
-export const canShare = () => typeof window === 'undefined' ? false : Boolean(window.navigator.share || window.navigator.clipboard?.writeText)
-export async function shareData(text: string, url: string, title: string): Promise<"copy"|"share"|"error"|"unavailable"> {
-  if (window.navigator.share)
-    return window.navigator.share({ title, url, text }).catch(() => true).then((isErr) => isErr ? 'error' : 'share')
-  else if (window.navigator.clipboard?.writeText)
-    return window.navigator.clipboard.writeText(url).then(() => 'copy')
-  return 'unavailable'
+
+export const throttle = (delay: number) => {
+  let pause: boolean
+
+  return (callback: () => void) => {
+    if (pause) return;
+    
+    pause = true
+    callback()
+    setTimeout(() => { pause = false }, delay)
+  };
 }
 
-export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependencies?: DependencyList, minimumDelay: number = 0) {
-  const timestamp = useRef(new Date().getTime())
-  const handleEvent = (isFocused: boolean) => {
-    const now = new Date().getTime()
-    if (now - timestamp.current >= minimumDelay) onFocus(isFocused)
-    timestamp.current = now
+export function debounce<A extends [] = []>(callback: (...args: A) => void, delay = 500) {
+  let timeout: NodeJS.Timeout
+
+  return (...args: A) => {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => {
+      callback(...args)
+    }, delay)
   }
-
-  useEffect(() => {
-    const handleFocus = () => handleEvent(true)
-    const handleBlur  = () => handleEvent(false)
-
-    window.addEventListener("focus", handleFocus)
-    window.addEventListener("blur",  handleBlur)
-    return () => {
-      window.removeEventListener("focus", handleFocus)
-      window.removeEventListener("blur",  handleBlur)
-    }
-  }, dependencies)
 }

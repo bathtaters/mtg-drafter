@@ -3,7 +3,7 @@ import type { LogFull } from "types/game"
 import { useCallback, useMemo, useState } from "react"
 import { fetcher } from "components/base/libs/fetch"
 import { allActions, otherPlayers, filterLogs } from "./log.utils"
-import { debounce } from "components/base/libs/utils"
+import { debounce } from "components/base/services/common.services"
 import { logOptions } from "assets/constants"
 
 const DEBOUNCE_DELAY = 500
