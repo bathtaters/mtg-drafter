@@ -68,7 +68,7 @@ export const formatLogAction = (action: LogAction, data: string | null, byHost: 
         `${key} changed to "${val}"`
       ).join(', ') || 'settings saved (Nothing changed)'} `
     
-    case 'round': return `Round ${data || '?'}`
+    case 'round': return data === 'END' ? 'Ended' : `Round ${data || '?'}`
     default: return `${action}ed`
   }
 }

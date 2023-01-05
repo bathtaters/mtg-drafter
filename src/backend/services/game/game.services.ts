@@ -40,21 +40,24 @@ export function renameGame(id: Game['id'], newName: Game['name']) {
   ]).then(([{ name }]) => name)
 }
 
-export function nextRound(id: Game['id'], round: Game['round']) {
-  return prisma.$transaction([
-    prisma.game.update({
-      where: { id },
-      data: {
-        round: round,
-        players: { updateMany: {
-          where: {}, data: { pick: 1 },
-        }},
-      },
-      select: { round: true }
-    }),
+export async function nextRound(id: Game['id'], round: Game['round']) {
+  const game = await prisma.game.update({
+    where: { id },
+    data: {
+      round: round,
+      players: { updateMany: {
+        where: {}, data: { pick: 1 },
+      }},
+    },
+    select: { round: true, roundCount: true }
+  })
+  if (!game) throw new Error('Game not found')
 
-    prisma.logEntry.create({ data: { gameId: id, byHost: true, action: 'round', data: `${round}` } })
-  ]).then(([{ round }]) => round)
+  await prisma.logEntry.create({ data: {
+    gameId: id, byHost: true, action: 'round',
+    data: `${game.round > game.roundCount ? 'END' : game.round}`
+  } })
+  return game.round
 }
 
 export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'], board: Board = "main") {
