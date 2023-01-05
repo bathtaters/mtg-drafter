@@ -1,22 +1,50 @@
-import type { Card, Game, Pack, GameCard, Player, Board, Color, PlayerStatus, LogEntry } from "@prisma/client"
+import type { Card, Game, Pack, GameCard, Player, Board, Color, PlayerStatus, LogEntry, LogAction } from "@prisma/client"
 import type { SortKey } from "components/base/services/cardSort.services"
 import z from "backend/libs/validation"
 import { boardLands } from "./game.validation"
 
-export type PartialGame = Pick<Game,"id"|"name"|"url">
-
-export type CardOptions = { width: string, showArt: boolean, sort?: SortKey }
-export type LogOptions = { hideHost: boolean, hidePrivate: boolean }
+// -- DATABASE JSONs -- \\
 
 export type BoardLands = z.infer<typeof boardLands>
 export type BasicLands = { [board in Board]: BoardLands } & { pack: never }
 
+
+// -- RELATED/PARTIAL TYPES -- \\
+
+export type PartialGame = Pick<Game,"id"|"name"|"url">
+
 export type CardFull = Card & { otherFaces: Card[] }
 export type GameCardFull = GameCard & { card: CardFull }
+
 export type PackFull = Pack & { cards: GameCardFull[] }
 export type PlayerFull = Player & { cards: GameCardFull[], basics: BasicLands }
 
-export type LogFull = (LogEntry & { card: (GameCard & { card: Card }) | null })[]
+
+// -- USER OPTIONS -- \\
+
+export type CardOptions = { width: string, showArt: boolean, sort?: SortKey }
+export type LogOptions = { hideHost: boolean, hidePrivate: boolean }
+
+
+// -- LOG TYPES -- \\
+
+export type LogData<Action extends LogAction = LogAction> = 
+  Action extends 'pick' ? `${string}:${string}` :
+  Action extends 'join' ? string :
+  Action extends 'leave' ? null :
+  Action extends 'rename' ? string :
+  Action extends 'round' ? `${number}` | 'END' :
+  Action extends 'settings' ? `${Partial<Game>}` :
+   undefined
+
+export interface LogEntryFull extends LogEntry {
+  card: (GameCard & { card: Card }) | null,
+  data: LogData
+}
+export type LogFull = LogEntryFull[]
+
+
+// -- API TYPES -- \\
 
 export interface ServerSuccess {
   options: Game,
@@ -47,6 +75,8 @@ export type ServerProps = ServerSuccess | ServerFail | ServerUnreg
 export type GameProps = Omit<Required<ServerProps>, 'error'>
 
 
+// -- FRONTEND TYPES -- \\
+
 export namespace Local {
   type NextRound    = (round: Game['round']) => void
   type RenamePlayer = (playerId: Player['id'], name: Player['name']) => void
@@ -66,7 +96,7 @@ export namespace Socket {
   type SetStatus     = (playerId: Player['id'], status?: PlayerStatus, byHost?: boolean) => void
 }
 
-// Alias
+// Aliases
 export type RenamePlayer  = Socket.RenamePlayer
 export type SetTitle      = Socket.SetTitle
 export type NextRound     = Socket.NextRound

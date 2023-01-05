@@ -1,5 +1,5 @@
 import type { Game, GameStatus, LogAction } from "@prisma/client"
-import type { BoardLands, LogOptions } from "types/game"
+import type { BoardLands, LogData, LogOptions } from "types/game"
 import type { ToastAlert } from "components/base/common/Alerts/alerts.d"
 import Link from "next/link"
 import { formatBytes, getObjectSum } from "components/base/services/common.services"
@@ -46,14 +46,14 @@ export const logFullDate = (dt: Date) => dt.toLocaleString(undefined, { timeStyl
 
 export const logTimestamp = (dt: Date) => dt.toLocaleTimeString(undefined, { timeStyle: 'short' }).replace(' ','').padStart(7, '0').slice(0,6).toLowerCase()
 
-export const formatLogAction = (action: LogAction, data: string | null, byHost: boolean) => {
+export const formatLogAction = (action: LogAction, data: LogData, byHost: boolean) => {
   // Log output: Player|Game <formatLogAction()> <data|card|none> <byHost>
 
   switch(action) {
     case 'pick':
       if (!data) return 'picked'
 
-      const [ pack, pick = '' ] = data?.split(':', 2)
+      const [ pack, pick = '' ] = data.split(':', 2)
       return ` pack-${pack.padStart(2,'0')} pick-${pick.padStart(2,'0')}`
 
     case 'join': return byHost ? 'added' : 'joined'

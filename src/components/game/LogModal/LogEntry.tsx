@@ -1,12 +1,13 @@
 import type { Player } from "@prisma/client"
-import type { LogFull } from "types/game"
+import type { LogEntryFull } from "types/game"
 import CookieIcon from "components/svgs/CookieIcon"
 import { EntryWrapper, EntryItem, EntrySpace } from "./LogModalStyles"
 import { allActions } from "./log.utils"
 import { formatLogAction, logFullDate, logTimestamp } from "assets/strings"
 
+type Props = { entry: LogEntryFull, players: Player[], isFirst?: boolean, isPrivate?: boolean }
 
-export default function LogEntry({ entry, players, isFirst, isPrivate = false }: { entry: LogFull[number], players: Player[], isFirst?: boolean, isPrivate?: boolean }) {
+export default function LogEntry({ entry, players, isFirst, isPrivate = false }: Props) {
   const { time, action, data, byHost, playerId, card, gameId } = entry
   
   const playerIdx = playerId ? players.findIndex(({ id }) => id === playerId) : -2
