@@ -1,3 +1,5 @@
+/* Card & X: original art by bathtaters -- CC0 */
+/* Gear: remixed from SVG Repo -- Public Domain: https://www.svgrepo.com/svg/438584/gear */
 export default function CardIcon({ innerIcon, className }: { innerIcon?: "X"|"gear", className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 125 160" className={className}>

@@ -1,3 +1,4 @@
+/* Provided at https://github.com/logos to use as link to a GitHub project */
 export function GitHubLogo({ className }: { className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" aria-label="GitHub logo" className={className} viewBox="0 0 98 98">
@@ -6,6 +7,7 @@ export function GitHubLogo({ className }: { className?: string }) {
   )
 }
 
+/* Provided at https://mtgjson.com/brand-assets/ to use for attribution */
 export function MtgJsonLogo({ className }: { className?: string }) {
 return (
   <svg xmlns="http://www.w3.org/2000/svg" aria-label="MTGJSON logo" className={className} viewBox="0 0 5000 3500">

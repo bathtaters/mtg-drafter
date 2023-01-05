@@ -1,3 +1,4 @@
+/* Copied from SVG Repo -- Public Domain: https://www.svgrepo.com/svg/438584/gear */
 export default function GearIcon({ className }: { className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 489.802 489.802">

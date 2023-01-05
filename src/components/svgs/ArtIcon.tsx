@@ -1,3 +1,4 @@
+/* Copied from SVG Repo -- Public Domain: https://www.svgrepo.com/svg/171919/art-studies */
 export default function ArtIcon({ className }: { className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430.424 430.424" className={className}>

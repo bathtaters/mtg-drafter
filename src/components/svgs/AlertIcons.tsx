@@ -1,3 +1,4 @@
+/* All icons copied from daisyUI sample code */
 
 export const InfoIcon = ({ className = "flex-shrink-0 w-6 h-6" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className={`stroke-current ${className}`}>

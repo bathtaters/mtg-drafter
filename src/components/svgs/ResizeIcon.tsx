@@ -1,3 +1,4 @@
+/* Original art by bathtaters -- CC0 */
 export default function ResizeIcon({ className }: { className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 240" className={className}>
@@ -12,6 +13,3 @@ export default function ResizeIcon({ className }: { className?: string }) {
     </svg>
   )
 }
-
-
-

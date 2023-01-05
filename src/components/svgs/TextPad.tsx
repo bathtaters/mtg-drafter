@@ -1,3 +1,4 @@
+/* Original art by bathtaters -- CC0 */
 export default function TextPad({ showArrow = false, className = "" }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} version="1.1" viewBox="0 0 752 752">
