@@ -2,7 +2,8 @@ import type { Game, Player } from "@prisma/client"
 import type { LogFull } from "types/game"
 import { useCallback, useMemo, useState } from "react"
 import { fetcher } from "components/base/libs/fetch"
-import { actionBase, additionalPlayers, debounce, filterLogs } from "./log.utils"
+import { actionBase, additionalPlayers, filterLogs } from "./log.utils"
+import { debounce } from "components/base/libs/utils"
 import { logOptions } from "assets/constants"
 
 const DEBOUNCE_DELAY = 500

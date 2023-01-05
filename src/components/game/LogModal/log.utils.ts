@@ -22,15 +22,3 @@ export const filterLogs = (logs?: LogFull, players?: PlayerFilter[], actions?: L
       players.includes(playerId) && ( !byHost || !options?.hideHost ))
     ))
   )
-
-
-export function debounce<A extends [] = []>(callback: (...args: A) => void, delay = 500) {
-  let timeout: NodeJS.Timeout
-
-  return (...args: A) => {
-    clearTimeout(timeout)
-    timeout = setTimeout(() => {
-      callback(...args)
-    }, delay)
-  }
-}
