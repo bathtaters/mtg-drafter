@@ -12,7 +12,7 @@ export const FormWrapper = ({ onSubmit, children }: { onSubmit?: React.FormEvent
 )
 
 export const FieldWrapper = ({ label, children }: { label: string, children: React.ReactNode }) => (
-  <fieldset className="form-control w-full border border-secondary rounded-lg">
+  <fieldset className="form-control w-full border border-secondary rounded-lg relative">
     <legend className="px-2"><h3>{label}</h3></legend>
     {children}
   </fieldset>
@@ -54,6 +54,13 @@ export const FormTitle = ({ placeholder, value, setValue }: { placeholder: strin
       required={true}
     />
   </div>
+)
+
+export const HelpButton = ({ tip }: { tip: string }) => (
+  <div data-tip={tip} className="absolute bottom-2 right-2 
+    btn btn-circle btn-sm btn-secondary p-0 text-lg
+    border-none bg-opacity-60 hover:bg-opacity-60
+    tooltip tooltip-left flex">?</div>
 )
 
 export const SubmitButton = ({ disabled, children }: { disabled?: boolean, children: React.ReactNode }) => (
