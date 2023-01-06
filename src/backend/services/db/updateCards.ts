@@ -4,10 +4,9 @@ import fetchJson from '../../libs/fetchJson'
 import batchCallback from '../../libs/batcher'
 import { adaptCardToDb, adaptCardToConnect, JsonCard } from '../../utils/db/card.utils'
 
-const downloadThreads = 1000, createBatch = 5000, enableLog = true
+const DL_THREADS = 1000, ENTRY_BATCH = 5000
 
-
-export default async function updateCards(url: string, fullUpdate?: boolean) {
+export default async function updateCards(url: string, fullUpdate = false, enableLog = false) {
   let connectOps: Prisma.CardUpdateArgs[] = []
 
 
@@ -20,7 +19,7 @@ export default async function updateCards(url: string, fullUpdate?: boolean) {
   enableLog && console.log('First Pass: Cards')
   enableLog && console.time('First Pass')
 
-  const firstPass = batchCallback(createBatch, async (data: Prisma.CardCreateInput[]) => {
+  const firstPass = batchCallback(ENTRY_BATCH, async (data: Prisma.CardCreateInput[]) => {
     await prisma.card.createMany({ data, skipDuplicates: !fullUpdate })
   })
   
@@ -31,7 +30,7 @@ export default async function updateCards(url: string, fullUpdate?: boolean) {
     const op = adaptCardToConnect(data)
     if (op) connectOps.push(op)
 
-  }, { jsonPath: 'data.*', maxThreads: downloadThreads })
+  }, { jsonPath: 'data.*', maxThreads: DL_THREADS })
   
   await firstPass.flush()
 

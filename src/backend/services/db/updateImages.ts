@@ -5,14 +5,12 @@ import fetchJson from '../../libs/fetchJson'
 import { fetchBulkUrl, adaptScryfallToImage, ImageData, isPreferredArt } from '../../utils/db/image.utils'
 import { createMultiUpdate } from '../../utils/db/db.utils'
 
-
-
-const downloadThreads = 1000, imageBatch = 5000, enableLog = true
+const DL_THREADS = 1000, IMAGE_BATCH = 5000
 
 const multiUpdate = createMultiUpdate<ImageData>('Card', ['scryfallId', 'side'], ['img'], prisma)
 
 
-export default async function updateImages(imgJsonUrl: string, preferredJsonUrl: string, fullUpdate?: boolean) {
+export default async function updateImages(imgJsonUrl: string, preferredJsonUrl: string, fullUpdate = false, enableLog = false) {
 
   const imgUrl = await fetchBulkUrl(imgJsonUrl)
   if (!imgUrl) return console.error('Unable to retrieve ImageURI data')
@@ -38,14 +36,14 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
   enableLog && console.time('Image URIs')
 
   let count = 0
-  const batch = batchCallback(imageBatch, (data: ImageData[]) => multiUpdate(data).then((c) => { count += c }))
+  const batch = batchCallback(IMAGE_BATCH, (data: ImageData[]) => multiUpdate(data).then((c) => { count += c }))
 
   await fetchJson<ScryfallCard>(imgUrl, async (data) => {
     if (missingImgs && !missingImgs.includes(data.id)) return;
 
     await batch.append(...adaptScryfallToImage(data).filter(({ img }) => img))
 
-  }, { jsonPath: '*', maxThreads: downloadThreads })
+  }, { jsonPath: '*', maxThreads: DL_THREADS })
 
   await batch.flush()
 
@@ -66,7 +64,7 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
   let preferred = [] as string[]
   await fetchJson<ScryfallCard>(prefUrl, async (card) => {
     if (isPreferredArt(card)) preferred.push(card.id)
-  }, { jsonPath: '*', maxThreads: downloadThreads })
+  }, { jsonPath: '*', maxThreads: DL_THREADS })
 
   enableLog && console.log('Downloaded',preferred.length,'Preferred Art IDs')
 
