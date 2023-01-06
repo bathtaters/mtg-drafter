@@ -7,6 +7,7 @@ import useCardImage from "./image.controller"
 
 type Props = {
   card: CardFull,
+  isFoil?: boolean,
   container: TabLabels,
   isSelected?: boolean,
   showImage?: boolean,
@@ -14,16 +15,16 @@ type Props = {
   className?: string,
 }
 
-export default function CardDisplay({ card, isSelected, container, showImage, onClick, className = '' }: Props) {
+export default function CardDisplay({ card, isFoil, isSelected, container, showImage, onClick, className = '' }: Props) {
   const { images, sideIdx, cardFace, handleFlip, isRotated } = useCardImage(card)
   const isBoard = container in Board
 
   return (
-    <CardWrapper isSelected={isSelected} onClick={!isBoard ? onClick : undefined} className={className}>
+    <CardWrapper isSelected={isSelected} isFoil={isFoil} onClick={!isBoard ? onClick : undefined} className={className}>
       {showImage && images.map((side, idx) => 
         <ImgWrapper rotate={isRotated} isTop={sideIdx < 0 || idx === sideIdx} key={idx}>{side}</ImgWrapper>
       )}
-      <RenderedCard card={cardFace} />
+      <RenderedCard card={cardFace} isFoil={isFoil} />
       {sideIdx >= 0 && <FlipButton onClick={handleFlip} isBack={sideIdx > 0} />}
       {isBoard && <SwapButton board={container as Board} onClick={onClick} />}
     </CardWrapper>

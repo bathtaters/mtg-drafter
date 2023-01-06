@@ -51,7 +51,7 @@ function buildBoosterPack(setData: SetFull) {
       shuffle(newCards)
     }
 
-    pack.push(...newCards.map(({ uuid }) => ({ cardId: uuid, /* foil: sheetData.foil */ })))
+    pack.push(...newCards.map(({ uuid }) => ({ cardId: uuid, foil: sheetData.foil })))
   })
 
   return pack
@@ -59,4 +59,4 @@ function buildBoosterPack(setData: SetFull) {
 
 
 type SetCache = { [code: SetFull['code']]: SetFull }
-type PackCard = Pick<GameCard,'cardId'/*|'foil'*/>
+type PackCard = Pick<GameCard,'cardId'|'foil'>

@@ -9,7 +9,7 @@ import cardZoomLevels from "../CardToolbar/cardZoomLevels"
 
 type Props = {
   label: TabLabels,
-  cards?: { id: string, card: CardFull }[],
+  cards?: { id: string, foil?: boolean, card: CardFull }[],
   lands?: BoardLands,
   loading?: boolean,
   children?: ReactNode,
@@ -28,9 +28,9 @@ export default function CardContainer({ label, cards, lands, loading, children, 
     >
       <CardsWrapper>
         {loading ? <LoadingPack /> : !cards ? <NoPack /> : !cards.length ? (label === 'pack' ? <EmptyPack /> : <EmptyBoard />) :
-          cards.sort((a,b) => packSort[cardOptions.sort ?? sortKeys[0]](a.card, b.card)).map(({ id, card }, idx) => 
+          cards.sort((a,b) => packSort[cardOptions.sort ?? sortKeys[0]](a.card, b.card)).map(({ id, foil, card }, idx) => 
             <Card
-              card={card} key={id}
+              card={card} key={id} isFoil={foil}
               showImage={cardOptions.showArt}
               className={cardOptions.width || cardZoomLevels[0]}
               onClick={onClick && ((ev) => onClick(id, ev))}
