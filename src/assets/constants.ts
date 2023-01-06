@@ -19,7 +19,39 @@ export const colorOrder = ['w','u','b','r','g'] as Array<keyof BoardLands>,
     b: 'Swamp',
     r: 'Mountain',
     g: 'Forest',
-  }
+  },
+
+  boosterSortOrder = [
+    'sta', // strixhaven
+    'playtest', 'oldFrame', // Playtest set
+    'dfc', 'therosGods', 'contraption', 'conspiracy', 'legendary', 'special',
+    'mythicPartner1', 'nondraftRareMythic',
+
+    'pcRare', 'modaldfcRareMythic', 'dfcRareMythic', 'legendaryRareMythic',
+    'nonlessonRareMythic',
+    'planeswalkerRareMythic','rareMythic', 'sfcRareMythic', 'nonlegendaryRareMythic',
+    'nonplaneswalkerRareMythic', 'nonconspiracyRareMythic', 'rarePartner1',
+    'rarePartner2', 'rarePartner3', 'rarePartner4', 'rarePartner5', 'rare',
+    
+    'pcCsUncommonRare',
+    'pcUncommon', 'modaldfcUncommon', 'planeswalkerUncommon', 'legendaryUncommon',
+    'uncommon', 'sfcUncommon', 'nonplaneswalkerUncommon', 'nonlegendaryUncommon',
+    'nonconspiracyUncommon', 'nondraftUncommon', 'uncommonPartner1',
+    'uncommonPartner2', 'uncommonPartner3', 'uncommonPartner4', 'uncommonPartner5',
+
+    // Playtest set
+    'multicolor','colorless',
+    'whiteA','blueA','blackA','redA','greenA',
+    'whiteB','blueB','blackB','redB','greenB',
+    
+    'dfcCommonUncommon',
+    'pcCsCommon', 'pcCommon', 'nonlessonCommon',
+    'sfcCommon', 'nonconspiracyCommon', 'nondraftCommon',
+    'nongainlandCommon', 'nonlandCommon', 'nonBasictypeCommon', 'common',
+    
+    'lesson', 'commonOrBasic', 'basicOrCommonLand',
+    'basicOrGainland', 'basictype', 'basic', 'land'
+  ].reverse()
 
 //  Local settings
 
