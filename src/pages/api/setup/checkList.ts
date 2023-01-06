@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSingleUpload } from 'backend/libs/upload'
-import buildCubeList from 'backend/services/game/buildCubeList'
+import buildCubeList from 'backend/services/setup/buildCubeList'
 import { fileSettings } from 'assets/constants'
 
 export type ListResponse = Awaited<ReturnType<typeof buildCubeList>>

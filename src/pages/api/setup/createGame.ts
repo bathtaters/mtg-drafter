@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { newCubeGame } from 'backend/services/game/createGame'
+import { newCubeGame } from 'backend/services/setup/createGame'
 import { getReqSessionId } from 'backend/libs/auth'
 import { cubeOptions } from 'types/setup.validation'
 
