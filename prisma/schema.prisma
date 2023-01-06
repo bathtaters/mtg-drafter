@@ -38,6 +38,11 @@ enum Side {
   e
 }
 
+enum BoosterType {
+  default
+  arena
+}
+
 enum Board {
   main
   side
@@ -140,15 +145,30 @@ model Card {
 
   // Relation fields
   inGame        GameCard[]
+  inBooster     BoosterCard[]
   inOtherFaces  Card[] @relation("OtherFaceCards")
 
   @@index([name])
   @@index([name, setCode])
 }
 
+model CardSet {
+  code        String @id
+  name        String
+  releaseDate DateTime
+  block       String?
+  
+  totalWeight   Int
+  boosterType   BoosterType
+  boosters      BoosterLayout[]
+  sheets        BoosterSheet[]
+}
+
 
 
 // Embedded Models
+
+// Game
 
 model Player {
   id          String @id @default(cuid()) 
@@ -208,10 +228,64 @@ model LogEntry {
   cardId      String?
 }
 
+
+// Set
+
+model BoosterLayout {
+  setCode   String
+  idx       Int
+  @@id([setCode, idx])
+
+  sheets    SheetsInLayout[]
+  weight    Int
+
+  set       CardSet @relation(fields: [setCode], references: [code], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model SheetsInLayout {
+  setCode       String
+  layoutIdx     Int
+  sheetName     String
+  @@id([setCode, layoutIdx, sheetName])
+
+  selectCount   Int
+
+  layout        BoosterLayout @relation(fields: [setCode,layoutIdx], references: [setCode,idx], onDelete: Cascade, onUpdate: Cascade)
+  sheet         BoosterSheet @relation(fields: [setCode,sheetName], references: [setCode,name], onDelete: Cascade, onUpdate: Cascade) 
+}
+
+model BoosterSheet {
+  setCode       String
+  name          String
+  @@id([setCode, name])
+
+  cards         BoosterCard[]
+  foil          Boolean
+  balanceColors Boolean
+  totalWeight   Int
+  
+  set           CardSet @relation(fields: [setCode], references: [code], onDelete: Cascade, onUpdate: Cascade)
+  layouts       SheetsInLayout[]
+}
+
+model BoosterCard {
+  id        String @id @default(cuid())
+  card      Card @relation(fields: [cardId], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+  weight    Int
+  
+  sheet     BoosterSheet @relation(fields: [setCode,sheetName], references: [setCode,name], onDelete: Cascade, onUpdate: Cascade)
+  setCode   String
+  sheetName String
+  cardId    String
+  @@index([setCode, sheetName])
+}
+
+
 model Enums {
   id           String @id
   TabLabels    TabLabels
   GameStatus   GameStatus
   PlayerStatus PlayerStatus
   LogAction    LogAction
+  BoosterType  BoosterType
 }

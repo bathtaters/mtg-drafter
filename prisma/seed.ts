@@ -1,11 +1,15 @@
 import prisma from '../src/backend/libs/db'
 import updateCards from '../src/backend/services/db/updateCards'
 import updateImages from '../src/backend/services/db/updateImages'
-import { cardDbUrl, imageDbUrl, preferredDbUrl } from '../src/assets/urls'
+import updateSets from '../src/backend/services/db/updateSets'
+import { cardDbUrl, imageDbUrl, preferredDbUrl, setsDbUrl } from '../src/assets/urls'
+
+const CONSOLE_LOGGING = true
 
 async function main() {
-  await updateCards(cardDbUrl, false)
-  await updateImages(imageDbUrl, preferredDbUrl, false)
+  await updateCards(cardDbUrl, false, CONSOLE_LOGGING)
+  await updateImages(imageDbUrl, preferredDbUrl, false, CONSOLE_LOGGING)
+  await updateSets(setsDbUrl, false, CONSOLE_LOGGING)
   console.log('DONE')
 }
 
