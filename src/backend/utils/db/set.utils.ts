@@ -11,14 +11,14 @@ const adaptSetToDb = ({ code, name, releaseDate, block, booster }: JsonSet, boos
 Prisma.CardSetCreateManyInput => ({
   code, name, block, boosterType,
   releaseDate: new Date(releaseDate || ''),
-  totalWeight: booster[boosterType].boostersTotalWeight ?? 0,
+  totalWeight: booster[boosterType].boostersTotalWeight,
 })
 
-const adaptBoosterToDb = ({ weight }: JsonBooster['boosters'][number], setCode: JsonSet['code'], idx: number):
+const adaptBoosterToDb = ({ weight }: JsonBooster['boosters'][number], setCode: JsonSet['code'], index: number):
 Prisma.BoosterLayoutCreateManyInput => ({
   setCode,
-  idx,
-  weight: weight ?? 0,
+  index,
+  weight,
 })
 
 const adaptContentsToDb = ({ contents }: JsonBooster['boosters'][number], setCode: JsonSet['code'], layoutIdx: number):
@@ -33,9 +33,9 @@ const adaptSheetsToDb = (name: string, { foil, balanceColors, totalWeight }: Jso
 Prisma.BoosterSheetCreateManyInput => ({
   setCode,
   name,
-  foil: foil ?? false,
-  balanceColors: balanceColors ?? false,
-  totalWeight: totalWeight ?? 0,
+  foil,
+  balanceColors,
+  totalWeight,
 })
 
 const adaptBoosterCardsToDb = (sheetName: string, { cards }: JsonBooster['sheets'][string], setCode: JsonSet['code']):

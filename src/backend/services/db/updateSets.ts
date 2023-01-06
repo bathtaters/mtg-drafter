@@ -1,4 +1,3 @@
-import type { Prisma } from '@prisma/client'
 import prisma from '../../libs/db'
 import fetchJson from '../../libs/fetchJson'
 import batchCallback from '../../libs/batcher'
