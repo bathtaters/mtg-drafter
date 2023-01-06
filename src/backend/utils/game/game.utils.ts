@@ -2,19 +2,18 @@ import type { Game, Player } from '@prisma/client'
 import { nanoid } from 'nanoid'
 import { gameUrlRegEx } from 'assets/urls'
 import { getNeighborIdx } from 'components/game/shared/game.utils'
+import { randomPop } from 'backend/libs/random'
 import { urlLength } from 'assets/constants'
 
 export const parseGameURL = (url: string) => (url.match(gameUrlRegEx) || [])[1]
 
-const randomInt = (max: number, min: number = 0) => min + Math.floor(Math.random() * max)
-const popRandom = <T = any>(array: T[]) => array.splice(randomInt(array.length), 1)[0]
 
 export function createPacks(cards: string[], packCount: number, packSize: number) {
   if (packCount * packSize > cards.length) throw new Error(`Not enough cards. Requires ${packCount * packSize} for this size game.`)
   let packs = [], next = []
   for (let p = 0; p++ < packCount; next = []) {
     for (let c = 0; c++ < packSize; ) {
-      next.push(popRandom(cards))
+      next.push(randomPop(cards))
     }
     packs.push(next)
   }
