@@ -9,7 +9,7 @@ export const adaptCardToDb = ({
   power, toughness, loyalty, rarity, colors,
   types, manaValue, identifiers, hasContentWarning,
   faceName, side, asciiName
-}: JsonCard): Prisma.CardCreateInput => ({
+}: JsonCard): Prisma.CardCreateManyInput => ({
   uuid, setCode, manaCost, type, text, manaValue, faceName,
   
   name: name || 'N/A',
@@ -42,4 +42,7 @@ export const adaptCardToConnect = ({
 
 // TYPES
 
-export type JsonCard = Card & { variations: Card['variation'], manaValue: Card['convertedManaCost'] }
+export interface JsonCard extends Card {
+  variations: Card['variation'],
+  manaValue: Card['convertedManaCost']
+}
