@@ -163,7 +163,7 @@ model FaceInCard {
 model CardSet {
   code        String @id
   name        String
-  releaseDate DateTime
+  releaseDate String?
   block       String?
   
   totalWeight   Int @default(0)

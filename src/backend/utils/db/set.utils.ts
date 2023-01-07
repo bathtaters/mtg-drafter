@@ -9,8 +9,7 @@ const boosterPreference: BoosterType[] = ['default', 'arena']
 
 const adaptSetToDb = ({ code, name, releaseDate, block, booster }: JsonSet, boosterType: BoosterType):
 Prisma.CardSetCreateManyInput => ({
-  code, name, block, boosterType,
-  releaseDate: new Date(releaseDate || ''),
+  code, name, releaseDate, block, boosterType,
   totalWeight: booster[boosterType].boostersTotalWeight,
 })
 
