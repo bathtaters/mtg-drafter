@@ -40,7 +40,7 @@ export default function usePickController(pickCard: PickCard, swapCard: SwapCard
   const deselectCard = useCallback(() => { setSelectedCard(undefined) }, [])
 
   useEffect(() => { if (hidePack && selectedTab === 'pack') selectTab('main') }, [hidePack])
-  useEffect(() => { if (pack?.id) selectTab('pack') }, [pack?.id])
+  useEffect(() => { if (pack?.index) selectTab('pack') }, [pack?.index])
 
   return {
     selectedCard, deselectCard,
