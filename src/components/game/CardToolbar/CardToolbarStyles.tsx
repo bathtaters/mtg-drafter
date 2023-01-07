@@ -29,7 +29,7 @@ export const ToolbarButton = [
 ]
 
 
-export const CardSort = (props: SelectorProps) => (
+export const CardSort = (props: SelectorProps<number>) => (
   <div className="flex">
     <SortIcon className="fill-base-content h-7 mr-2" />
     <Selector className="select-secondary select-sm tooltip-secondary" {...props} />

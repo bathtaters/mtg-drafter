@@ -2,6 +2,7 @@ import { ToolbarContainer, ToolbarCollapse, ToolbarButton, CardSort, ArtToggle, 
 import useToolbar, { ToolbarProps } from "./toolbar.controller"
 import { sortList } from "./toolbar.utils"
 import cardZoomLevels from "./cardZoomLevels"
+import { Fragment } from "react"
 
 
 export default function CardToolbar(props: ToolbarProps) {
@@ -14,8 +15,8 @@ export default function CardToolbar(props: ToolbarProps) {
     <ToolbarCollapse button={ToolbarButton} defaultOpen={false}>
       <ToolbarContainer>
 
-        <CardSort label="Sort cards" selected={sort} setSelected={setSort}>
-          {sortList}
+        <CardSort label="Sort cards" selected={sort} setSelected={(idx) => setSort(+idx)}>
+          {sortList.map((sortType, idx) => <Fragment key={idx}>{sortType}</Fragment>)}
         </CardSort>
 
         <CardArtWrapper>

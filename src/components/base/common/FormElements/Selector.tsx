@@ -1,18 +1,18 @@
-import type { ReactNode } from "react"
+import { ReactNode, Children, ReactElement, Component } from "react"
 
-export type Props = {
-  label: string,
-  selected: number,
-  setSelected: (index: number) => void,
+export type Props<ID extends string|number> = {
+  label?: string,
+  selected: ID,
+  setSelected: (key: string) => void,
   className?: string,
-  children: ReactNode[],
+  children: ReactElement[],
 }
 
-export default function Selector({ label, selected, setSelected, className, children }: Props) {
+export default function Selector<ID extends string|number = number>({ label, selected, setSelected, className, children }: Props<ID>) {
   return (
     <div className={`${label ? 'tooltip' : ''} tooltip-secondary`} data-tip={label}>
-      <select className={`select ${className || ''}`} value={selected} onChange={(ev) => setSelected(+ev.target.value)}>
-        {children.map((child, idx) => <option key={idx} value={idx}>{child}</option>)}
+      <select className={`select ${className || ''}`} value={selected} onChange={(ev) => setSelected(ev.target.value)}>
+        {Children.map(children, (child, idx) => <option key={child.key ?? idx} value={child.key ?? idx}>{child}</option>)}
       </select>
     </div>
   )
