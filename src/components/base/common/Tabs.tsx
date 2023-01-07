@@ -3,8 +3,8 @@ import type { ReactNode, MouseEventHandler } from "react"
 export default function Tabs<Tab extends string|number>({ tabs, selected, setSelected, className = '', tabClass = '' }: Props<Tab>) {
   return (
     <TabWrapper className={className}>
-      {tabs.map((value) =>
-        <Tab selected={value === selected} onClick={() => setSelected(value)} className={tabClass}>{value}</Tab>
+      {tabs.map((tab) =>
+        <Tab key={tab} selected={tab === selected} onClick={() => setSelected(tab)} className={tabClass}>{tab}</Tab>
       )}
     </TabWrapper>
   )
