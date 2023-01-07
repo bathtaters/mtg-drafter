@@ -37,7 +37,15 @@ async function newGame(options: GenericOptions, sessionId?: string) {
     }),
     prisma.game.update({
       where: { id },
-      data: { hostId: host.id }
+      data: {
+        hostId: host.id,
+        log: { create: {
+          action: 'join',
+          data: sessionId,
+          playerId: host.id,
+          byHost: true,
+        }},
+      }
     })
   ])
   return url
