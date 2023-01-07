@@ -11,7 +11,7 @@ export default function useCardImage(card: CardFull, showImages = true) {
   const [ images, setImages ] = useState([] as ReactNode[])
   const [ sideIdx, setSideIdx ] = useState(card.side ? 0 : -1)
 
-  const cardFace = card.otherFaces[sideIdx - 1] || card
+  const cardFace = card.otherFaces[sideIdx - 1]?.card || card
   const isRotated = sideIdx > 0 && card.img === cardFace.img
 
   const handleFlip: MouseEventHandler = (ev) => {
@@ -33,7 +33,7 @@ export default function useCardImage(card: CardFull, showImages = true) {
   }
 
   useEffect(() => {
-    setImages([card, ...card.otherFaces].map(({ uuid, img }, idx) => showImages && !!img &&
+    setImages([card, ...card.otherFaces.map(({ card }) => card)].map(({ uuid, img }, idx) => showImages && !!img &&
       <Image key={uuid} src={img} sizes="100vw" fill priority={idx === 0} alt="" />
     ))
   }, [])

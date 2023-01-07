@@ -3,11 +3,10 @@ import type { Card } from 'mtggraphql'
 
 export const normalizeName = (name: string) => name.replace(/\s\/\/\s.+$/,'').toLowerCase()
 
-// Pass 1
 export const adaptCardToDb = ({
   uuid, name, setCode, manaCost, type, text,
   power, toughness, loyalty, rarity, colors,
-  types, manaValue, identifiers, hasContentWarning,
+  types, manaValue, identifiers,
   faceName, side, asciiName
 }: JsonCard): Prisma.CardCreateManyInput => ({
   uuid, setCode, manaCost, type, text, manaValue, faceName,
@@ -29,15 +28,8 @@ export const adaptCardToDb = ({
   side: side ? side as Side : null,
 })
 
-// Pass 2
-export const adaptCardToConnect = ({
-  uuid, otherFaceIds,
-}: JsonCard): Prisma.CardUpdateArgs | undefined => otherFaceIds?.length ? ({
-  where: { uuid },
-  data: {
-    otherFaces: otherFaceIds?.length ? { connect: otherFaceIds.map((uuid) => ({ uuid })) } : undefined,
-  }
-}) : undefined
+export const adaptFacesToDb = ({ uuid, otherFaceIds }: JsonCard): Prisma.FaceInCardCreateManyInput[] =>
+  otherFaceIds ? otherFaceIds.map((cardId) => ({ selfId: uuid, cardId })) : []
 
 
 // TYPES

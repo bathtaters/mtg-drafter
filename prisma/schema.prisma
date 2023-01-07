@@ -141,15 +141,23 @@ model Card {
   // Double-faced card data
   faceName      String?
   side          Side?
-  otherFaces    Card[] @relation("OtherFaceCards")
+  otherFaces    FaceInCard[] @relation("Self")
 
   // Relation fields
   inGame        GameCard[]
   inBooster     BoosterCard[]
-  inOtherFaces  Card[] @relation("OtherFaceCards")
+  inOtherFaces  FaceInCard[] @relation("Face")
 
   @@index([name])
   @@index([name, setCode])
+}
+
+model FaceInCard {
+  self      Card @relation("Self", fields: [selfId], references: [uuid], onDelete: Cascade, onUpdate: Cascade)
+  selfId    String
+  card      Card @relation("Face", fields: [cardId], references: [uuid], onDelete: Cascade, onUpdate: Cascade)
+  cardId    String
+  @@id([selfId, cardId])
 }
 
 model CardSet {

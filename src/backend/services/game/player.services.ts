@@ -8,7 +8,7 @@ export async function getPlayer(sessionId: Player['sessionId'], playerList: Play
 
   return prisma.player.findUnique({
     where: { id }, include: {
-      cards: { include: { card: { include: { otherFaces: true } } } },
+      cards: { include: { card: { include: { otherFaces: { include: { card: true } } } } } },
     }
   })
 }
@@ -17,7 +17,7 @@ export async function setStatus(id: Player['id'], sessionId: Player['sessionId']
   const player = await prisma.player.update({
     where: { id }, data: { sessionId },
     include: {
-      cards: !!sessionId && { include: { card: { include: { otherFaces: true } } } },
+      cards: !!sessionId && { include: { card: { include: { otherFaces: { include: { card: true } } } } } },
     }
   })
   await prisma.logEntry.create({ data: {

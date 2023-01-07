@@ -11,7 +11,7 @@ export function getGame(url: Game['url']) {
           cards: { 
             where: { playerId: null },
             include: {
-              card: { include: { otherFaces: true } }
+              card: { include: { otherFaces: { include: { card: true } } } }
             }
           }
         }

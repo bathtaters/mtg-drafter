@@ -13,7 +13,7 @@ export type BasicLands = { [board in Board]: BoardLands } & { pack: never }
 
 export type PartialGame = Pick<Game,"id"|"name"|"url">
 
-export type CardFull = Card & { otherFaces: Card[] }
+export type CardFull = Card & { otherFaces: Array<{ card: Card }> }
 export type GameCardFull = GameCard & { card: CardFull }
 
 export type PackFull = Pack & { cards: GameCardFull[] }
