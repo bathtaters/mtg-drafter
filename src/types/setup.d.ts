@@ -1,7 +1,9 @@
 import type { BoosterCard, BoosterLayout, BoosterSheet, Card, CardSet, SheetsInLayout } from '@prisma/client'
-import type { ErrResponse, ListResponse } from "pages/api/setup/checkList"
+import type { ErrResponse, ListResponse } from "pages/api/setup/upload"
 import z from "backend/libs/validation"
 import { commonOptions, cubeOptions } from "./setup.validation"
+
+export type DraftType = "cube"|"booster"
 
 export type CubeOptions = z.infer<typeof cubeOptions>
 

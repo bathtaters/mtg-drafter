@@ -1,7 +1,7 @@
 import type { Card, GameCard } from '@prisma/client'
 import type { SetFull } from 'types/setup'
 import { getFullSet } from './sets.services'
-import { balanceColors, sortSheets } from 'backend/utils/game/setup.utils'
+import { balanceColors, sortSheets } from 'backend/utils/setup/booster.utils'
 import { randomElemWeighted, shuffle } from 'backend/libs/random'
 
 const LOG_SHEET_NAMES = true

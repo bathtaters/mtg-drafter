@@ -1,6 +1,6 @@
 import type { CubeOptions, GenericOptions } from 'types/setup'
 import prisma from '../../libs/db'
-import { createPacks, createPlayers, randomUrl } from '../../utils/game/game.utils'
+import { createPacks, createPlayers, randomUrl } from '../../utils/setup/setup.utils'
 
 export async function newCubeGame({ packSize, cardList, ...options }: CubeOptions, hostSessionId?: string) {
   return newGame({ ...options, packs: createPacks(cardList, options.playerCount * options.roundCount, packSize) }, hostSessionId)
