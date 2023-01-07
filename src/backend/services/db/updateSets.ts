@@ -9,15 +9,11 @@ const DL_THREADS = 1000, ENTRY_BATCH = 25
 export default async function updateSets(url: string, fullUpdate = false, enableLog = false) {
 
   let existingSets: string[] | undefined
-
-  if (fullUpdate) {
+  if (!fullUpdate) existingSets = await prisma.cardSet.findMany({ select: { code: true }})
+      .then((sets) => sets.map(({ code }) => code))
+  else {
     enableLog && console.log('Erasing All Sets')
     await prisma.cardSet.deleteMany()
-  } else {
-    enableLog && console.log('Collecting existing sets')
-    await prisma.cardSet.findMany({ select: { code: true }}).then((sets) => {
-      existingSets = sets.map(({ code }) => code)
-    })
   }
 
   enableLog && console.log('Updating Sets',existingSets ? `(${existingSets.length} exisiting)` : '')

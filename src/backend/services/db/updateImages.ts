@@ -27,7 +27,7 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
       
     }).then((c) => c.map(({ scryfallId }) => scryfallId as string))
 
-    enableLog && console.log('Found',missingImgs?.length,'missing images')
+    enableLog && console.log('Missing',missingImgs?.length,'images')
     if (!missingImgs?.length) return
   }
 
