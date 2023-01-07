@@ -1,3 +1,4 @@
+import type { DraftType, GameOptions } from "types/setup"
 import { useState, useCallback, FormEventHandler } from "react"
 import useCreateGame from "./createGame.controller"
 import useCubeFile from "./cubeFile.controller"
@@ -5,20 +6,25 @@ import { setupDefaults } from "assets/constants"
 
 
 export default function useSetupController() {
-  const [ options, setOptions ] = useState(setupDefaults)
+  const [ options,   setOptions ] = useState(setupDefaults as GameOptions)
   const { file, setFile, loading: fileLoading } = useCubeFile()
 
-  const setName     = useCallback((value: string) => setOptions((curr) => ({ ...curr, name: value     })), [setOptions])
-  const setPlayers  = useCallback((value: string) => setOptions((curr) => ({ ...curr, players: value  })), [setOptions])
-  const setPacks    = useCallback((value: string) => setOptions((curr) => ({ ...curr, packs: value    })), [setOptions])
-  const setPackSize = useCallback((value: string) => setOptions((curr) => ({ ...curr, packSize: value })), [setOptions])
+  const setType     = useCallback((type: DraftType)    => setOptions((curr) => ({ ...curr, type     })), [setOptions])
+  const setName     = useCallback((name: string)       => setOptions((curr) => ({ ...curr, name     })), [setOptions])
+  const setPlayers  = useCallback((players: string)    => setOptions((curr) => ({ ...curr, players  })), [setOptions])
+  const setPacks    = useCallback((packs: string)      => setOptions((curr) => ({ ...curr, packs    })), [setOptions])
+  const setPackSize = useCallback((packSize: string)   => setOptions((curr) => ({ ...curr, packSize })), [setOptions])
+  const setPackList = useCallback((packList: string[]) => setOptions((curr) => ({ ...curr, packList })), [setOptions])
 
   const { createGame, loading: gameLoading, error } = useCreateGame()
-  const submitForm: FormEventHandler = (ev) => { ev.preventDefault(); return createGame(options, file) }
+
+  const disableSubmit = !options.name || (options.type === 'Cube' ? !file : !options.packList.length)
+  const submitForm: FormEventHandler|undefined = disableSubmit ? undefined : (ev) => {
+    ev.preventDefault(); return createGame(options, file)
+  }
 
   return {
-    options, file, fileLoading,
-    submitForm, gameLoading, error,
-    setName, setPlayers, setPacks, setPackSize, setFile,
+    options, file, fileLoading, submitForm, gameLoading, error,
+    setType, setName, setPlayers, setPacks, setPackSize, setPackList, setFile,
   }
 }

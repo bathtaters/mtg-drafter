@@ -1,47 +1,22 @@
+import type { ReactNode, FormEventHandler } from "react"
+import { DraftType, draftTypes } from "types/setup.d"
+import Tabs, { Props as TabProps } from "components/base/common/Tabs"
 import { ErrorIcon } from "components/svgs/AlertIcons"
-import DeckIcon from "components/svgs/DeckIcon"
-import PackIcon from "components/svgs/PackIcon"
-import UserIcon from "components/svgs/UserIcon"
 
-// WRAPPERS
 
-export const FormWrapper = ({ onSubmit, children }: { onSubmit?: React.FormEventHandler, children: React.ReactNode }) => (
+export const FormWrapper = ({ onSubmit, children }: { onSubmit?: FormEventHandler, children: ReactNode }) => (
   <div className="flex flex-col h-full justify-center items-center w-full max-w-3xl m-auto">
     <form className="bg-base-300 p-6 form-control gap-6 w-full" onSubmit={onSubmit}>{children}</form>
   </div>
 )
 
-export const FieldWrapper = ({ label, children }: { label: string, children: React.ReactNode }) => (
-  <fieldset className="form-control w-full border border-secondary rounded-lg relative">
-    <legend className="px-2"><h3>{label}</h3></legend>
-    {children}
-  </fieldset>
+export const TypeTabs = (props: Pick<TabProps<DraftType>,"selected"|"setSelected">) => (
+  <Tabs {...props} tabs={draftTypes} className="tabs-boxed bg-opacity-0 justify-center gap-2" tabClass="tab-lg tab-secondary" />
 )
 
-export const ErrorText = ({ children }: { children?: React.ReactNode }) => children ? (
-  <div className="alert alert-error shadow-lg"><div>
-    <ErrorIcon className="stroke-current flex-shrink-0 h-6 w-6" />
-    <span>{children}</span>
-  </div></div>
-) : <span />
-
-export const InputWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className="grid grid-cols-1 p-4 gap-8 sm:grid-cols-2">{children}</div>
+export const SubmitButton = ({ disabled, children }: { disabled?: boolean, children: ReactNode }) => (
+  <button type="submit" disabled={disabled} className="btn btn-secondary btn-lg m-4 text-2xl">{children}</button>
 )
-
-// LABELS
-
-export const PlayersLabel  = () => (<span className="flex items-center gap-2">
-  <UserIcon className="fill-current stroke-base-300 inline-block h-5 w-6" />Players
-</span>)
-export const PacksLabel    = () => (<span className="flex items-center gap-2">
-  <PackIcon className="fill-current stroke-base-300 inline-block h-7 w-6" />Packs
-</span>)
-export const PackSizeLabel = () => (<span className="flex items-center gap-2">
-  <DeckIcon className="fill-current stroke-base-300 inline-block h-6 w-6" />Pack Size
-</span>)
-
-// FORM ELEMENTS
 
 export const FormTitle = ({ placeholder, value, setValue }: { placeholder: string, value?: string, setValue?: (value: string) => void }) => (
   <div className="w-full flex justify-center font-serif">
@@ -56,13 +31,9 @@ export const FormTitle = ({ placeholder, value, setValue }: { placeholder: strin
   </div>
 )
 
-export const HelpButton = ({ tip }: { tip: string }) => (
-  <div data-tip={tip} className="absolute bottom-2 right-2 
-    btn btn-circle btn-sm btn-secondary p-0 text-lg
-    border-none bg-opacity-60 hover:bg-opacity-60
-    tooltip tooltip-left flex">?</div>
-)
-
-export const SubmitButton = ({ disabled, children }: { disabled?: boolean, children: React.ReactNode }) => (
-  <button type="submit" disabled={disabled} className="btn btn-secondary btn-lg m-4 text-2xl">{children}</button>
-)
+export const ErrorText = ({ children }: { children?: ReactNode }) => children ? (
+  <div className="alert alert-error shadow-lg"><div>
+    <ErrorIcon className="stroke-current flex-shrink-0 h-6 w-6" />
+    <span>{children}</span>
+  </div></div>
+) : <span />

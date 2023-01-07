@@ -11,19 +11,19 @@ export default function useCreateGame() {
   const [ loading, setLoading ] = useState<boolean>(false)
   const [ error,   setError   ] = useState<string | null>(null)
 
-
   const createGame = useCallback((options: GameOptions, file: CubeFile | null) => {
-    if (!file) return setError('Must select a cube file')
-    if (file.error) return setError(`Error with cube file: ${file.error}`)
+    if (options.type === 'Cube' && !file) return setError('Must select a cube file')
+    if (options.type === 'Booster' && !options.packList.length) return setError('Must select at least one pack')
+    if (file?.error) return setError(`Error with cube file: ${file.error}`)
     
     setError(null)
     setLoading(true)
 
-    return post(newGameURL, adaptOptions(options, file)).then(async (data) => {
+    return post(newGameURL(options.type), adaptOptions(options, file)).then(async (data) => {
       if (!data?.url) return setError('Error creating game!')
       return router.push(gameURL(data.url)).catch((err) => setError(err?.message || err))
-
-    }).catch((err) => setError(err?.message || err))
+    })
+      .catch((err) => setError(err?.message || err))
       .finally(() =>  setLoading(false))
 
   }, [setLoading, setError])
