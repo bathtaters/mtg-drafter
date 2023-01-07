@@ -1,11 +1,17 @@
-import type { CubeOptions, GenericOptions } from 'types/setup'
+import type { BoosterOptions, CubeOptions, GenericOptions } from 'types/setup'
 import prisma from '../../libs/db'
 import { createPacks, createPlayers, randomUrl } from '../../utils/setup/setup.utils'
+import buildBoosterPacks from './buildBoosters'
 
 export async function newCubeGame({ packSize, cardList, ...options }: CubeOptions, hostSessionId?: string) {
-  return newGame({ ...options, packs: createPacks(cardList, options.playerCount * options.roundCount, packSize) }, hostSessionId)
+  const packs = createPacks(cardList, options.playerCount * options.roundCount, packSize)
+  return newGame({ ...options, packs }, hostSessionId)
 }
 
+export async function newBoosterGame({ packList, ...options }: BoosterOptions, hostSessionId?: string) {
+  const packs = await buildBoosterPacks(packList, options.playerCount)
+  return newGame({ ...options, roundCount: packList.length, packs }, hostSessionId)
+}
 
 // Generic Creator
 
@@ -19,9 +25,7 @@ async function newGame(options: GenericOptions, sessionId?: string) {
     players: { create: createPlayers(options.playerCount) },
     packs: { create: options.packs.map((pack,index) => ({
       index,
-      cards: { create: pack.map((uuid) => ({ 
-        card: { connect: { uuid } }
-      })) }
+      cards: { create: pack }
     })) },
   }})
   
@@ -42,7 +46,7 @@ async function newGame(options: GenericOptions, sessionId?: string) {
         log: { create: {
           action: 'join',
           data: sessionId,
-          playerId: host.id,
+          player: { connect: { id: host.id } },
           byHost: true,
         }},
       }

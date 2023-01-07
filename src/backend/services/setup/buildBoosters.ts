@@ -1,13 +1,14 @@
-import type { Card, GameCard } from '@prisma/client'
-import type { SetFull } from 'types/setup'
+import type { Card } from '@prisma/client'
+import type { PackCard, SetFull } from 'types/setup'
 import { getFullSet } from './sets.services'
 import { balanceColors, sortSheets } from 'backend/utils/setup/booster.utils'
 import { randomElemWeighted, shuffle } from 'backend/libs/random'
 
 const LOG_SHEET_NAMES = true
 
+type SetCache = { [code: SetFull['code']]: SetFull }
 
-export default async function buildBoosterPacks(setCodes: SetFull['code'][], playerCount: number) {
+export default async function buildBoosterPacks(setCodes: SetFull['code'][], playerCount: number): Promise<PackCard[][]> {
   let packs: PackCard[][] = [], setCache: SetCache = {}
   
   for (const code of setCodes) {
@@ -56,7 +57,3 @@ function buildBoosterPack(setData: SetFull) {
 
   return pack
 }
-
-
-type SetCache = { [code: SetFull['code']]: SetFull }
-type PackCard = Pick<GameCard,'cardId'|'foil'>

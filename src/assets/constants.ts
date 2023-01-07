@@ -81,9 +81,11 @@ export const
     players:  { min: 1, max: 12 },
     packs:    { min: 1, max: 5  },
     packSize: { min: 1, max: 20 },
+    setCode:  { min: 3, max: 4  },
+    cubeSize: { max: 720 * 4 },
   }, 
 
-  setupDefaults = { name: "", players: "8", packs: "3", packSize: "15" },
+  setupDefaults = { type: "cube", name: "", players: "8", packs: "3", packSize: "15", packList: ["KLD","KLD","AER"] },
 
   fileSettings = { id: "cubeFile", type: "text/plain", maxSize: 10 * 1024 * 1024 /* = 10 MB */, },
 
