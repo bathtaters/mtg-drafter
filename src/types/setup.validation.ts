@@ -18,7 +18,7 @@ export const cubeOptions = z.object({
   ...commonOptionsObj,
   roundCount: z.number().int().gte(setupLimits.packs.min).lte(setupLimits.packs.max),
   packSize:   z.number().int().gte(setupLimits.packSize.min).lte(setupLimits.packSize.max),
-  cardList:   z.array(z.string().uuid()).nonempty().max(setupLimits.cubeSize.max),
+  cardList:   z.array(z.string().uuid()).max(setupLimits.cubeSize.max),
 })
 
 export const cubeFileOptions = z.object({

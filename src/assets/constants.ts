@@ -1,4 +1,5 @@
 import type { BoardLands, LogOptions } from 'types/game'
+import type { GameOptions } from 'types/setup'
 import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
 
 // MtG library
@@ -85,7 +86,7 @@ export const
     cubeSize: { max: 720 * 4 },
   }, 
 
-  setupDefaults = { type: "cube", name: "", players: "8", packs: "3", packSize: "15", packList: ["KLD","KLD","AER"] },
+  setupDefaults: GameOptions = { type: "Cube", name: "", players: "8", packs: "3", packSize: "15", packList: ["KLD","KLD","AER"] },
 
   fileSettings = { id: "cubeFile", type: "text/plain", maxSize: 10 * 1024 * 1024 /* = 10 MB */, },
 

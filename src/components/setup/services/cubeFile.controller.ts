@@ -32,4 +32,4 @@ export default function useCubeFile() {
   return { file, setFile, loading }
 }
 
-
+export type SetFile = ReturnType<typeof useCubeFile>['setFile']

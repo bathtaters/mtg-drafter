@@ -1,11 +1,11 @@
-import type { DraftType } from "types/setup"
+import { DraftType } from "types/setup"
 
 export const INVALID_PATH = "_INVALID"
 
 export const gameUrlRegEx = /game\/([^\/]+)(?:\/|$)/ // = game/gameUrl
 
 export const
-  newGameURL = (type: DraftType) => type === 'cube' ? '/api/setup/cube' : '/api/setup/booster',
+  newGameURL = (type: DraftType) => type === "Cube" ? '/api/setup/cube' : '/api/setup/booster',
   cubeListURL = "/api/setup/upload",
   gameURL = (gameIdentifier: string) => `/game/${gameIdentifier}`,
   gameAPI = (gameURL: any) => `/api/game/${typeof gameURL === 'string' ? gameURL : INVALID_PATH}/all`,
