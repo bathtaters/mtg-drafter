@@ -29,7 +29,7 @@ export default function BoosterForm({ setList, options, setPlayers, setPackList 
             {options.packList.map((setCode,idx) => (
 
               <PackSelector selected={setCode} setSelected={setPack(idx)}>
-                {setList.map(({ name, code }) => <Fragment key={code}>{name}</Fragment>)}
+                {setList.map(({ name, code, boosterType }) => <Fragment key={code}>{name}{boosterType !== 'default' ? ` (${boosterType})` : ''}</Fragment>)}
               </PackSelector>
             ))}
 
