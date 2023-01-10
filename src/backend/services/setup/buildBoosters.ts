@@ -4,7 +4,7 @@ import { getFullSet } from './sets.services'
 import { balanceColors, sortSheets } from 'backend/utils/setup/booster.utils'
 import { randomElemWeighted, shuffle } from 'backend/libs/random'
 
-const LOG_SHEET_NAMES = true
+const LOG_SHEET_NAMES = false
 
 type SetCache = { [code: SetFull['code']]: SetFull }
 
