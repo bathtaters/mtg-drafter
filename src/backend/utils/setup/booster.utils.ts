@@ -16,17 +16,9 @@ export const getReplaceIndex = (cards: Card[], color: Color|"other") => {
   return cards.findIndex(({ uuid }) => uuid === replaceId)
 }
 
-/** Order array using boosterSortOrder (in defintions) -- CAN IMPROVE  */
+/** Order array using boosterSortOrder  */
 export function sortSheets(layout: BoosterLayoutFull['sheets']) {
-  const end = boosterSortOrder.length
-  for (let i = 0, toIndex = layout.length; i < end; i++) {
-      
-    const fromIndex = layout.findIndex((elem) => elem.sheetName == boosterSortOrder[i])
-    if (fromIndex < 0) continue
-
-    swapInPlace(layout, fromIndex, --toIndex)
-  }
-  return layout
+  return layout.sort((a,b) => boosterSortOrder.indexOf(a.sheetName) - boosterSortOrder.indexOf(b.sheetName))
 }
 
 /** Color balance pack (Drawing from pool if needed) */

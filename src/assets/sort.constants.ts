@@ -32,7 +32,7 @@ export const colorOrder = ['w','u','b','r','g'] as Array<keyof BoardLands>,
 
     // Special cards
     'a30Retro', 'brrRetroArtifact', 'mechBasic', 'dedicatedFoilDoubleMasters', 
-    'sunfSticker', 'sta', 'playtest', 'playtest2', 'oldFrame',
+    'sunfSticker', 'sta', 'playtest', 'playtest2',
     'dfc', 'therosGods', 'contraption', 'conspiracy', 'draft',
     'legendary', 'background', 'tsts', 'special',
 
@@ -48,6 +48,10 @@ export const colorOrder = ['w','u','b','r','g'] as Array<keyof BoardLands>,
     'a30Rare', 'pcRare', 'rare',
     'rarePartner1', 'rarePartner2', 'rarePartner3', 'rarePartner4', 'rarePartner5',
     
+    // Playtest set
+    'oldFrame','colorless','multicolor','greenB','greenA',
+    'redB','redA','blackB','blackA','blueB','blueA','whiteB','whiteA',
+
     'pcCsUncommonRare', 'newToModern',
 
     // Uncommons
@@ -58,11 +62,6 @@ export const colorOrder = ['w','u','b','r','g'] as Array<keyof BoardLands>,
     'midSfcUncommon', 'vowSfcUncommon',
     'nonconspiracyUncommon', 'nondraftUncommon',
     'uncommonPartner1', 'uncommonPartner2', 'uncommonPartner3', 'uncommonPartner4', 'uncommonPartner5',
-
-    // Playtest set
-    'multicolor','colorless',
-    'whiteA','blueA','blackA','redA','greenA',
-    'whiteB','blueB','blackB','redB','greenB',
     
     'dfcCommonUncommon',
     
@@ -76,4 +75,4 @@ export const colorOrder = ['w','u','b','r','g'] as Array<keyof BoardLands>,
     // Lands
     'lesson', 'commonOrBasic', 'basicOrCommonLand', 'a30Basic', 'a30RetroBasic',
     'sncBasic', 'basicOrGainland', 'basictype', 'basic', 'land'
-  ].reverse()
+  ]
