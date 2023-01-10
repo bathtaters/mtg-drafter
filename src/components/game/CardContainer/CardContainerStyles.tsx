@@ -28,7 +28,7 @@ export const ContainerLabelStyle = ({ children }: { children: ReactNode }) => (
 )
 
 export const LandContainerStyle = ({ onClick, children }: { onClick?: MouseEventHandler, children: ReactNode }) => (
-  <div className="ml-auto">
+  <div className="ml-auto col-span-2">
     <button type="button" onClick={onClick} className="relative z-20 flex justify-end gap-0 md:gap-2">{children}</button>
   </div>
 )

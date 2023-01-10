@@ -1,4 +1,4 @@
-import { DependencyList, useEffect, useRef } from 'react'
+import { DependencyList, useEffect, useRef, useState } from 'react'
 
 export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependencies?: DependencyList, minimumDelay: number = 0) {
   const timestamp = useRef(new Date().getTime())
@@ -19,4 +19,12 @@ export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependenci
       window.removeEventListener("blur",  handleBlur)
     }
   }, dependencies)
+}
+
+export function useTouchDevice() {
+  const [ isTouchDevice, setIsTouchDevice ] = useState(false)
+  useEffect(() => {
+    setIsTouchDevice(typeof window !== 'undefined' && ('ontouchstart' in window || window.navigator.maxTouchPoints > 0))
+  }, [])
+  return isTouchDevice
 }

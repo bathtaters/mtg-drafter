@@ -15,7 +15,7 @@ const LandCounter = ({ color, count }: { color: Lowercase<Color>, count: number 
   </LandCounterStyle>
 )
 
-export default function ContainerHeader({ label, count, children = <div />, lands, onLandClick }: { label: TabLabels, count?: number, children?: ReactNode, lands?: BoardLands, onLandClick?: MouseEventHandler }) {
+export default function ContainerHeader({ label, count, children, lands, onLandClick }: { label: TabLabels, count?: number, children?: ReactNode, lands?: BoardLands, onLandClick?: MouseEventHandler }) {
   return (
     <ContainerHeaderStyle>
       <ContainerLabelStyle>{containerIcon[label]}{titleCase(label)}{<CardCounter text={cardCounter(count, lands)} />}</ContainerLabelStyle>

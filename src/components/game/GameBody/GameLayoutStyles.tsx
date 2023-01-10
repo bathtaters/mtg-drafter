@@ -6,9 +6,9 @@ import { titleCase } from "components/base/services/common.services"
 import { hostButtonLabel } from "assets/strings"
 
 export const containerIcon: Record<TabLabels, ReactNode> = {
-  pack: <PackIcon className="h-7 fill-secondary-content stroke-secondary-focus mr-2 hidden sm:block" />,
-  main: <DeckIcon className="h-7 fill-primary-content stroke-primary-focus mr-2 hidden sm:block" />,
-  side: <DeckIcon className="h-7 fill-primary-focus stroke-primary-content opacity-70 mr-2 hidden sm:block" />,
+  pack: <PackIcon className="h-5 md:h-7 fill-secondary-content stroke-secondary-focus mr-1 md:mr-2 hidden sm:block" />,
+  main: <DeckIcon className="h-5 md:h-7 fill-primary-content stroke-primary-focus mr-1 md:mr-2 hidden sm:block" />,
+  side: <DeckIcon className="h-5 md:h-7 fill-primary-focus stroke-primary-content opacity-70 mr-1 md:mr-2 hidden sm:block" />,
 }
 
 
@@ -20,11 +20,11 @@ export const TabStyle = (
   { label: TabLabels, count?: string, isSelected?: boolean, onClick?: MouseEventHandler }
 ) => (
   <div
-    className={`indicator tab tab-lg ${label === "pack" ? " tab-secondary" : " tab-primary"}${isSelected ? " tab-active" : ""}`}
+    className={`indicator flex-nowrap tab tab-lg ${label === "pack" ? " tab-secondary" : " tab-primary"}${isSelected ? " tab-active" : ""}`}
     onClick={onClick} onMouseEnter={onClick}
   >
     {containerIcon[label]}
-    <span className="text-2xl font-medium">{titleCase(label)}</span>
+    <span className="text-xl md:text-2xl font-medium">{titleCase(label)}</span>
     {count && 
       <span className="indicator-item indicator-center indicator-bottom -bottom-1 whitespace-nowrap badge badge-sm sm:badge-md shadow shadow-black">
         {count}

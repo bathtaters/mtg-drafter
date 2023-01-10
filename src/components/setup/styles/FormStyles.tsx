@@ -4,10 +4,26 @@ import PackIcon from "components/svgs/PackIcon"
 import UserIcon from "components/svgs/UserIcon"
 import Selector from "components/base/common/FormElements/Selector"
 
+// SHARED
+
+export const InputWrapper = ({ children }: { children: ReactNode }) => (
+  <div className="grid grid-cols-1 p-4 pt-0 gap-8 sm:grid-cols-2">{children}</div>
+)
+
+export const FieldWrapper = ({ label, children }: { label: string, children: ReactNode }) => (
+  <fieldset className="form-control w-full border border-secondary rounded-lg relative pb-4">
+    <legend className="px-2"><h3>{label}</h3></legend>
+    {children}
+  </fieldset>
+)
 
 export const PlayersLabel  = () => (<span className="flex items-center gap-2">
   <UserIcon className="fill-current stroke-base-300 inline-block h-5 w-6" />Players
 </span>)
+
+
+// CUBE FORM
+
 export const PacksLabel    = () => (<span className="flex items-center gap-2">
   <PackIcon className="fill-current stroke-base-300 inline-block h-7 w-6" />Packs
 </span>)
@@ -23,25 +39,16 @@ export const HelpButton = ({ tip }: { tip: string }) => (
 )
 
 
-export const InputWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="grid grid-cols-1 p-4 pt-0 gap-8 sm:grid-cols-2">{children}</div>
-)
-
-export const FieldWrapper = ({ label, children }: { label: string, children: ReactNode }) => (
-  <fieldset className="form-control w-full border border-secondary rounded-lg relative pb-4">
-    <legend className="px-2"><h3>{label}</h3></legend>
-    {children}
-  </fieldset>
-)
+// BOOSTER FORM
 
 export const PacksWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="min-h-[18rem] flex flex-col gap-2 items-center">{children}</div>
+  <div className="min-h-[18rem] flex flex-col gap-2 items-center px-4 py-2">{children}</div>
 )
 
 export const PackSelector = (props: Parameters<typeof Selector>['0']) => <Selector {...props} className="select-secondary max-w-[19rem]" />
 
 export const PackButtonWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="btn-group mx-2 place-self-stretch">{children}</div>
+  <div className="btn-group place-self-stretch">{children}</div>
 )
 
 export const PackButton = ({ onClick, children }: { onClick?: MouseEventHandler, children: ReactNode }) => (
