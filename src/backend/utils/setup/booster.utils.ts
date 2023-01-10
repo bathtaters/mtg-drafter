@@ -1,47 +1,22 @@
-import type { BoosterLayoutFull, BoosterCardFull } from 'types/setup'
-import { Card, Color } from '@prisma/client'
-import { randomElemWeighted, randomElem, swapInPlace } from 'backend/libs/random'
+import type { Card, Color } from '@prisma/client'
+import type { BoosterLayoutFull } from 'types/setup'
+import { randomElem } from 'backend/libs/random'
 import { boosterSortOrder } from 'assets/sort.constants'
 
-export const colorCountBase = Object.fromEntries(Object.keys(Color).concat("other").map((c) => [c, 0])) as Record<Color|"other", number>
 
-export const maxKey = <T extends { [key: string]: any }>(obj: T) => Object.keys(obj).reduce((a, b) => obj[a] > obj[b] ? a : b, '' as keyof T)
+export const compareKeys = <T extends { [key: string]: any }>(obj: T, compare: (a: T[keyof T], b: T[keyof T]) => number) =>
+  Object.keys(obj).reduce((keys, key) => {
+    if (!keys.length) return [key]
+    const result = compare(obj[keys[0]], obj[key])
+    return !result ? keys.concat(key) : result > 0 ? keys : [key]
+  }, [] as Array<keyof T>)
 
-export const getReplaceIndex = (cards: Card[], color: Color|"other") => {
-  const colorFilter = color === 'other' ?
-    (card: Card) => !card.monoColor :
-    (card: Card) => card.monoColor === color
-
-  const replaceId = randomElem(cards.filter(colorFilter)).uuid
-  return cards.findIndex(({ uuid }) => uuid === replaceId)
+export const getReplaceIndex = (cards: Card[], colors: Array<Color|"other">) => {
+  const replaceId = randomElem(cards.filter((card: Card) => colors.includes(card.monoColor || 'other')))?.uuid
+  return replaceId ? cards.findIndex(({ uuid }) => uuid === replaceId) : -1
 }
 
-/** Order array using boosterSortOrder  */
-export function sortSheets(layout: BoosterLayoutFull['sheets']) {
-  return layout.sort((a,b) => boosterSortOrder.indexOf(a.sheetName) - boosterSortOrder.indexOf(b.sheetName))
-}
+export const sortSheets = (layout: BoosterLayoutFull['sheets']) => layout.sort((a,b) =>
+  boosterSortOrder.indexOf(a.sheetName) - boosterSortOrder.indexOf(b.sheetName)
+)
 
-/** Color balance pack (Drawing from pool if needed) */
-export function balanceColors(pack: Card[], pool: BoosterCardFull[], totalWeight = 0) {
-
-  const colorCount = pack.reduce((sums, card) => {
-    sums[card.monoColor || 'other']++
-    return sums
-  }, { ...colorCountBase });
-  
-  (Object.keys(colorCount) as (keyof typeof colorCount)[]).forEach((color) => {
-    if (colorCount[color]) return
-    
-    const subPool = pool.filter((card) => card.card.monoColor === color)
-    if (!subPool.length) return // No cards of this color exist
-    
-    const replColor = maxKey(colorCount)
-    const replIdx   = getReplaceIndex(pack, replColor)
-    if (replIdx < 0) throw new Error('No valid replacement while color balancing (Perhaps due to empty pack)')
-
-    pack[replIdx] = randomElemWeighted(subPool,totalWeight).card
-    colorCount[color]++
-    colorCount[replColor]--
-  })
-  return pack
-}

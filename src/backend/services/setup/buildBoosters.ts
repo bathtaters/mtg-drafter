@@ -1,7 +1,8 @@
-import type { Card } from '@prisma/client'
+import type { Card, SheetsInLayout } from '@prisma/client'
 import type { PackCard, SetFull } from 'types/setup'
 import { getFullSet } from './sets.services'
-import { balanceColors, sortSheets } from 'backend/utils/setup/booster.utils'
+import balanceColors from './balanceColors'
+import { sortSheets } from 'backend/utils/setup/booster.utils'
 import { randomElemWeighted, shuffle } from 'backend/libs/random'
 import { logSheetNames } from 'assets/constants'
 
@@ -27,7 +28,7 @@ export default async function buildBoosterPacks(setCodes: SetFull['code'][], pla
 function buildBoosterPack(setData: SetFull) {
   const layout = setData.boosters.length === 1 ?
     setData.boosters[0].sheets :
-    randomElemWeighted(setData.boosters, setData.totalWeight).sheets
+    randomElemWeighted(setData.boosters, setData.totalWeight)?.sheets as SheetsInLayout[]
   
   const sheets = sortSheets(layout)
   logSheetNames && console.log(` > Sheet names [${setData.code}]: ${sheets.map(entry => entry.sheetName).join(', ')}`)
@@ -36,13 +37,13 @@ function buildBoosterPack(setData: SetFull) {
   sheets.forEach((sheet) => {
     const sheetData = setData.sheets[sheet.sheetName]
     if (!sheetData) throw new Error(`${sheet.sheetName} sheet not found in set ${setData.code}`)
-    if (sheet.selectCount < 1) throw new Error(`Invalid sheet card count [${setData.code}]: ${JSON.stringify(sheet)}`);
+    if (sheet.selectCount < 1 || sheetData.cards.length < 1) throw new Error(`Invalid sheet card count [${setData.code}]: ${JSON.stringify(sheet)}`);
 
-    let nextCard: Card, newCards: Card[] = [];
+    let nextCard: Card, newCards: Card[] = []
     for (let i=0; i < sheet.selectCount; i++) {
       do { // select unique card
-        nextCard = randomElemWeighted(sheetData.cards, sheetData.totalWeight).card;
-      } while (newCards.some(({ uuid }) => nextCard.uuid === uuid))
+        nextCard = randomElemWeighted(sheetData.cards, sheetData.totalWeight)?.card as Card
+      } while (newCards.some(({ uuid }) => nextCard?.uuid === uuid))
       newCards.push(nextCard)
     }
     
