@@ -1,5 +1,6 @@
-import type { Card } from "@prisma/client";
-import { colorOrder, rarityOrder, typeOrder } from "assets/constants";
+import type { Card } from "@prisma/client"
+import { colorOrder, rarityOrder, typeOrder } from "assets/sort.constants"
+
 const colorOrderUpper = colorOrder.map((c) => c.toUpperCase())
 
 export const sortKeys = ["none", "rarity", "color", "type", "cost"] as const

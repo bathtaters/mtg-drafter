@@ -1,5 +1,5 @@
 import type { BasicLands, BoardLands, GameCardFull } from "types/game"
-import { colorOrder } from "assets/constants"
+import { colorOrder } from "assets/sort.constants"
 import { sameValueObject } from "components/base/services/common.services"
 import { getBoard } from "../../game/shared/game.utils"
 

@@ -3,7 +3,7 @@ import type { Color } from "@prisma/client"
 import ModalWrapper, { ModalButton } from "components/base/common/Modal"
 import { ColorsWrapper, ColorInputWrapper, ColorLabels, ColorInput, AutoLandsWrapper, AutoLandsInput } from "./LandsModalStyles"
 import useLandsModal, { LandsModalProps } from "./lands.controller"
-import { colorOrder } from "assets/constants"
+import { colorOrder } from "assets/sort.constants"
 
 
 export default function LandsModal(props: LandsModalProps) {
@@ -20,7 +20,7 @@ export default function LandsModal(props: LandsModalProps) {
       <ColorsWrapper>
         <ColorLabels labels={['','Main','Side']} className="text-2xl items-end font-bold font-serif" />
 
-        {(colorOrder).map((color) =>
+        {colorOrder.map((color) =>
           <ColorColumn label={color} key={color}
             main={localLands.main[color]} setMain={landChange('main',color)}
             side={localLands.side[color]} setSide={landChange('side',color)}
