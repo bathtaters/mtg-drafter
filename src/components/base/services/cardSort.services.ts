@@ -2,13 +2,15 @@ import type { Card } from "@prisma/client";
 import { colorOrder, rarityOrder, typeOrder } from "assets/constants";
 const colorOrderUpper = colorOrder.map((c) => c.toUpperCase())
 
-export const sortKeys = ["rarity", "color", "type", "cost"] as const
+export const sortKeys = ["none", "rarity", "color", "type", "cost"] as const
 export type SortKey = typeof sortKeys[number]
 export type CardSorter = (a: Card, b: Card) => number
 type SortValue = (card: Card) => number
 
 
 const sortValue: { [algo in SortKey]: SortValue } = {
+  none: () => 0,
+
   rarity: (card) => rarityOrder.indexOf(card.rarity || 'none'),
 
   color:  (card) => card.colors.length === 1 ?
@@ -31,6 +33,7 @@ export const deckSort: CardSorter = (a, b) => colorSort(a,b) ||
   typeSort(a,b) || costSort(a,b) || nameSort(a,b) || tieBreak(a,b)
 
 export const packSort: { [key in SortKey]: CardSorter } = {
+  none:   ()     => 0,
   rarity: (a, b) => raritySort(a,b) || deckSort(a,b),
   color:  (a, b) => colorSort(a,b) || typeSort(a,b) || costSort(a,b) || raritySort(a,b) || nameSort(a,b) || tieBreak(a,b),
   type:   (a, b) => typeSort(a,b) || costSort(a,b) || colorSort(a,b) || raritySort(a,b) || nameSort(a,b) || tieBreak(a,b),
