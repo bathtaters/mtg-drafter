@@ -3,8 +3,7 @@ import type { PackCard, SetFull } from 'types/setup'
 import { getFullSet } from './sets.services'
 import { balanceColors, sortSheets } from 'backend/utils/setup/booster.utils'
 import { randomElemWeighted, shuffle } from 'backend/libs/random'
-
-const LOG_SHEET_NAMES = false
+import { logSheetNames } from 'assets/constants'
 
 type SetCache = { [code: SetFull['code']]: SetFull }
 
@@ -31,7 +30,7 @@ function buildBoosterPack(setData: SetFull) {
     randomElemWeighted(setData.boosters, setData.totalWeight).sheets
   
   const sheets = sortSheets(layout)
-  LOG_SHEET_NAMES && console.log(` > Sheet names [${setData.code}]: ${sheets.map(entry => entry.sheetName).join(', ')}`)
+  logSheetNames && console.log(` > Sheet names [${setData.code}]: ${sheets.map(entry => entry.sheetName).join(', ')}`)
   
   let pack: PackCard[] = []
   sheets.forEach((sheet) => {
