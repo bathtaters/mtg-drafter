@@ -1,7 +1,7 @@
 import type { BoosterLayoutFull, BoosterCardFull } from 'types/setup'
 import { Card, Color } from '@prisma/client'
 import { randomElemWeighted, randomElem, swapInPlace } from 'backend/libs/random'
-import { boosterSortOrder } from 'assets/constants'
+import { boosterSortOrder } from 'assets/sort.constants'
 
 export const colorCountBase = Object.fromEntries(Object.keys(Color).concat("other").map((c) => [c, 0])) as Record<Color|"other", number>
 
