@@ -1,5 +1,6 @@
 // Helpers
-const randomAlgo = (min: number, max: number) => min + Math.floor(Math.random() * (max - min))
+import { randomInt as randomAlgo } from 'crypto'
+// const randomAlgo = (min: number, max: number) => min + Math.floor(Math.random() * (max - min))
 
 export const swapInPlace = (arr: any[], idxA: number, idxB: number) => { if (idxA != idxB) [arr[idxA], arr[idxB]] = [arr[idxB], arr[idxA]] }
 
@@ -7,7 +8,7 @@ export const swapInPlace = (arr: any[], idxA: number, idxB: number) => { if (idx
 
 export const randomInt = (maxExcl: number, minInclu = 0) => randomAlgo(minInclu,maxExcl)
 
-export const randomElem = <T = any>(array: T[]) => array[randomInt(array.length)]
+export const randomElem = <T = any>(array: T[]) => array.length ? array[randomInt(array.length)] : undefined
 
 export const randomPop = <T = any>(array: T[]) => array.splice(randomInt(array.length), 1)[0]
 
@@ -18,7 +19,8 @@ export function shuffle<T = any>(array: T[]) {
     return array
 }
 
-/** Returns element in array using "weight" prop of each element to weigh randomness */
+/** Returns element in array using "weight" prop of each element to weigh randomness
+ * (Only returns undef when array is empty) */
 export function randomElemWeighted<T extends { weight: number }>(array: T[], totalWeight = 0) {
   if (!array.length) throw new Error('Called randomElemWeighted with empty array')
   
@@ -28,7 +30,6 @@ export function randomElemWeighted<T extends { weight: number }>(array: T[], tot
     return randomElem(array)
   }
   
-  const randomIndex = randomInt(totalWeight) + 1
-  let sum = 0
+  let sum = 0, randomIndex = randomInt(totalWeight) + 1
   return array.find(({ weight }) => (sum += weight) > randomIndex) ?? array[array.length - 1]
 }
