@@ -1,12 +1,16 @@
-import type { Game, GameCard, Player, Board } from '@prisma/client'
-import { getNextPlayerId } from '../../utils/game/game.utils'
+import type { Game, GameCard, Board } from '@prisma/client'
+import type { Player } from 'types/game'
 import prisma from '../../libs/db'
+import { getNextPlayerId } from '../../utils/game/game.utils'
+
+const basicPlayer /* Prisma.Game$playersArgs */ = { select: { id: true, name: true, sessionId: true, pick: true } }
 
 export function getGame(url: Game['url']) {
   return prisma.game.findUnique({
     where: { url },
     include: {
-      players: true, packs: {
+      players: basicPlayer,
+      packs: {
         orderBy: { index: 'asc' }, include: {
           cards: { 
             where: { playerId: null },
@@ -24,7 +28,7 @@ export function getGameLog(url: Game['url']) {
   return prisma.game.findUnique({
     where: { url },
     include: {
-      players: true,
+      players: basicPlayer,
       log: {
         orderBy: { time: 'desc' },
         include: { card: { include: { card: true } } }
@@ -78,7 +82,7 @@ export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'
   const [ player ] = await prisma.$transaction([
     prisma.player.update({
       where: { id: playerId },
-      data: { pick: { increment: 1 } },
+      data: { pick: { increment: 1 }, timer: null },
       select: { id: true, pick: true, gameId: true },
     }),
     prisma.gameCard.update({
@@ -87,7 +91,13 @@ export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'
     }),
   ])
   
-  await prisma.logEntry.create({ data: { gameId: game.id, playerId, cardId: gameCardId, action: 'pick', data: `${game.round}:${player.pick - 1}` } })
+  await prisma.logEntry.create({ data: {
+    gameId: game.id,
+    playerId,
+    cardId: gameCardId,
+    action: 'pick',
+    data: `${game.round}:${player.pick - 1}`
+  } })
 
   return { ...player, passingToId: getNextPlayerId(playerId, game) }
 }

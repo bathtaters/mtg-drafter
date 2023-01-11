@@ -1,6 +1,8 @@
-import type { Game, Player } from '@prisma/client'
+import type { Game } from '@prisma/client'
+import type { Player, TimerOptions } from 'types/game'
 import { gameUrlRegEx } from 'assets/urls'
 import { getNeighborIdx } from 'components/game/shared/game.utils'
+import { defaultTimer } from 'assets/constants'
 
 export const parseGameURL = (url: string) => (url.match(gameUrlRegEx) || [])[1]
 
@@ -12,4 +14,14 @@ export const getNextPlayerId = (playerId: Player['id'], game?: Pick<Game, "round
   return game.players[getNeighborIdx(game, game.players.length, playerIdx)]?.id
 }
 
-export const unregGameAdapter = ({ id, name, url }: Game) => ({ id, name, url })
+export const unregGameAdapter = ({ id, name, url }: Pick<Game,"id"|"name"|"url">) => ({ id, name, url })
+
+export function getTimerLength(cardCount: number, options?: TimerOptions) {
+  if (!options && cardCount === 11) return 25
+
+  const { minSec, maxSec, secPerCard, secOffset = 0, roundTo } = options ?? defaultTimer
+  const timer = cardCount * secPerCard + secOffset
+  if (typeof minSec === 'number' && timer < minSec) return minSec
+  if (typeof maxSec === 'number' && timer > maxSec) return maxSec
+  return roundTo ? Math.round(timer / roundTo) * roundTo : timer
+}

@@ -1,24 +1,34 @@
-import type { GameCard, Player, Board } from '@prisma/client'
-import type { BasicLands } from 'types/game'
+import type { GameCard, Player as DbPlayer, Board } from '@prisma/client'
+import type { BasicLands, Player, BasicPlayer } from 'types/game'
 import prisma from '../../libs/db'
+import { getTimerLength } from 'backend/utils/game/game.utils'
 
-export async function getPlayer(sessionId: Player['sessionId'], playerList: Player[]) {
+export const fixed = <P extends DbPlayer>(player?: P | null) => player && ({ ...player, timer: typeof player.timer === 'bigint' ? Number(player.timer) : player.timer })
+
+const fullPlayer /* Prisma.PlayerInclude */ = {
+  cards: { include: { card: { include: { otherFaces: { include: { card: true } } } } } }
+}
+
+export async function getPlayer(sessionId: Player['sessionId'], playerList: BasicPlayer[], cardCount?: number, startTime?: number) {
   const id = playerList.find(({ sessionId: sid }) => sessionId === sid)?.id
   if (!id) return null
 
-  return prisma.player.findUnique({
-    where: { id }, include: {
-      cards: { include: { card: { include: { otherFaces: { include: { card: true } } } } } },
-    }
-  })
+  const player = await prisma.player.findUnique({ where: { id }, include: fullPlayer })
+  if (!player || typeof cardCount !== 'number') return fixed(player)
+  
+  const isActive = !!player?.pick && player.pick <= cardCount
+  if (isActive && player.timer !== null) return fixed(player)
+
+  const timer = isActive ? (startTime ?? Date.now()) + getTimerLength(cardCount - player.pick + 1) * 1000 : null
+
+  if (timer !== null || player.timer) await prisma.player.update({ where: { id }, data: { timer } })
+  return { ...player, timer }
 }
 
 export async function setStatus(id: Player['id'], sessionId: Player['sessionId'] = null, byHost: boolean = false) {
   const player = await prisma.player.update({
     where: { id }, data: { sessionId },
-    include: {
-      cards: !!sessionId && { include: { card: { include: { otherFaces: { include: { card: true } } } } } },
-    }
+    include: { cards: !!sessionId && fullPlayer.cards }
   })
   await prisma.logEntry.create({ data: {
     gameId: player.gameId,
@@ -27,7 +37,7 @@ export async function setStatus(id: Player['id'], sessionId: Player['sessionId']
     action: sessionId ? 'join' : 'leave',
     data: sessionId,
   } })
-  return player
+  return fixed(player)
 }
 
 export async function renamePlayer(id: Player['id'], newName: Player['name'], byHost: boolean = false) {

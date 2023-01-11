@@ -30,7 +30,7 @@ async function newGame(options: GenericOptions, sessionId?: string) {
   }})
   
   if (!sessionId) return url
-  const host = await prisma.player.findFirst({ where: { gameId: id }})
+  const host = await prisma.player.findFirst({ where: { gameId: id }, select: { id: true }})
   if (!host) return url
   
   // Add host

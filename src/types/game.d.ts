@@ -1,4 +1,4 @@
-import type { Card, Game, Pack, GameCard, Player, Board, Color, PlayerStatus, LogEntry, LogAction } from "@prisma/client"
+import type { Card, Game, Pack, GameCard, Player as DbPlayer, Board, Color, PlayerStatus, LogEntry, LogAction } from "@prisma/client"
 import type { SortKey } from "components/base/services/cardSort.services"
 import z from "backend/libs/validation"
 import { boardLands } from "./game.validation"
@@ -10,6 +10,9 @@ export type BasicLands = { [board in Board]: BoardLands } & { pack: never }
 
 
 // -- RELATED/PARTIAL TYPES -- \\
+
+export interface Player extends DbPlayer { timer: number | null }
+export type BasicPlayer = Pick<Player, "id"|"name"|"sessionId"|"pick">
 
 export type PartialGame = Pick<Game,"id"|"name"|"url">
 
@@ -24,7 +27,7 @@ export type PlayerFull = Player & { cards: GameCardFull[], basics: BasicLands }
 
 export type CardOptions = { width: string, showArt: boolean, sort?: SortKey }
 export type LogOptions = { hideHost: boolean, hidePrivate: boolean }
-
+export type TimerOptions = { secPerCard: number, secOffset?: number, roundTo?: number, minSec?: number, maxSec?: number }
 
 // -- LOG TYPES -- \\
 
@@ -48,18 +51,20 @@ export type LogFull = LogEntryFull[]
 
 export interface ServerSuccess {
   options: Game,
-  players: Player[],
+  players: BasicPlayer[],
   packs: PackFull[],
   player: PlayerFull | null,
   sessionId: string,
+  now: number,
   error?: never,
 }
 export interface ServerUnreg {
   options: PartialGame,
-  players: Player[],
+  players: BasicPlayer[],
   packs?: never,
   player?: never,
   sessionId: string,
+  now?: never,
   error?: never,
 }
 export interface ServerFail {
@@ -69,6 +74,7 @@ export interface ServerFail {
   packs?: never,
   player?: never,
   sessionId?: never,
+  now?: never,
 }
 export type ServerProps = ServerSuccess | ServerFail | ServerUnreg
 

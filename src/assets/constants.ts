@@ -1,4 +1,4 @@
-import type { LogOptions } from 'types/game'
+import type { LogOptions, TimerOptions } from 'types/game'
 import type { GameOptions } from 'types/setup'
 import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
 
@@ -21,6 +21,9 @@ export const shareGame = {
 }
 
 export const logOptions: LogOptions = { hideHost: false, hidePrivate: true }
+
+export const defaultTimer: TimerOptions = { secPerCard: 3.3, secOffset: -5, roundTo: 5, minSec: 5 }
+
 
 // Setup validation
 
