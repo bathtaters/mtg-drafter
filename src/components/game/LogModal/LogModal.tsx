@@ -1,12 +1,12 @@
 import type { Dispatch, SetStateAction } from "react"
-import type { Player } from "@prisma/client"
+import type { BasicPlayer } from "types/game"
 import type { GameLog } from "./log.controller"
 import LogToolbar from "./LogToolbar/LogToolbar"
 import LogEntry from "./LogEntry"
 import { LargeModal, LogContainer, ErrorContainer } from "./LogModalStyles"
 
 type Props = {
-  players: Player[],
+  players: BasicPlayer[],
   log: GameLog,
   gameEnded: boolean,
   isOpen: boolean,

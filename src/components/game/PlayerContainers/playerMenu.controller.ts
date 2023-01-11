@@ -1,8 +1,8 @@
-import type { Player } from "@prisma/client"
+import type { BasicPlayer } from "types/game"
 import { useState } from "react"
 
 
-export default function usePlayerMenu(player: Player, maxPick: number, holding?: number, hideStats = false) {
+export default function usePlayerMenu(player: BasicPlayer, maxPick: number, holding?: number, hideStats = false) {
   const [ showMenu, setShowMenu ] = useState<boolean>()
   const [ editingName, setEditingName ] = useState(false)
   

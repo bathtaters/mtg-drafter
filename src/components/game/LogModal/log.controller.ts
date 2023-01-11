@@ -1,5 +1,5 @@
-import type { Game, Player } from "@prisma/client"
-import type { LogFull } from "types/game"
+import type { Game } from "@prisma/client"
+import type { BasicPlayer, LogFull } from "types/game"
 import { useCallback, useMemo, useState } from "react"
 import { fetcher } from "components/base/libs/fetch"
 import { allActions, otherPlayers, filterLogs } from "./log.utils"
@@ -8,7 +8,7 @@ import { logOptions } from "assets/constants"
 
 const DEBOUNCE_DELAY = 500
 
-export default function useGameLog(url: Game['url'], playerData: Player[]) {
+export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) {
   const allPlayers = useMemo(() => playerData.map(({ id }) => id).concat(otherPlayers), [playerData.length])
 
   const [ logs,    setLog     ] = useState<LogFull>()

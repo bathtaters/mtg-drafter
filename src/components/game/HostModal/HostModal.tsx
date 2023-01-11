@@ -1,5 +1,5 @@
-import type { Game, Player } from "@prisma/client"
-import type { Socket } from "types/game"
+import type { Game } from "@prisma/client"
+import type { BasicPlayer, Socket } from "types/game"
 import ModalWrapper, { ModalButton } from "components/base/common/Modal"
 import Loader from "components/base/Loader"
 import PlayerEntry from "./PlayerEntry"
@@ -10,7 +10,7 @@ type Props = {
   setOpen: () => void,
   setLog?: () => void,
   title?: Game['name'],
-  players: Player[],
+  players: BasicPlayer[],
   hostId: Game['hostId'],
   setTitle: Socket.SetTitle,
   renamePlayer: Socket.RenamePlayer,

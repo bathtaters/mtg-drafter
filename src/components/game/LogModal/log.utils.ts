@@ -1,5 +1,5 @@
-import type { LogEntry, Player } from "@prisma/client"
-import type { LogFull, LogOptions } from "types/game"
+import type { LogEntry } from "@prisma/client"
+import type { Player, LogFull, LogOptions } from "types/game"
 import { LogAction } from "@prisma/client"
 
 type FilterId = Player['id']

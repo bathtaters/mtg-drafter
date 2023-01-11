@@ -1,8 +1,8 @@
-import type { Player } from "@prisma/client"
+import type { BasicPlayer } from "types/game"
 import { FullGame } from "assets/strings"
 import { PlayerJoinContainer, PlayersWrapper, PlayerWrapper, PlayerButton } from "./PlayerJoinStyles"
 
-type Props = { slots: Player['id'][], players: Player[], selectPlayer?: (id: Player['id']) => void }
+type Props = { slots: BasicPlayer['id'][], players: BasicPlayer[], selectPlayer?: (id: BasicPlayer['id']) => void }
 
 export default function PlayerJoin({ slots, players, selectPlayer }: Props) {
   

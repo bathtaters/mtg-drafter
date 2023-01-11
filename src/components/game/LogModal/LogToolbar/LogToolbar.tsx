@@ -1,12 +1,11 @@
-import type { Player } from "@prisma/client"
-import type { LogOptions } from "types/game"
+import type { BasicPlayer, LogOptions } from "types/game"
 import type { GameLog } from "../log.controller"
 import LogFilter from "./LogFilter"
 import { ToolbarWrapper, FilterDropdown, SettingsDropdown, SettingToggle } from "./LogToolbarStyles"
 import { gameActionList, otherList, playerActionList } from "../log.utils"
 import { logOptionLabels } from "assets/strings"
 
-type Props = { log: GameLog, players: Player[], gameEnded: boolean }
+type Props = { log: GameLog, players: BasicPlayer[], gameEnded: boolean }
 
 export default function LogToolbar({ log, players, gameEnded }: Props) {
   return (

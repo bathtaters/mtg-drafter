@@ -1,4 +1,4 @@
-import type { Player } from "@prisma/client"
+import type { BasicPlayer } from "types/game"
 import PlayerMenu from "./PlayerMenu"
 import PlayerContainerStyle, { ColorTheme } from "./PlayerContainerStyle"
 import { EmptyPlayerContainer, StatsStyle, PlayerNameEditor, UserHeader, FullStatsWrapper, FullStatsDivider } from "./PlayerContainerElemStyles"
@@ -50,7 +50,7 @@ export const PlayerContainerFull = ({ player, holding, maxPick, isConnected, hid
 
 
 interface ContainerProps {
-  player: Player,
+  player: BasicPlayer,
   maxPick: number,
   holding?: number,
   hideStats: boolean,

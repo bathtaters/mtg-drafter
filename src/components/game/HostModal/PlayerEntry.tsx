@@ -1,9 +1,8 @@
-import type { Player } from "@prisma/client"
-import type { Socket } from "types/game"
+import type { BasicPlayer, Socket } from "types/game"
 import { PlayerWrapper, NameEditor, DropButton } from "./HostModalStyles"
 
 type Props = {
-  player: Player,
+  player: BasicPlayer,
   isHost: boolean,
   renamePlayer: Socket.RenamePlayer,
   setStatus: Socket.SetStatus,

@@ -1,5 +1,4 @@
-import type { Player } from '@prisma/client'
-import type { ServerProps, ServerSuccess } from 'types/game'
+import type { Player, ServerProps, ServerSuccess } from 'types/game'
 import type { LocalController } from './services/local.controller'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
