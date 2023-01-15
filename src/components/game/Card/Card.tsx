@@ -10,17 +10,18 @@ type Props = {
   isFoil?: boolean,
   container: TabLabels,
   isSelected?: boolean,
+  isHighlighted?: boolean,
   showImage?: boolean,
   onClick?: MouseEventHandler,
   className?: string,
 }
 
-export default function CardDisplay({ card, isFoil, isSelected, container, showImage, onClick, className = '' }: Props) {
+export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, container, showImage, onClick, className = '' }: Props) {
   const { images, sideIdx, cardFace, handleFlip, isRotated } = useCardImage(card)
   const isBoard = container in Board
 
   return (
-    <CardWrapper isSelected={isSelected} isFoil={isFoil} onClick={!isBoard ? onClick : undefined} className={className}>
+    <CardWrapper isSelected={isSelected} isHighlighted={isHighlighted} isFoil={isFoil} onClick={!isBoard ? onClick : undefined} className={className}>
       {showImage && images.map((side, idx) => 
         <ImgWrapper rotate={isRotated} isTop={sideIdx < 0 || idx === sideIdx} key={idx}>{side}</ImgWrapper>
       )}

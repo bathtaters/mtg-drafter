@@ -2,12 +2,15 @@ import type { Board } from "@prisma/client"
 import type { MouseEventHandler, ReactNode } from "react"
 import DeckIcon from "components/svgs/DeckIcon"
 
-export const CardWrapper = ({ isSelected, isFoil, onClick, className, children }: { isSelected?: boolean, isFoil?: boolean, onClick?: MouseEventHandler, className: string, children: ReactNode }) => (
+export const CardWrapper = (
+  { isSelected, isHighlighted, isFoil, onClick, className, children }:
+  { isSelected?: boolean, isHighlighted?: boolean, isFoil?: boolean, onClick?: MouseEventHandler, className: string, children: ReactNode }
+) => (
   <span
     onClick={onClick}
     className={`flex justify-center items-center relative group rounded-card${
-      isSelected ? " outline outline-secondary outline-4 outline-offset-2" : ""
-    } ${className}`}
+      isSelected ? " outline outline-secondary" : isHighlighted ? " outline outline-error" : ""
+    } outline-4 outline-offset-2 ${className}`}
   >
     <div className="pointer-events-none select-none relative w-full h-full">
       {isFoil && <div className="absolute w-full h-full z-50 bg-foil opacity-70 mix-blend-multiply" />}

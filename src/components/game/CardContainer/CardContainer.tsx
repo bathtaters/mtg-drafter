@@ -17,10 +17,11 @@ type Props = {
   onBgdClick?: MouseEventHandler,
   onLandClick?: MouseEventHandler,
   selectedId?: string,
+  highlightId?: string,
   cardOptions: CardOptions,
 }
 
-export default function CardContainer({ label, cards, lands, loading, children, onClick, onBgdClick, onLandClick, selectedId, cardOptions }: Props) {
+export default function CardContainer({ label, cards, lands, loading, children, onClick, onBgdClick, onLandClick, selectedId, highlightId, cardOptions }: Props) {
   return (
     <CardContainerWrapper 
       title={<ContainerHeader label={label} count={cards?.length} lands={lands} onLandClick={onLandClick}>{children}</ContainerHeader>}
@@ -35,6 +36,7 @@ export default function CardContainer({ label, cards, lands, loading, children, 
               className={cardOptions.width || cardZoomLevels[0]}
               onClick={onClick && ((ev) => onClick(id, ev))}
               isSelected={selectedId === id}
+              isHighlighted={!selectedId && highlightId === id}
               container={label}
             />
           )
