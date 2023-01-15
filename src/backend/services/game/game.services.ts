@@ -65,6 +65,7 @@ export async function nextRound(id: Game['id'], round: Game['round']) {
 }
 
 export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'], board: Board = "main") {
+  if (!(await prisma.player.count({ where: { id: playerId }}))) return 'Player'
   const unPicked = await prisma.gameCard.findFirst({
     where: { id: gameCardId, playerId: null },
     select: { pack: { select: {
@@ -76,7 +77,7 @@ export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'
       }}
     }}}
   })
-  if (!unPicked) return undefined
+  if (!unPicked) return 'Card'
 
   const game = unPicked.pack.game
   const [ player ] = await prisma.$transaction([

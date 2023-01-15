@@ -48,7 +48,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
 
         // Update DB
         const player = await pickCard(playerId, gameCardId)
-        if (player == null) throw new Error('Player not found')
+        if (typeof player === 'string') throw new Error(player === 'Player' ? 'Player not found' : 'Card was already picked or does not exist')
 
         // Update Client(s)
         io.emit('updatePick', player.id, player.pick, player.passingToId)
