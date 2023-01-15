@@ -2,7 +2,7 @@ import type { GenericAlert, ErrorAlert, ToastAlert } from "./alerts.d"
 import { nanoid } from "nanoid"
 import { useCallback, useState } from "react"
 import { ErrorModal, ToastDisplay } from "./Alerts"
-import { toastDefaults } from "./alert.constants"
+import { showInConsole, toastDefaults } from "./alert.constants"
 
 const withId = <T extends { id?: string }>(obj: T) => ({ id: nanoid(), ...obj })
 
@@ -39,7 +39,7 @@ function useGenericAlert<Alert extends GenericAlert>(initialAlert: Alert[] = [],
   const push = useCallback((alert: Alert) => {
     const apdapted = adapter(alert)
     updateList((list) => list.concat(apdapted))
-    if (alert.theme === 'error' || alert.theme === 'warning') console[alert.theme === 'warning' ? 'warn' : 'error'](alert.message)
+    alert.theme && showInConsole[alert.theme] && console[showInConsole[alert.theme] as 'log'](alert.message)
     return apdapted.id
   }, [])
 

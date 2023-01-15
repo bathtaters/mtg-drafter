@@ -6,7 +6,7 @@ import type { LocalController } from './local.controller'
 import type { BasicLands, Player, PlayerFull, Socket } from 'types/game'
 import type useSocket from 'components/base/libs/sockets'
 import { Dispatch, SetStateAction, useCallback } from 'react'
-import { debugSockets } from 'assets/constants'
+import { clientErrorsInConsole, debugSockets } from 'assets/constants'
 import { reloadData } from '../game.controller'
 
 const formatError = (message: string): ErrorAlert => ({ message: `${message}. Attempting to reconnect.`, title: 'Action Failed', theme: 'warning'  })
@@ -55,6 +55,8 @@ export function getGameListeners(
       setStatus(playerId, sessionId)
       updateLog && updateLog()
     })
+    
+    clientErrorsInConsole && socket.on('error', (msg) => { console.error('Server Error:',msg) })
 
     onConnect && socket.on('connect', onConnect)
 

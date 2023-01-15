@@ -1,6 +1,6 @@
-import type { ReactNode } from "react"
 import type { ErrorAlert, ToastAlert, Defaults, AlertTheme } from "./alerts.d"
 import { ErrorIcon, InfoIcon, SuccessIcon, WarningIcon } from "components/svgs/AlertIcons"
+import { clientErrorsInConsole } from "assets/constants"
 
 
 export const errorDefaults: Defaults<ErrorAlert> = {
@@ -46,3 +46,9 @@ export const alertIcons: { [theme in AlertTheme]: (props: { className?: string }
   primary:   InfoIcon,
   secondary: InfoIcon,
 }
+
+type CallableConsoleKey = keyof { [P in keyof Console as Console[P] extends (...args: any[]) => void? P: never]: any }
+export const showInConsole: { [theme in AlertTheme]?: CallableConsoleKey } = clientErrorsInConsole ? {
+  error: 'error',
+  warning: 'warn',
+} : {}

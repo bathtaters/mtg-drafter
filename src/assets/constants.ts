@@ -51,6 +51,8 @@ export const MAX_GAME_CONN = 20
 
 export const debugSockets = false
 
+export const clientErrorsInConsole = true
+
 export const enableDropping = true
 
 export const logSheetNames = false
