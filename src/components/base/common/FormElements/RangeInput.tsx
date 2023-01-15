@@ -7,18 +7,23 @@ const rangeValueError = (min: any, max: any, step: any) => new Error(
 )
 
 export type Props = HTMLProps<HTMLInputElement> & {
+  keys?: string[],
   caption?: ReactNode,
   wrapperClass?: string,
+  boxClass?: string,
   setValue?: (value: string) => void,
 }
 
-export default function RangeInput({ caption, value, setValue, min = 0, max = 100, step = 1, wrapperClass, ...props }: Props) {
+export default function RangeInput({ caption, value, keys, setValue, min = 0, max = 100, step = 1, wrapperClass, boxClass, ...props }: Props) {
 
   const length = useMemo(() => Math.round((+max - +min) / +step + 1), [min, max, step])
   if (isNaN(length)) throw rangeValueError(min, max, step)
 
   return (
-    <RangeContainer className={wrapperClass} caption={caption} value={value} tooltip={props['aria-label']}>
+    <RangeContainer
+      caption={caption} value={keys && value && +value in keys ? keys[+value] : value}
+      className={wrapperClass} boxClass={boxClass} tooltip={props['aria-label']}
+    >
 
       <RangeInputElem
         min={min} max={max} step={step}
@@ -28,7 +33,7 @@ export default function RangeInput({ caption, value, setValue, min = 0, max = 10
         {...props}
       />
 
-      {caption && <RangeStepMarkers first={min} last={max} count={length}  />}
+      {caption && <RangeStepMarkers first={keys ? undefined : min} last={keys ? undefined : max} count={length}  />}
     </RangeContainer>
   )
 }
