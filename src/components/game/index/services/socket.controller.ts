@@ -3,7 +3,8 @@ import type { GameClient } from 'backend/controllers/game.socket.d'
 import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 import type { ErrorAlert } from 'components/base/common/Alerts/alerts.d'
 import type { LocalController } from './local.controller'
-import type { Socket } from 'types/game'
+import type { BasicLands, Player, PlayerFull, Socket } from 'types/game'
+import type useSocket from 'components/base/libs/sockets'
 import { Dispatch, SetStateAction, useCallback } from 'react'
 import { debugSockets } from 'assets/constants'
 import { reloadData } from '../game.controller'
@@ -73,78 +74,71 @@ export function getGameListeners(
 }
 
 
-export function useGameEmitters(local: LocalController, { socket, reconnect }: { socket: GameClient | null, reconnect: () => Promise<void> }, throwError: AlertsReturn['newError']) {
+export function useGameEmitters(local: LocalController, { emit, reconnect }: ReturnType<typeof useSocket<GameClient>>, throwError: AlertsReturn['newError']) {
   
   const renamePlayer: Socket.RenamePlayer = useCallback((name, playerId, byHost = false) => {
-    if (!socket?.connected) return throwError(formatError('Error renaming player: Not connected to server'))
     if (!local.player) return throwError(formatError('Error renaming player: Player not loaded'))
 
     name && local.renamePlayer(playerId || local.player.id, name)
-    socket.emit('setName', playerId || local.player.id, name, byHost)
-  }, [socket?.connected, local.player?.id, local.renamePlayer])
+    emit('setName', playerId || local.player.id, name, byHost)
+  }, [emit, local.player?.id, local.renamePlayer])
 
 
   const setTitle: Socket.SetTitle = useCallback((title) => {
-    if (!socket?.connected) return throwError(formatError('Error renaming game: Not connected to server'))
     if (!local.game) return throwError(formatError('Error renaming game: Game not loaded'))
 
     title && local.updateGame((game) => game && ({ ...game, name: title }))
-    socket.emit('setTitle', local.game.id, title)
-  }, [socket?.connected, local.game?.id, local.updateGame])
+    emit('setTitle', local.game.id, title)
+  }, [emit, local.game?.id, local.updateGame])
 
 
   const nextRound: Socket.NextRound = useCallback(() => {
-    if (!socket?.connected) return throwError(formatError('Error fetching next round: Not connected to server'))
     if (!local.game || !('round' in local.game)) return throwError(formatError('Error fetching next round: Game not loaded'))
 
     local.setLoadingPack((v) => v + 1)
-    socket.emit('nextRound', local.game.id, local.game.round + 1)
-  }, [socket?.connected, (local.game as Game)?.round])
+    emit('nextRound', local.game.id, local.game.round + 1)
+  }, [emit, (local.game as Game)?.round])
 
 
   const pickCard: Socket.PickCard = useCallback((gameCardId) => {
-    if (!socket?.connected || !local.player) return throwError(formatError('Error picking card: Not connected to server'))
+    if (!local.player) return throwError(formatError('Error picking card: Not connected to server'))
     
     local.setLoadingPack((v) => v + 1)
-    socket.emit('pickCard', local.player.id, gameCardId, (pick) => {
+    emit('pickCard', local.player.id, gameCardId, (pick?: number) => {
       if (typeof pick !== 'number') throwError(formatError('Error picking: Failed to pick card'))
       return reloadData(local, throwError, typeof pick !== 'number' ? reconnect : undefined).finally(() => local.setLoadingPack((v) => v && v - 1))
     })
-  }, [socket?.connected, local.game?.id])
+  }, [emit, local.game?.id])
 
 
   const swapCard: Socket.SwapCard = useCallback((cardId, board) => {
-    if (!socket?.connected) return throwError(formatError('Error moving card: Not connected to server'))
-
     local.swapCard(cardId, board)
-    socket.emit('swapBoards', cardId, board, (cardId, board) => {
+    emit('swapBoards', cardId, board, (cardId, board) => {
       if (!cardId) return reloadData(local, throwError, reconnect)
       local.swapCard(cardId, board)
     })
-  }, [socket?.connected, local.swapCard])
+  }, [emit, local.swapCard])
 
 
   const setLands: Socket.SetLands = useCallback((lands) => {
-    if (!socket?.connected || !local.player) return throwError(formatError('Error saving lands: Not connected to server'))
+    if (!local.player) return throwError(formatError('Error saving lands: Not connected to server'))
 
     local.setLands(lands)
-    socket.emit('setLands', local.player.id, lands, (lands) => {
+    emit('setLands', local.player.id, lands, (lands: void | BasicLands) => {
       if (!lands) return reloadData(local, throwError, reconnect)
       local.setLands(lands)
     })
-  }, [socket?.connected, local.player?.id, local.setLands])
+  }, [emit, local.player?.id, local.setLands])
 
 
   const setStatus: Socket.SetStatus = useCallback((playerId, status = 'join', byHost = false) => {
-    if (!socket?.connected) return throwError(formatError('Error updating player: Not connected to server'))
-
     local.setLoadingAll((v) => v + 1)
-    socket.emit('setStatus', playerId, status, byHost, (player) => {
+    emit('setStatus', playerId, status, byHost, (player?: Player | PlayerFull) => {
       reloadData(local, throwError).finally(() => local.setLoadingAll((v) => v && v - 1))
       if (player?.id && player.sessionId && local.sessionId === player.sessionId && 'cards' in player) local.updatePlayer(player)
       if (player) local.setStatus(player.id, player.sessionId || null)
     })
-  }, [socket?.connected, local.game?.id, local.sessionId, local.setStatus])
+  }, [emit, local.game?.id, local.sessionId, local.setStatus])
 
 
   return { renamePlayer, setTitle, nextRound, pickCard, swapCard, setLands, setStatus }

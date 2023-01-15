@@ -1,6 +1,7 @@
 import io, { ManagerOptions, Socket, SocketOptions } from 'socket.io-client'
 import { useState, useEffect, useRef, useCallback, EffectCallback, DependencyList } from 'react'
 import { debugSockets } from 'assets/constants'
+import { appendIfNotInList } from '../services/common.services'
 
 const options: Partial<SocketOptions & ManagerOptions> = {
   // transports: ["websocket", "polling"], // Causes handleUpgrade error
@@ -15,15 +16,25 @@ export default function useSocket<S extends Socket = Socket>(
   onFail?: (error: { message: string, code?: number }) => void,
 ) {
   const socket = useRef<S | null>(null)
+  const emitQueue = useRef([] as Parameters<S['emit']>[])
   const destructor = useRef<ReturnType<EffectCallback>>()
   const [ isConnected, setConnected ] = useState<boolean>(false)
 
 
-  const updateIsConnected = useCallback(() => {
+  const updateIsConnected = useCallback(async () => {
     setConnected((c) => {
       if (debugSockets && c === !socket.current?.connected) console.debug(`Socket connected at ${path} ${socket.current?.id || ''}`)
       return !!socket.current?.connected
     })
+
+    if (socket.current?.connected) {
+      if (debugSockets && emitQueue.current.length) console.debug(`Emptying emitter queue of ${emitQueue.current.length} items.`)
+      while (emitQueue.current.length) {
+        const args = emitQueue.current.shift()
+        args && socket.current.emit.apply(socket.current, args)
+        await new Promise((res) => setTimeout(res, Math.random() * 100)) // avoid overloading server after crash
+      }
+    }
   }, [debugSockets])
 
 
@@ -58,10 +69,19 @@ export default function useSocket<S extends Socket = Socket>(
   }, dependencies)
 
 
+  const emitOrQueue = useCallback((...args: Parameters<S['emit']>) => {
+    if (socket.current?.connected) {
+      socket.current.emit.apply(socket.current, args)
+      return
+    }
+    if (appendIfNotInList(emitQueue.current, args) === -1 && debugSockets) console.debug(`Cancelled duplicate emit: ${args.filter((a) => typeof a !== 'function').join(', ')}`)
+  }, [])
+
+
   useEffect(() => {
     if (typeof window !== 'undefined') connectToSocket()
     return disconnectFromSocket
   }, [connectToSocket, disconnectFromSocket])
 
-  return { isConnected, socket: socket.current, reconnect: connectToSocket }
+  return { isConnected, socket: socket.current, emit: emitOrQueue, reconnect: connectToSocket }
 }

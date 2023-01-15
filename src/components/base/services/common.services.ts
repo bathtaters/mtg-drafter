@@ -24,6 +24,10 @@ export const spliceInPlace = <T>(array: T[], find: ((entry: T, idx: number) => b
   return array.slice(0, idx).concat(insert).concat(array.slice(idx + removeCount))
 }
 
+export const appendIfNotInList = (arrayList: any[][], newArray: any[]) => arrayList.some((array) => array.length === newArray.length &&
+  newArray.every((entry,i) => typeof entry === 'function' ? typeof array[i] === 'function' : entry.toString() === array[i].toString())
+) ? -1 : arrayList.push(newArray)
+
 export const sameValueObject = <T extends { [key: string]: any }> (keys: (keyof T)[], value: T[keyof T]): T =>
   Object.fromEntries(keys.map((key) => [key, value])) as T
 
