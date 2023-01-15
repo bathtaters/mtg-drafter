@@ -39,6 +39,7 @@ function useGenericAlert<Alert extends GenericAlert>(initialAlert: Alert[] = [],
   const push = useCallback((alert: Alert) => {
     const apdapted = adapter(alert)
     updateList((list) => list.concat(apdapted))
+    if (alert.theme === 'error' || alert.theme === 'warning') console[alert.theme === 'warning' ? 'warn' : 'error'](alert.message)
     return apdapted.id
   }, [])
 
