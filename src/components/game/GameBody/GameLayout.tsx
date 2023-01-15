@@ -6,7 +6,7 @@ import Overlay from 'components/base/common/Overlay'
 import Spinner from 'components/base/common/Spinner'
 import CardContainer from "../CardContainer/CardContainer"
 import CardToolbar from '../CardToolbar/CardToolbar'
-import { PickCardButton, RoundButton, GameLayoutWrapper } from './GameLayoutStyles'
+import { PickCardButton, RoundButton, GameLayoutWrapper, TimerStyle } from './GameLayoutStyles'
 import { EmptyStyle } from 'components/base/styles/AppStyles'
 import usePickController from "./pick.controller"
 import ContainerTabs from './ContainerTabs'
@@ -28,9 +28,9 @@ type Props = {
 export default function GameLayout({ game, player, pack, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, loadingPack, notify }: Props) {
 
   const {
-    selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
-    cardOptions, setCardOptions, selectedTab, selectTab, hidePack,
-  } = usePickController(pickCard, swapCard, notify, pack, game)
+    autopickCard, selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
+    cardOptions, setCardOptions, selectedTab, selectTab, hidePack, timer
+  } = usePickController(pickCard, swapCard, notify, pack, game, player)
   
   if (!('round' in game) || game.round < 1 || !player) return (
     <GameLayoutWrapper>
@@ -48,7 +48,7 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, onLandCl
       {selectedTab === 'pack' ?
         <CardContainer
           label="pack" cardOptions={cardOptions} loading={loadingPack}
-          cards={pack?.cards} selectedId={selectedCard}
+          cards={pack?.cards} selectedId={selectedCard} highlightId={autopickCard}
           onClick={clickPackCard} onBgdClick={deselectCard}
         >
           { clickRoundBtn ?
@@ -63,6 +63,8 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, onLandCl
           cards={getBoard(player.cards, selectedTab)}
           onClick={clickBoardCard(selectedTab)} onLandClick={onLandClick} />
       }
+
+      { typeof timer === 'number' &&  <TimerStyle value={timer} /> }
     </GameLayoutWrapper>
   )
 }

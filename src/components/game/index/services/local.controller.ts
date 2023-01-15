@@ -1,7 +1,7 @@
 import type { PackFull, ServerProps, Local } from 'types/game'
 import { useCallback, useMemo, useState } from 'react'
 import { spliceInPlace, updateArrayIdx } from 'components/base/services/common.services'
-import { canAdvance, filterPackIds, getHolding, getPackIdx, getPlayerIdx, getSlots, playerIsHost } from '../../shared/game.utils'
+import { canAdvance, filterPackIds, getHolding, getPackIdx, getPlayerIdx, getSlots, offsetTimer, playerIsHost } from '../../shared/game.utils'
 import { reloadData } from '../game.controller'
 import { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 
@@ -11,11 +11,11 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   const [loadingPack, setLoadingPack] = useState(1)
 
   const [ game,    updateGame    ] = useState(props.options)
-  const [ player,  updatePlayer  ] = useState(props.player || undefined)
+  const [ player,  updatePlayer  ] = useState(offsetTimer(props.player || undefined, props.now))
   const [ packs,   updatePacks   ] = useState(props.packs || [])
   const [ players, updatePlayers ] = useState(props.players || [])
   const [ slots,   updateSlots   ] = useState(getSlots(props.players))
-  const [ pack,    updatePack    ] = useState<PackFull | undefined>()
+  const [ pack,    updatePack    ] = useState<PackFull>()
   
   const isHost = playerIsHost(player, game)
   const holding = getHolding(players, game)
@@ -75,7 +75,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     if ('error' in data) throw new Error(`CAnnot updating data: ${data.error}`)
 
     updateGame(data.options)
-    updatePlayer(data.player || undefined)
+    updatePlayer(offsetTimer(data.player || undefined, data.now))
     updatePacks(data.packs || [])
     updatePlayers(data.players)
     updateSlots(getSlots(data.players))

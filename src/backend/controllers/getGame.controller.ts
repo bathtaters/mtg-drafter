@@ -10,9 +10,9 @@ async function getGameProps(url: string, sessionId: string): Promise<ServerProps
   const game = await getGame(url)
   if (!game) return { error: 'Unable to find game' }
   
-  const now = Date.now()
   const { players, packs, ...options } = game
-  const player = await getPlayer(sessionId, players, game.packSize, now) as PlayerFull | null // Convert type JSON value -> BasicLands
+  const now = Date.now()
+  const player = await getPlayer(sessionId, players, game, now) as PlayerFull | null // Convert type JSON value -> BasicLands
   
   return !player ?
     { options: unregGameAdapter(options), players, sessionId } :

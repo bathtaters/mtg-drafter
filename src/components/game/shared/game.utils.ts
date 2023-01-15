@@ -1,5 +1,5 @@
 import type { Game, GameCard, Board, GameStatus } from "@prisma/client"
-import type { BasicPlayer, PackFull } from "types/game"
+import type { BasicPlayer, PackFull, Player } from "types/game"
 import { mod } from "components/base/services/common.services"
 
 export const gameIsEnded = (game?: Partial<Game>): boolean =>
@@ -73,4 +73,9 @@ export const canAdvance = (game?: Partial<Game>, players: BasicPlayer[] = [], ho
 
 export const filterPackIds = (pack?: PackFull): PackFull | undefined => pack && ({
   ...pack, cards: pack.cards.filter(({ playerId }) => !playerId)
+})
+
+export const offsetTimer = <P extends Partial<Player>>(player?: P, serverTime?: number) => typeof player?.timer !== 'number' ? player : ({
+  ...player,
+  timer: typeof serverTime === 'number' ? player.timer + Date.now() - serverTime : player.timer
 })

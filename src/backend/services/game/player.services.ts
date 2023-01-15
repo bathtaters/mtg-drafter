@@ -1,4 +1,4 @@
-import type { GameCard, Player as DbPlayer, Board } from '@prisma/client'
+import type { GameCard, Player as DbPlayer, Board, Game } from '@prisma/client'
 import type { BasicLands, Player, BasicPlayer } from 'types/game'
 import prisma from '../../libs/db'
 import { getTimerLength } from 'backend/utils/game/game.utils'
@@ -9,17 +9,17 @@ const fullPlayer /* Prisma.PlayerInclude */ = {
   cards: { include: { card: { include: { otherFaces: { include: { card: true } } } } } }
 }
 
-export async function getPlayer(sessionId: Player['sessionId'], playerList: BasicPlayer[], cardCount?: number, startTime?: number) {
+export async function getPlayer(sessionId: Player['sessionId'], playerList: BasicPlayer[], game: Game, startTime?: number) {
   const id = playerList.find(({ sessionId: sid }) => sessionId === sid)?.id
   if (!id) return null
 
   const player = await prisma.player.findUnique({ where: { id }, include: fullPlayer })
-  if (!player || typeof cardCount !== 'number') return fixed(player)
+  if (!player || !game.timerBase || game.round > game.roundCount) return fixed(player)
   
-  const isActive = !!player?.pick && player.pick <= cardCount
+  const isActive = !!player?.pick && player.pick <= game.packSize
   if (isActive && player.timer !== null) return fixed(player)
 
-  const timer = isActive ? (startTime ?? Date.now()) + getTimerLength(cardCount - player.pick + 1) * 1000 : null
+  const timer = isActive ? (startTime ?? Date.now()) + getTimerLength(game.packSize - player.pick + 1, game.timerBase) * 1000 : null
 
   if (timer !== null || player.timer) await prisma.player.update({ where: { id }, data: { timer } })
   return { ...player, timer }

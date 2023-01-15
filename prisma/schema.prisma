@@ -109,6 +109,7 @@ model Game {
   roundCount  Int
   round       Int @default(0)
   isPaused    Boolean @default(false)
+  timerBase   Int?
 
   players     Player[] @relation("GamePlayers")
   host        Player? @relation("GameHost", fields: [hostId], references: [id])

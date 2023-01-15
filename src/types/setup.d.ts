@@ -33,6 +33,7 @@ export type GameOptions = {
   type: DraftType,
   name: string,
   players: string,
+  timer: string,
   packs: string,
   packSize: string,
   packList: string[],

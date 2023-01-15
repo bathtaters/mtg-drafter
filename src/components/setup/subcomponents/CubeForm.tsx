@@ -4,9 +4,9 @@ import FilePreview from "./FilePreview"
 import FileInput from "components/base/common/FormElements/FileInput"
 import RangeInput from "components/base/common/FormElements/RangeInput"
 import Spinner from "components/base/common/Spinner"
-import { FieldWrapper, InputWrapper, PlayersLabel, PacksLabel, PackSizeLabel, HelpButton } from "../styles/FormStyles" 
+import { FieldWrapper, InputWrapper, PlayersLabel, PacksLabel, PackSizeLabel, HelpButton, TimerLabel } from "../styles/FormStyles" 
 import { fileSettings, setupLimits } from "assets/constants"
-import { uploadHelp } from "assets/strings"
+import { timerLabels, uploadHelp } from "assets/strings"
 
 type Props = {
   options: GameOptions,
@@ -14,17 +14,20 @@ type Props = {
   fileLoading: boolean,
   setFile: SetFile,
   setPlayers: (value: string) => void,
+  setTimer: (value: string) => void,
   setPacks: (value: string) => void,
   setPackSize: (value: string) => void,
 }
 
-export default function CubeForm({ options, file, fileLoading, setFile, setPlayers, setPacks, setPackSize }: Props) {
+export default function CubeForm({ options, file, fileLoading, setFile, setPlayers, setTimer, setPacks, setPackSize }: Props) {
   return (
       <InputWrapper>
         <FieldWrapper label="Options">
           <RangeInput caption={<PlayersLabel />}  value={options.players}  setValue={setPlayers}  {...setupLimits.players}  />
           <RangeInput caption={<PacksLabel />}    value={options.packs}    setValue={setPacks}    {...setupLimits.packs}    />
           <RangeInput caption={<PackSizeLabel />} value={options.packSize} setValue={setPackSize} {...setupLimits.packSize} />
+          <RangeInput caption={<TimerLabel />}    value={options.timer}    setValue={setTimer}    {...setupLimits.timer}  
+            keys={timerLabels} boxClass="w-16" />
         </FieldWrapper>
 
         <FieldWrapper label="Cube File">

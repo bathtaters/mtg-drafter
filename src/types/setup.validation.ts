@@ -4,6 +4,7 @@ import { fileSettings, setupLimits } from "assets/constants"
 const commonOptionsObj = {
   name:          z.string().min(setupLimits.name.minLength).max(setupLimits.name.maxLength).trim(),
   playerCount:   z.number().int().gte(setupLimits.players.min).lte(setupLimits.players.max),
+  timer:         z.number().int().gte(setupLimits.timer.min).lte(setupLimits.timer.max),
 }
 export const commonOptions = z.object(commonOptionsObj)
 

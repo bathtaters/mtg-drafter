@@ -23,6 +23,7 @@ async function newGame(options: GenericOptions, sessionId?: string) {
     roundCount: options.roundCount,
     packSize: options.packs[0].length,
     players: { create: createPlayers(options.playerCount) },
+    timerBase: options.timer || null,
     packs: { create: options.packs.map((pack,index) => ({
       index,
       cards: { create: pack }

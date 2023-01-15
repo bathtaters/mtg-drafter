@@ -1,9 +1,11 @@
-import type { ReactNode, MouseEventHandler } from "react"
+import type { ReactNode, MouseEventHandler, HTMLAttributes } from "react"
 import type { GameStatus, TabLabels } from "@prisma/client"
 import PackIcon from "components/svgs/PackIcon"
 import DeckIcon from "components/svgs/DeckIcon"
 import { titleCase } from "components/base/services/common.services"
 import { hostButtonLabel } from "assets/strings"
+import { redTimerSeconds } from "assets/constants"
+import TimerIcon from "components/svgs/TimerIcon"
 
 export const containerIcon: Record<TabLabels, ReactNode> = {
   pack: <PackIcon className="h-5 md:h-7 fill-secondary-content stroke-secondary-focus mr-1 md:mr-2 hidden sm:block" />,
@@ -30,6 +32,18 @@ export const TabStyle = (
         {count}
       </span>
     }
+  </div>
+)
+
+export const TimerStyle = ({ value = 0 }: { value?: number }) => (
+  <div className={`fixed bottom-4 right-4 z-50 flex flex-col items-center p-2 rounded-box ${
+    typeof value === 'number' && value < redTimerSeconds ? 'bg-error text-error-content' : 'bg-secondary text-secondary-content'
+  } text-xs md:text-base opacity-80`}>
+    <TimerIcon className="w-5 fill-current" />
+    
+    <span className="countdown font-mono text-4xl md:text-6xl">
+      <span style={{"--value":value} as HTMLAttributes<HTMLSpanElement>['style']} />
+    </span>
   </div>
 )
 

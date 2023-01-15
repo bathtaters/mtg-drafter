@@ -1,8 +1,9 @@
 import { MouseEventHandler, ReactNode } from "react"
-import DeckIcon from "components/svgs/DeckIcon"
-import PackIcon from "components/svgs/PackIcon"
-import UserIcon from "components/svgs/UserIcon"
 import Selector from "components/base/common/FormElements/Selector"
+import UserIcon from "components/svgs/UserIcon"
+import TimerIcon from "components/svgs/TimerIcon"
+import PackIcon from "components/svgs/PackIcon"
+import DeckIcon from "components/svgs/DeckIcon"
 
 // SHARED
 
@@ -19,6 +20,9 @@ export const FieldWrapper = ({ label, children }: { label: string, children: Rea
 
 export const PlayersLabel  = () => (<span className="flex items-center gap-2">
   <UserIcon className="fill-current stroke-base-300 inline-block h-5 w-6" />Players
+</span>)
+export const TimerLabel  = () => (<span className="flex items-center gap-2">
+  <TimerIcon className="fill-current stroke-base-300 inline-block h-5 w-6" />Timer
 </span>)
 
 

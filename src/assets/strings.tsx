@@ -1,5 +1,5 @@
 import type { Game, GameStatus, LogAction } from "@prisma/client"
-import type { BoardLands, LogData, LogOptions } from "types/game"
+import type { BoardLands, LogData, LogOptions, PartialGame } from "types/game"
 import type { ToastAlert } from "components/base/common/Alerts/alerts.d"
 import Link from "next/link"
 import { formatBytes, getObjectSum } from "components/base/services/common.services"
@@ -13,8 +13,8 @@ export const FullGame = () => <p className="opacity-70 italic">
   Wait here for an opening or <Link href="/" className="link link-primary link-hover">start a new one</Link>.
 </p>
 
-export const roundCounter = (status?: GameStatus, game?: Game) =>
-  !status ? 'Waiting Room' :
+export const roundCounter = (status?: GameStatus, game?: Game|PartialGame, isNotJoined = false) =>
+  isNotJoined || !status || !game || !('packSize' in game) ? 'Waiting Room' :
   status === 'start' ? 'Starting Soon' :
   status === 'end' ? 'Finished' :
     `Pack ${game?.round ?? '–'} of ${game?.roundCount ?? '–'}`
@@ -36,6 +36,8 @@ export const sharingMessage: { [key: string]: ToastAlert} = {
 }
 
 export const maxSizeError = (size: number, maxSize: number) => `File exceeds ${formatBytes(maxSize)} limit (${formatBytes(size)})`
+
+export const timerLabels = ['Off', 'Casual', 'Slower', 'Normal', 'Faster', 'Speed']
 
 export const logOptionLabels: Record<keyof LogOptions, ReactNode> = {
   hideHost: <span>Show Host<HostIcon className="ml-2 w-5 ms-2x" /></span>,

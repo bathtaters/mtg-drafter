@@ -8,9 +8,11 @@ import { roundCounter } from "assets/strings"
 
 
 type Props = {
-  game?: GameProps['options'], players: GameProps['players'],
+  game?: GameProps['options'],
+  players: GameProps['players'],
   playerCards?: GameCardFull[],
-  playerIdx: number, holding: number[],
+  playerIdx: number,
+  holding: number[],
   isConnected: boolean,
   notify: AlertsReturn['newToast'],
   saveDeck?:   (() => void),
@@ -32,7 +34,7 @@ export default function GameHeader({ game, players, playerIdx, holding, isConnec
         <GameHeaderWrapper>
             <div>
               <GameTitle title={game.name} onClick={handleShare} />
-              <RoundCounter status={gameStatus} label={players[playerIdx] && 'packSize' in game ? roundCounter(gameStatus, game) : "Waiting Room"} />
+              <RoundCounter status={gameStatus} label={roundCounter(gameStatus, game, !players[playerIdx])} />
             </div>
 
             <PlayerContainerFull
