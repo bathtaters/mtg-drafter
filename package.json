@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev -p 3040",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3040",
     "lint": "next lint",
     "test": "jest",
     "ssl": "npx local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3041 --target 3040",
