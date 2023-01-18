@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  staticPageGenerationTimeout: 5 * 60, // seconds
   images: {
     remotePatterns: [
       {
