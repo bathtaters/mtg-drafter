@@ -42,6 +42,8 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     updatePlayers((list) => updateArrayIdx(list,
       ({ id }) => id === playerId, (p) => ({ ...p, pick })
     ))
+
+    if (playerId === player?.id) updatePlayer((p) => p && ({ ...p, timer: null }))
     
     if (passingToId && player?.id === passingToId) updatePack((pack) => {
       if (!pack) reloadData({ game, updateLocal }, throwError)
@@ -72,16 +74,16 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   }, [])
     
   const updateLocal = useCallback((data: ServerProps) => {
-    if ('error' in data) throw new Error(`CAnnot updating data: ${data.error}`)
+    if ('error' in data) throw new Error(`Cannot update data: ${data.error}`)
+
+    const newPack = data.packs?.[getPackIdx(data.options, data.players, data.player)] as PackFull | undefined
 
     updateGame(data.options)
-    updatePlayer(offsetTimer(data.player || undefined, data.now))
     updatePacks(data.packs || [])
     updatePlayers(data.players)
     updateSlots(getSlots(data.players))
-
-    const newPack = data.packs?.[getPackIdx(data.options, data.players, data.player)] as PackFull | undefined
     updatePack(filterPackIds(newPack))
+    updatePlayer(offsetTimer(data.player || undefined, data.now))
   }, [])
 
   const reload = useCallback(() => {
