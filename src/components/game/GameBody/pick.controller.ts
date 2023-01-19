@@ -7,7 +7,8 @@ import { useTimer } from "components/base/libs/hooks"
 import getAutopickCard from "components/base/services/autoPick.service"
 import { redTimerSeconds } from "assets/constants"
 
-const DBL_CLICK_DELAY = 500
+const DBL_CLICK_DELAY = 500,
+  NEXT_PICK_DELAY = 100
 
 export default function usePickController(
   pickCard: PickCard, swapCard: SwapCard, notify: AlertsReturn['newToast'],
@@ -16,13 +17,16 @@ export default function usePickController(
   const hidePack = !game || !('round' in game) || game.round > game.roundCount || game.round < 1
 
   const lastClick = useRef(-1)
+  const nextPickAllowed = useRef(0)
   const [ selectedTab,  selectTab       ] = useState<TabLabels>(hidePack ? 'main' : 'pack')
   const [ selectedCard, setSelectedCard ] = useState<GameCard['id']>()
   const [ autopickCard, setAutopickCard ] = useState(pack && getAutopickCard(pack, player?.cards))
   const [ cardOptions,  setCardOptions  ] = useState<CardOptions>({ width: '', showArt: true, sort: undefined })
   
   const autoPick = useCallback(() => {
-    if (!autopickCard) return;
+    if (!autopickCard || nextPickAllowed.current > Date.now()) return;
+    nextPickAllowed.current = Date.now() + NEXT_PICK_DELAY
+
     pickCard(selectedCard || autopickCard)
     setSelectedCard(undefined)
     setAutopickCard(undefined)
@@ -32,6 +36,9 @@ export default function usePickController(
   const clickPickButton = useCallback(() => {
     if (typeof pack?.index !== 'number') return notify({ message: 'Cannot pick without a pack.', theme: 'error' })
     if (!selectedCard) return notify({ message: 'Cannot pick before selecting a card.', theme: 'error' })
+    if (nextPickAllowed.current > Date.now()) return notify({ message: 'Your picks were too quick, try again after closing this.', theme: 'info' })
+    nextPickAllowed.current = Date.now() + NEXT_PICK_DELAY
+
     pickCard(selectedCard)
     setSelectedCard(undefined)
     setAutopickCard(undefined)
