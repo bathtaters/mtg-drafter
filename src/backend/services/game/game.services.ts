@@ -1,9 +1,11 @@
 import type { Game, GameCard, Board } from '@prisma/client'
 import type { Player } from 'types/game'
 import prisma from '../../libs/db'
+import retry from '../../libs/retry'
 import { getNextPlayerId } from '../../utils/game/game.utils'
 
 const basicPlayer /* Prisma.Game$playersArgs */ = { select: { id: true, name: true, sessionId: true, pick: true } }
+
 
 export function getGame(url: Game['url']) {
   return prisma.game.findUnique({
@@ -24,6 +26,7 @@ export function getGame(url: Game['url']) {
   })
 }
 
+
 export function getGameLog(url: Game['url']) {
   return prisma.game.findUnique({
     where: { url },
@@ -37,15 +40,18 @@ export function getGameLog(url: Game['url']) {
   })
 }
 
+
 export function renameGame(id: Game['id'], newName: Game['name']) {
-  return prisma.$transaction([
+  return retry(() => prisma.$transaction([
     prisma.game.update({ where: { id }, data: { name: newName }, select: { name: true } }),
+
     prisma.logEntry.create({ data: { gameId: id, byHost: true, action: 'settings', data: JSON.stringify({ name: newName }) } })
-  ]).then(([{ name }]) => name)
+  ])).then(([{ name }]) => name)
 }
 
+
 export async function nextRound(id: Game['id'], round: Game['round']) {
-  const game = await prisma.game.update({
+  const game = await retry(() => prisma.game.update({
     where: { id },
     data: {
       round: round,
@@ -54,15 +60,17 @@ export async function nextRound(id: Game['id'], round: Game['round']) {
       }},
     },
     select: { round: true, roundCount: true }
-  })
+  }))
   if (!game) throw new Error('Game not found')
 
-  await prisma.logEntry.create({ data: {
+  await retry(() => prisma.logEntry.create({ data: {
     gameId: id, byHost: true, action: 'round',
     data: `${game.round > game.roundCount ? 'END' : game.round}`
-  } })
+  } }))
+
   return game.round
 }
+
 
 export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'], board: Board = "main") {
   if (!(await prisma.player.count({ where: { id: playerId }}))) return 'Player'
@@ -80,7 +88,7 @@ export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'
   if (!unPicked) return 'Card'
 
   const game = unPicked.pack.game
-  const [ player ] = await prisma.$transaction([
+  const [ player ] = await retry(() => prisma.$transaction([
     prisma.player.update({
       where: { id: playerId },
       data: { pick: { increment: 1 }, timer: null },
@@ -90,24 +98,26 @@ export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'
       where: { id: gameCardId },
       data: { playerId, board },
     }),
-  ])
+  ]))
   
-  await prisma.logEntry.create({ data: {
+  await retry(() => prisma.logEntry.create({ data: {
     gameId: game.id,
     playerId,
     cardId: gameCardId,
     action: 'pick',
     data: `${game.round}:${player.pick - 1}`
-  } })
+  } }))
 
   return { ...player, passingToId: getNextPlayerId(playerId, game) }
 }
+
 
 export async function gameExists(gameUrl: string | string[] | undefined) {
   if (!gameUrl || typeof gameUrl !== 'string') {
     console.error(`Fetch game/player: Invalid gameURL (${gameUrl})`)
     return false
   }
+
   const gameExists = await prisma.game.count({ where: { url: gameUrl } })
   if (!gameExists) console.error(`Fetch game: GameURL not found (${gameUrl})`)
   return !!gameExists

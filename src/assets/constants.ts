@@ -1,5 +1,6 @@
 import type { LogOptions, TimerOptions } from 'types/game'
 import type { GameOptions } from 'types/setup'
+import type { RetryOptions } from 'backend/libs/retry'
 import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
 
 //  Settings
@@ -60,6 +61,8 @@ export const redTimerSeconds = 10
 
 
 // Advanced Tweaks + Debug Settings
+
+export const retryDefaults: RetryOptions = { maxRetries: 10, delay: 10, errCodes: ['P2034'], logRetry: console.warn } // delay10/max10 = max delay 5sec
 
 export const refreshOnRefocusDelay = 3 * 60 * 1000
 

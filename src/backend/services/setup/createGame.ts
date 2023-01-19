@@ -1,5 +1,6 @@
 import type { BoosterOptions, CubeOptions, GenericOptions } from 'types/setup'
 import prisma from '../../libs/db'
+import retry from '../../libs/retry'
 import { createPacks, createPlayers, randomUrl } from '../../utils/setup/setup.utils'
 import buildBoosterPacks from './buildBoosters'
 
@@ -17,7 +18,7 @@ export async function newBoosterGame({ packList, ...options }: BoosterOptions, h
 
 async function newGame(options: GenericOptions, sessionId?: string) {
 
-  const { id, url } = await prisma.game.create({ data: {
+  const { id, url } = await retry(() => prisma.game.create({ data: {
     name: options.name,
     url: randomUrl(),
     roundCount: options.roundCount,
@@ -28,14 +29,14 @@ async function newGame(options: GenericOptions, sessionId?: string) {
       index,
       cards: { create: pack }
     })) },
-  }})
+  }}))
   
   if (!sessionId) return url
   const host = await prisma.player.findFirst({ where: { gameId: id }, select: { id: true }})
   if (!host) return url
   
   // Add host
-  await prisma.$transaction([
+  await retry(() => prisma.$transaction([
     prisma.player.update({
       where: { id: host.id },
       data: { sessionId }
@@ -52,6 +53,6 @@ async function newGame(options: GenericOptions, sessionId?: string) {
         }},
       }
     })
-  ])
+  ]))
   return url
 }
