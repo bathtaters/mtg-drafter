@@ -1,27 +1,25 @@
-import type { GameCard, Player as DbPlayer, Board, Game } from '@prisma/client'
+import type { GameCard, Board, Game } from '@prisma/client'
 import type { BasicLands, Player, BasicPlayer } from 'types/game'
 import prisma from '../../libs/db'
-import { getTimerLength } from 'backend/utils/game/game.utils'
-
-export const fixed = <P extends DbPlayer>(player?: P | null) => player && ({ ...player, timer: typeof player.timer === 'bigint' ? Number(player.timer) : player.timer })
+import { getTimerLength, adaptDbPlayer, hasPack } from 'backend/utils/game/game.utils'
 
 const fullPlayer /* Prisma.PlayerInclude */ = {
   cards: { include: { card: { include: { otherFaces: { include: { card: true } } } } } }
 }
 
 export async function getPlayer(sessionId: Player['sessionId'], playerList: BasicPlayer[], game: Game, startTime?: number) {
-  const id = playerList.find(({ sessionId: sid }) => sessionId === sid)?.id
-  if (!id) return null
+  const playerIdx = playerList.findIndex(({ sessionId: sid }) => sessionId === sid)
+  if (playerIdx === -1) return null
 
-  const player = await prisma.player.findUnique({ where: { id }, include: fullPlayer })
-  if (!player || !game.timerBase || game.round > game.roundCount) return fixed(player)
+  const player = await prisma.player.findUnique({ where: { id: playerList[playerIdx].id }, include: fullPlayer })
+  if (!player || !game.timerBase || game.round > game.roundCount) return adaptDbPlayer(player)
   
-  const isActive = !!player?.pick && player.pick <= game.packSize
-  if (isActive && player.timer !== null) return fixed(player)
+  const isPicking = hasPack(game, playerList, playerIdx)
+  if (isPicking && player.timer !== null) return adaptDbPlayer(player)
 
-  const timer = isActive ? (startTime ?? Date.now()) + getTimerLength(game.packSize - player.pick + 1, game.timerBase) * 1000 : null
+  const timer = isPicking ? (startTime ?? Date.now()) + getTimerLength(game.packSize - player.pick + 1, game.timerBase) * 1000 : null
 
-  if (timer !== null || player.timer) await prisma.player.update({ where: { id }, data: { timer } })
+  if (timer !== null || player.timer) await prisma.player.update({ where: { id: player.id }, data: { timer } })
   return { ...player, timer }
 }
 
@@ -37,7 +35,7 @@ export async function setStatus(id: Player['id'], sessionId: Player['sessionId']
     action: sessionId ? 'join' : 'leave',
     data: sessionId,
   } })
-  return fixed(player)
+  return adaptDbPlayer(player)
 }
 
 export async function renamePlayer(id: Player['id'], newName: Player['name'], byHost: boolean = false) {
