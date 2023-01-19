@@ -4,6 +4,7 @@ import ModalWrapper, { ModalButton } from "components/base/common/Modal"
 import Loader from "components/base/Loader"
 import PlayerEntry from "./PlayerEntry"
 import { Divider, FieldWrapper, TitleEditor, PlayersContainer } from "./HostModalStyles"
+import { setupLimits } from "assets/constants"
 
 type Props = {
   isOpen: boolean,
@@ -30,7 +31,7 @@ export default function HostModal({ isOpen, setOpen, setLog, title, setTitle, pl
       <Loader data={title}>
 
         <FieldWrapper label="Rename Game">
-          <TitleEditor value={title as string} onSubmit={setTitle} />
+          <TitleEditor value={title as string} onSubmit={setTitle} {...setupLimits.name} />
         </FieldWrapper>
 
         <Divider />

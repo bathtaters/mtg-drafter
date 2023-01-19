@@ -1,5 +1,6 @@
 import type { BasicPlayer, Socket } from "types/game"
 import { PlayerWrapper, NameEditor, DropButton } from "./HostModalStyles"
+import { setupLimits } from "assets/constants"
 
 type Props = {
   player: BasicPlayer,
@@ -13,7 +14,7 @@ export default function PlayerEntry({ player, isHost, renamePlayer, setStatus }:
 
   return (
     <PlayerWrapper>
-      <NameEditor value={player.name || ''} onSubmit={(name) => renamePlayer(name, player.id, true)} />
+      <NameEditor value={player.name || ''} onSubmit={(name) => renamePlayer(name, player.id, true)} {...setupLimits.name} />
       <DropButton onClick={btnLabel === 'Drop' ? () => setStatus(player.id, 'leave', true) : undefined} label={btnLabel} />
     </PlayerWrapper>
   )

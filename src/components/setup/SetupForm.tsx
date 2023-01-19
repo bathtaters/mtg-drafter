@@ -5,6 +5,7 @@ import CubeForm from "./subcomponents/CubeForm"
 import BoosterForm from "./subcomponents/BoosterForm"
 import { FormWrapper, FormTitle, TypeTabs, SubmitButton, ErrorText } from "./styles/SetupStyles"
 import useSetupController from "./services/setup.controller"
+import { setupLimits } from "assets/constants"
 
 type Props = SetupProps
 
@@ -14,7 +15,7 @@ export default function SetupForm({ setList }: Props) {
 
   return (
     <FormWrapper onSubmit={submitForm}>
-      <FormTitle placeholder="Enter Title" value={options.name} setValue={setName} />
+      <FormTitle placeholder="Enter Title" value={options.name} setValue={setName} {...setupLimits.name} />
       
       <TypeTabs selected={options.type} setSelected={setType} />
       { options.type === "Cube" ? <CubeForm {...setup} /> : <BoosterForm {...setup} setList={setList} /> }

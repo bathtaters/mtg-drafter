@@ -1,4 +1,4 @@
-import type { ReactNode, FormEventHandler } from "react"
+import type { ReactNode, FormEventHandler, InputHTMLAttributes } from "react"
 import { DraftType, draftTypes } from "types/setup.d"
 import Tabs, { Props as TabProps } from "components/base/common/Tabs"
 import { ErrorIcon } from "components/svgs/AlertIcons"
@@ -18,10 +18,10 @@ export const SubmitButton = ({ disabled, children }: { disabled?: boolean, child
   <button type="submit" disabled={disabled} className="btn btn-secondary btn-lg m-4 text-2xl">{children}</button>
 )
 
-export const FormTitle = ({ placeholder, value, setValue }: { placeholder: string, value?: string, setValue?: (value: string) => void }) => (
+export const FormTitle = ({ value, setValue, ...props }: InputHTMLAttributes<HTMLInputElement> & { setValue?: (value: string) => void }) => (
   <div className="w-full flex justify-center font-serif">
-    <input
-      type="text" placeholder={placeholder}
+    <input {...props}
+      type="text"
       className="input input-secondary input-bordered input-lg w-full max-w-lg text-3xl font-semibold text-center"
       value={setValue ? value : undefined}
       defaultValue={setValue ? undefined : value}
