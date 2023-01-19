@@ -74,31 +74,42 @@ export async function nextRound(id: Game['id'], round: Game['round']) {
 
 export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'], board: Board = "main") {
   if (!(await prisma.player.count({ where: { id: playerId }}))) return 'Player'
-  const unPicked = await prisma.gameCard.findFirst({
-    where: { id: gameCardId, playerId: null },
-    select: { pack: { select: {
-      game: { select: {
-        id: true,
-        round: true,
-        roundCount: true,
-        players: { select: { id: true } }
-      }}
-    }}}
-  })
-  if (!unPicked) return 'Card'
 
-  const game = unPicked.pack.game
-  const [ player ] = await retry(() => prisma.$transaction([
-    prisma.player.update({
-      where: { id: playerId },
-      data: { pick: { increment: 1 }, timer: null },
-      select: { id: true, pick: true, gameId: true },
-    }),
-    prisma.gameCard.update({
-      where: { id: gameCardId },
-      data: { playerId, board },
-    }),
-  ]))
+  let game: Pick<Game,"id"|"round"|"roundCount"> & { players: { id: Player['id'] }[] },
+    player: Pick<Player,"id"|"gameId"|"pick">
+
+  try {
+    const txRes = await retry(() => prisma.$transaction([
+      prisma.gameCard.findFirstOrThrow({
+        where: { id: gameCardId, playerId: null },
+        select: { pack: { select: {
+          game: { select: {
+            id: true,
+            round: true,
+            roundCount: true,
+            players: { select: { id: true } }
+          }}
+        }}}
+      }),
+      prisma.player.update({
+        where: { id: playerId },
+        data: { pick: { increment: 1 }, timer: null },
+        select: { id: true, pick: true, gameId: true },
+      }),
+      prisma.gameCard.update({
+        where: { id: gameCardId },
+        data: { playerId, board },
+      }),
+    ]))
+
+    game = txRes[0].pack.game
+    player = txRes[1]
+
+  } catch (err: any) {
+    // P2025 = GameCard not found
+    if (err.code = 'P2025') return 'Card'
+    throw err
+  }
   
   await retry(() => prisma.logEntry.create({ data: {
     gameId: game.id,
