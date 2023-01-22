@@ -9,5 +9,6 @@
 ALTER TYPE "Color" DROP VALUE 'C';
 
 -- AlterTable
-ALTER TABLE "Card" DROP COLUMN "manaValue";
+ALTER TABLE "Card" RENAME COLUMN "manaValue" TO "old_manaValue";
+ALTER TABLE "Card" DROP COLUMN "old_manaValue";
 ALTER TABLE "Card" ADD COLUMN     "manaValue" FLOAT8;
