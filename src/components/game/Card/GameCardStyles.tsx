@@ -1,5 +1,6 @@
-import type { Board } from "@prisma/client"
 import type { MouseEventHandler, ReactNode } from "react"
+import type { Board } from "@prisma/client"
+import { Direction } from "types/game.d"
 import DeckIcon from "components/svgs/DeckIcon"
 
 export const CardWrapper = (
@@ -19,8 +20,12 @@ export const CardWrapper = (
   </span>
 )
 
-export const ImgWrapper = ({ isTop, rotate, children }: { isTop: boolean, rotate: boolean, children: ReactNode }) => (
-  <div className={`absolute top-0 bottom-0 left-0 right-0 rounded-card overflow-hidden${rotate ? " rotate-180" : ""} ${isTop ? "z-20" : "-z-10"}`}>
+const dirClass: { [dir in Direction]: string } = { N: '', E: ' rotate-90', S: ' rotate-180', W: ' -rotate-90' }
+
+export const ImgWrapper = ({ isTop, direction = Direction.N, children }: { isTop: boolean, direction?: Direction, children: ReactNode }) => (
+  <div className={`absolute top-0 bottom-0 left-0 right-0 rounded-card overflow-hidden${
+    dirClass[direction]} ${!isTop ? "-z-10" : direction === Direction.N ? "z-20" : "z-30"
+  }`}>
     {children}
   </div>
 )

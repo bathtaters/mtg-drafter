@@ -35,5 +35,5 @@ export const getBgdColor = ({ colors, types }: Card) =>
 
 export const getNextFace = (currentFace: number, otherFaceCount: number) => (currentFace + 1) % (otherFaceCount + 1)
 
-export const showSwapButton = (side: Card['side'], layout: Card['layout'], showImages: boolean) =>
-  side && (!showImages || (layout && flippableLayouts.includes(layout)))
+export const showSwapButton = (layout: Card['layout'], otherFacesLength: number, showImages: boolean) =>
+  !!otherFacesLength && (!showImages || otherFacesLength === 1) && flippableLayouts.includes(layout || 'normal')

@@ -1,21 +1,16 @@
-import type { CardFull } from "types/game"
-import { useState, useEffect, useCallback, ReactNode } from "react"
+import type { CardFull, Direction } from "types/game"
 import Image from "next/image"
+import { useState, useEffect, useCallback, ReactNode } from "react"
 import { showSwapButton, getNextFace } from "./RenderedCard/card.services"
 import { HoverAction, useHoverClick } from "components/base/libs/hooks"
-
+import { layoutDirection } from "assets/constants"
 
 export default function useCardImage(card: CardFull, showImages = true) {
   const [ images, setImages ] = useState([] as ReactNode[])
-  const [ sideIdx, setSideIdx ] = useState(showSwapButton(card.side, card.layout, showImages) ? 0 : -1)
-  // sideIdx of -1 = hide swap card button
-
-  useEffect(() => {
-    setSideIdx((idx) => !showSwapButton(card.side, card.layout, showImages) ? -1 : idx < 0 ? 0 : idx)
-  }, [card.side, card.layout, showImages])
+  const [ sideIdx, setSideIdx ] = useState(card.otherFaces.length ? 0 : -1)
 
   const cardFace = card.otherFaces[sideIdx - 1]?.card || card
-  const isRotated = sideIdx > 0 && card.img === cardFace.img
+  const direction: Direction | undefined = sideIdx === 1 ? layoutDirection[card.layout || 'normal'] : undefined
 
   const handleSideChange = useCallback(
     (state: HoverAction) => setSideIdx(state < 2 ? state : (idx) => getNextFace(idx, card.otherFaces.length)),
@@ -29,5 +24,8 @@ export default function useCardImage(card: CardFull, showImages = true) {
     ))
   }, [])
 
-  return { images, sideIdx, cardFace, handleFlip, isRotated }
+  return {
+    images, cardFace, handleFlip, direction,
+    sideIdx: showSwapButton(card.layout, card.otherFaces.length, showImages) ? sideIdx : -1,
+  }
 }
