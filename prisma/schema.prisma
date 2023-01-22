@@ -38,6 +38,30 @@ enum Side {
   e
 }
 
+enum CardLayout {
+  adventure
+  aftermath
+  art_series
+  augment
+  class
+  double_faced_token
+  emblem
+  flip
+  host
+  leveler
+  meld
+  modal_dfc
+  normal
+  planar
+  reversible_card
+  saga
+  scheme
+  split
+  token
+  transform
+  vanguard
+}
+
 enum BoosterType {
   default
   arena
@@ -132,6 +156,7 @@ model Card {
   types       String[]
   manaValue   Float?
   monoColor   Color?
+  layout      CardLayout?
   
   // Image data
   img           String?

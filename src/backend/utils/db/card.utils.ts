@@ -1,4 +1,4 @@
-import type { Prisma, Color, Rarity, Side } from '@prisma/client'
+import type { Prisma, Color, Rarity, Side, CardLayout } from '@prisma/client'
 import type { Card } from 'mtggraphql'
 
 export const normalizeName = (name: string) => name.replace(/\s\/\/\s.+$/,'').toLowerCase()
@@ -6,7 +6,7 @@ export const normalizeName = (name: string) => name.replace(/\s\/\/\s.+$/,'').to
 export const adaptCardToDb = ({
   uuid, name, setCode, manaCost, type, text,
   power, toughness, loyalty, rarity, colors,
-  types, manaValue, identifiers,
+  types, manaValue, identifiers, layout,
   faceName, side, asciiName
 }: JsonCard): Prisma.CardCreateManyInput => ({
   uuid, setCode, manaCost, type, text, manaValue, faceName,
@@ -26,6 +26,7 @@ export const adaptCardToDb = ({
   colors: colors ? colors as Color[] : [],
   rarity: rarity ? rarity as Rarity : null,
   side: side ? side as Side : null,
+  layout: layout ? layout as CardLayout : null,
 })
 
 export const adaptFacesToDb = ({ uuid, otherFaceIds }: JsonCard): Prisma.FaceInCardCreateManyInput[] =>
