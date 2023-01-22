@@ -1,19 +1,38 @@
 import type { ReactElement, ReactNode } from "react"
+import type { Props } from './RenderedCard'
+import { Card } from "@prisma/client"
+import { splitRatios } from "components/game/CardToolbar/cardZoomLevels"
 
-type Style = (props: { html?: string, className?: string, children?: ReactNode }) => ReactElement
+type Style = (props: { html?: string, className?: string, children?: ReactNode, hide?: boolean }) => ReactElement
+type LayoutProps = { layout:Card['layout'], split: Props['splitSide'], className?: string, children: ReactNode }
 
 
 // MAIN WRAPPERS \\
 
-export const Border: Style = ({ children }) => (
-  <div className="w-full h-full absolute flex bg-black text-black rounded-card">{children}</div>
+const splitLayouts: { [layout in NonNullable<Card['layout']>]?: [string, string, string, boolean, boolean] } = {
+  // layout: [ base classes, card1 classes, card2 classes, card1isHalf, card2isHalf ]
+  split: ['left-[15%] -rotate-90 '+splitRatios.join(' '), '-bottom-[9%]', '-top-[9%]', false, false],
+  aftermath: ['','top-0 h-1/2','-bottom-[9%] left-[15%] rotate-90 '+splitRatios.join(' '), true, false],
+  flip: ['w-full h-1/2','top-0','bottom-0 rotate-180', true, true]
+}
+
+export const Border: Style = ({ hide, children }) => (
+  <div className={`absolute${hide ? '' : ' bg-black'} text-black rounded-card w-full h-full`}>
+    {children}
+  </div>
 )
 
-export const Layout: Style = ({ className = '', children }) => (
-  <div className={
-    `grid grid-rows-card grid-cols-card grid-flow-col place-items-stretch
-    w-[92%] h-[94%] m-auto p-[2%] font-serif ${className}`
-  }>{children}</div>
+export const Layout = ({ layout, split, className = '', children }: LayoutProps) => (
+  <div className={`absolute ${
+    // @ts-ignore
+    split && layout && splitLayouts[layout] ? `${splitLayouts[layout][0]} ${splitLayouts[layout][split]}` : 'w-full h-full'
+  } flex`}>
+    <div className={
+      `grid ${split && splitLayouts[layout || 'normal']?.[2 + split] ? 'grid-rows-split' : 'grid-rows-card'
+    } grid-cols-card grid-flow-col place-items-stretch relative
+      w-[92%] h-[94%] m-auto p-[2%] font-serif ${className}`
+    }>{children}</div>
+  </div>
 )
 
 
@@ -23,8 +42,10 @@ export const CardBox: Style = ({ children }) => ( // Header/Type Box
   <div className="col-span-2 flex justify-between items-center m-[2%] py-[1%] px-[2%] bg-white/40 rounded-[0.3em] shadow-top">{children}</div>
 )
 
-export const ArtBox: Style = ({ children }) => (
-  <div className="col-span-2 flex flex-col leading-[1.3em] justify-center items-center my-0 mx-[4%] bg-zinc-300 text-zinc-700/60 font-sans text-[1.8em]">
+export const ArtBox: Style = ({ hide, children }) => (
+  <div className={`col-span-2 flex flex-col justify-center items-center ${
+    hide ? 'text-[1em]' : 'text-[1.8em]'
+  } leading-[1.3em] my-0 mx-[4%] bg-zinc-300 text-zinc-700/60 font-sans`}>
     {children}
   </div>
 )

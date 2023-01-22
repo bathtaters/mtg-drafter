@@ -1,11 +1,12 @@
 import type { Card, Color } from "@prisma/client"
+import { CardFull } from "types/game"
 import { titleCase } from "components/base/services/common.services"
 import { bgdClass } from "components/base/styles/manaIcons"
-import { flippableLayouts } from "assets/constants"
+import { flippableLayouts, layoutDirection } from "assets/constants"
 import { cardLayoutText } from "assets/strings"
 
 export const getArtBoxText = (layout: Card['layout'], otherFaceCount: number): string | false | null => 
-  layout && (cardLayoutText[layout] ||
+  layout && (cardLayoutText[layout] || 
   (!!otherFaceCount && `${otherFaceCount > 1 ? `${otherFaceCount+1}-way ` : ''}${titleCase(layout)}`))
 
 
@@ -35,5 +36,7 @@ export const getBgdColor = ({ colors, types }: Card) =>
 
 export const getNextFace = (currentFace: number, otherFaceCount: number) => (currentFace + 1) % (otherFaceCount + 1)
 
-export const showSwapButton = (layout: Card['layout'], otherFacesLength: number, showImages: boolean) =>
-  !!otherFacesLength && (!showImages || otherFacesLength === 1) && flippableLayouts.includes(layout || 'normal')
+export const isStdSplit = ({ layout, otherFaces }: CardFull) => otherFaces.length === 1 && layout && layout in layoutDirection
+
+export const showFlipButton = ({ layout, otherFaces }: CardFull, showImages: boolean) =>
+  otherFaces.length > 1 ? !showImages : otherFaces.length === 1 && flippableLayouts.includes(layout || 'normal')

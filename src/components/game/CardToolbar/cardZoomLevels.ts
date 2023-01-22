@@ -21,4 +21,6 @@ const cardZoomLevels = [
 ]
 // Ratio = 63[w]:88[h]
 
+export const splitRatios = ['h-[70%]', 'w-[70%]'] // 63/88, 88/63 * 50% (for split cards)
+
 export default cardZoomLevels

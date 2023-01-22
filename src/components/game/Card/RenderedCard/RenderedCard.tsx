@@ -3,20 +3,21 @@ import { rarityClass } from "components/base/styles/manaIcons"
 import { getArtBoxText, symbolFix, splitLines, getBgdColor } from "./card.services"
 import { Border, Layout, CardBox, ArtBox, TextBox, Footer, Name, Mana, Type, Rarity, TextLine } from "./RenderedCardStyles"
 
+export type Props = { card: Card, isFoil?: boolean, splitSide?: 0|1|2, otherFaceCount?: number }
 
-export default function FauxCard({ card, isFoil = false, otherFaceCount = 0 }: { card: Card, isFoil?: boolean, otherFaceCount?: number }) {
+export default function RenderedCard({ card, isFoil = false, splitSide = 0, otherFaceCount = 0 }: Props) {
   const artBoxText = getArtBoxText(card.layout, otherFaceCount)
 
   return (
-    <Border> <Layout className={getBgdColor(card)}>
+    <Border hide={splitSide > 1}><Layout layout={card.layout} split={splitSide} className={getBgdColor(card)}>
 
       <CardBox>
         <Name>{card.faceName || card.name}</Name>
         <Mana html={symbolFix(card.manaCost, true)} />
       </CardBox>
 
-      <ArtBox>
-        {artBoxText && <div>{artBoxText}</div>}
+      <ArtBox hide={!!splitSide}>
+        {!splitSide && artBoxText && <div>{artBoxText}</div>}
         {isFoil && <div>Foil</div>}
       </ArtBox>
 
