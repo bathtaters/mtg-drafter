@@ -1,7 +1,7 @@
 import type { Prisma, Color, Rarity, Side, CardLayout } from '@prisma/client'
 import type { Card } from 'mtggraphql'
 
-export const normalizeName = (name: string) => name.replace(/\s\/\/\s.+$/,'').replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
+export const normalizeName = (name: string) => name.replace(/\s\/\/\s.+$/,'').replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase()
 
 export const adaptCardToDb = ({
   uuid, name, setCode, manaCost, type, text,
