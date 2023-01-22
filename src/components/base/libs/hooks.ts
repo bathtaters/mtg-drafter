@@ -1,4 +1,5 @@
-import { DependencyList, useCallback, useEffect, useRef, useState } from 'react'
+import { DependencyList, useCallback, useEffect, useRef, useState, MouseEventHandler } from 'react'
+import { hoverAfterClickDelay } from "assets/constants"
 
 const remaining = (end?: number|null, roundTo = 1, current = Date.now()) =>
   end && end > current ? Math.round((end - current) / roundTo) : undefined
@@ -26,6 +27,32 @@ export function useTimer(endTime?: number|null, onEnd = () => {}, tickMs = 1000)
   return countdown
 }
 
+
+export enum HoverAction { Leave = 0, Enter = 1, Click = 2 }
+
+export function useHoverClick<Key extends number|string = string>(handleAction: (action: HoverAction, key?: Key) => void): (key?: Key) => MouseEventHandler {
+  const disableHover = useRef(false)
+
+  return useCallback((key) => (ev) => {
+    ev.stopPropagation()
+  
+    switch (ev.type) {
+      case 'mouseenter':
+        disableHover.current !== true && handleAction(HoverAction.Enter, key)
+        break
+      case 'mouseleave':
+        disableHover.current !== true && handleAction(HoverAction.Leave, key)
+        break
+      case 'click':
+        disableHover.current = true
+        setTimeout(() => disableHover.current = false, hoverAfterClickDelay)
+      default:
+        handleAction(HoverAction.Click, key)
+    }
+  }, [handleAction])
+}
+
+
 export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependencies?: DependencyList, minimumDelay: number = 0) {
   const timestamp = useRef(new Date().getTime())
   const handleEvent = (isFocused: boolean) => {
@@ -46,6 +73,7 @@ export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependenci
     }
   }, dependencies)
 }
+
 
 export function useTouchDevice() {
   const [ isTouchDevice, setIsTouchDevice ] = useState(false)
