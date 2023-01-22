@@ -4,8 +4,8 @@ import { getArtBoxText, symbolFix, splitLines, getBgdColor } from "./card.servic
 import { Border, Layout, CardBox, ArtBox, TextBox, Footer, Name, Mana, Type, Rarity, TextLine } from "./RenderedCardStyles"
 
 
-export default function FauxCard({ card, isFoil }: { card: Card, isFoil?: boolean }) {
-  const artBoxText = getArtBoxText(card.layout, !!card.side)
+export default function FauxCard({ card, isFoil = false, otherFaceCount = 0 }: { card: Card, isFoil?: boolean, otherFaceCount?: number }) {
+  const artBoxText = getArtBoxText(card.layout, otherFaceCount)
 
   return (
     <Border> <Layout className={getBgdColor(card)}>

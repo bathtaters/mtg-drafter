@@ -4,8 +4,9 @@ import { bgdClass } from "components/base/styles/manaIcons"
 import { flippableLayouts } from "assets/constants"
 import { cardLayoutText } from "assets/strings"
 
-export const getArtBoxText = (layout: Card['layout'], hasFaces: boolean): string | false | null => 
-  layout && (cardLayoutText[layout] || (hasFaces && titleCase(layout)))
+export const getArtBoxText = (layout: Card['layout'], otherFaceCount: number): string | false | null => 
+  layout && (cardLayoutText[layout] ||
+  (!!otherFaceCount && `${otherFaceCount > 1 ? `${otherFaceCount+1}-way ` : ''}${titleCase(layout)}`))
 
 
 // Special codes { 'BRACE CODE': 'mana.css code'  }

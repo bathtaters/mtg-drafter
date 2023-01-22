@@ -25,7 +25,7 @@ export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, c
       {showImage && images.map((side, idx) => 
         <ImgWrapper rotate={isRotated} isTop={sideIdx < 0 || idx === sideIdx} key={idx}>{side}</ImgWrapper>
       )}
-      <RenderedCard card={cardFace} isFoil={isFoil} />
+      <RenderedCard card={cardFace} isFoil={isFoil} otherFaceCount={card.otherFaces.length} />
       {sideIdx >= 0 && <FlipButton onClick={handleFlip} isBack={sideIdx > 0} />}
       {isBoard && <SwapButton board={container as Board} onClick={onClick} />}
       {showImage && sideIdx > 0 && card.layout === 'meld' && <MeldBadge />}
