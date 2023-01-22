@@ -24,7 +24,9 @@ export const CardBox: Style = ({ children }) => ( // Header/Type Box
 )
 
 export const ArtBox: Style = ({ children }) => (
-  <div className="col-span-2 flex justify-center items-center my-0 mx-[4%] bg-zinc-300 text-white/60 font-sans text-[1.8em]">{children}</div>
+  <div className="col-span-2 flex flex-col leading-[1.3em] justify-center items-center my-0 mx-[4%] bg-zinc-300 text-zinc-700/60 font-sans text-[1.8em]">
+    {children}
+  </div>
 )
 
 export const Footer: Style = ({ children }) => (<>

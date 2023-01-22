@@ -1,3 +1,4 @@
+import type { CardLayout } from '@prisma/client'
 import type { LogOptions, TimerOptions } from 'types/game'
 import type { GameOptions } from 'types/setup'
 import type { RetryOptions } from 'backend/libs/retry'
@@ -59,6 +60,7 @@ export const
 
 export const redTimerSeconds = 10
 
+export const flippableLayouts: CardLayout[] = ['modal_dfc', 'transform', 'flip', 'meld']
 
 // Advanced Tweaks + Debug Settings
 

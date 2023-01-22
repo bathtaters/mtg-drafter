@@ -2,7 +2,7 @@ import type { MouseEventHandler } from "react"
 import type { CardFull } from "types/game"
 import { Board, TabLabels } from "@prisma/client"
 import RenderedCard from "./RenderedCard/RenderedCard"
-import { CardWrapper, FlipButton, ImgWrapper, SwapButton } from "./GameCardStyles"
+import { CardWrapper, FlipButton, ImgWrapper, MeldBadge, SwapButton } from "./GameCardStyles"
 import useCardImage from "./image.controller"
 
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
 }
 
 export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, container, showImage, onClick, className = '' }: Props) {
-  const { images, sideIdx, cardFace, handleFlip, isRotated } = useCardImage(card)
+  const { images, sideIdx, cardFace, handleFlip, isRotated } = useCardImage(card, showImage)
   const isBoard = container in Board
 
   return (
@@ -28,6 +28,7 @@ export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, c
       <RenderedCard card={cardFace} isFoil={isFoil} />
       {sideIdx >= 0 && <FlipButton onClick={handleFlip} isBack={sideIdx > 0} />}
       {isBoard && <SwapButton board={container as Board} onClick={onClick} />}
+      {showImage && sideIdx > 0 && card.layout === 'meld' && <MeldBadge />}
     </CardWrapper>
   )
 }

@@ -1,4 +1,4 @@
-import type { Game, GameStatus, LogAction } from "@prisma/client"
+import type { CardLayout, Game, GameStatus, LogAction } from "@prisma/client"
 import type { BoardLands, LogData, LogOptions, PartialGame } from "types/game"
 import type { ToastAlert } from "components/base/common/Alerts/alerts.d"
 import Link from "next/link"
@@ -38,6 +38,11 @@ export const sharingMessage: { [key: string]: ToastAlert} = {
 export const maxSizeError = (size: number, maxSize: number) => `File exceeds ${formatBytes(maxSize)} limit (${formatBytes(size)})`
 
 export const timerLabels = ['Off', 'Casual', 'Slower', 'Normal', 'Faster', 'Speed']
+
+// Text to display on rendered card, key is card layout (auto displays <Layout> if card has multiple faces)
+export const cardLayoutText: {[layout in CardLayout]?: string} = {
+  modal_dfc: 'Modal',
+}
 
 export const logOptionLabels: Record<keyof LogOptions, ReactNode> = {
   hideHost: <span>Show Host<HostIcon className="ml-2 w-5 ms-2x" /></span>,

@@ -1,10 +1,12 @@
 import type { Card } from "@prisma/client"
 import { rarityClass } from "components/base/styles/manaIcons"
-import { symbolFix, splitLines, getBgdColor } from "./card.services"
+import { getArtBoxText, symbolFix, splitLines, getBgdColor } from "./card.services"
 import { Border, Layout, CardBox, ArtBox, TextBox, Footer, Name, Mana, Type, Rarity, TextLine } from "./RenderedCardStyles"
 
 
 export default function FauxCard({ card, isFoil }: { card: Card, isFoil?: boolean }) {
+  const artBoxText = getArtBoxText(card.layout, !!card.side)
+
   return (
     <Border> <Layout className={getBgdColor(card)}>
 
@@ -13,7 +15,10 @@ export default function FauxCard({ card, isFoil }: { card: Card, isFoil?: boolea
         <Mana html={symbolFix(card.manaCost, true)} />
       </CardBox>
 
-      <ArtBox>{isFoil ? 'Foil' : ''}</ArtBox>
+      <ArtBox>
+        {artBoxText && <div>{artBoxText}</div>}
+        {isFoil && <div>Foil</div>}
+      </ArtBox>
 
       <CardBox>
         <Type>{card.type}</Type>

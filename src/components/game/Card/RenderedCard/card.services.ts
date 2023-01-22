@@ -1,5 +1,11 @@
 import type { Card, Color } from "@prisma/client"
+import { titleCase } from "components/base/services/common.services"
 import { bgdClass } from "components/base/styles/manaIcons"
+import { flippableLayouts } from "assets/constants"
+import { cardLayoutText } from "assets/strings"
+
+export const getArtBoxText = (layout: Card['layout'], hasFaces: boolean): string | false | null => 
+  layout && (cardLayoutText[layout] || (hasFaces && titleCase(layout)))
 
 
 // Special codes { 'BRACE CODE': 'mana.css code'  }
@@ -22,3 +28,11 @@ export const splitLines = (text: string | null) => !text ? [] : text.split('\n')
 export const getBgdColor = ({ colors, types }: Card) => 
   colors.length == 1 ? bgdClass[colors[0].toLowerCase() as Lowercase<Color>] :
   colors.length ? bgdClass.multi : types.includes('Land') ? bgdClass.land : bgdClass.none
+
+
+// Image controller utils:
+
+export const getNextFace = (currentFace: number, otherFaceCount: number) => (currentFace + 1) % (otherFaceCount + 1)
+
+export const showSwapButton = (side: Card['side'], layout: Card['layout'], showImages: boolean) =>
+  side && (!showImages || (layout && flippableLayouts.includes(layout)))

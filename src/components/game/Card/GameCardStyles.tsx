@@ -47,3 +47,9 @@ export const FlipButton = ({ isBack, onClick }: { isBack?: boolean, onClick?: Mo
   }>
     <i className={`ms ${isBack ? 'ms-untap' : 'ms-tap'} w-full`} />
   </button>
+
+export const MeldBadge = () => (
+  <div className="absolute left-0 -top-2 z-30 w-full h-full flex items-center justify-center">
+    <div className="font-serif text-[2em] badge h-auto p-[0.5em] opacity-80">Meld</div>
+  </div>
+)
