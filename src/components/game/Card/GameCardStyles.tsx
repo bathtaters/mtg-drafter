@@ -13,13 +13,13 @@ export const CardWrapper = (
 ) => (
   <span
     onClick={onClick}
-    className={`flex justify-center items-center relative group rounded-card${
-      isSelected ? " outline outline-secondary" : isHighlighted ? " outline outline-error" : ""
+    className={`flex justify-center items-center relative hover:z-30 group rounded-card${
+      isSelected ? ' outline outline-secondary' : isHighlighted ? ' outline outline-error' : ''
     } outline-4 outline-offset-2${typeof reversed === 'boolean' ? ' flip-container' : ''} ${className}`}
   >
     <div className={`pointer-events-none select-none w-full h-full ${
       typeof reversed === 'boolean' ? 'flip-inner' : 'transition-transform duration-300'} ${reversed ? 'flipped ' : ''}${
-        dirClass[direction]}${direction !== Direction.N ? ' z-30' : ''}`}>
+        dirClass[direction]} ${direction !== Direction.N ? 'z-30' : ''}`}>
       {isFoil && <div className="absolute w-full h-full z-50 bg-foil opacity-70 mix-blend-multiply" />}
       {image}
       {rendered}
@@ -46,7 +46,7 @@ export const SwapButton = ({ board, low, onClick }: { board: Board, low?: boolea
       pointer-events-auto opacity-50 hover:opacity-90`
   }>
     <span className="normal-case">{board === 'main' ? 'Side' : 'Main'}</span>
-    <DeckIcon className={`h-[2em] inline ${board === 'main' ? "fill-base-content stroke-base-300" : "fill-base-300 stroke-base-content"}`} />
+    <DeckIcon className={`h-[2em] inline ${board === 'main' ? 'fill-base-content stroke-base-300' : 'fill-base-300 stroke-base-content'}`} />
   </button>
 
 
