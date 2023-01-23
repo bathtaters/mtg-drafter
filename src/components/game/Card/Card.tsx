@@ -17,26 +17,33 @@ type Props = {
 }
 
 export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, container, showImage, onClick, className = '' }: Props) {
-  const { images, sideIdx, cardFace, handleFlip, direction } = useCardImage(card, showImage)
+  const { images, cardFaces, sideIdx, sideCount, direction, reversed, showFlip, handleFlip } = useCardImage(card, showImage)
   const isBoard = container in Board
 
   return (
     <CardWrapper
-      isSelected={isSelected} isHighlighted={isHighlighted} isFoil={isFoil} direction={direction}
+      isSelected={isSelected} isHighlighted={isHighlighted} isFoil={isFoil} direction={direction} reversed={reversed}
       onClick={!isBoard ? onClick : undefined} className={className}
 
-      image={showImage && images.map((side, idx) => 
-        <ImgWrapper isTop={sideIdx < 0 || idx === sideIdx} key={idx}>{side}</ImgWrapper>
+      image={showImage && images.map((side, idx) => <>
+        <ImgWrapper isTop={images.length === 1 || idx === sideIdx} flipSide={typeof reversed === 'boolean' ? idx + 1 : 0} key={idx}>{side}</ImgWrapper>
+        {idx === 1 && card.layout === 'meld' && <MeldBadge image={true} />}
+      </>
       )}
 
-      rendered={<>
-        <RenderedCard card={cardFace[0]} isFoil={isFoil} otherFaceCount={card.otherFaces.length} splitSide={+!!cardFace[1] as 0|1} />
-        {1 in cardFace && <RenderedCard card={cardFace[1]} isFoil={isFoil} otherFaceCount={card.otherFaces.length} splitSide={2} />}
-      </>}
+      rendered={sideCount <= 2 ? <>
+        {/* 1-2 sided cards: */}
+        <RenderedCard card={cardFaces[0]} side={sideCount - 1} sideCount={sideCount} isFoil={isFoil}  />
+        { sideCount === 2 && <RenderedCard card={cardFaces[1]} side={2} sideCount={sideCount} isFoil={isFoil} /> }
+        { !showImage && card.layout === 'meld' && <MeldBadge image={false} /> }
+      </>
+
+      : /* 3+ sided cards */
+        <RenderedCard card={cardFaces[sideIdx]} side={sideIdx + 1} sideCount={sideCount} isFoil={isFoil}  />
+      }
     >
-      {sideIdx >= 0 && <FlipButton onClick={handleFlip} isBack={sideIdx > 0} low={card.layout === 'flip'} />}
+      {showFlip && <FlipButton onClick={handleFlip} isBack={sideIdx > 0} low={card.layout === 'flip'} />}
       {isBoard && <SwapButton board={container as Board} onClick={onClick} low={card.layout === 'flip'} />}
-      {showImage && sideIdx > 0 && card.layout === 'meld' && <MeldBadge />}
     </CardWrapper>
   )
 }

@@ -1,24 +1,32 @@
 import type { Card } from "@prisma/client"
 import { rarityClass } from "components/base/styles/manaIcons"
 import { getArtBoxText, symbolFix, splitLines, getBgdColor } from "./card.services"
-import { Border, Layout, CardBox, ArtBox, TextBox, Footer, Name, Mana, Type, Rarity, TextLine } from "./RenderedCardStyles"
+import {
+  Border, Layout, CardBox, ArtBox, TextBox, Footer, 
+  Name, Mana, Type, Rarity, TextLine, ArtMainText, ArtSubText, splitLayouts
+} from "./RenderedCardStyles"
 
-export type Props = { card: Card, isFoil?: boolean, splitSide?: 0|1|2, otherFaceCount?: number }
+export type Props = { card: Card, isFoil?: boolean, side?: number, sideCount?: number }
 
-export default function RenderedCard({ card, isFoil = false, splitSide = 0, otherFaceCount = 0 }: Props) {
-  const artBoxText = getArtBoxText(card.layout, otherFaceCount)
+export default function RenderedCard({ card, isFoil = false, side = 0, sideCount = 0 }: Props) {
+  const artBoxText = getArtBoxText(card.layout, sideCount)
+  const layout = sideCount === 2 ? splitLayouts[card.layout || 'normal'] : undefined
 
   return (
-    <Border hide={splitSide > 1}><Layout layout={card.layout} split={splitSide} className={getBgdColor(card)}>
+    <Border hide={layout && side > 1} flipSide={layout ? -1 : side}><Layout layout={layout} side={side} className={getBgdColor(card)}>
 
       <CardBox>
         <Name>{card.faceName || card.name}</Name>
         <Mana html={symbolFix(card.manaCost, true)} />
       </CardBox>
 
-      <ArtBox hide={!!splitSide}>
-        {!splitSide && artBoxText && <div>{artBoxText}</div>}
-        {isFoil && <div>Foil</div>}
+      <ArtBox>
+        <ArtMainText small={!!layout}>
+          {(!layout || !side) && artBoxText && <div>{artBoxText}</div>}
+          {isFoil && <div>Foil</div>}
+        </ArtMainText>
+
+        {!layout && !!side && <ArtSubText>{side}/{sideCount}</ArtSubText>}
       </ArtBox>
 
       <CardBox>
