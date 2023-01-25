@@ -50,10 +50,16 @@
   .scrollbar-secondary::-webkit-scrollbar-thumb { @apply bg-secondary-focus hover:bg-secondary; }
   .scrollbar-accent::-webkit-scrollbar-thumb    { @apply bg-accent-focus    hover:bg-accent;    }
 
-  /* Add 3d card flip effect */
-  .flip-container { @apply [perspective:62rem]; }
-  .flip-inner { @apply relative transition-transform duration-500 [transform-style:preserve-3d]; }
-  .flip-inner .flip-front, .flip-inner .flip-back { @apply absolute w-full h-full [backface-visibility:hidden]; }
-  .flip-inner.flipped, .flip-inner .flip-back { @apply [transform:rotateY(180deg)]; }
-
+  /* Add 3d card flip effect (w/ reduced & non-reduced motion options) */
+  .flip-container:not(.reduced-motion) { @apply [perspective:62rem]; }
+  .flip-container:not(.reduced-motion) .flip-inner {
+    @apply relative transition-transform duration-500 [transform-style:preserve-3d] will-change-transform;
+  }
+  .flip-container:not(.reduced-motion) .flip-front, .flip-container:not(.reduced-motion) .flip-back {
+    @apply absolute w-full h-full [backface-visibility:hidden];
+  }
+  .flip-container:not(.reduced-motion) .flip-inner.flipped,
+  .flip-container:not(.reduced-motion) .flip-back { @apply [transform:rotateY(180deg)]; }
+  .reduced-motion .flip-inner.flipped .flip-front,
+  .reduced-motion .flip-inner:not(.flipped) .flip-back { @apply hidden; }
 }

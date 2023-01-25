@@ -5,21 +5,22 @@ import DeckIcon from "components/svgs/DeckIcon"
 
 const dirClass: { [dir in Direction]: string } = { N: '', E: ' rotate-90', S: ' rotate-180', W: ' -rotate-90' }
 
-export const CardWrapper = (
-  { isSelected, isHighlighted, isFoil, direction = Direction.N, reversed, onClick, className, image, rendered, children }: {
-    isSelected?: boolean, isHighlighted?: boolean, isFoil?: boolean, direction?: Direction, reversed?: boolean
-    onClick?: MouseEventHandler, className: string, image?: ReactNode, rendered?: ReactNode, children?: ReactNode
-  }
-) => (
+export const CardWrapper = ({
+  isSelected, isHighlighted, isFoil, direction = Direction.N, reversed,
+  onClick, className, reduceMotion = false, image, rendered, children 
+}: WrapperProps) => (
   <span
     onClick={onClick}
-    className={`flex justify-center items-center relative hover:z-[31] group rounded-card${
-      isSelected ? ' outline outline-secondary' : isHighlighted ? ' outline outline-error' : ''
-    } outline-4 outline-offset-2${typeof reversed === 'boolean' ? ' flip-container' : ''} ${className}`}
+    className={`flex justify-center items-center relative group hover:z-[31] rounded-card${
+      typeof reversed === 'boolean' ? ' flip-container' : ''}${reduceMotion ? ' reduced-motion' : ''} ${className}`}
   >
     <div className={`pointer-events-none select-none w-full h-full ${
-      typeof reversed === 'boolean' ? 'flip-inner' : 'transition-transform duration-300'} ${reversed ? 'flipped ' : ''}${
-        dirClass[direction]} ${direction !== Direction.N ? 'z-30' : ''}`}>
+      typeof reversed === 'boolean' ? 'flip-inner' : reduceMotion ? '' : 'transition-transform duration-300'} ${
+        reversed ? 'flipped ' : ''}${dirClass[direction]} ${direction !== Direction.N ? 'z-30' : ''
+    }`}>
+      <div className={`absolute top-[-1.5%] left-[-2%] w-[104%] h-[103%] z-0 rounded-card ${
+        isSelected ? 'bg-secondary' : isHighlighted ? 'bg-error' : 'bg-transparent'
+      }`} />
       {isFoil && <div className="absolute w-full h-full z-50 bg-foil opacity-70 mix-blend-multiply" />}
       {image}
       {rendered}
@@ -67,3 +68,11 @@ export const MeldBadge = ({ image }: { image?: boolean }) => (
     </div>
   </div>
 )
+
+
+type WrapperProps = {
+  isSelected?: boolean, isHighlighted?: boolean, isFoil?: boolean,
+  direction?: Direction, reversed?: boolean,
+  onClick?: MouseEventHandler, className: string, reduceMotion?: boolean,
+  image?: ReactNode, rendered?: ReactNode, children?: ReactNode
+}
