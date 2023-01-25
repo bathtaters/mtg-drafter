@@ -34,7 +34,7 @@ export const getBgdColor = ({ colors, types }: Card) =>
 
 // Image controller utils:
 
-export const getNextFace = (currentFace: number, otherFaceCount: number) => (currentFace + 1) % (otherFaceCount + 1)
+export const getNextFace = (currentFace: number, faceCount: number) => (currentFace + 1) % faceCount
 
 export const isReversible = ({ layout, otherFaces }: CardFull) => otherFaces.length === 1 && !(layout && layout in layoutDirection)
 

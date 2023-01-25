@@ -7,15 +7,26 @@ import { layoutDirection } from "assets/constants"
 
 export default function useCardImage(card: CardFull, showImages = true) {
   const cardFaces = useMemo(() => [card, ...card.otherFaces.map(({ card }) => card)], [card.uuid])
+  const sideCount = cardFaces.length
 
   const [ images, setImages ] = useState([] as ReactNode[])
-  const [ sideIdx, setSideIdx ] = useState(card.otherFaces.length ? 0 : -1)
+  const [ sideIdx, setSideIdx ] = useState(sideCount > 1 ? 0 : -1)
 
-  const direction: Direction | undefined = sideIdx === 1 && card.otherFaces.length === 1 ? layoutDirection[card.layout || 'normal'] : undefined
+  const direction: Direction | undefined = sideIdx === 1 && sideCount === 2 ? layoutDirection[card.layout || 'normal'] : undefined
 
   const handleSideChange = useCallback(
-    (state: HoverAction) => setSideIdx(state < 2 ? state : state === HoverAction.FirstClick ? 1 : (idx) => getNextFace(idx, card.otherFaces.length)),
-    [card.otherFaces.length]
+    sideCount < 3 ?
+      // Normal action
+      (state: HoverAction) => setSideIdx(
+        state < HoverAction.Click ? state :
+        state === HoverAction.FirstClick ? 1 :
+          (idx) => getNextFace(idx, sideCount)
+      )
+    :
+      // 3+ Faced Card
+      (state: HoverAction) => state !== HoverAction.Leave && 
+        setSideIdx((idx) => getNextFace(idx, sideCount)),
+    [sideCount]
   )
   const handleFlip = useHoverClick(handleSideChange)()
 
@@ -29,9 +40,8 @@ export default function useCardImage(card: CardFull, showImages = true) {
 
   return {
     images, cardFaces, handleFlip, direction,
+    sideIdx, sideCount,
     reversed: isReversible(card) ? !!sideIdx : undefined,
-    sideIdx,
-    sideCount: card.otherFaces.length + 1,
     showFlip: showFlipButton(card, showImages),
   }
 }
