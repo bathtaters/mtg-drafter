@@ -39,7 +39,7 @@ export const HelpButton = ({ tip }: { tip: string }) => (
   <div data-tip={tip} className="absolute bottom-2 right-2 
     btn btn-circle btn-sm btn-secondary p-0 text-lg
     border-none bg-opacity-60 hover:bg-opacity-60
-    tooltip tooltip-left flex">?</div>
+    tooltip tooltip-left flex whitespace-pre-line">?</div>
 )
 
 
@@ -49,7 +49,7 @@ export const PacksWrapper = ({ children }: { children: ReactNode }) => (
   <div className="min-h-[18rem] flex flex-col gap-2 items-center px-4 py-2">{children}</div>
 )
 
-export const PackSelector = (props: Parameters<typeof Selector>['0']) => <Selector {...props} className="select-secondary max-w-[19rem]" />
+export const PackSelector = (props: Parameters<typeof Selector>['0']) => <Selector {...props} className="select-secondary max-w-[19rem] w-full" />
 
 export const PackButtonWrapper = ({ children }: { children: ReactNode }) => (
   <div className="btn-group place-self-stretch">{children}</div>

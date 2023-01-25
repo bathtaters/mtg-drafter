@@ -7,7 +7,7 @@ import { ReactNode } from "react"
 import CardIcon from "components/svgs/CardIcon"
 import HostIcon from "components/svgs/HostIcon"
 
-export const uploadHelp = "Cube file should be a .txt of card names. One per line with no formatting."
+export const uploadHelp = "Expects a .txt of card names. \nOne per line with no formatting."
 
 export const FullGame = () => <p className="opacity-70 italic">
   Wait here for an opening or <Link href="/" className="link link-primary link-hover">start a new one</Link>.
