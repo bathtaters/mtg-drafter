@@ -74,7 +74,7 @@ export const retryDefaults: RetryOptions = { maxRetries: 10, delay: 10, errCodes
 
 export const refreshOnRefocusDelay = 3 * 60 * 1000
 
-export const hoverAfterClickDelay = 5 * 1000 // How long to wait after clicking before allowing hovering on/off
+export const hoverAfterClickDelay = 4 * 1000 // How long to wait after clicking before allowing hovering on/off
 
 export const MAX_GAME_CONN = 20
 

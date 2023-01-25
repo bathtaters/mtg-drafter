@@ -13,7 +13,7 @@ export const CardWrapper = (
 ) => (
   <span
     onClick={onClick}
-    className={`flex justify-center items-center relative hover:z-30 group rounded-card${
+    className={`flex justify-center items-center relative hover:z-[31] group rounded-card${
       isSelected ? ' outline outline-secondary' : isHighlighted ? ' outline outline-error' : ''
     } outline-4 outline-offset-2${typeof reversed === 'boolean' ? ' flip-container' : ''} ${className}`}
   >

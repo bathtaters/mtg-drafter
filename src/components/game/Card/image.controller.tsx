@@ -14,7 +14,7 @@ export default function useCardImage(card: CardFull, showImages = true) {
   const direction: Direction | undefined = sideIdx === 1 && card.otherFaces.length === 1 ? layoutDirection[card.layout || 'normal'] : undefined
 
   const handleSideChange = useCallback(
-    (state: HoverAction) => setSideIdx(state < 2 ? state : (idx) => getNextFace(idx, card.otherFaces.length)),
+    (state: HoverAction) => setSideIdx(state < 2 ? state : state === HoverAction.FirstClick ? 1 : (idx) => getNextFace(idx, card.otherFaces.length)),
     [card.otherFaces.length]
   )
   const handleFlip = useHoverClick(handleSideChange)()

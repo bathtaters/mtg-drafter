@@ -28,9 +28,10 @@ export function useTimer(endTime?: number|null, onEnd = () => {}, tickMs = 1000)
 }
 
 
-export enum HoverAction { Leave = 0, Enter = 1, Click = 2 }
+export enum HoverAction { Leave = 0, Enter = 1, Click = 2, FirstClick = 3 }
 
 export function useHoverClick<Key extends number|string = string>(handleAction: (action: HoverAction, key?: Key) => void): (key?: Key) => MouseEventHandler {
+  const wasClicked = useRef(false)
   const disableHover = useRef(false)
 
   return useCallback((key) => (ev) => {
@@ -41,13 +42,16 @@ export function useHoverClick<Key extends number|string = string>(handleAction: 
         disableHover.current !== true && handleAction(HoverAction.Enter, key)
         break
       case 'mouseleave':
-        disableHover.current !== true && handleAction(HoverAction.Leave, key)
+        if (disableHover.current === true) break
+        handleAction(HoverAction.Leave, key)
+        wasClicked.current = false
         break
       case 'click':
         disableHover.current = true
         setTimeout(() => disableHover.current = false, hoverAfterClickDelay)
       default:
-        handleAction(HoverAction.Click, key)
+        handleAction(wasClicked.current ? HoverAction.Click : HoverAction.FirstClick, key)
+        wasClicked.current = true
     }
   }, [handleAction])
 }
