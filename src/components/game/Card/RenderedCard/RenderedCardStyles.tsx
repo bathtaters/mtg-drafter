@@ -13,9 +13,9 @@ type LayoutProps = { layout?: Layout, side: Props['side'], className?: string, c
 // MAIN WRAPPERS \\
 
 export const splitLayouts: { [layout in NonNullable<Card['layout']>]?: Layout} = {
-  split: ['left-[15%] -rotate-90 '+splitRatios.join(' '), '-bottom-[9%]', '-top-[9%]', false, false],
-  aftermath: ['','top-[1%] h-1/2','-bottom-[9%] left-[15%] rotate-90 '+splitRatios.join(' '), true, false],
-  flip: ['w-full h-1/2','top-[1%]','bottom-[1%] rotate-180', true, true],
+  split: [' left-[15%] -rotate-90 '+splitRatios.join(' '), ' -bottom-[9%]', ' -top-[9%]', false, false],
+  aftermath: ['',' top-[1%] h-1/2',' -bottom-[9%] left-[15%] rotate-90 '+splitRatios.join(' '), true, false],
+  flip: ['w-full h-1/2',' top-[1%]',' bottom-[1%] rotate-180', true, true],
   adventure: ['',' top-[1%] w-full h-[63%]',' bottom-[1.75%] left-[1%] w-3/4 h-[45%]', true, true],
 }
 
