@@ -12,19 +12,18 @@ type Props = {
   isSelected?: boolean,
   isHighlighted?: boolean,
   showImage?: boolean,
-  reduceMotion?: boolean,
   onClick?: MouseEventHandler,
   className?: string,
 }
 
-export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, container, showImage, reduceMotion, onClick, className = '' }: Props) {
+export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, container, showImage, onClick, className = '' }: Props) {
   const { images, cardFaces, sideIdx, sideCount, direction, reversed, showFlip, handleFlip } = useCardImage(card, showImage)
   const isBoard = container in Board
 
   return (
     <CardWrapper
       isSelected={isSelected} isHighlighted={isHighlighted} isFoil={isFoil} direction={direction} reversed={reversed}
-      onClick={!isBoard ? onClick : undefined} className={className} reduceMotion={reduceMotion}
+      onClick={!isBoard ? onClick : undefined} className={className}
 
       image={showImage && images.map((side, idx) => <>
         <ImgWrapper isTop={images.length === 1 || idx === sideIdx} flipSide={typeof reversed === 'boolean' ? idx + 1 : 0} key={idx}>{side}</ImgWrapper>
