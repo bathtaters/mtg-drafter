@@ -1,4 +1,4 @@
-import type { MouseEventHandler } from "react"
+import { Fragment, MouseEventHandler } from "react"
 import type { CardFull } from "types/game"
 import { Board, TabLabels } from "@prisma/client"
 import RenderedCard from "./RenderedCard/RenderedCard"
@@ -18,7 +18,7 @@ type Props = {
 }
 
 export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, container, showImage, onClick, onLoad, className = '' }: Props) {
-  const { images, cardFaces, sideIdx, sideCount, direction, reversed, showFlip, handleFlip } = useCardImage(card, showImage, onLoad)
+  const { images, cardFaces, sideIdx, sideCount, direction, reversed, showFlip, handleFlip } = useCardImage(card, className, showImage, onLoad)
   const isBoard = container in Board
 
   return (
@@ -26,11 +26,12 @@ export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, c
       isSelected={isSelected} isHighlighted={isHighlighted} isFoil={isFoil} direction={direction} reversed={reversed}
       onClick={!isBoard ? onClick : undefined} className={className}
 
-      image={showImage && images.map((side, idx) => <>
-        <ImgWrapper isTop={images.length === 1 || idx === sideIdx} flipSide={typeof reversed === 'boolean' ? idx + 1 : 0} key={idx}>{side}</ImgWrapper>
-        {idx === 1 && card.layout === 'meld' && <MeldBadge image={true} />}
-      </>
-      )}
+      image={showImage && images.map((side, idx) => (
+        <Fragment key={idx}>
+          <ImgWrapper isTop={images.length === 1 || idx === sideIdx} flipSide={typeof reversed === 'boolean' ? idx + 1 : 0}>{side}</ImgWrapper>
+          {idx === 1 && card.layout === 'meld' && <MeldBadge image={true} />}
+        </Fragment>
+      ))}
 
       rendered={sideCount <= 2 ? <>
         {/* 1-2 sided cards: */}
