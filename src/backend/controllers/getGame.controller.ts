@@ -1,5 +1,5 @@
 import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next'
-import type { ServerProps, PlayerFull, ServerSuccess } from 'types/game'
+import type { ServerProps, ServerSuccess, PlayerFullTimer } from 'types/game'
 import { getGame } from '../services/game/game.services'
 import { getPlayer } from '../services/game/player.services'
 import { getCtxSessionId, getReqSessionId } from '../libs/auth'
@@ -12,7 +12,7 @@ async function getGameProps(url: string, sessionId: string): Promise<ServerProps
   
   const { players, packs, ...options } = game
   const now = Date.now()
-  const player = await getPlayer(sessionId, players, game, now) as PlayerFull | null // Convert type JSON value -> BasicLands
+  const player = await getPlayer(sessionId, players, game, now) as PlayerFullTimer | null // Convert type JSON value -> BasicLands
   
   return !player ?
     { options: unregGameAdapter(options), players, sessionId } :

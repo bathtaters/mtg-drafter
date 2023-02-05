@@ -5,7 +5,7 @@ import { showFlipButton, getNextFace, isReversible } from "./RenderedCard/card.s
 import { HoverAction, useHoverClick } from "components/base/libs/hooks"
 import { layoutDirection } from "assets/constants"
 
-export default function useCardImage(card: CardFull, showImages = true) {
+export default function useCardImage(card: CardFull, showImages = true, onLoad?: () => Promise<void> | void) {
   const cardFaces = useMemo(() => [card, ...card.otherFaces.map(({ card }) => card)], [card.uuid])
   const sideCount = cardFaces.length
 
@@ -34,7 +34,12 @@ export default function useCardImage(card: CardFull, showImages = true) {
   useEffect(() => {
     setImages(cardFaces
       .filter(({ img }, idx) => img && (!idx || img !== card.img))
-      .map(({ uuid, img }, idx) =>  <Image key={uuid} src={img as string} sizes="100vw" fill priority={!idx} alt="" /> )
+      .map(({ uuid, img }, idx) => (
+        <Image key={uuid} src={img as string}
+            sizes="100vw" fill priority={!idx} alt=""
+            onLoadingComplete={idx ? undefined : onLoad}
+        />
+      ))
     )
   }, [cardFaces])
 

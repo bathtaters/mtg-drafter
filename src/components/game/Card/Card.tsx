@@ -13,11 +13,12 @@ type Props = {
   isHighlighted?: boolean,
   showImage?: boolean,
   onClick?: MouseEventHandler,
+  onLoad?: () => Promise<void> | void,
   className?: string,
 }
 
-export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, container, showImage, onClick, className = '' }: Props) {
-  const { images, cardFaces, sideIdx, sideCount, direction, reversed, showFlip, handleFlip } = useCardImage(card, showImage)
+export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, container, showImage, onClick, onLoad, className = '' }: Props) {
+  const { images, cardFaces, sideIdx, sideCount, direction, reversed, showFlip, handleFlip } = useCardImage(card, showImage, onLoad)
   const isBoard = container in Board
 
   return (

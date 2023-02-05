@@ -1,10 +1,18 @@
 import type { MouseEventHandler, ReactNode } from "react"
 import { EmptyStyle } from "components/base/styles/AppStyles"
+import RadialProgress from "components/base/common/RadialProgress"
 
 export const NoPack = () => <EmptyStyle>Awaiting next pack.</EmptyStyle>
 export const EmptyPack = () => <EmptyStyle>Awaiting next round.</EmptyStyle>
 export const EmptyBoard = () => <EmptyStyle>No cards.</EmptyStyle>
-export const LoadingPack = () => <EmptyStyle>Loading pack.</EmptyStyle>
+
+// loading -1 = loading pack; loading > 0 = loading images
+export const LoadingPack = ({ loading, count = 0 }: { loading: number, count?: number  }) => (
+  <EmptyStyle>
+    <RadialProgress value={count - loading} maxValue={count} />
+    <div className="mt-8">{loading < 1 ? 'Looking for pack' : 'Loading cards'}.</div>
+  </EmptyStyle>
+)
 
 export const CardContainerWrapper = ({ title, isPrimary, children, onClick }: {
    title: ReactNode, isPrimary: boolean, children: ReactNode, onClick?: MouseEventHandler
@@ -43,6 +51,6 @@ export const LandCounterStyle = ({ className = '', children }: { className?: str
 
 export const LandButton = () => <span className="btn btn-circle btn-sm btn-outline"><i className="ms ms-land text-base" /></span>
 
-export const CardsWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="flex gap-4 flex-wrap justify-center">{children}</div>
+export const CardsWrapper = ({ hideCards, children }: { hideCards: boolean, children: ReactNode }) => (
+  <div className={`${hideCards ? 'hidden' : 'flex'} gap-4 flex-wrap justify-center`}>{children}</div>
 )

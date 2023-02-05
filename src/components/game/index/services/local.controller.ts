@@ -1,8 +1,9 @@
-import type { PackFull, ServerProps, Local } from 'types/game'
+import type { PackFull, ServerProps, Local, PlayerFull } from 'types/game'
 import { useCallback, useMemo, useState } from 'react'
 import { spliceInPlace, updateArrayIdx } from 'components/base/services/common.services'
-import { canAdvance, filterPackIds, getHolding, getPackIdx, getPlayerIdx, getSlots, offsetTimer, playerIsHost } from '../../shared/game.utils'
+import { canAdvance, getCurrentPack, getHolding, getPlayerIdx, getSlots, playerIsHost } from '../../shared/game.utils'
 import { reloadData } from '../game.controller'
+import { useTimerStore } from 'components/base/libs/hooks'
 import { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 
 
@@ -11,11 +12,13 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   const [loadingPack, setLoadingPack] = useState(1)
 
   const [ game,    updateGame    ] = useState(props.options)
-  const [ player,  updatePlayer  ] = useState(offsetTimer(props.player || undefined, props.now))
+  const [ player,  updatePlayer  ] = useState<Omit<PlayerFull,'timer'> | undefined>(props.player || undefined)
   const [ packs,   updatePacks   ] = useState(props.packs || [])
   const [ players, updatePlayers ] = useState(props.players || [])
   const [ slots,   updateSlots   ] = useState(getSlots(props.players))
   const [ pack,    updatePack    ] = useState<PackFull>()
+  
+  const { timer, startTimer, resetTimer, storeTimer } = useTimerStore(props.player?.timer, props.now)
   
   const isHost = playerIsHost(player, game)
   const holding = getHolding(players, game)
@@ -43,7 +46,10 @@ export default function useLocalController(props: ServerProps, throwError: Alert
       ({ id }) => id === playerId, (p) => ({ ...p, pick })
     ))
 
-    if (playerId === player?.id) updatePlayer((p) => p && ({ ...p, timer: null }))
+    if (playerId === player?.id) {
+      updatePack(undefined)
+      resetTimer()
+    }
     
     if (passingToId && player?.id === passingToId) updatePack((pack) => {
       if (!pack) reloadData({ game, updateLocal }, throwError)
@@ -76,14 +82,16 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   const updateLocal = useCallback((data: ServerProps) => {
     if ('error' in data) throw new Error(`Cannot update data: ${data.error}`)
 
-    const newPack = data.packs?.[getPackIdx(data.options, data.players, data.player)] as PackFull | undefined
+    const newPack = getCurrentPack(data)
+    if (newPack?.cards.length) storeTimer(data.player?.timer, data.now)
+    else resetTimer()
 
     updateGame(data.options)
     updatePacks(data.packs || [])
     updatePlayers(data.players)
     updateSlots(getSlots(data.players))
-    updatePack(filterPackIds(newPack))
-    updatePlayer(offsetTimer(data.player || undefined, data.now))
+    updatePack(newPack)
+    updatePlayer(data.player || undefined)
   }, [])
 
   const reload = useCallback(() => {
@@ -94,9 +102,9 @@ export default function useLocalController(props: ServerProps, throwError: Alert
 
   return {
     loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer, updateGame, updateLocal,
-    game, player, players, playerIdx, holding, isHost, isReady, pack, packs, slots,
+    game, player, players, playerIdx, holding, isHost, isReady, pack, packs, slots, timer,
     sessionId: props.sessionId,
-    renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus, reload,
+    renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus, reload, startTimer, 
   }
 }
 

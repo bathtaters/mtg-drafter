@@ -3,7 +3,7 @@ import type { GameCard, Board, Game, TabLabels } from "@prisma/client"
 import type { CardOptions, PackFull, PartialGame, PickCard, PlayerFull, SwapCard } from "types/game"
 import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import { useCallback, useRef, useState, useEffect } from "react"
-import { useTimer } from "components/base/libs/hooks"
+import { useTimer, useLoadElements } from "components/base/libs/hooks"
 import getAutopickCard from "components/base/services/autoPick.service"
 import { redTimerSeconds } from "assets/constants"
 
@@ -12,7 +12,7 @@ const DBL_CLICK_DELAY = 500,
 
 export default function usePickController(
   pickCard: PickCard, swapCard: SwapCard, notify: AlertsReturn['newToast'],
-  pack?: PackFull, game?: Game|PartialGame, player?: PlayerFull,
+  pack?: PackFull, game?: Game|PartialGame, player?: PlayerFull, playerTimer?: number, onPackLoad?: () => void
 ) {
   const hidePack = !game || !('round' in game) || game.round > game.roundCount || game.round < 1
 
@@ -62,8 +62,9 @@ export default function usePickController(
 
   const deselectCard = useCallback(() => { setSelectedCard(undefined) }, [])
 
+  const timer = useTimer(playerTimer, autoPick)
 
-  const timer = useTimer(player?.timer, autoPick)
+  const [ packLoading, handleCardLoad ] = useLoadElements(onPackLoad, pack?.cards.length, !cardOptions.showArt, [pack?.index])
 
   useEffect(() => { if (hidePack && selectedTab === 'pack') selectTab('main') }, [hidePack])
   
@@ -80,5 +81,6 @@ export default function usePickController(
     clickPickButton, clickPackCard, clickBoardCard,
     cardOptions, setCardOptions,
     selectedTab, selectTab, hidePack, timer,
+    packLoading, handleCardLoad,
   }
 }

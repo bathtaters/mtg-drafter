@@ -1,11 +1,11 @@
 import type { Game, Board, Card } from "@prisma/client"
-import type { Player, BoardLands, BasicLands, PlayerFull } from "types/game"
+import type { BoardLands, BasicLands, PlayerFull } from "types/game"
 import { deckSort } from "components/base/services/cardSort.services"
 import downloadTextFile from "components/base/libs/download"
 import { colorOrder, landNames } from 'assets/sort.constants'
 
 
-const deckFileName = (game: Game, player: Player) =>
+const deckFileName = (game: Game, player: PlayerFull) =>
   `${player?.name || 'Player'} - ${game?.name || 'Draft'} Deck`
 
 const basicLandText = (lands: BoardLands, preLineBreak = true) => {

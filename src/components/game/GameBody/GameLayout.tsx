@@ -2,8 +2,6 @@ import type { MouseEventHandler } from 'react'
 import type { Game } from '@prisma/client'
 import type { GameProps, PartialGame, PickCard, PlayerFull, SwapCard } from 'types/game'
 import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
-import Overlay from 'components/base/common/Overlay'
-import Spinner from 'components/base/common/Spinner'
 import CardContainer from "../CardContainer/CardContainer"
 import CardToolbar from '../CardToolbar/CardToolbar'
 import { PickCardButton, RoundButton, GameLayoutWrapper, TimerStyle } from './GameLayoutStyles'
@@ -16,21 +14,23 @@ type Props = {
   game: Game | PartialGame,
   player: PlayerFull,
   pack?: GameProps['packs'][number],
+  playerTimer?: number,
   pickCard: PickCard,
   swapCard: SwapCard,
   clickRoundBtn?: () => void,
   onLandClick?: MouseEventHandler,
   clickReload?: () => void,
+  onPackLoad?: () => void,
   loadingPack: boolean,
   notify: AlertsReturn['newToast'],
 }
 
-export default function GameLayout({ game, player, pack, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, loadingPack, notify }: Props) {
+export default function GameLayout({ game, player, pack, playerTimer, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, onPackLoad, loadingPack, notify }: Props) {
 
   const {
     autopickCard, selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
-    cardOptions, setCardOptions, selectedTab, selectTab, hidePack, timer
-  } = usePickController(pickCard, swapCard, notify, pack, game, player)
+    cardOptions, setCardOptions, selectedTab, selectTab, hidePack, timer, packLoading, handleCardLoad
+  } = usePickController(pickCard, swapCard, notify, pack, game, player, playerTimer, onPackLoad)
   
   if (!('round' in game) || game.round < 1 || !player) return (
     <GameLayoutWrapper>
@@ -47,15 +47,14 @@ export default function GameLayout({ game, player, pack, clickRoundBtn, onLandCl
 
       {selectedTab === 'pack' ?
         <CardContainer
-          label="pack" cardOptions={cardOptions} loading={loadingPack}
+          label="pack" cardOptions={cardOptions} loading={loadingPack ? -1 : packLoading || undefined}
           cards={pack?.cards} selectedId={selectedCard} highlightId={autopickCard}
-          onClick={clickPackCard} onBgdClick={deselectCard}
+          onClick={clickPackCard} onBgdClick={deselectCard} onCardLoad={handleCardLoad}
         >
           { clickRoundBtn ?
             <RoundButton onClick={clickRoundBtn} label={getGameStatus(game)} /> :
-            <PickCardButton disabled={loadingPack || !pack || !pack.cards.length || !selectedCard} onClick={clickPickButton} />}
-
-          { loadingPack && <Overlay className="absolute z-40"><Spinner /></Overlay> }
+            <PickCardButton disabled={loadingPack || !!packLoading || !pack || !pack.cards.length || !selectedCard} onClick={clickPickButton} />
+          }
         </CardContainer>
         :
         <CardContainer

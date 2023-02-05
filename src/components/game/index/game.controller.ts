@@ -1,4 +1,4 @@
-import type { Player, ServerProps, ServerSuccess } from 'types/game'
+import type { PlayerFull, ServerProps, ServerSuccess } from 'types/game'
 import type { LocalController } from './services/local.controller'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
@@ -68,7 +68,7 @@ export default function useGameController(props: ServerProps) {
 
     landModal, hostModal, logModal, saveDeck,
     toggleLandModal, toggleHostModal, toggleLogModal,
-    dropPlayer: enableDropping && local.player ? () => setStatus((local.player as Player).id, 'leave') : undefined,
+    dropPlayer: enableDropping && local.player ? () => setStatus((local.player as PlayerFull).id, 'leave') : undefined,
     reload: local.game?.url ? local.reload : undefined,
   }
 }

@@ -20,7 +20,8 @@ export type CardFull = Card & { otherFaces: Array<{ card: Card }> }
 export type GameCardFull = GameCard & { card: CardFull }
 
 export type PackFull = Pack & { cards: GameCardFull[] }
-export type PlayerFull = Player & { cards: GameCardFull[], basics: BasicLands }
+export type PlayerFullTimer = Player & { cards: GameCardFull[], basics: BasicLands }
+export type PlayerFull = Omit<PlayerFullTimer, 'timer'>
 
 
 // -- USER OPTIONS -- \\
@@ -54,7 +55,7 @@ export interface ServerSuccess {
   options: Game,
   players: BasicPlayer[],
   packs: PackFull[],
-  player: PlayerFull | null,
+  player: PlayerFullTimer | null,
   sessionId: string,
   now: number,
   error?: never,

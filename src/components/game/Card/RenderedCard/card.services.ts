@@ -7,7 +7,8 @@ import { cardLayoutText } from "assets/strings"
 
 export const getArtBoxText = (layout: Card['layout'], sideCount: number): string | false | null => 
   layout && (cardLayoutText[layout] || 
-  (!!sideCount && `${sideCount > 2 ? `${sideCount}-way ` : ''}${titleCase(layout)}`))
+    (sideCount > 1 && `${sideCount > 2 ? `${sideCount}-way ` : ''}${titleCase(layout)}`)
+  )
 
 
 // Special codes { 'BRACE CODE': 'mana.css code'  }

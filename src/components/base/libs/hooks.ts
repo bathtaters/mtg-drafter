@@ -28,6 +28,66 @@ export function useTimer(endTime?: number|null, onEnd = () => {}, tickMs = 1000)
 }
 
 
+export function useTimerStore(initTimer?: number | null, initOffset?: number | null) {
+  const [ timer, setTimer ] = useState<number>()
+  
+  const timerStore = useRef<number | undefined | 'standby'>(initTimer == null || initOffset == null ? undefined : initTimer - initOffset)
+  // null = nothing in storage, standby = run upon receiving value, # = stored timer value
+
+  const resetTimer = useCallback(() => setTimer(timerStore.current = undefined), [])
+
+  const startTimer = useCallback(() => {
+    // Place in standby mode
+    if (typeof timerStore.current !== 'number') {
+      timerStore.current = 'standby'
+
+    // Start timer
+    } else {
+      setTimer(timerStore.current + Date.now())
+      timerStore.current = undefined
+    }
+  }, [])
+
+
+  const storeTimer = useCallback((timer?: number | null, offset?: number | null) => {
+    if (timer == null || offset == null) return resetTimer()
+
+    // Store value & disable timer
+    if (timerStore.current !== 'standby' && timer > offset) {
+      timerStore.current = timer - offset
+      setTimer(undefined)
+
+    // Start timer
+    } else {
+      setTimer(timer - offset + Date.now())
+      timerStore.current = undefined
+    }
+  }, [])
+
+  return { timer, startTimer, resetTimer, storeTimer }
+}
+
+
+export function useLoadElements(onLoadAll?: () => void, elementCount?: number, skip = false, depends: any[] = []) {
+  const [ loadCount, setLoadCount ] = useState(elementCount)
+
+  
+  const handleElementLoad = useCallback(() => setLoadCount((loadCount) => {
+    loadCount === 1 && onLoadAll && onLoadAll()
+    return loadCount ? loadCount - 1 : loadCount
+  }), [onLoadAll, ...depends])
+
+  useEffect(() => {
+    if (typeof elementCount !== 'number') return setLoadCount(undefined)
+
+    const remainingCount = skip ? 0 : elementCount
+    setLoadCount(remainingCount)
+  }, [elementCount, ...depends])
+
+  return [ loadCount, handleElementLoad ] as [ number | undefined, () => void ]
+}
+
+
 export enum HoverAction { Leave = 0, Enter = 1, Click = 2, FirstClick = 3 }
 
 export function useHoverClick<Key extends number|string = string>(handleAction: (action: HoverAction, key?: Key) => void): (key?: Key) => MouseEventHandler {

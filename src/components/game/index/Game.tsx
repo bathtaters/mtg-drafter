@@ -18,9 +18,9 @@ import { gameIsEnded } from '../shared/game.utils'
 export default function Game(props: ServerProps) {
   const {
     game, player, players, playerIdx, isConnected, loadingPack, loadingAll,
-    holding, isReady, pack, landModal, hostModal, logModal, slots, gameLog,
+    holding, isReady, pack, landModal, hostModal, logModal, slots, gameLog, timer,
     saveDeck, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setTitle,
-    nextRound, pickCard, swapCard, setLands, setStatus, dropPlayer, reload,
+    nextRound, pickCard, swapCard, setLands, setStatus, dropPlayer, reload, startTimer,
     newError, newToast, ErrorComponent, ToastComponent,
   } = useGameController(props)
 
@@ -39,11 +39,12 @@ export default function Game(props: ServerProps) {
 
           <GameLayout
             game={game as Game|PartialGame}
-            player={player}
+            player={player} playerTimer={timer}
             pack={pack} pickCard={pickCard} swapCard={swapCard}
             clickRoundBtn={isReady ? () => nextRound() : undefined}
             onLandClick={toggleLandModal}
             clickReload={reload}
+            onPackLoad={startTimer}
             loadingPack={!!loadingPack}
             notify={newToast}
           />
