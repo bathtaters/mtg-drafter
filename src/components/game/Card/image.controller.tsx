@@ -4,8 +4,14 @@ import { useState, useEffect, useCallback, ReactNode, useMemo } from "react"
 import { showFlipButton, getNextFace, isReversible } from "./RenderedCard/card.services"
 import { HoverAction, useHoverClick } from "components/base/libs/hooks"
 import { layoutDirection } from "assets/constants"
+import { matchWidth } from "../CardToolbar/cardZoomLevels"
 
-export default function useCardImage(card: CardFull, showImages = true, onLoad?: () => Promise<void> | void) {
+const zoomLevelToWidth = (zoomClass: string) => {
+  const w = zoomClass.match(matchWidth)?.[1]
+  return w ? w + 'rem' : '100vw'
+}
+
+export default function useCardImage(card: CardFull, zoomClass: string, showImages = true, onLoad?: () => Promise<void> | void) {
   const cardFaces = useMemo(() => [card, ...card.otherFaces.map(({ card }) => card)], [card.uuid])
   const sideCount = cardFaces.length
 
@@ -34,10 +40,12 @@ export default function useCardImage(card: CardFull, showImages = true, onLoad?:
   useEffect(() => {
     setImages(cardFaces
       .filter(({ img }, idx) => img && (!idx || img !== card.img))
-      .map(({ uuid, img }, idx) => (
+      .map(({ uuid, img, name, faceName }, idx) => (
         <Image key={uuid} src={img as string}
-            sizes="100vw" fill priority={!idx} alt=""
-            onLoadingComplete={idx ? undefined : onLoad}
+          alt="" placeholder="empty" title={faceName || name}
+          sizes={zoomLevelToWidth(zoomClass)}
+          fill priority={!idx} 
+          onLoadingComplete={idx ? undefined : onLoad}
         />
       ))
     )
