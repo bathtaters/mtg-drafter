@@ -9,7 +9,6 @@ const ONE_YEAR = 365 * 24 * 60 * 60 * 1000
 
 const cookieOptions = Object.freeze({
   expires: new Date(Date.now() + ONE_YEAR),
-  sameSite: true,
   secure: process.env.NODE_ENV === 'production',
   path: '/',
 })
