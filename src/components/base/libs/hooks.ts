@@ -28,40 +28,43 @@ export function useTimer(endTime?: number|null, onEnd = () => {}, tickMs = 1000)
 }
 
 
+type TimerStore = 'standby' /* run upon reciving timer */ | 'active' /* timer is running */ | number /* stored value */ | undefined /* empty */
+
 export function useTimerStore(initTimer?: number | null, initOffset?: number | null) {
   const [ timer, setTimer ] = useState<number>()
   
-  const timerStore = useRef<number | undefined | 'standby'>(initTimer == null || initOffset == null ? undefined : initTimer - initOffset)
-  // null = nothing in storage, standby = run upon receiving value, # = stored timer value
+  const timerStore = useRef<TimerStore>(initTimer == null || initOffset == null ? undefined : initTimer - initOffset)
 
   const resetTimer = useCallback(() => setTimer(timerStore.current = undefined), [])
 
   const startTimer = useCallback(() => {
-    // Place in standby mode
-    if (typeof timerStore.current !== 'number') {
-      timerStore.current = 'standby'
-
     // Start timer
-    } else {
+    if (typeof timerStore.current === 'number') {
       setTimer(timerStore.current + Date.now())
-      timerStore.current = undefined
+      timerStore.current = 'active'
+      
+    // Place in standby mode
+    } else if (!timerStore.current) {
+      timerStore.current = 'standby'
     }
   }, [])
 
 
   const storeTimer = useCallback((timer?: number | null, offset?: number | null) => {
     if (timer == null || offset == null) return resetTimer()
-
-    // Store value & disable timer
-    if (timerStore.current !== 'standby' && timer > offset) {
-      timerStore.current = timer - offset
-      setTimer(undefined)
-
-    // Start timer
-    } else {
-      setTimer(timer - offset + Date.now())
-      timerStore.current = undefined
-    }
+    
+    setTimer((clock) => {
+      // Store value & disable timer
+      if (typeof timerStore.current !== 'string' && (clock == undefined || clock >= Date.now()) && timer > offset) {
+        timerStore.current = timer - offset
+        return undefined
+  
+      // Start/Update timer
+      } else {
+        timerStore.current = 'active'
+        return timer - offset + Date.now()
+      }
+    })
   }, [])
 
   return { timer, startTimer, resetTimer, storeTimer }
@@ -70,7 +73,6 @@ export function useTimerStore(initTimer?: number | null, initOffset?: number | n
 
 export function useLoadElements(onLoadAll?: () => void, elementCount?: number, skip = false, depends: any[] = []) {
   const [ loadCount, setLoadCount ] = useState(elementCount)
-
   
   const handleElementLoad = useCallback(() => setLoadCount((loadCount) => {
     loadCount === 1 && onLoadAll && onLoadAll()
@@ -79,9 +81,11 @@ export function useLoadElements(onLoadAll?: () => void, elementCount?: number, s
 
   useEffect(() => {
     if (typeof elementCount !== 'number') return setLoadCount(undefined)
+    
+    if (!skip) return setLoadCount(elementCount)
 
-    const remainingCount = skip ? 0 : elementCount
-    setLoadCount(remainingCount)
+    onLoadAll && onLoadAll()
+    setLoadCount(0)
   }, [elementCount, ...depends])
 
   return [ loadCount, handleElementLoad ] as [ number | undefined, () => void ]
