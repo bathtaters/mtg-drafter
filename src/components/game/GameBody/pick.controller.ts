@@ -20,7 +20,7 @@ export default function usePickController(
   const nextPickAllowed = useRef(0)
   const [ selectedTab,  selectTab       ] = useState<TabLabels>(hidePack ? 'main' : 'pack')
   const [ selectedCard, setSelectedCard ] = useState<GameCard['id']>()
-  const [ autopickCard, setAutopickCard ] = useState(pack && getAutopickCard(pack, player?.cards))
+  const [ autopickCard, setAutopickCard ] = useState<string>()
   const [ cardOptions,  setCardOptions  ] = useState<CardOptions>({ width: '', showArt: true, sort: undefined })
   
   const autoPick = useCallback(() => {

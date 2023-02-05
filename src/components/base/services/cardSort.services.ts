@@ -33,6 +33,9 @@ const tieBreak:   CardSorter = (a, b) => a.uuid.localeCompare(b.uuid)
 export const deckSort: CardSorter = (a, b) => colorSort(a,b) ||
   typeSort(a,b) || costSort(a,b) || nameSort(a,b) || tieBreak(a,b)
 
+export const pickSort: CardSorter = (a, b) => raritySort(a,b) ||
+  costSort(a,b) || typeSort(a,b) || nameSort(a,b) || colorSort(a,b) || tieBreak(a,b)
+
 export const packSort: { [key in SortKey]: CardSorter } = {
   none:   ()     => 0,
   rarity: (a, b) => raritySort(a,b) || deckSort(a,b),
