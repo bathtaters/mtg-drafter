@@ -1,5 +1,4 @@
-import type { CardSet } from "@prisma/client"
-import type { GameOptions } from "types/setup"
+import type { GameOptions, SetBasic } from "types/setup"
 import { Fragment } from "react"
 import RangeInput from "components/base/common/FormElements/RangeInput"
 import { FieldWrapper, InputWrapper, PlayersLabel, PackButton, PackButtonWrapper, PacksWrapper, PackSelector, TimerLabel } from "../styles/FormStyles" 
@@ -8,7 +7,7 @@ import { setupLimits } from "assets/constants"
 import { timerLabels } from "assets/strings"
 
 type Props = {
-  setList: CardSet[]
+  setList: SetBasic[]
   options: GameOptions,
   setPlayers: (value: string) => void,
   setTimer: (value: string) => void,

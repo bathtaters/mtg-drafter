@@ -19,6 +19,7 @@ export interface SetFull extends CardSet {
   sheets: { [name in BoosterSheet['name']]: BoosterSheetFull | undefined }
 }
 
+export type SetBasic = Pick<CardSet, "code"|"name"|"block"|"boosterType">
 
 // -- USER OPTIONS -- \\
 
@@ -42,7 +43,7 @@ export type GameOptions = {
 
 // -- API TYPES -- \\
 
-export type SetupProps = { setList: CardSet[] }
+export type SetupProps = { setList: SetBasic[] }
 
 export type UploadType = ListResponse | ErrResponse
 
