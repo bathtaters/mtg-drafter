@@ -7,12 +7,12 @@ import { getNextPlayerId } from '../../utils/game/game.utils'
 const basicPlayer /* Prisma.Game$playersArgs */ = { select: { id: true, name: true, sessionId: true, pick: true } }
 
 
-export function getGame(url: Game['url']) {
+export function getGame(url: Game['url'], includePacks = true) {
   return prisma.game.findUnique({
     where: { url },
     include: {
       players: basicPlayer,
-      packs: {
+      packs: includePacks && {
         orderBy: { index: 'asc' }, include: {
           cards: { 
             where: { playerId: null },
