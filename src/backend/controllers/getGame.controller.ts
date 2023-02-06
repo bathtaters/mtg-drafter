@@ -1,14 +1,21 @@
+import type { ParsedUrlQuery } from 'querystring'
 import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next'
-import type { ServerProps, ServerSuccess, PlayerFullTimer } from 'types/game'
+import type { ServerProps, ServerSuccess, PlayerFullTimer, ServerFail } from 'types/game'
 import { getGame } from '../services/game/game.services'
 import { getPlayer } from '../services/game/player.services'
 import { getCtxSessionId, getReqSessionId } from '../libs/auth'
 import validation from 'types/game.validation'
 import { unregGameAdapter } from 'backend/utils/game/game.utils'
 
-async function getGameProps(url: string, sessionId: string): Promise<ServerProps> {  
+const NOTFOUND = 'Unable to find game'
+
+async function getGameProps(query: ParsedUrlQuery, sessionId: string): Promise<ServerProps> {
+  let url: string;
+  try { url = validation.url.parse(query.url) }
+  catch(e) { return { error: NOTFOUND } } 
+
   const game = await getGame(url)
-  if (!game) return { error: 'Unable to find game' }
+  if (!game) return { error: NOTFOUND }
   
   const { players, packs, ...options } = game
   const now = Date.now()
@@ -19,17 +26,15 @@ async function getGameProps(url: string, sessionId: string): Promise<ServerProps
     { options, players, packs, player, sessionId, now }
 }
 
-export function serverSideHandler(ctx: GetServerSidePropsContext) {
-  const url = validation.url.parse(ctx.query.url)
-  return getGameProps(url, getCtxSessionId(ctx))
+export async function serverSideHandler(ctx: GetServerSidePropsContext) {
+  return getGameProps(ctx.query, getCtxSessionId(ctx))
 }
 
 export async function apiHandler(req: NextApiRequest, res: NextApiResponse<ServerSuccess>) {
-  const url = validation.url.parse(req.query.url)
-  const props = await getGameProps(url, getReqSessionId(req, res))
+  const props = await getGameProps(req.query, getReqSessionId(req, res))
   if (props.error) {
-    console.error('Error with game',url,'player',getReqSessionId(req,res),props.error)
-    return res.status(400).end()
+    console.error('Game API Error -- game:',req.query.url,', player:',getReqSessionId(req,res),'--',props.error)
+    return res.writeHead(props.error === NOTFOUND ? 404 : 400, props.error)
   }
 
   res.status(200).json(props as ServerSuccess)
