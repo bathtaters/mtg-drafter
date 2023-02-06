@@ -74,10 +74,10 @@ export function useTimerStore(initTimer?: number | null, initOffset?: number | n
 export function useLoadElements(onLoadAll?: () => void, elementCount?: number, skip = false, depends: any[] = []) {
   const [ loadCount, setLoadCount ] = useState(elementCount)
   
-  const handleElementLoad = useCallback(() => setLoadCount((loadCount) => {
+  const handleElementLoad = useCallback(() => {
+    setLoadCount((loadCount) => loadCount ? loadCount - 1 : loadCount)
     loadCount === 1 && onLoadAll && onLoadAll()
-    return loadCount ? loadCount - 1 : loadCount
-  }), [onLoadAll, ...depends])
+  }, [onLoadAll, loadCount, ...depends])
 
   useEffect(() => {
     if (typeof elementCount !== 'number') return setLoadCount(undefined)
