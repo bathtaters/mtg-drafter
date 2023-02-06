@@ -29,6 +29,7 @@ export const
   defaultTimer: TimerOptions = { secPerCard: 3.3, secOffset: -8, roundTo: 5, minSec: 5 },
   timerOptions: Array<Partial<TimerOptions> | null> = [
     null,
+    { secPerCard: 1, minSec: 24 * 60 * 60 }, // Daily: 24 hours
     { secPerCard: 6.6, minSec: 10 }, // Casual: 90 sec / 15 cards
     { secPerCard: 5.0, minSec: 10 }, // Slow: 60 sec / 15 cards
     {}, // Normal (Official rules): 40 sec / 15 cards
@@ -43,14 +44,14 @@ export const
   setupLimits = {
     name:     { minLength: 1, maxLength: 22 },
     players:  { min: 1, max: 12 },
-    timer:    { min: 0, max: 5  },
+    timer:    { min: 0, max: timerOptions.length - 1 },
     packs:    { min: 1, max: 5  },
     packSize: { min: 1, max: 20 },
     setCode:  { min: 3, max: 4  },
     cubeSize: { max: 720 * 4    },
   }, 
 
-  setupDefaults: GameOptions = { type: "Cube", name: "", players: "8", timer: "3", packs: "3", packSize: "15", packList: ["KLD","KLD","AER"] },
+  setupDefaults: GameOptions = { type: "Cube", name: "", players: "8", timer: "4", packs: "3", packSize: "15", packList: ["KLD","KLD","AER"] },
 
   fileSettings = { id: "cubeFile", type: "text/plain", maxSize: 10 * 1024 * 1024 /* = 10 MB */, },
 

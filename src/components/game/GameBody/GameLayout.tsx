@@ -63,7 +63,7 @@ export default function GameLayout({ game, player, pack, playerTimer, clickRound
           onClick={clickBoardCard(selectedTab)} onLandClick={onLandClick} />
       }
 
-      { typeof timer === 'number' &&  <TimerStyle value={timer} /> }
+      { typeof timer === 'number' &&  <TimerStyle seconds={timer} /> }
     </GameLayoutWrapper>
   )
 }

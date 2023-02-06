@@ -37,7 +37,7 @@ export const sharingMessage: { [key: string]: ToastAlert} = {
 
 export const maxSizeError = (size: number, maxSize: number) => `File exceeds ${formatBytes(maxSize)} limit (${formatBytes(size)})`
 
-export const timerLabels = ['Off', 'Casual', 'Slower', 'Normal', 'Faster', 'Speed']
+export const timerLabels = ['Off', '24hr', 'Casual', 'Slower', 'Normal', 'Faster', 'Speed']
 
 // Text to display on rendered card, key is card layout (auto displays <Layout> if card has multiple faces)
 export const cardLayoutText: {[layout in CardLayout]?: string} = {

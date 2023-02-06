@@ -1,8 +1,8 @@
-import type { ReactNode, MouseEventHandler, HTMLAttributes } from "react"
 import type { GameStatus, TabLabels } from "@prisma/client"
+import { ReactNode, MouseEventHandler, CSSProperties, Fragment } from "react"
 import PackIcon from "components/svgs/PackIcon"
 import DeckIcon from "components/svgs/DeckIcon"
-import { titleCase } from "components/base/services/common.services"
+import { formatTime, titleCase } from "components/base/services/common.services"
 import { hostButtonLabel } from "assets/strings"
 import { redTimerSeconds } from "assets/constants"
 import TimerIcon from "components/svgs/TimerIcon"
@@ -35,14 +35,17 @@ export const TabStyle = (
   </div>
 )
 
-export const TimerStyle = ({ value = 0 }: { value?: number }) => (
+export const TimerStyle = ({ seconds = 0 }: { seconds?: number }) => (
   <div className={`fixed bottom-4 right-4 z-50 flex flex-col items-center p-2 rounded-box ${
-    typeof value === 'number' && value < redTimerSeconds ? 'bg-error text-error-content' : 'bg-secondary text-secondary-content'
+    typeof seconds === 'number' && seconds < redTimerSeconds ? 'bg-error text-error-content' : 'bg-secondary text-secondary-content'
   } text-xs md:text-base opacity-80`}>
     <TimerIcon className="w-5 fill-current" />
     
-    <span className="countdown font-mono text-4xl md:text-6xl">
-      <span style={{"--value":value} as HTMLAttributes<HTMLSpanElement>['style']} />
+    <span className="countdown font-mono text-3xl md:text-5xl">
+      { formatTime(seconds).map((value, idx) => (
+        typeof value !== 'number' ? <Fragment key={`${idx}${value}`}>{value}</Fragment> :
+          <span key={`${idx}num`} style={{"--value":value} as CSSProperties} />
+      )) }
     </span>
   </div>
 )

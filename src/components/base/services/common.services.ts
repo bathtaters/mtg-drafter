@@ -11,6 +11,13 @@ export const formatBytes = (bytes: number, decimals = 2) => {
   return `${parseFloat((bytes/Math.pow(1024,d)).toFixed(c))} ${["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"][d]}`
 }
 
+export const formatTime = (seconds: number) => {
+  if (seconds < 60) return [ seconds ]
+  if (seconds < 3600) return [ Math.floor(seconds / 60), ':', seconds % 60 ]
+  if (seconds < 86400) return [ Math.floor(seconds / 3600), ':', Math.floor(seconds / 60) % 60 ]
+  return [ (seconds / 86400).toFixed(1), 'd' ]
+}
+
 
 export const updateArrayIdx = <T>(array: T[], find: ((entry: T, idx: number) => boolean) | number, newVal: ((entry: T, idx: number) => T)) => {
   const idx = typeof find === 'number' ? find : array.findIndex(find)
