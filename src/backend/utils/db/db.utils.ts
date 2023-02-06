@@ -62,6 +62,32 @@ export function createMultiUpdate<T extends Obj>(tableName: Prisma.ModelName, wh
     (updateObj: T[], prisma: PrismaClient) => prisma.$executeRawUnsafe(cmd(updateObj), ...args(updateObj)).catch(catchSql)
 }
 
+
+export function createMultiUpsert<T extends Obj>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>): (updateObj: T[], prisma: PrismaClient) => PrismaPromise<number>
+export function createMultiUpsert<T extends Obj>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>, prisma: PrismaClient): (updateObj: T[]) => PrismaPromise<number>
+export function createMultiUpsert<T extends Obj>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>, prisma?: PrismaClient) {
+  checkInjection([tableName, ...updateKeys], tableName)
+
+  const table  = addQuotes.test(tableName) ? `"${tableName}"` : tableName,
+    updates = updateKeys.map((updateKey) => addQuotes.test(updateKey) ? `"${updateKey}"` : updateKey)
+    
+  const cmd = (updateObj: T[]) => `UPSERT INTO ${table} (${updates.join(', ')}) VALUES ${
+    updateObj.map((obj, i) => 
+      `(${updates.map((_, j) =>
+          obj[updateKeys[j]] == null ? 'NULL' : `$${1 + j + i * updates.length}`
+        ).join(', ')})`
+    ).join(', ')
+  }`
+
+  const args = (updateObj: T[]) => updateObj.flatMap(
+    (obj) => updateKeys.map((key) => obj[key] == null ? 'NULL' : obj[key])
+  )
+
+  return prisma ? (updateObj: T[]) => prisma.$executeRawUnsafe(cmd(updateObj), ...args(updateObj)).catch(catchSql) :
+    (updateObj: T[], prisma: PrismaClient) => prisma.$executeRawUnsafe(cmd(updateObj), ...args(updateObj)).catch(catchSql)
+}
+
+
 // FILL IN VALS TO TEXT (For debug output)
 // const sql = (text: string, vals: any[]) => {
 //   for (let i=vals.length; i > 0; i--) { text = text.replaceAll(`$${i}`, JSON.stringify(vals[i-1])) }

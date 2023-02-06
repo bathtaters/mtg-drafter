@@ -144,6 +144,7 @@ model Game {
 }
 
 model Card {
+  // NOTE: IF YOU CHANGE THIS, UPDATE backend/card.utils:cardFields
   uuid        String @id
   name        String
   normalName  String?

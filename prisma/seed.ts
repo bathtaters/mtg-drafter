@@ -5,11 +5,12 @@ import updateSets from '../src/backend/services/db/updateSets'
 import { cardDbUrl, imageDbUrl, preferredDbUrl, setsDbUrl } from '../src/assets/urls'
 
 const CONSOLE_LOGGING = true
+const FULL_REBUILD = false
 
 async function main() {
-  await updateCards(cardDbUrl, false, CONSOLE_LOGGING)
-  await updateImages(imageDbUrl, preferredDbUrl, false, CONSOLE_LOGGING)
-  await updateSets(setsDbUrl, false, CONSOLE_LOGGING)
+  await updateCards(cardDbUrl, FULL_REBUILD, CONSOLE_LOGGING)
+  await updateImages(imageDbUrl, preferredDbUrl, FULL_REBUILD, CONSOLE_LOGGING)
+  await updateSets(setsDbUrl, FULL_REBUILD, CONSOLE_LOGGING)
   console.log('DONE')
 }
 
