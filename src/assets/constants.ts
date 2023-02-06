@@ -86,3 +86,5 @@ export const clientErrorsInConsole = true
 export const enableDropping = true
 
 export const logSheetNames = false
+
+export const serverSideImageOptimize = false

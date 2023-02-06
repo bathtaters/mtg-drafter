@@ -3,7 +3,7 @@ import Image from "next/image"
 import { useState, useEffect, useCallback, ReactNode, useMemo } from "react"
 import { showFlipButton, getNextFace, isReversible } from "./RenderedCard/card.services"
 import { HoverAction, useHoverClick } from "components/base/libs/hooks"
-import { layoutDirection } from "assets/constants"
+import { layoutDirection, serverSideImageOptimize } from "assets/constants"
 import { matchWidth } from "../CardToolbar/cardZoomLevels"
 
 const zoomLevelToWidth = (zoomClass: string) => {
@@ -46,7 +46,7 @@ export default function useCardImage(card: CardFull, zoomClass: string, showImag
         <Image key={uuid} src={img as string}
           alt="" placeholder="empty" title={faceName || name}
           sizes={zoomLevelToWidth(zoomClass)}
-          fill priority={!idx} 
+          fill priority={!idx} unoptimized={!serverSideImageOptimize}
           onLoadingComplete={idx ? undefined : onLoad}
         />
       ))
