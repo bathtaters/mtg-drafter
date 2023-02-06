@@ -11,7 +11,7 @@ export type BasicLands = { [board in Board]: BoardLands } & { pack: never }
 
 // -- RELATED/PARTIAL TYPES -- \\
 
-export interface Player extends DbPlayer { timer: number | null }
+export interface Player extends DbPlayer { timer: number | null, basics: BasicLands }
 export type BasicPlayer = Pick<Player, "id"|"name"|"sessionId"|"pick">
 
 export type PartialGame = Pick<Game,"id"|"name"|"url">

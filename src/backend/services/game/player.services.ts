@@ -27,10 +27,7 @@ export async function getPlayer(sessionId: Player['sessionId'], playerList: Basi
 
 
 export async function setStatus(id: Player['id'], sessionId: Player['sessionId'] = null, byHost: boolean = false) {
-  const player = await retry(() => prisma.player.update({
-    where: { id }, data: { sessionId },
-    include: { cards: !!sessionId && fullPlayer.cards }
-  }))
+  const player = await retry(() => prisma.player.update({ where: { id }, data: { sessionId } }))
 
   await retry(() => prisma.logEntry.create({ data: {
     gameId: player.gameId,

@@ -1,5 +1,5 @@
 import type { Game, Player as DbPlayer } from '@prisma/client'
-import type { BasicPlayer, Player } from 'types/game'
+import type { BasicLands, BasicPlayer, Player } from 'types/game'
 import { gameUrlRegEx } from 'assets/urls'
 import { getNeighborIdx } from 'components/game/shared/game.utils'
 import { defaultTimer, setupDefaults, timerOptions } from 'assets/constants'
@@ -7,7 +7,7 @@ import { defaultTimer, setupDefaults, timerOptions } from 'assets/constants'
 export const adaptDbPlayer = <P extends DbPlayer>(player?: P | null) => player ? ({
   ...player,
   timer: typeof player.timer === 'bigint' ? Number(player.timer) : player.timer
-}) : null
+}) as P & { timer: number | null, basics: BasicLands } : null
 
 export const parseGameURL = (url: string) => (url.match(gameUrlRegEx) || [])[1]
 

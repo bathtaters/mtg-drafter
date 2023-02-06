@@ -82,6 +82,7 @@ export function useGameEmitters(local: LocalController, { emit, reconnect }: Ret
     if (!local.player?.id) return throwError(formatError('Error renaming player: Player not loaded'))
 
     name && local.renamePlayer(playerId || local.player.id, name)
+    
     emit('setName', playerId || local.player.id, name, byHost)
   }, [emit, local.player?.id, local.renamePlayer])
 
@@ -90,6 +91,7 @@ export function useGameEmitters(local: LocalController, { emit, reconnect }: Ret
     if (!local.game) return throwError(formatError('Error renaming game: Game not loaded'))
 
     title && local.updateGame((game) => game && ({ ...game, name: title }))
+
     emit('setTitle', local.game.id, title)
   }, [emit, local.game?.id, local.updateGame])
 
@@ -98,6 +100,7 @@ export function useGameEmitters(local: LocalController, { emit, reconnect }: Ret
     if (!local.game || !('round' in local.game)) return throwError(formatError('Error fetching next round: Game not loaded'))
 
     local.setLoadingPack((v) => v + 1)
+
     emit('nextRound', local.game.id, local.game.round + 1)
   }, [emit, (local.game as Game)?.round])
 
@@ -106,6 +109,7 @@ export function useGameEmitters(local: LocalController, { emit, reconnect }: Ret
     if (!local.player?.id) return throwError(formatError('Error picking card: Not connected to server'))
     
     local.setLoadingPack((v) => v + 1)
+
     emit('pickCard', local.player.id, gameCardId, (pick?: number) => {
       if (typeof pick !== 'number') throwError(formatError('Error picking: Failed to pick card'))
       return reloadData(local, throwError, typeof pick !== 'number' ? reconnect : undefined).finally(() => local.setLoadingPack((v) => v && v - 1))
@@ -115,6 +119,7 @@ export function useGameEmitters(local: LocalController, { emit, reconnect }: Ret
 
   const swapCard: Socket.SwapCard = useCallback((cardId, board) => {
     local.swapCard(cardId, board)
+
     emit('swapBoards', cardId, board, (cardId, board) => {
       if (!cardId) return reloadData(local, throwError, reconnect)
       local.swapCard(cardId, board)
@@ -135,10 +140,14 @@ export function useGameEmitters(local: LocalController, { emit, reconnect }: Ret
 
   const setStatus: Socket.SetStatus = useCallback((playerId, status = 'join', byHost = false) => {
     local.setLoadingAll((v) => v + 1)
-    emit('setStatus', playerId, status, byHost, (player?: Player | PlayerFull) => {
+
+    emit('setStatus', playerId, status, byHost, (player?: Player) => {
       reloadData(local, throwError).finally(() => local.setLoadingAll((v) => v && v - 1))
-      if (player?.id && player.sessionId && local.sessionId === player.sessionId && 'cards' in player) local.updatePlayer(player)
-      if (player) local.setStatus(player.id, player.sessionId || null)
+      if (!player) return
+
+      if (local.sessionId === player.sessionId)
+        local.updatePlayer((p) => ({ ...(p || { cards: [] }), ...player }))
+      local.setStatus(player.id, player.sessionId || null)
     })
   }, [emit, local.game?.id, local.sessionId, local.setStatus])
 
