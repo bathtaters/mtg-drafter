@@ -12,6 +12,7 @@ const zoomLevelToWidth = (zoomClass: string) => {
 }
 
 export default function useCardImage(card: CardFull, zoomClass: string, showImages = true, onLoad?: () => Promise<void> | void) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const cardFaces = useMemo(() => [card, ...card.otherFaces.map(({ card }) => card)], [card.uuid])
   const sideCount = cardFaces.length
 
@@ -20,6 +21,7 @@ export default function useCardImage(card: CardFull, zoomClass: string, showImag
 
   const direction: Direction | undefined = sideIdx === 1 && sideCount === 2 ? layoutDirection[card.layout || 'normal'] : undefined
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSideChange = useCallback(
     sideCount < 3 ?
       // Normal action
@@ -49,6 +51,7 @@ export default function useCardImage(card: CardFull, zoomClass: string, showImag
         />
       ))
     )
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cardFaces])
 
   return {

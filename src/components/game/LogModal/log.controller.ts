@@ -9,7 +9,7 @@ import { logOptions } from "assets/constants"
 const DEBOUNCE_DELAY = 500
 
 export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) {
-  const allPlayers = useMemo(() => playerData.map(({ id }) => id).concat(otherPlayers), [playerData.length])
+  const allPlayers = useMemo(() => playerData.map(({ id }) => id).concat(otherPlayers), [playerData])
 
   const [ logs,    setLog     ] = useState<LogFull>()
   const [ error,   setError   ] = useState<string>()
@@ -17,6 +17,7 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
   const [ actions, setActions ] = useState(allActions)
   const [ options, setOptions ] = useState(logOptions)
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const refresh = useCallback(debounce(() => {
 
     fetcher<LogFull>(`/api/game/${url}/log`).then((data) => {

@@ -13,9 +13,11 @@ export const getPlayerColor = (curr: number, player: number, opp: number | undef
 
 export default function useGameHeader(game: GameProps['options'] | undefined, players: GameProps['players'], playerIdx: number, notify: AlertsReturn['newToast']) {
   const [ shareable, setShareable ] = useState(false)
-  useEffect(() => { setShareable(!!game && canShare()) }, [])
+  const gameExists = Boolean(game)
   
-  const oppIdx = useMemo(() => game ? getOppIdx(playerIdx, players.length) : -1, [playerIdx, players.length])
+  useEffect(() => { setShareable(gameExists && canShare()) }, [gameExists])
+  
+  const oppIdx = useMemo(() => gameExists ? getOppIdx(playerIdx, players.length) : -1, [gameExists, playerIdx, players.length])
 
   const handleShare = !game || !shareable ? undefined : () => browserShare(shareGame.message, shareGame.url(game.url), shareGame.title)
     .then((res) => res in sharingMessage ? notify(sharingMessage[res]) : undefined)

@@ -22,15 +22,31 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   
   const isHost = playerIsHost(player, game)
   const holding = getHolding(players, game)
-  const playerIdx = useMemo(() => getPlayerIdx(players, player), [player?.id, players.length])
   const isReady = isHost && canAdvance(game, players, holding)
+  const playerIdx = useMemo(() => getPlayerIdx(players, player), [player, players])
+
+  const updateLocal = useCallback((data: ServerProps) => {
+    if ('error' in data) throw new Error(`Cannot update data: ${data.error}`)
+
+    const newPack = getCurrentPack(data)
+    if (newPack?.cards.length) storeTimer(data.player?.timer, data.now)
+    else resetTimer()
+
+    updateGame(data.options)
+    updatePacks(data.packs || [])
+    updatePlayers(data.players)
+    updateSlots(getSlots(data.players))
+    updatePack(newPack)
+    updatePlayer(data.player || undefined)
+  }, [storeTimer, resetTimer])
+
 
   const nextRound: Local.NextRound = useCallback((round) => {
     updateGame((g) => g && ({ ...g, round }))
     updatePlayers((list) => list.map((p) => ({ ...p, pick: 1 })))
     updatePlayer((p) => p && ({ ...p, pick: 1 }))
     isHost && setLoadingPack((v) => v && v - 1)
-  }, [])
+  }, [isHost])
 
 
   const renamePlayer: Local.RenamePlayer = useCallback((playerId, name) => {
@@ -52,10 +68,10 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     }
     
     if (passingToId && player?.id === passingToId) updatePack((pack) => {
-      if (!pack) reloadData({ game, updateLocal }, throwError)
+      if (!pack) reloadData(game?.url, updateLocal, throwError)
       return pack
     })
-  }, [game?.id, player?.id])
+  }, [game?.url, player?.id, updateLocal, resetTimer, throwError])
 
 
   const swapCard: Local.SwapCard = useCallback((pickedCardId, board) => {
@@ -78,26 +94,12 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     updatePlayer((p) => p?.id !== playerId ? p : sessionId ? ({ ...p, sessionId }) : undefined)
     if (!sessionId) setLoadingAll((v) => v && v - 1)
   }, [])
-    
-  const updateLocal = useCallback((data: ServerProps) => {
-    if ('error' in data) throw new Error(`Cannot update data: ${data.error}`)
-
-    const newPack = getCurrentPack(data)
-    if (newPack?.cards.length) storeTimer(data.player?.timer, data.now)
-    else resetTimer()
-
-    updateGame(data.options)
-    updatePacks(data.packs || [])
-    updatePlayers(data.players)
-    updateSlots(getSlots(data.players))
-    updatePack(newPack)
-    updatePlayer(data.player || undefined)
-  }, [])
+  
 
   const reload = useCallback(() => {
     setLoadingAll((v) => v + 1)
-    reloadData({ game, updateLocal }, throwError).finally(() => setLoadingAll((v) => v && v - 1))
-  }, [game?.url, updateLocal])
+    reloadData(game?.url, updateLocal, throwError).finally(() => setLoadingAll((v) => v && v - 1))
+  }, [game?.url, updateLocal, throwError])
 
 
   return {

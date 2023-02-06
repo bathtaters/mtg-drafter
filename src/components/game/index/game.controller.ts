@@ -14,10 +14,15 @@ import { gameAPI, socketEndpoint } from 'assets/urls'
 import { enableDropping, refreshOnRefocusDelay } from 'assets/constants'
 
 
-export const reloadData = async ({ game, updateLocal }: Pick<LocalController, "game"|"updateLocal">, throwError: AlertsReturn['newError'], reconnect?: () => Promise<void>) => {
+export async function reloadData(
+  gameUrl: string | undefined,
+  updateLocal: LocalController["updateLocal"],
+  throwError: AlertsReturn['newError'],
+  reconnect?: () => Promise<void>
+) {
   try {
-    if (!game?.url) throw new Error('There is no game at this URL')
-    const res = await fetcher<ServerSuccess>(gameAPI(game?.url))
+    if (!gameUrl) throw new Error('There is no game at this URL')
+    const res = await fetcher<ServerSuccess>(gameAPI(gameUrl))
     if (typeof res === 'number') throw new Error(`Cannot update data: HTTP error ${res}`)
     updateLocal(res)
     if (reconnect) reconnect()
@@ -58,7 +63,10 @@ export default function useGameController(props: ServerProps) {
 
   const saveDeck = !local.player?.cards || !local.game ? undefined : () => { downloadDeck(local as Parameters<typeof downloadDeck>['0']) }
   
-  useFocusEffect((focus) => { focus && reloadData(local, newError, socket.reconnect) }, [local.game?.id, newError, socket.reconnect], refreshOnRefocusDelay)
+  useFocusEffect(
+    (focus) => { focus && reloadData(local.game?.url, local.updateLocal, newError, socket.reconnect) },
+    [local.game?.url, local.updateLocal, newError, socket.reconnect], refreshOnRefocusDelay
+  )
 
   return {
     ...local, gameLog,

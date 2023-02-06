@@ -42,7 +42,7 @@ export default function usePickController(
     pickCard(selectedCard)
     setSelectedCard(undefined)
     setAutopickCard(undefined)
-  }, [selectedCard, pack])
+  }, [selectedCard, pack, notify, pickCard])
 
 
   const clickPackCard = useCallback((id: GameCard['id'], ev: MouseEvent) => {
@@ -66,14 +66,15 @@ export default function usePickController(
 
   const [ packLoading, handleCardLoad ] = useLoadElements(onPackLoad, pack?.cards.length, !cardOptions.showArt, [pack?.index])
 
-  useEffect(() => { if (hidePack && selectedTab === 'pack') selectTab('main') }, [hidePack])
+  useEffect(() => { if (hidePack && selectedTab === 'pack') selectTab('main') }, [hidePack, selectedTab])
   
   useEffect(() => {
     if (typeof pack?.index === 'number') {
       selectTab('pack')
       setAutopickCard(getAutopickCard(pack, player?.cards))
     }
-  }, [pack, player?.id])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pack, player?.id, player?.cards.length])
 
   return {
     autopickCard: timer && timer < redTimerSeconds ? autopickCard : undefined,

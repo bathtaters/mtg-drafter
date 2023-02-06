@@ -65,7 +65,7 @@ export function useTimerStore(initTimer?: number | null, initOffset?: number | n
         return timer - offset + Date.now()
       }
     })
-  }, [])
+  }, [resetTimer])
 
   return { timer, startTimer, resetTimer, storeTimer }
 }
@@ -77,7 +77,7 @@ export function useLoadElements(onLoadAll?: () => void, elementCount?: number, s
   const handleElementLoad = useCallback(() => {
     setLoadCount((loadCount) => loadCount ? loadCount - 1 : loadCount)
     loadCount === 1 && onLoadAll && onLoadAll()
-  }, [onLoadAll, loadCount, ...depends])
+  }, [onLoadAll, loadCount])
 
   useEffect(() => {
     if (typeof elementCount !== 'number') return setLoadCount(undefined)
@@ -86,6 +86,7 @@ export function useLoadElements(onLoadAll?: () => void, elementCount?: number, s
 
     onLoadAll && onLoadAll()
     setLoadCount(0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [elementCount, ...depends])
 
   return [ loadCount, handleElementLoad ] as [ number | undefined, () => void ]
@@ -123,13 +124,14 @@ export function useHoverClick<Key extends number|string = string>(handleAction: 
 
 export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependencies?: DependencyList, minimumDelay: number = 0) {
   const timestamp = useRef(new Date().getTime())
-  const handleEvent = (isFocused: boolean) => {
-    const now = new Date().getTime()
-    if (now - timestamp.current >= minimumDelay) onFocus(isFocused)
-    timestamp.current = now
-  }
 
   useEffect(() => {
+    const handleEvent = (isFocused: boolean) => {
+      const now = new Date().getTime()
+      if (now - timestamp.current >= minimumDelay) onFocus(isFocused)
+      timestamp.current = now
+    }
+    
     const handleFocus = () => handleEvent(true)
     const handleBlur  = () => handleEvent(false)
 
@@ -139,6 +141,7 @@ export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependenci
       window.removeEventListener("focus", handleFocus)
       window.removeEventListener("blur",  handleBlur)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies)
 }
 

@@ -37,9 +37,9 @@ export default function useToolbar({ setCardOptions, notify }: ToolbarProps) {
     return () => window.removeEventListener('resize', updateMax)
   }, [zoom, setTempZoom])
 
-  useEffect(() => { setCardOptions((opt) => ({ ...opt, showArt: art })) }, [art])
-  useEffect(() => { setCardOptions((opt) => ({ ...opt, sort: sortKeys[sort] })) }, [sort])
-  useEffect(() => { setCardOptions((opt) => ({ ...opt, width: cardZoomLevels[zoom] })) }, [zoom])
+  useEffect(() => { setCardOptions((opt) => ({ ...opt, showArt: art })) }, [art, setCardOptions])
+  useEffect(() => { setCardOptions((opt) => ({ ...opt, sort: sortKeys[sort] })) }, [sort, setCardOptions])
+  useEffect(() => { setCardOptions((opt) => ({ ...opt, width: cardZoomLevels[zoom] })) }, [zoom, setCardOptions])
 
   return {
     art, sort, zoom,

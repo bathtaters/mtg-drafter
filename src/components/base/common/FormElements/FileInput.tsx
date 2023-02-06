@@ -7,7 +7,7 @@ import TextPad from "components/svgs/TextPad"
 type Props = { helperText?: string, fileMimeType?: string, setFile?: (file: File) => void }
 
 export default function FileInput({ helperText, setFile, fileMimeType }: Props) {
-  const dropCheck = useCallback<DropTester>((_, item: any) => item.items.length ? item.items[0].type === fileMimeType : null, [])
+  const dropCheck = useCallback<DropTester>((_, item: any) => item.items.length ? item.items[0].type === fileMimeType : null, [fileMimeType])
   const onDrop = useCallback<DropHandler>((item: any) => setFile && item.files?.[0] && setFile(item.files[0]), [setFile])
 
   const fileChangeHandler = !setFile ? undefined :

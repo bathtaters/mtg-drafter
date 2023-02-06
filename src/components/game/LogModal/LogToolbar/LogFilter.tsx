@@ -20,7 +20,7 @@ export default function LogFilter<ID extends Key = string>({ label, buttons, bas
     (val: boolean) => setSelected((list) =>
       val ? (list || []).concat(id) : (list || baseList).filter((i) => i !== id)
     ),
-  [setSelected])
+  [baseList, setSelected])
 
   return (
     <FilterWrapper label={label}>

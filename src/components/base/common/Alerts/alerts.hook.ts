@@ -6,16 +6,17 @@ import { showInConsole, toastDefaults } from "./alert.constants"
 
 const withId = <T extends { id?: string }>(obj: T) => ({ id: nanoid(), ...obj })
 
+const toastAdapter: AlertAdapter<ToastAlert> = (alert, pop) => {
+  alert = withId(alert)
+  const delay = alert.hideDelay ?? toastDefaults.hideDelay
+  delay >= 0 && setTimeout(() => pop(alert.id), delay * 1000)
+  return alert
+}
 
 export default function useAlerts(initialAlert: { error?: ErrorAlert[], toast?: ToastAlert[] } = {}) {
 
   const [ errorList, updateErrors ] = useGenericAlert(initialAlert.error)
-  const [ toastList, updateToasts ] = useGenericAlert(initialAlert.toast, (alert) => {
-    alert = withId(alert)
-    const delay = alert.hideDelay ?? toastDefaults.hideDelay
-    delay >= 0 && setTimeout(() => updateToasts.pop(alert.id), delay * 1000)
-    return alert
-  })
+  const [ toastList, updateToasts ] = useGenericAlert(initialAlert.toast, toastAdapter)
 
   return {
     ErrorComponent: () => errorList[0] && ErrorModal({ alert: errorList[0], closeModal: updateErrors.pop }),
@@ -31,18 +32,9 @@ export default function useAlerts(initialAlert: { error?: ErrorAlert[], toast?: 
 export type AlertsReturn = ReturnType<typeof useAlerts>
 
 
-function useGenericAlert<Alert extends GenericAlert>(initialAlert: Alert[] = [], adapter: (alert: Alert) => Alert = withId) {
+function useGenericAlert<Alert extends GenericAlert>(initialAlert: Alert[] = [], adapter: AlertAdapter<Alert> = withId) {
   
-  const [ list, updateList ] = useState<Alert[]>(initialAlert.map(adapter))
-
-
-  const push = useCallback((alert: Alert) => {
-    const apdapted = adapter(alert)
-    updateList((list) => list.concat(apdapted))
-    alert.theme && showInConsole[alert.theme] && console[showInConsole[alert.theme] as 'log'](alert.message)
-    return apdapted.id
-  }, [])
-
+  const [ list, updateList ] = useState<Alert[]>(initialAlert)
 
   const pop = useCallback((withId?: string) => {
 
@@ -53,5 +45,14 @@ function useGenericAlert<Alert extends GenericAlert>(initialAlert: Alert[] = [],
 
   }, [])
 
+  const push = useCallback((alert: Alert) => {
+    const apdapted = adapter(alert, pop)
+    updateList((list) => list.concat(apdapted))
+    alert.theme && showInConsole[alert.theme] && console[showInConsole[alert.theme] as 'log'](alert.message)
+    return apdapted.id
+  }, [adapter, pop])
+
   return [ list, { push, pop } ] as const
 }
+
+type AlertAdapter<Alert extends GenericAlert> = (alert: Alert, pop: (withId?: string) => void) => Alert

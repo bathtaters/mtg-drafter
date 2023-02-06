@@ -35,7 +35,7 @@ export default function useSocket<S extends Socket = Socket>(
         await new Promise((res) => setTimeout(res, Math.random() * 100)) // avoid overloading server after crash
       }
     }
-  }, [debugSockets])
+  }, [path])
 
 
   const disconnectFromSocket = useCallback(() => {
@@ -66,7 +66,8 @@ export default function useSocket<S extends Socket = Socket>(
 
     destructor.current = onConnect(socket.current)
     updateIsConnected()
-  }, dependencies)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...dependencies, endpoint, path, disconnectFromSocket, updateIsConnected])
 
 
   const emitOrQueue = useCallback((...args: Parameters<S['emit']>) => {

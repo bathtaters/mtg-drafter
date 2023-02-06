@@ -31,12 +31,12 @@ type SetValue<T> = (value: T) => void
 export function useLocalStorage<T = typeof storageDefaults[LocalKeys]>(key: LocalKeys): [ T, SetValue<T>, SetValue<T> ] {
   const [ state, setState ] = useState<T>(storageDefaults[key] as T)
 
-  useEffect(() => { if (typeof window !== 'undefined') setState(getLocalVar<T>(key)) }, [])
+  useEffect(() => { if (typeof window !== 'undefined') setState(getLocalVar<T>(key)) }, [key])
   
   const updateValue = useCallback((value: T) => {
     setState(value)
     setLocalVar(key, value)
-  }, [])
+  }, [key])
   
   return [ state, updateValue, setState ]
 }

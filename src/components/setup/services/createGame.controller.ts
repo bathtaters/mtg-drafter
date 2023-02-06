@@ -26,7 +26,7 @@ export default function useCreateGame() {
       .catch((err) => setError(err?.message || err))
       .finally(() =>  setLoading(false))
 
-  }, [setLoading, setError])
+  }, [router, setLoading, setError])
 
 
   return { createGame, loading, error }
