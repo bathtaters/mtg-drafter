@@ -14,6 +14,8 @@ export const containerIcon: Record<TabLabels, ReactNode> = {
 }
 
 
+export const GameBodyHeader = ({ children }: { children?: ReactNode }) => <div className="relative w-full max-w-6xl m-auto">{children}</div>
+
 export const TabsWrapper = ({ children }: { children: ReactNode }) => <div className="tabs tabs-boxed justify-center gap-2 mb-6 bg-transparent">{children}</div>
 
 
@@ -69,6 +71,6 @@ export const RoundButton = ({ label, onClick }: { onClick: MouseEventHandler, la
 )
 
 
-export const GameLayoutWrapper = ({ children }: { children: ReactNode }) => (
+export const GameBodyWrapper = ({ children }: { children: ReactNode }) => (
   <div className="flex flex-col text-center relative">{children}</div>
 )

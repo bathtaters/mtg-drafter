@@ -4,7 +4,7 @@ import type { GameProps, PartialGame, PickCard, PlayerFull, SwapCard } from 'typ
 import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 import CardContainer from "../CardContainer/CardContainer"
 import CardToolbar from '../CardToolbar/CardToolbar'
-import { PickCardButton, RoundButton, GameLayoutWrapper, TimerStyle } from './GameBodyStyles'
+import { PickCardButton, RoundButton, GameBodyWrapper, GameBodyHeader, TimerStyle } from './GameBodyStyles'
 import { EmptyStyle } from 'components/base/styles/AppStyles'
 import usePickController from "./pick.controller"
 import ContainerTabs from './ContainerTabs'
@@ -33,17 +33,19 @@ export default function GameLayout({ game, player, pack, playerTimer, clickRound
   } = usePickController(pickCard, swapCard, notify, pack, game, player, playerTimer, onPackLoad)
   
   if (!('round' in game) || game.round < 1 || !player) return (
-    <GameLayoutWrapper>
+    <GameBodyWrapper>
       { clickRoundBtn && <RoundButton onClick={clickRoundBtn} label="start" /> }
       <EmptyStyle>{'round' in game ? "Waiting for draft to start." : "Loading game..."}</EmptyStyle>
-    </GameLayoutWrapper>
+    </GameBodyWrapper>
   )
 
   return (
-    <GameLayoutWrapper>
-      <ContainerTabs pack={pack?.cards} player={player} selectedTab={selectedTab} selectTab={selectTab} hidePack={hidePack} />
+    <GameBodyWrapper>
+      <GameBodyHeader>
+        <ContainerTabs pack={pack?.cards} player={player} selectedTab={selectedTab} selectTab={selectTab} hidePack={hidePack} />
 
-      <CardToolbar setCardOptions={setCardOptions} clickReload={clickReload} notify={notify} />
+        <CardToolbar setCardOptions={setCardOptions} clickReload={clickReload} notify={notify} />
+      </GameBodyHeader>
 
       {selectedTab === 'pack' ?
         <CardContainer
@@ -64,6 +66,6 @@ export default function GameLayout({ game, player, pack, playerTimer, clickRound
       }
 
       { typeof timer === 'number' &&  <TimerStyle seconds={timer} /> }
-    </GameLayoutWrapper>
+    </GameBodyWrapper>
   )
 }
