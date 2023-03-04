@@ -23,7 +23,7 @@ export const TabStyle = (
 ) => (
   <div
     className={`indicator flex-nowrap tab tab-lg ${label === "pack" ? " tab-secondary" : " tab-primary"}${isSelected ? " tab-active" : ""}`}
-    onClick={onClick} onMouseEnter={onClick}
+    onClick={onClick}
   >
     {containerIcon[label]}
     <span className="text-xl md:text-2xl font-medium">{titleCase(label)}</span>
