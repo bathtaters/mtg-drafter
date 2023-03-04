@@ -4,7 +4,7 @@ import type { GameProps, PartialGame, PickCard, PlayerFull, SwapCard } from 'typ
 import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 import CardContainer from "../CardContainer/CardContainer"
 import CardToolbar from '../CardToolbar/CardToolbar'
-import { PickCardButton, RoundButton, GameLayoutWrapper, TimerStyle } from './GameLayoutStyles'
+import { PickCardButton, RoundButton, GameLayoutWrapper, TimerStyle } from './GameBodyStyles'
 import { EmptyStyle } from 'components/base/styles/AppStyles'
 import usePickController from "./pick.controller"
 import ContainerTabs from './ContainerTabs'
