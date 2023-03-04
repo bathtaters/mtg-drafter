@@ -1,7 +1,16 @@
 import { parse } from 'jsonstream'
 import { get } from 'https'
 
-export default function fetchJson<Data = any>(url: string, onData: FetchCB<Data>, { jsonPath, limit, maxThreads = 750 }: FetchOptions = {}): Promise<number> {
+/**
+ * Fetch a large JSON from a URL and parse it entry by entry.
+ * @param url - Fetch URL
+ * @param onData - Called after each entry is parsed
+ * @param options
+ * @returns Resolves to count of entries parsed on suceess or rejects to error message on failure
+ */
+export default function fetchJson<JSONEntry = any>(url: string, onData: FetchCB<JSONEntry>, { jsonPath, limit, maxThreads = 500 }: FetchOptions = {}): Promise<number> {
+  if (maxThreads < 0) throw new Error('maxThreads must be a non-negative integer')
+
   return new Promise((resolve, reject) => {
     get(url, (res) => {
       try {
@@ -16,17 +25,16 @@ export default function fetchJson<Data = any>(url: string, onData: FetchCB<Data>
         res.setEncoding('utf8')
         const jsonPipe = res.pipe(parse(jsonPath)) as NodeJS.ReadStream
         
-        // Get new data
+        // Get new entry
         let count = 0, threads = 0, isClosed = false
-        jsonPipe.on('data', (data: Data) => {
+        jsonPipe.on('data', async (entry: JSONEntry) => {
           if (++threads === maxThreads && maxThreads) jsonPipe.pause()
 
-          onData(data, count, jsonPipe.destroy).then(() => {
-              if (threads-- === maxThreads && maxThreads) jsonPipe.resume()
-              if (isClosed && !threads) resolve(count)
-          })
+          await onData(entry, count, jsonPipe.destroy)
 
           if (++count === limit && limit) return jsonPipe.destroy()
+          if (threads-- === maxThreads && maxThreads) jsonPipe.resume()
+          if (isClosed && !threads) resolve(count)
         });
 
         // Handle close/error
@@ -49,9 +57,12 @@ export default function fetchJson<Data = any>(url: string, onData: FetchCB<Data>
 // TYPES
 
 interface FetchOptions {
+  /*** XPath for JSON, see https://goessner.net/articles/JsonPath/index.html#e2 */
   jsonPath?: string,
+  /** Only process first N entries (<1 = no limit) */
   limit?: number,
+  /** Limit concurrent processing to N threads (0 = no limit, <0 = error) */
   maxThreads?: number,
 }
 
-type FetchCB<Data = any> = (data: Data, count: number, abortSignal: () => void) => Promise<void>
+type FetchCB<JSONEntry = any> = (entry: JSONEntry, count: number, abortSignal: () => void) => Promise<any> | any
