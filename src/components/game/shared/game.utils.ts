@@ -25,13 +25,13 @@ export const passingRight = ({ round, roundCount }: Partial<Game>) =>
 export const getPlayerIdx = (players: Pick<BasicPlayer,"id">[], player?: Pick<BasicPlayer,"id"> | null) => !player?.id ? -1 :
   players.findIndex(({ id }) => id === player.id)
 
-export const getNeighborIdx = (game: Partial<Game> | undefined, playerCount: number, playerIdx: number) => {
+export const getNeighborIdx = (game: Partial<Game> | undefined, playerCount: number, playerIdx: number, invert = false) => {
   if (!game || playerIdx === -1 || playerCount <= 1) return -1
   
   const passRight = passingRight(game)
   if (typeof passRight !== 'boolean') return -1
 
-  return passRight ?
+  return passRight !== invert ?
     mod(playerIdx - 1, playerCount) :
     (playerIdx + 1) % playerCount
 }

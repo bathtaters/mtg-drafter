@@ -16,7 +16,7 @@ export const getNextPlayerId = (playerId: Player['id'], game?: Pick<Game, "round
   const playerIdx = game.players.findIndex(({ id }) => playerId === id)
   if (playerIdx === -1) return undefined
   
-  return game.players[getNeighborIdx(game, game.players.length, playerIdx)]?.id
+  return game.players[getNeighborIdx(game, game.players.length, playerIdx, true)]?.id
 }
 
 export const hasPack = (game: Pick<Game,"round"|"roundCount"|"packSize">, players: Pick<BasicPlayer,"id"|"pick">[], playerIdx: number) => {
