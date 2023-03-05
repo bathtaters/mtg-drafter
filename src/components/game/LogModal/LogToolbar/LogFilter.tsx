@@ -4,7 +4,7 @@ import { FilterWrapper, FilterButton } from "./LogToolbarStyles"
 
 type Props<ID> = {
   label: string,
-  buttons: { id: ID, name?: string }[],
+  buttons: { id: ID, name?: string | null }[],
   baseList: ID[],
   offset?: number,
   invert?: boolean,
