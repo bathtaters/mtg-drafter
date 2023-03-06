@@ -30,7 +30,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     if ('error' in data) throw new Error(`Cannot update data: ${data.error}`)
 
     const newPack = getCurrentPack(data)
-    if (newPack && player?.pick && player.pick <= (data.packSize ?? 0)) storeTimer(data.player?.timer, data.now)
+    if (newPack && data.player?.pick && data.player.pick <= (data.packSize ?? 0)) storeTimer(data.player?.timer, data.now)
     else resetTimer()
 
     updateGame(data.options)
