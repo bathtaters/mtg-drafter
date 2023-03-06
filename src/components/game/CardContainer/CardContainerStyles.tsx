@@ -2,9 +2,9 @@ import type { MouseEventHandler, ReactNode } from "react"
 import { EmptyStyle } from "components/base/styles/AppStyles"
 import RadialProgress from "components/base/common/RadialProgress"
 
+export const NoCards = () => <EmptyStyle>No cards.</EmptyStyle>
 export const NoPack = () => <EmptyStyle>Awaiting next pack.</EmptyStyle>
-export const EmptyPack = () => <EmptyStyle>Awaiting next round.</EmptyStyle>
-export const EmptyBoard = () => <EmptyStyle>No cards.</EmptyStyle>
+export const RoundOver = () => <EmptyStyle>Awaiting next round.</EmptyStyle>
 
 // loading -1 = loading pack; loading > 0 = loading images
 export const LoadingPack = ({ loading, count = 0 }: { loading: number, count?: number  }) => (

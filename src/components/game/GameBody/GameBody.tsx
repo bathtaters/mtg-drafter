@@ -51,7 +51,7 @@ export default function GameBody({ game, player, pack, playerTimer, roundOver, c
       {selectedTab === 'pack' ?
         <CardContainer
           label="pack" cardOptions={cardOptions} loading={loadingPack ? -1 : packLoading || undefined}
-          cards={roundOver ? undefined : pack?.cards || []} selectedId={selectedCard} highlightId={autopickCard}
+          cards={roundOver ? 'roundEnd' : pack?.cards} selectedId={selectedCard} highlightId={autopickCard}
           onClick={clickPackCard} onBgdClick={deselectCard} onCardLoad={handleCardLoad}
         >
           { clickRoundBtn ?
