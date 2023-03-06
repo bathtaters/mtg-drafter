@@ -9,17 +9,17 @@ const fullPlayer /* Prisma.PlayerInclude */ = {
 }
 
 
-export async function getPlayer(sessionId: Player['sessionId'], playerList: BasicPlayer[], game: Game, startTime?: number) {
+export async function getPlayer(sessionId: Player['sessionId'], playerList: BasicPlayer[], game: Game, packSize: number, startTime?: number) {
   const playerIdx = playerList.findIndex(({ sessionId: sid }) => sessionId === sid)
   if (playerIdx === -1) return null
 
   const player = await prisma.player.findUnique({ where: { id: playerList[playerIdx].id }, include: fullPlayer })
   if (!player || !game.timerBase || game.round > game.roundCount) return adaptDbPlayer(player)
   
-  const isPicking = hasPack(game, playerList, playerIdx)
+  const isPicking = hasPack(game, playerList, playerIdx, packSize)
   if (isPicking && player.timer !== null) return adaptDbPlayer(player)
 
-  const timer = isPicking ? (startTime ?? Date.now()) + getTimerLength(game.packSize - player.pick + 1, game.timerBase) * 1000 : null
+  const timer = isPicking ? (startTime ?? Date.now()) + getTimerLength(packSize - player.pick + 1, game.timerBase) * 1000 : null
 
   if (timer !== null || player.timer) await retry(() => prisma.player.update({ where: { id: player.id }, data: { timer } }))
   return { ...player, timer }

@@ -41,4 +41,6 @@ export const EntryItem = (
   </span>
 )
 
+export const MissingCard = () => <span className="italic opacity-50">Empty Pack</span>
+
 export const EntrySpace = () => <span className="inline-block w-1"></span>

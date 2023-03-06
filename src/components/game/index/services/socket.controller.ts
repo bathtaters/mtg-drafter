@@ -107,12 +107,12 @@ export function useGameEmitters(local: LocalController, { emit, reconnect }: Ret
   }, [emit, local.game?.id, (local.game as Game)?.round, local.setLoadingPack, throwError])
 
 
-  const pickCard: Socket.PickCard = useCallback((gameCardId) => {
+  const pickCard: Socket.PickCard = useCallback((gameCardOrPack) => {
     if (!local.player?.id) return throwError(formatError('Error picking card: Not connected to server'))
     
     local.setLoadingPack((v) => v + 1)
 
-    emit('pickCard', local.player.id, gameCardId, (pick?: number) => {
+    emit('pickCard', local.player.id, gameCardOrPack, (pick?: number) => {
       if (typeof pick !== 'number') throwError(formatError('Error picking: Failed to pick card'))
       return reloadData(local.game?.url, local.updateLocal, throwError, typeof pick !== 'number' ? reconnect : undefined)
         .finally(() => local.setLoadingPack((v) => v && v - 1))

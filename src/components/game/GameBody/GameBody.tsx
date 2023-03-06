@@ -15,6 +15,7 @@ type Props = {
   player: PlayerFull,
   pack?: GameProps['packs'][number],
   playerTimer?: number,
+  roundOver?: boolean,
   pickCard: PickCard,
   swapCard: SwapCard,
   clickRoundBtn?: () => void,
@@ -25,7 +26,7 @@ type Props = {
   notify: AlertsReturn['newToast'],
 }
 
-export default function GameLayout({ game, player, pack, playerTimer, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, onPackLoad, loadingPack, notify }: Props) {
+export default function GameBody({ game, player, pack, playerTimer, roundOver, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, onPackLoad, loadingPack, notify }: Props) {
 
   const {
     autopickCard, selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
@@ -50,12 +51,16 @@ export default function GameLayout({ game, player, pack, playerTimer, clickRound
       {selectedTab === 'pack' ?
         <CardContainer
           label="pack" cardOptions={cardOptions} loading={loadingPack ? -1 : packLoading || undefined}
-          cards={pack?.cards} selectedId={selectedCard} highlightId={autopickCard}
+          cards={roundOver ? undefined : pack?.cards || []} selectedId={selectedCard} highlightId={autopickCard}
           onClick={clickPackCard} onBgdClick={deselectCard} onCardLoad={handleCardLoad}
         >
           { clickRoundBtn ?
             <RoundButton onClick={clickRoundBtn} label={getGameStatus(game)} /> :
-            <PickCardButton disabled={loadingPack || !!packLoading || !pack || !pack.cards.length || !selectedCard} onClick={clickPickButton} />
+            <PickCardButton
+              disabled={loadingPack || !!packLoading || !pack || roundOver || !selectedCard}
+              isEmpty={!roundOver && pack && !pack.cards.length}
+              onClick={clickPickButton}
+            />
           }
         </CardContainer>
         :

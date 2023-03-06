@@ -53,10 +53,10 @@ export const TimerStyle = ({ seconds = 0 }: { seconds?: number }) => (
 )
 
 
-export const PickCardButton = ({ disabled, onClick }: { disabled?: boolean, onClick?: MouseEventHandler }) => (
+export const PickCardButton = ({ disabled, isEmpty, onClick }: { disabled?: boolean, isEmpty?: boolean, onClick?: MouseEventHandler }) => (
   <div className="text-center w-full">
-    <button type="button" className="btn btn-secondary btn-lg w-60 h-18 mb-4" onClick={onClick} disabled={disabled}>
-      Pick Card
+    <button type="button" className="btn btn-secondary btn-lg w-60 h-18 mb-4" onClick={onClick} disabled={disabled && !isEmpty}>
+      {!isEmpty ? "Pick Card" : "Pass Empty Pack"}
     </button>
   </div>
 )

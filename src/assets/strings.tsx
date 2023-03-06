@@ -14,7 +14,7 @@ export const FullGame = () => <p className="opacity-70 italic">
 </p>
 
 export const roundCounter = (status?: GameStatus, game?: Game|PartialGame, isNotJoined = false) =>
-  isNotJoined || !status || !game || !('packSize' in game) ? 'Waiting Room' :
+  isNotJoined || !status || !game || !('round' in game) ? 'Waiting Room' :
   status === 'start' ? 'Starting Soon' :
   status === 'end' ? 'Finished' :
     `Pack ${game?.round ?? '–'} of ${game?.roundCount ?? '–'}`

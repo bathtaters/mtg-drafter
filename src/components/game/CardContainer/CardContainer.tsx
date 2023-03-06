@@ -29,7 +29,7 @@ export default function CardContainer({ label, cards, lands, loading = 0, childr
       isPrimary={label !== 'pack'} onClick={onBgdClick}
     >
       <CardsWrapper hideCards={loading > 0}>
-        {loading < 0 ? null : !cards ? <NoPack /> : !cards.length ? (label === 'pack' ? <EmptyPack /> : <EmptyBoard />) :
+        {loading < 0 ? null : !cards ? <EmptyPack /> : !cards.length ? (label === 'pack' ? <NoPack /> : <EmptyBoard />) :
           cards.slice().sort((a,b) => packSort[cardOptions.sort ?? sortKeys[0]](a.card, b.card)).map(({ id, foil, card }, idx) => 
             <Card
               card={card} key={id} isFoil={foil}

@@ -130,7 +130,6 @@ model Game {
   url         String @unique
 
   packs       Pack[]
-  packSize    Int
   roundCount  Int
   round       Int @default(0)
   isPaused    Boolean @default(false)

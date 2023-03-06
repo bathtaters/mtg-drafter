@@ -109,43 +109,43 @@ describe('getPackIdx', () => {
 })
 
 describe('getHolding', () => {
-  const firstRound = { round: 1, roundCount: 3, packSize: 15 }
-  const secondRound = { round: 1, roundCount: 3, packSize: 15 }
+  const firstRound =  { round: 1, roundCount: 3 }
+  const secondRound = { round: 1, roundCount: 3 }
   const setPicks = (picks: number[]) => picks.map((pick, idx) => ({ id: players[idx]?.id, pick }))
 
   it('all ones', () => {
-    expect(getHolding(setPicks([1,1,1,1]), firstRound)).toEqual([1,1,1,1])
-    expect(getHolding(setPicks([2,2,2,2]), firstRound)).toEqual([1,1,1,1])
-    expect(getHolding(setPicks([5,5,5,5]), firstRound)).toEqual([1,1,1,1])
-    expect(getHolding(setPicks([1,1,1,1]), secondRound)).toEqual([1,1,1,1])
-    expect(getHolding(setPicks([5,5,5,5]), secondRound)).toEqual([1,1,1,1])
+    expect(getHolding(setPicks([1,1,1,1]), 15, firstRound)).toEqual([1,1,1,1])
+    expect(getHolding(setPicks([2,2,2,2]), 15, firstRound)).toEqual([1,1,1,1])
+    expect(getHolding(setPicks([5,5,5,5]), 15, firstRound)).toEqual([1,1,1,1])
+    expect(getHolding(setPicks([1,1,1,1]), 15, secondRound)).toEqual([1,1,1,1])
+    expect(getHolding(setPicks([5,5,5,5]), 15, secondRound)).toEqual([1,1,1,1])
   })
   it('random values', () => {
-    expect(getHolding(setPicks([1,2,3,2]), firstRound)).toEqual([2,2,0,0])
-    expect(getHolding(setPicks([2,1,3,3]), firstRound)).toEqual([0,3,1,0])
-    expect(getHolding(setPicks([4,4,5,4]), secondRound)).toEqual([1,2,0,1])
-    expect(getHolding(setPicks([14,14,14,13]), secondRound)).toEqual([1,1,0,2])
+    expect(getHolding(setPicks([1,2,3,2]), 15, firstRound)).toEqual([2,2,0,0])
+    expect(getHolding(setPicks([2,1,3,3]), 15, firstRound)).toEqual([0,3,1,0])
+    expect(getHolding(setPicks([4,4,5,4]), 15, secondRound)).toEqual([1,2,0,1])
+    expect(getHolding(setPicks([14,14,14,13]), 15, secondRound)).toEqual([1,1,0,2])
   })
   it('finshed picking', () => {
-    expect(getHolding(setPicks([16,16,16,16]), firstRound)).toEqual([0,0,0,0])
-    expect(getHolding(setPicks([15,16,16,16]), firstRound)).toEqual([1,0,0,0])
-    expect(getHolding(setPicks([15,16,16,16]), firstRound)).toEqual([1,0,0,0])
-    expect(getHolding(setPicks([16,15,15,15]), firstRound)).toEqual([0,1,1,1])
+    expect(getHolding(setPicks([16,16,16,16]), 15, firstRound)).toEqual([0,0,0,0])
+    expect(getHolding(setPicks([15,16,16,16]), 15, firstRound)).toEqual([1,0,0,0])
+    expect(getHolding(setPicks([15,16,16,16]), 15, firstRound)).toEqual([1,0,0,0])
+    expect(getHolding(setPicks([16,15,15,15]), 15, firstRound)).toEqual([0,1,1,1])
   })
   it('single player', () => {
-    expect(getHolding(setPicks([1]), firstRound)).toEqual([1])
-    expect(getHolding(setPicks([9]), secondRound)).toEqual([1])
-    expect(getHolding(setPicks([15]), secondRound)).toEqual([1])
-    expect(getHolding(setPicks([16]), secondRound)).toEqual([0])
+    expect(getHolding(setPicks([1]),  15, firstRound)).toEqual([1])
+    expect(getHolding(setPicks([9]),  15, secondRound)).toEqual([1])
+    expect(getHolding(setPicks([15]), 15, secondRound)).toEqual([1])
+    expect(getHolding(setPicks([16]), 15, secondRound)).toEqual([0])
   })
   it('empty array', () => {
-    expect(getHolding([], firstRound)).toEqual([])
-    expect(getHolding(setPicks([1,1,1,1]))).toEqual([])
+    expect(getHolding([], 15, firstRound)).toEqual([])
+    expect(getHolding(setPicks([1,1,1,1]), 15)).toEqual([])
   })
   it('before/after game', () => {
-    expect(getHolding(setPicks([1,2,3,2]), { ...firstRound, round: 0 })).toEqual([0,0,0,0])
-    expect(getHolding(setPicks([2,1,3,3]), { ...firstRound, round: 0 })).toEqual([0,0,0,0])
-    expect(getHolding(setPicks([4,4,5,4]), { ...firstRound, round: 4 })).toEqual([0,0,0,0])
-    expect(getHolding(setPicks([14,14,14,13]), { ...firstRound, round: 4 })).toEqual([0,0,0,0])
+    expect(getHolding(setPicks([1,2,3,2]), 15, { ...firstRound, round: 0 })).toEqual([0,0,0,0])
+    expect(getHolding(setPicks([2,1,3,3]), 15, { ...firstRound, round: 0 })).toEqual([0,0,0,0])
+    expect(getHolding(setPicks([4,4,5,4]), 15, { ...firstRound, round: 4 })).toEqual([0,0,0,0])
+    expect(getHolding(setPicks([14,14,14,13]), 15, { ...firstRound, round: 4 })).toEqual([0,0,0,0])
   })
 })

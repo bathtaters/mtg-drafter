@@ -14,6 +14,7 @@ const gameData = {
   status:  z.nativeEnum(PlayerStatus),
   board:   z.nativeEnum(Board),
   basics:  z.object(fillAndLowerCaseObject(Board, boardLands)),
+  idOrNum: z.union([ z.string().cuid(), z.number() ]),
 }
 
 export default gameData

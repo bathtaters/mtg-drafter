@@ -10,9 +10,9 @@ import { roundCounter } from "assets/strings"
 type Props = {
   game?: GameProps['options'],
   players: GameProps['players'],
-  playerCards?: GameCardFull[],
   playerIdx: number,
   holding: number[],
+  packSize: number,
   isConnected: boolean,
   notify: AlertsReturn['newToast'],
   saveDeck?:   (() => void),
@@ -23,9 +23,9 @@ type Props = {
 }
 
 
-export default function GameHeader({ game, players, playerIdx, holding, isConnected, notify, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
+export default function GameHeader({ game, players, playerIdx, holding, packSize, isConnected, notify, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
 
-  const { oppIdx, handleShare, gameStatus, isRight, packSize } = useGameHeader(game, players, playerIdx, notify)
+  const { oppIdx, handleShare, gameStatus, isRight } = useGameHeader(game, players, playerIdx, notify)
   
   if (!game) return <Header><GameTitle title="Game Not Found" /></Header>
 
@@ -46,7 +46,7 @@ export default function GameHeader({ game, players, playerIdx, holding, isConnec
               openHost={openHost}
               dropPlayer={dropPlayer}
               renamePlayer={renamePlayer}
-              maxPick={packSize}
+              packSize={packSize}
               hideStats={gameStatus === 'end' || gameStatus === 'start'}
             />
       
@@ -58,7 +58,7 @@ export default function GameHeader({ game, players, playerIdx, holding, isConnec
                   isHost={'hostId' in game ? game.hostId === play.id : false}
                   color={getPlayerColor(idx, playerIdx, oppIdx, game)}
                   holding={holding[idx]}
-                  maxPick={packSize}
+                  packSize={packSize}
                   hideStats={gameStatus === 'end' || gameStatus === 'start'}
                 />
                 

@@ -1,10 +1,11 @@
-import type { Game, GameCard, Board } from '@prisma/client'
+import type { Game, GameCard, Board, Pack } from '@prisma/client'
 import type { Player } from 'types/game'
 import prisma from '../../libs/db'
 import retry from '../../libs/retry'
-import { getNextPlayerId } from '../../utils/game/game.utils'
+import { getMaxPackSize, getNextPlayerId } from '../../utils/game/game.utils'
 
 const basicPlayer /* Prisma.Game$playersArgs */ = { select: { id: true, name: true, sessionId: true, pick: true } }
+const basicGame /* Prisma.GameArgs */ = { select: { id: true, round: true, roundCount: true, players: { select: { id: true } } }}
 
 
 export function getGame(url: Game['url'], includePacks = true) {
@@ -24,6 +25,15 @@ export function getGame(url: Game['url'], includePacks = true) {
       }
     }
   })
+}
+
+export function getRoundPackSize(gameId: Game["id"], round: number, roundCount: number, playerCount: number) {
+  return prisma.gameCard.groupBy({
+    where: { gameId },
+    by: ['packIdx'],
+    orderBy: { packIdx: 'asc' },
+    _count: true
+  }).then((counts) => getMaxPackSize(counts, round, roundCount, playerCount))
 }
 
 
@@ -72,38 +82,52 @@ export async function nextRound(id: Game['id'], round: Game['round']) {
 }
 
 
-export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'], board: Board = "main") {
+export async function pickCard(playerId: Player['id'], gameCardOrPack: GameCard['id'] | Pack['index'], board: Board = "main") {
   if (!(await prisma.player.count({ where: { id: playerId }}))) return 'Player'
 
   let game: Pick<Game,"id"|"round"|"roundCount"> & { players: { id: Player['id'] }[] },
     player: Pick<Player,"id"|"gameId"|"pick">
 
   try {
-    const txRes = await retry(() => prisma.$transaction([
-      prisma.gameCard.findFirstOrThrow({
-        where: { id: gameCardId, playerId: null },
-        select: { pack: { select: {
-          game: { select: {
-            id: true,
-            round: true,
-            roundCount: true,
-            players: { select: { id: true } }
-          }}
-        }}}
-      }),
-      prisma.player.update({
+    // Pick w/o card
+    if (typeof gameCardOrPack === 'number') {
+      const txRes = await prisma.player.findFirstOrThrow({
+        where: { id: playerId },
+        select: { game: basicGame }
+      })
+      game = txRes.game
+
+      if (await prisma.gameCard.count({ where: { gameId: game.id, packIdx: gameCardOrPack, playerId: null }}))
+        throw new Error("Attempting to skip pack with pickable cards")
+
+      player = await retry(() => prisma.player.update({
         where: { id: playerId },
         data: { pick: { increment: 1 }, timer: null },
         select: { id: true, pick: true, gameId: true },
-      }),
-      prisma.gameCard.update({
-        where: { id: gameCardId },
-        data: { playerId, board },
-      }),
-    ]))
+      }))
+    
+    // Pick w/ card
+    } else {
+      const txRes = await retry(() => prisma.$transaction([
+        prisma.gameCard.findFirstOrThrow({
+          where: { id: gameCardOrPack, playerId: null },
+          select: { pack: { select: { game: basicGame }}}
+        }),
+        prisma.player.update({
+          where: { id: playerId },
+          data: { pick: { increment: 1 }, timer: null },
+          select: { id: true, pick: true, gameId: true },
+        }),
+        prisma.gameCard.update({
+          where: { id: gameCardOrPack },
+          data: { playerId, board },
+        }),
+      ]))
 
-    game = txRes[0].pack.game
-    player = txRes[1]
+      game = txRes[0].pack.game
+      player = txRes[1]
+    }
+
 
   } catch (err: any) {
     // P2025 = GameCard not found
@@ -114,11 +138,10 @@ export async function pickCard(playerId: Player['id'], gameCardId: GameCard['id'
   await retry(() => prisma.logEntry.create({ data: {
     gameId: game.id,
     playerId,
-    cardId: gameCardId,
+    cardId: typeof gameCardOrPack === 'string' ? gameCardOrPack : undefined,
     action: 'pick',
     data: `${game.round}:${player.pick - 1}`
   } }))
-
   return { ...player, passingToId: getNextPlayerId(playerId, game) }
 }
 

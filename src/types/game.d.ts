@@ -19,6 +19,7 @@ export type PartialGame = Pick<Game,"id"|"name"|"url">
 export type CardFull = Card & { otherFaces: Array<{ card: Card }> }
 export type GameCardFull = GameCard & { card: CardFull }
 
+export type PackMin = { cards: Pick<GameCard, "playerId">[] }
 export type PackFull = Pack & { cards: GameCardFull[] }
 export type PlayerFullTimer = Player & { cards: GameCardFull[], basics: BasicLands }
 export type PlayerFull = Omit<PlayerFullTimer, 'timer'>
@@ -55,6 +56,7 @@ export interface ServerSuccess {
   options: Game,
   players: BasicPlayer[],
   packs: PackFull[],
+  packSize: number | null,
   player: PlayerFullTimer | null,
   sessionId: string,
   now: number,
@@ -64,6 +66,7 @@ export interface ServerUnreg {
   options: PartialGame,
   players: BasicPlayer[],
   packs?: never,
+  packSize?: never,
   player?: never,
   sessionId: string,
   now?: never,
@@ -71,9 +74,10 @@ export interface ServerUnreg {
 }
 export interface ServerFail {
   error: string,
-  options?: never,
+  options?: PartialGame,
   players?: never,
   packs?: never,
+  packSize?: never,
   player?: never,
   sessionId?: never,
   now?: never,
@@ -98,7 +102,7 @@ export namespace Socket {
   type RenamePlayer  = (name: Player['name'], playerId?: Player['id'], byHost?: boolean) => void
   type SetTitle      = (title: Game['name']) => void
   type NextRound     = () => void
-  type PickCard      = (gameCardId: GameCard['id']) => void
+  type PickCard      = (gameCardOrPack: GameCard['id'] | Pack['index']) => void
   type SwapCard      = (gameCardId: GameCard['id'], toBoard: Board) => void
   type SetLands      = (lands: BasicLands) => void
   type SetStatus     = (playerId: Player['id'], status?: PlayerStatus, byHost?: boolean) => void

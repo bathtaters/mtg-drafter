@@ -6,18 +6,18 @@ import usePlayerMenu from "./playerMenu.controller"
 import { setupLimits } from "assets/constants"
 
 
-export const PlayerContainerSmall = ({ player, holding, maxPick, color, isHost, hideStats }: ContainerSmallProps) => (
+export const PlayerContainerSmall = ({ player, holding, packSize, color, isHost, hideStats }: ContainerSmallProps) => (
   <PlayerContainerStyle title={player.name} isMini={true} disconnected={!player.sessionId} color={color} isHost={isHost}>
     { hideStats ? <StatsStyle /> : <>
-      <StatsStyle isMini={true} type="pick"    count={!player.pick || player.pick > maxPick ? undefined : player.pick} />
+      <StatsStyle isMini={true} type="pick"    count={!player.pick || player.pick > packSize ? undefined : player.pick} />
       <StatsStyle isMini={true} type="holding" count={typeof holding === 'number' ? Math.max(holding,0) : holding} />
     </>}
   </PlayerContainerStyle>
 )
 
 
-export const PlayerContainerFull = ({ player, holding, maxPick, isConnected, hideStats, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => {
-  const { showMenu, editingName, setEditingName, enableEdit, pickValue, holdingValue } = usePlayerMenu(player, maxPick, holding, hideStats)
+export const PlayerContainerFull = ({ player, holding, packSize, isConnected, hideStats, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => {
+  const { showMenu, editingName, setEditingName, enableEdit, pickValue, holdingValue } = usePlayerMenu(player, packSize, holding, hideStats)
   
   if (!player) return <EmptyPlayerContainer />
   
@@ -51,7 +51,7 @@ export const PlayerContainerFull = ({ player, holding, maxPick, isConnected, hid
 
 interface ContainerProps {
   player: BasicPlayer,
-  maxPick: number,
+  packSize: number,
   holding?: number,
   hideStats: boolean,
 }

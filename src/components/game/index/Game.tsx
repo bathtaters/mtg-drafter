@@ -2,7 +2,7 @@ import type { Game } from '@prisma/client'
 import type { ServerProps, BasicLands, PartialGame } from 'types/game'
 import GameHeader from 'components/game/GameHeader/GameHeader'
 import PlayerJoin from 'components/game/PlayerJoin/PlayerJoin'
-import GameLayout from 'components/game/GameBody/GameBody'
+import GameBody from 'components/game/GameBody/GameBody'
 import LandsModal from 'components/game/LandsModal/LandsModal'
 import HostModal from 'components/game/HostModal/HostModal'
 import LogModal from '../LogModal/LogModal'
@@ -17,8 +17,8 @@ import { gameIsEnded } from '../shared/game.utils'
 
 export default function Game(props: ServerProps) {
   const {
-    game, player, players, playerIdx, isConnected, loadingPack, loadingAll,
-    holding, isReady, pack, landModal, hostModal, logModal, slots, gameLog, timer,
+    game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize,
+    holding, canAdvance, pack, landModal, hostModal, logModal, slots, gameLog, timer, 
     saveDeck, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setTitle,
     nextRound, pickCard, swapCard, setLands, setStatus, dropPlayer, reload, startTimer,
     newError, newToast, ErrorComponent, ToastComponent,
@@ -28,7 +28,7 @@ export default function Game(props: ServerProps) {
     <SetPageTitle title={game?.name || ""} />
 
     <GameHeader
-      game={game} players={players} playerIdx={playerIdx} holding={holding} isConnected={isConnected} saveDeck={saveDeck}
+      game={game} players={players} playerIdx={playerIdx} holding={holding} packSize={maxPackSize} isConnected={isConnected} saveDeck={saveDeck}
       openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer} dropPlayer={dropPlayer} notify={newToast}
     />
     
@@ -36,12 +36,13 @@ export default function Game(props: ServerProps) {
       <Loader data={game || 404} message={props.error}>
         { !player ?
           <PlayerJoin slots={slots} players={players} selectPlayer={setStatus} /> :
-
-          <GameLayout
+          
+          <GameBody
             game={game as Game|PartialGame}
             player={player} playerTimer={timer}
+            roundOver={player.pick > maxPackSize}
             pack={pack} pickCard={pickCard} swapCard={swapCard}
-            clickRoundBtn={isReady ? () => nextRound() : undefined}
+            clickRoundBtn={canAdvance ? () => nextRound() : undefined}
             onLandClick={toggleLandModal}
             clickReload={reload}
             onPackLoad={startTimer}

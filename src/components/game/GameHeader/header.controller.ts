@@ -26,6 +26,5 @@ export default function useGameHeader(game: GameProps['options'] | undefined, pl
     oppIdx, handleShare,
     gameStatus: players[playerIdx] ? getGameStatus(game) : undefined,
     isRight: game && players[playerIdx] && passingRight(game),
-    packSize: game && 'packSize' in game ? game.packSize : 0,
   }
 }
