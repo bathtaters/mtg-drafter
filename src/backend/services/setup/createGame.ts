@@ -9,8 +9,8 @@ export async function newCubeGame({ packSize, cardList, ...options }: CubeOption
   return newGame({ ...options, packs }, hostSessionId)
 }
 
-export async function newBoosterGame({ packList, includeBasics, ...options }: BoosterOptions, hostSessionId?: string) {
-  const packs = await buildBoosterPacks(packList, options.playerCount, includeBasics)
+export async function newBoosterGame({ packList, basics, ...options }: BoosterOptions, hostSessionId?: string) {
+  const packs = await buildBoosterPacks(packList, options.playerCount, basics)
   return newGame({ ...options, roundCount: packList.length, packs }, hostSessionId)
 }
 

@@ -51,7 +51,7 @@ export const
     cubeSize: { max: 720 * 4    },
   }, 
 
-  setupDefaults: GameOptions = { type: "Cube", name: "", players: "8", timer: "4", packs: "3", packSize: "15", packList: ["KLD","KLD","AER"], includeBasics: true },
+  setupDefaults: GameOptions = { type: "Cube", name: "", players: "8", timer: "4", packs: "3", packSize: "15", packList: ["KLD","KLD","AER"], basics: true },
 
   fileSettings = { id: "cubeFile", type: "text/plain", maxSize: 10 * 1024 * 1024 /* = 10 MB */, },
 
