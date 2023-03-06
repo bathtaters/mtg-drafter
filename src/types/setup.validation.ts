@@ -10,6 +10,7 @@ export const commonOptions = z.object(commonOptionsObj)
 
 export const boosterOptions = z.object({
   ...commonOptionsObj,
+  includeBasics: z.boolean().default(false),
   packList: z.array(
     z.string().min(setupLimits.setCode.min).max(setupLimits.setCode.max).transform((str) => str.toUpperCase())
   ).min(setupLimits.packs.min).max(setupLimits.packs.max)

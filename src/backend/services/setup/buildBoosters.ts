@@ -5,10 +5,13 @@ import balanceColors from './balanceColors'
 import { sortSheets } from 'backend/utils/setup/booster.utils'
 import { randomElemWeighted, shuffle } from 'backend/libs/random'
 import { logSheetNames } from 'assets/constants'
+import { landNames } from 'assets/sort.constants'
 
 type SetCache = { [code: SetFull['code']]: SetFull }
 
-export default async function buildBoosterPacks(setCodes: SetFull['code'][], playerCount: number): Promise<PackCard[][]> {
+const landCards = Object.values(landNames)
+
+export default async function buildBoosterPacks(setCodes: SetFull['code'][], playerCount: number, includeBasics = true): Promise<PackCard[][]> {
   let packs: PackCard[][] = [], setCache: SetCache = {}
   
   for (const code of setCodes) {
@@ -18,14 +21,14 @@ export default async function buildBoosterPacks(setCodes: SetFull['code'][], pla
     if (!(code in setCache)) setCache[code] = setData
 
     for (let i = 0; i < playerCount; i++) {
-      packs.push(buildBoosterPack(setData))
+      packs.push(buildBoosterPack(setData, includeBasics))
     }
   }
   return packs
 }
 
 
-function buildBoosterPack(setData: SetFull) {
+function buildBoosterPack(setData: SetFull, includeBasics = true) {
   const layout = setData.boosters.length === 1 ?
     setData.boosters[0].sheets :
     randomElemWeighted(setData.boosters, setData.totalWeight)?.sheets as SheetsInLayout[]
@@ -44,7 +47,8 @@ function buildBoosterPack(setData: SetFull) {
       do { // select unique card
         nextCard = randomElemWeighted(sheetData.cards, sheetData.totalWeight)?.card as Card
       } while (newCards.some(({ uuid }) => nextCard?.uuid === uuid))
-      newCards.push(nextCard)
+
+      if (includeBasics || !landCards.includes(nextCard.name)) newCards.push(nextCard)
     }
     
     if (sheetData.balanceColors) {
