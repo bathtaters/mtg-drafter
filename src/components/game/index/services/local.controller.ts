@@ -47,6 +47,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     updateGame((g) => g && ({ ...g, round }))
     updatePlayers((list) => list.map((p) => ({ ...p, pick: 1 })))
     updatePlayer((p) => p && ({ ...p, pick: 1 }))
+    updatePack(undefined)
     isHost && setLoadingPack((v) => v && v - 1)
   }, [isHost])
 
