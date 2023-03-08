@@ -3,13 +3,13 @@ import type { TabLabels } from "@prisma/client"
 import type { CardFull, CardOptions, BoardLands } from "types/game"
 import Card from "../Card/Card"
 import ContainerHeader from "./CardContainerHeader"
-import { CardContainerWrapper, CardsWrapper, NoPack, EmptyPack, EmptyBoard, LoadingPack } from "./CardContainerStyles"
+import { CardContainerWrapper, CardsWrapper, NoPack, NoCards, RoundOver, LoadingPack } from "./CardContainerStyles"
 import { packSort, sortKeys } from "components/base/services/cardSort.services"
 import cardZoomLevels from "../CardToolbar/cardZoomLevels"
 
 type Props = {
   label: TabLabels,
-  cards?: { id: string, foil?: boolean, card: CardFull }[],
+  cards?: { id: string, foil?: boolean, card: CardFull }[] | "roundEnd",
   lands?: BoardLands,
   loading?: number,
   children?: ReactNode,
@@ -23,13 +23,19 @@ type Props = {
 }
 
 export default function CardContainer({ label, cards, lands, loading = 0, children, onClick, onCardLoad, onBgdClick, onLandClick, selectedId, highlightId, cardOptions }: Props) {
+  const count = typeof cards === 'string' ? undefined : cards?.length
+  
   return (
     <CardContainerWrapper 
-      title={<ContainerHeader label={label} count={cards?.length} lands={lands} onLandClick={onLandClick}>{children}</ContainerHeader>}
+      title={
+        <ContainerHeader label={label} count={count} lands={lands} onLandClick={onLandClick}>
+          {children}
+        </ContainerHeader>
+      }
       isPrimary={label !== 'pack'} onClick={onBgdClick}
     >
       <CardsWrapper hideCards={loading > 0}>
-        {loading < 0 ? null : !cards ? <NoPack /> : !cards.length ? (label === 'pack' ? <EmptyPack /> : <EmptyBoard />) :
+        {loading < 0 ? null : typeof cards === 'string' ? <RoundOver /> : !cards ? <NoPack /> : !count ? <NoCards /> :
           cards.slice().sort((a,b) => packSort[cardOptions.sort ?? sortKeys[0]](a.card, b.card)).map(({ id, foil, card }, idx) => 
             <Card
               card={card} key={id} isFoil={foil}

@@ -14,7 +14,7 @@ export const FullGame = () => <p className="opacity-70 italic">
 </p>
 
 export const roundCounter = (status?: GameStatus, game?: Game|PartialGame, isNotJoined = false) =>
-  isNotJoined || !status || !game || !('packSize' in game) ? 'Waiting Room' :
+  isNotJoined || !status || !game || !('round' in game) ? 'Waiting Room' :
   status === 'start' ? 'Starting Soon' :
   status === 'end' ? 'Finished' :
     `Pack ${game?.round ?? '–'} of ${game?.roundCount ?? '–'}`
@@ -29,7 +29,7 @@ export const hostButtonLabel: { [label in GameStatus]: string } = {
 export const cardCounter = (count?: number, lands?: BoardLands) => typeof count !== 'number' || (!count && !lands) ? undefined :
   lands ? `${count} | ${getObjectSum(lands) + count}` : `${count}`
 
-export const sharingMessage: { [key: string]: ToastAlert} = {
+export const sharingMessage: Record<string,ToastAlert> = {
   copy: { message: 'Link copied to clipboard', theme: 'info' },
   error: { message: 'Unable to share link, refresh page then try again', theme: 'error' },
   unavailable: { message: 'Link sharing is not available in your browser', theme: 'error' },

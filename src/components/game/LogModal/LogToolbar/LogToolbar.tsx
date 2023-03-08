@@ -11,7 +11,7 @@ export default function LogToolbar({ log, players, gameEnded }: Props) {
   return (
     <ToolbarWrapper>
       <SettingsDropdown>
-        {(Object.keys(log.options) as Array<keyof LogOptions>).map((key) => (key !== 'hidePrivate' || gameEnded) &&
+        {Object.keys(log.options).map((key) => (key !== 'hidePrivate' || gameEnded) &&
           <SettingToggle key={key} label={logOptionLabels[key]} value={!log.options[key]} setValue={(val) => log.setOptions((opt) => ({ ...opt, [key]: !val }))} />
         )}
       </SettingsDropdown>

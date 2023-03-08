@@ -45,9 +45,6 @@ function countPips(cardList: GameCardFull[]) {
     }
   })
   
-  count.sum = Object.keys(count).reduce((sum,c) =>
-    c.length === 1 ? sum + count[c as keyof BoardLands] : sum,
-    0
-  )
+  count.sum = Object.keys(count).reduce((sum,c) => c.length === 1 ? sum + count[c] : sum, 0)
   return count
 }

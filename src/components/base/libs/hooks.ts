@@ -1,4 +1,4 @@
-import { DependencyList, useCallback, useEffect, useRef, useState, MouseEventHandler } from 'react'
+import { DependencyList, useCallback, useEffect, useRef, useState, useReducer, useMemo, MouseEventHandler } from 'react'
 import { hoverAfterClickDelay } from "assets/constants"
 
 const remaining = (end?: number|null, roundTo = 1, current = Date.now()) =>
@@ -147,6 +147,25 @@ export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependenci
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies)
+}
+
+
+const simpleReducer = <T>(state: T, action: { type: keyof T, value: T[keyof T] }): T =>
+  ({ ...state, [action.type]: action.value })
+
+export function useSimpleReducer<T extends {}>(initialValue: T) {
+  const [ state, updateState ] = useReducer(simpleReducer<T>, { ...initialValue })
+
+  const updaters = useMemo(() => 
+    Object.keys(initialValue)
+      .reduce((updaters, type) => ({
+        ...updaters, [type]: (value: T[keyof T]) => updateState({ type, value })
+      }),
+      {} as { [K in keyof T]: (value: T[K]) => void }
+    ),
+  [initialValue])
+  
+  return [ state, updaters ] as [ T, typeof updaters ]
 }
 
 

@@ -20,11 +20,11 @@ export default function usePickController(
   const nextPickAllowed = useRef(0)
   const [ selectedTab,  selectTab       ] = useState<TabLabels>(hidePack ? 'main' : 'pack')
   const [ selectedCard, setSelectedCard ] = useState<GameCard['id']>()
-  const [ autopickCard, setAutopickCard ] = useState<string>()
+  const [ autopickCard, setAutopickCard ] = useState<string | number>()
   const [ cardOptions,  setCardOptions  ] = useState<CardOptions>({ width: '', showArt: true, sort: undefined })
   
   const autoPick = useCallback(() => {
-    if (!autopickCard || nextPickAllowed.current > Date.now()) return;
+    if (typeof autopickCard === 'undefined' || nextPickAllowed.current > Date.now()) return;
     nextPickAllowed.current = Date.now() + NEXT_PICK_DELAY
 
     pickCard(selectedCard || autopickCard)
@@ -35,11 +35,11 @@ export default function usePickController(
 
   const clickPickButton = useCallback(() => {
     if (typeof pack?.index !== 'number') return notify({ message: 'Cannot pick without a pack.', theme: 'error' })
-    if (!selectedCard) return notify({ message: 'Cannot pick before selecting a card.', theme: 'error' })
+    if (!selectedCard && pack.cards.length) return notify({ message: 'Cannot pick before selecting a card.', theme: 'error' })
     if (nextPickAllowed.current > Date.now()) return notify({ message: 'Your picks were too quick, try again after closing this.', theme: 'info' })
     nextPickAllowed.current = Date.now() + NEXT_PICK_DELAY
 
-    pickCard(selectedCard)
+    pickCard(selectedCard || pack.index)
     setSelectedCard(undefined)
     setAutopickCard(undefined)
   }, [selectedCard, pack, notify, pickCard])
@@ -71,13 +71,13 @@ export default function usePickController(
   useEffect(() => {
     if (typeof pack?.index === 'number') {
       selectTab('pack')
-      setAutopickCard(getAutopickCard(pack, player?.cards))
+      setAutopickCard(getAutopickCard(pack, player?.cards) || pack.index)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pack, player?.id, player?.cards.length])
 
   return {
-    autopickCard: timer && timer < redTimerSeconds ? autopickCard : undefined,
+    autopickCard: typeof autopickCard === 'string' && timer && timer < redTimerSeconds ? autopickCard : undefined,
     selectedCard, deselectCard,
     clickPickButton, clickPackCard, clickBoardCard,
     cardOptions, setCardOptions,

@@ -4,6 +4,7 @@ import UserIcon from "components/svgs/UserIcon"
 import TimerIcon from "components/svgs/TimerIcon"
 import PackIcon from "components/svgs/PackIcon"
 import DeckIcon from "components/svgs/DeckIcon"
+import CardIcon from "components/svgs/CardIcon"
 
 // SHARED
 
@@ -44,6 +45,10 @@ export const HelpButton = ({ tip }: { tip: string }) => (
 
 
 // BOOSTER FORM
+
+export const BasicsLabel  = () => (<span className="flex items-center gap-2">
+  <CardIcon className="stroke-current fill-none inline-block h-5 w-6" />Include Basic Lands
+</span>)
 
 export const PacksWrapper = ({ children }: { children: ReactNode }) => (
   <div className="min-h-[18rem] flex flex-col gap-2 items-center px-4 py-2">{children}</div>

@@ -1,7 +1,7 @@
 import type { PackFull, ServerProps, Local, PlayerFull } from 'types/game'
 import { useCallback, useMemo, useState } from 'react'
 import { spliceInPlace, updateArrayIdx } from 'components/base/services/common.services'
-import { canAdvance, getCurrentPack, getHolding, getPlayerIdx, getSlots, playerIsHost } from '../../shared/game.utils'
+import { getCanAdvance, getCurrentPack, getHolding, getPlayerIdx, getSlots, playerIsHost } from '../../shared/game.utils'
 import { reloadData } from '../game.controller'
 import { useTimerStore } from 'components/base/libs/hooks'
 import { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
@@ -17,23 +17,25 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   const [ players, updatePlayers ] = useState(props.players || [])
   const [ slots,   updateSlots   ] = useState(getSlots(props.players))
   const [ pack,    updatePack    ] = useState<PackFull>()
+  const [ maxPackSize, updatePackSize ] = useState(0)
   
   const { timer, startTimer, resetTimer, storeTimer } = useTimerStore(props.player?.timer, props.now)
   
   const isHost = playerIsHost(player, game)
-  const holding = getHolding(players, game)
-  const isReady = isHost && canAdvance(game, players, holding)
+  const holding = getHolding(players, maxPackSize, game)
+  const canAdvance = isHost && getCanAdvance(game, players, holding)
   const playerIdx = useMemo(() => getPlayerIdx(players, player), [player, players])
 
   const updateLocal = useCallback((data: ServerProps) => {
     if ('error' in data) throw new Error(`Cannot update data: ${data.error}`)
 
     const newPack = getCurrentPack(data)
-    if (newPack?.cards.length) storeTimer(data.player?.timer, data.now)
+    if (newPack && data.player?.pick && data.player.pick <= (data.packSize ?? 0)) storeTimer(data.player?.timer, data.now)
     else resetTimer()
 
     updateGame(data.options)
     updatePacks(data.packs || [])
+    updatePackSize(data.packSize || 0)
     updatePlayers(data.players)
     updateSlots(getSlots(data.players))
     updatePack(newPack)
@@ -45,6 +47,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     updateGame((g) => g && ({ ...g, round }))
     updatePlayers((list) => list.map((p) => ({ ...p, pick: 1 })))
     updatePlayer((p) => p && ({ ...p, pick: 1 }))
+    updatePack(undefined)
     isHost && setLoadingPack((v) => v && v - 1)
   }, [isHost])
 
@@ -104,7 +107,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
 
   return {
     loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer, updateGame, updateLocal,
-    game, player, players, playerIdx, holding, isHost, isReady, pack, packs, slots, timer,
+    game, player, players, playerIdx, maxPackSize, holding, isHost, canAdvance, pack, packs, slots, timer,
     sessionId: props.sessionId,
     renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus, reload, startTimer, 
   }

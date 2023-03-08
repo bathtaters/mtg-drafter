@@ -1,46 +1,47 @@
+import {} from "types/global.d";
 import { COMMON_CLS, combineKeys } from "./dragDrop.custom";
 
 // ---- Class Helpers ---- \\
 
 // Create a deep copy of obj & inner arrays (depth of 2)
 // if OnlyKeys exists, filter to only include these keys
-function copyArrObj<T extends { [key: string]: any }, KeyList extends keyof T>(obj: T, onlyKeys: Readonly<Array<keyof T>>): Pick<T, KeyList> {
-  if (!onlyKeys) onlyKeys = Object.keys(obj) as unknown as Array<keyof T>;
+function copyArrObj<T extends {}, KeyList extends keyof T>(obj: T, onlyKeys: Readonly<Array<keyof T>>) {
+  if (!onlyKeys) onlyKeys = Object.keys(obj);
   let copy: Partial<T> = {};
   for (const key of onlyKeys) {
     if (!(key in obj)) continue;
-    copy[key] = (Array.isArray(obj[key]) ? [...obj[key]] : obj[key]) as T[keyof T];
+    copy[key] = (Array.isArray(obj[key]) ? [...obj[key] as any[]] : obj[key]) as T[keyof T];
   }
   return copy as Pick<T, KeyList>; 
 }
 
 // Convert Object of string arrays to object of joined strings
 const CLASS_SEP = ' '
-const flattenArrays = <T extends { [key: string]: string[] }>(stringArrays: T) => {
-  let result = {} as { [key: string]: string };
-  (Object.keys(stringArrays) as Array<keyof T>).forEach((k) => { result[k as string] = stringArrays[k].join(CLASS_SEP) })
-  return result as { [key in keyof T]: string }
+const flattenArrays = <T extends Record<string,string[]>>(stringArrays: T) => {
+  let result = {} as { [key in keyof T]: string }
+  Object.keys(stringArrays).forEach((k: keyof T) => { result[k] = stringArrays[k].join(CLASS_SEP) })
+  return result
 }
 
 // Append entry (COMMON_CLS) w/ elements common to all 3 'combineKeys'
 const compareKeys = combineKeys.slice(1);
-export function extractMatches<C extends { [key: string]: string[] }>(classes: C, optimizeClassSwapping: boolean) {
+export function extractMatches<C extends Record<string,string[]>>(classes: C, optimizeClassSwapping: boolean) {
   if (!optimizeClassSwapping) return flattenArrays({
     [COMMON_CLS]: [] as string[],
     ...classes,
   });
 
-  let indexes, copy = copyArrObj<typeof classes, typeof combineKeys[number]>(classes, combineKeys);
+  let indexes: Record<string,number>, copy = copyArrObj<typeof classes, typeof combineKeys[number]>(classes, combineKeys);
   let result = {
     ...classes,
     [COMMON_CLS]: [] as string[],
     [combineKeys[0]]: [] as string[],
   };
   
-  for (const entry of copy[combineKeys[0]] as string[]) {
+  for (const entry of copy[combineKeys[0]]) {
     
     // Find & record matches from other entries
-    indexes = {} as { [key: string]: number };
+    indexes = {};
     for (const key of compareKeys) {
       if (!result[key]) break
       const nextIdx = result[key].indexOf(entry); 

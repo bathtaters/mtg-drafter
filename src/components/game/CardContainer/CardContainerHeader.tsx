@@ -6,7 +6,7 @@ import { colorClass, colorPip, hoverClass } from "components/base/styles/manaIco
 import { colorOrder } from "assets/sort.constants"
 import { cardCounter } from "assets/strings"
 import { getObjectSum, titleCase } from "components/base/services/common.services"
-import { containerIcon } from "../GameBody/GameLayoutStyles"
+import { containerIcon } from "../GameBody/GameBodyStyles"
 
 const LandCounter = ({ color, count }: { color: Lowercase<Color>, count: number }) => !count ? null : (
   <LandCounterStyle className={`${colorClass[color]} ${hoverClass[color]} border-solid border-1`}>

@@ -14,6 +14,8 @@ export const containerIcon: Record<TabLabels, ReactNode> = {
 }
 
 
+export const GameBodyHeader = ({ children }: { children?: ReactNode }) => <div className="relative w-full max-w-6xl m-auto">{children}</div>
+
 export const TabsWrapper = ({ children }: { children: ReactNode }) => <div className="tabs tabs-boxed justify-center gap-2 mb-6 bg-transparent">{children}</div>
 
 
@@ -23,7 +25,7 @@ export const TabStyle = (
 ) => (
   <div
     className={`indicator flex-nowrap tab tab-lg ${label === "pack" ? " tab-secondary" : " tab-primary"}${isSelected ? " tab-active" : ""}`}
-    onClick={onClick} onMouseEnter={onClick}
+    onClick={onClick}
   >
     {containerIcon[label]}
     <span className="text-xl md:text-2xl font-medium">{titleCase(label)}</span>
@@ -51,10 +53,10 @@ export const TimerStyle = ({ seconds = 0 }: { seconds?: number }) => (
 )
 
 
-export const PickCardButton = ({ disabled, onClick }: { disabled?: boolean, onClick?: MouseEventHandler }) => (
+export const PickCardButton = ({ disabled, isEmpty, onClick }: { disabled?: boolean, isEmpty?: boolean, onClick?: MouseEventHandler }) => (
   <div className="text-center w-full">
-    <button type="button" className="btn btn-secondary btn-lg w-60 h-18 mb-4" onClick={onClick} disabled={disabled}>
-      Pick Card
+    <button type="button" className="btn btn-secondary btn-lg w-60 h-18 mb-4" onClick={onClick} disabled={disabled && !isEmpty}>
+      {!isEmpty ? "Pick Card" : "Pass Empty Pack"}
     </button>
   </div>
 )
@@ -69,6 +71,6 @@ export const RoundButton = ({ label, onClick }: { onClick: MouseEventHandler, la
 )
 
 
-export const GameLayoutWrapper = ({ children }: { children: ReactNode }) => (
+export const GameBodyWrapper = ({ children }: { children: ReactNode }) => (
   <div className="flex flex-col text-center relative">{children}</div>
 )

@@ -1,5 +1,5 @@
 import type { Game, GameCard, Board, GameStatus } from "@prisma/client"
-import type { BasicPlayer, ServerProps } from "types/game"
+import type { BasicPlayer, PackMin, ServerProps } from "types/game"
 import { mod } from "components/base/services/common.services"
 
 export const gameIsEnded = (game?: Partial<Game>): boolean =>
@@ -25,13 +25,13 @@ export const passingRight = ({ round, roundCount }: Partial<Game>) =>
 export const getPlayerIdx = (players: Pick<BasicPlayer,"id">[], player?: Pick<BasicPlayer,"id"> | null) => !player?.id ? -1 :
   players.findIndex(({ id }) => id === player.id)
 
-export const getNeighborIdx = (game: Partial<Game> | undefined, playerCount: number, playerIdx: number) => {
+export const getNeighborIdx = (game: Partial<Game> | undefined, playerCount: number, playerIdx: number, invert = false) => {
   if (!game || playerIdx === -1 || playerCount <= 1) return -1
   
   const passRight = passingRight(game)
   if (typeof passRight !== 'boolean') return -1
 
-  return passRight ?
+  return passRight !== invert ?
     mod(playerIdx - 1, playerCount) :
     (playerIdx + 1) % playerCount
 }
@@ -51,23 +51,33 @@ export const getPackIdx = (game: Pick<Game,"round"|"roundCount"> | undefined, pl
   )
 }
 
-export const getHolding = (players: Pick<BasicPlayer,"pick">[], game?: Partial<Game>) =>
-  !game || !players.length || typeof game.packSize !== 'number' ? [] :
+export const getRoundPackSize = (packs: PackMin[], playerCount: number, game?: Partial<Game>) => {
+  if (!game || typeof game.round !== 'number' || !packs.length) return 0
+
+  let packSize = 0, offset = (game.round - 1) * playerCount
+  for (let i = 0; i < playerCount; i++) {
+    if (packs[offset + i]?.cards.length || 0 > packSize) packSize = packs[offset + i].cards.length
+  }
+  return packSize
+}
+
+export const getHolding = (players: Pick<BasicPlayer,"pick">[], packSize: number, game?: Partial<Game>) =>
+  !game || !players.length || typeof game.round !== 'number' ? [] :
     players.map(({ pick }, i) => {
-      if (!pick || pick > (game.packSize as number)) return 0
+      if (!pick || pick > packSize) return 0
       if (players.length === 1) return 1
 
       const neighborPick = players[getNeighborIdx(game, players.length, i)]?.pick
       if (typeof neighborPick !== 'number') return 0
 
-      return Math.min(neighborPick, (game.packSize as number)) - pick + 1
+      return Math.min(neighborPick, packSize) - pick + 1
     })
 
 export const getSlots = (players?: BasicPlayer[]) => players ? players.filter(({ sessionId }) => !sessionId).map(({ id }) => id) : []
 
 export const playerIsHost = (player?: Partial<BasicPlayer>, game?: Partial<Game>): game is Game => game?.hostId ? game.hostId === player?.id : false
 
-export const canAdvance = (game?: Partial<Game>, players: BasicPlayer[] = [], holding: number[] = []) =>
+export const getCanAdvance = (game?: Partial<Game>, players: BasicPlayer[] = [], holding: number[] = []) =>
   game && typeof game.round === 'number' &&
     (game.round < 1 ? players.every(({ sessionId }) => sessionId) : holding.every((h) => !h))
 

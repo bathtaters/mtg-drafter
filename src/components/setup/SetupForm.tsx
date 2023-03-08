@@ -11,13 +11,13 @@ type Props = SetupProps
 
 export default function SetupForm({ setList }: Props) {
   const setup = useSetupController()
-  const { options, submitForm, gameLoading, error, setName, setType } = setup
+  const { options, submitForm, gameLoading, error, setOption } = setup
 
   return (
     <FormWrapper onSubmit={submitForm}>
-      <FormTitle placeholder="Enter Title" value={options.name} setValue={setName} {...setupLimits.name} />
+      <FormTitle placeholder="Enter Title" value={options.name} setValue={setOption.name} {...setupLimits.name} />
       
-      <TypeTabs selected={options.type} setSelected={setType} />
+      <TypeTabs selected={options.type} setSelected={setOption.type} />
       { options.type === "Cube" ? <CubeForm {...setup} /> : <BoosterForm {...setup} setList={setList} /> }
       
       <ErrorText>{error}</ErrorText>

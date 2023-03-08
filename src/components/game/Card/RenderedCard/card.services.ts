@@ -12,7 +12,7 @@ export const getArtBoxText = (layout: Card['layout'], sideCount: number): string
 
 
 // Special codes { 'BRACE CODE': 'mana.css code'  }
-const specials: { [key: string]: string } = {
+const specials: Record<string,string> = {
   'T': 'tap'
 }
 

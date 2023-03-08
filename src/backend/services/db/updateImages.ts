@@ -1,6 +1,6 @@
 import type { Card as ScryfallCard } from '../../../types/scryfall'
 import prisma from '../../libs/db'
-import batchCallback from '../../libs/batcher'
+import Batcher from '../../libs/Batcher'
 import fetchJson from '../../libs/fetchJson'
 import { fetchBulkUrl, adaptScryfallToImage, ImageData, isPreferredArt } from '../../utils/db/image.utils'
 import { createMultiUpdate } from '../../utils/db/db.utils'
@@ -36,16 +36,17 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
   enableLog && console.time('Image URIs')
 
   let count = 0
-  const batch = batchCallback(IMAGE_BATCH, (data: ImageData[]) => multiUpdate(data).then((c) => { count += c }))
+  const batch = new Batcher(IMAGE_BATCH, (data: ImageData[]) => multiUpdate(data).then((c) => { count += c }))
 
   await fetchJson<ScryfallCard>(imgUrl, async (data) => {
     if (missingImgs && !missingImgs.includes(data.id)) return;
 
-    await batch.append(...adaptScryfallToImage(data).filter(({ img }) => img))
-
+    for (const card of adaptScryfallToImage(data)) {
+      if (card.img) await batch.add(card)
+    }
   }, { jsonPath: '*', maxThreads: DL_THREADS })
 
-  await batch.flush()
+  await batch.finish()
 
   enableLog && console.timeEnd('Image URIs')
   enableLog && console.log('Updated',count,'image URIs')

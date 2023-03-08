@@ -21,7 +21,7 @@ export const CardWrapper = ({
       <div className={`absolute top-[-1.5%] left-[-2%] w-[104%] h-[103%] z-0 rounded-card ${
         isSelected ? 'bg-secondary' : isHighlighted ? 'bg-error' : 'bg-transparent'
       }`} />
-      {isFoil && <div className="absolute w-full h-full z-50 bg-foil opacity-70 mix-blend-multiply" />}
+      {isFoil && <div className="absolute w-full h-full z-50 rounded-card bg-foil opacity-70 mix-blend-multiply" />}
       {image}
       {rendered}
     </div>

@@ -2,8 +2,8 @@ import type { PackFull, GameCardFull, CardFull } from "types/game"
 import { Color } from "@prisma/client"
 import { pickSort } from "./cardSort.services"
 
-type ColorRank = Record<Color|"none", number>
-const colorBase = () => Object.fromEntries(Object.keys(Color).concat("none").map((c) => [c, 0])) as ColorRank
+const NONE = "none" as const
+const colorBase = () => Object.fromEntries([...Object.keys(Color), NONE].map((c) => [c, 0]))
 
 
 const getMaxValue = <T = any>(array: T[], sortAlgo: (a: T, b: T) => number) => {
@@ -13,7 +13,7 @@ const getMaxValue = <T = any>(array: T[], sortAlgo: (a: T, b: T) => number) => {
 }
 
 
-const getColorRating = (card: CardFull, colorRank: ColorRank) => {
+const getColorRating = (card: CardFull, colorRank: ReturnType<typeof colorBase>) => {
   // If no matches, but card is colorless, add half a point
   const colorCount = card.colors.length
   if (!colorCount) return colorRank.none || 0.5

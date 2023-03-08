@@ -40,14 +40,14 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
     })
     
 
-    socket.on('pickCard', async (playerId, gameCardId, callback) => {
+    socket.on('pickCard', async (playerId, gameCardOrPack, callback) => {
       try {
         // Validation
         playerId = validation.id.parse(playerId)
-        gameCardId = validation.id.parse(gameCardId)
+        gameCardOrPack = validation.idOrNum.parse(gameCardOrPack)
 
         // Update DB
-        const player = await pickCard(playerId, gameCardId)
+        const player = await pickCard(playerId, gameCardOrPack)
         if (typeof player === 'string') throw new Error(player === 'Player' ? 'Player not found' : 'Card was already picked or does not exist')
 
         // Update Client(s)

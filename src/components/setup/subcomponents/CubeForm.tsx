@@ -13,20 +13,22 @@ type Props = {
   file: CubeFile | null,
   fileLoading: boolean,
   setFile: SetFile,
-  setPlayers: (value: string) => void,
-  setTimer: (value: string) => void,
-  setPacks: (value: string) => void,
-  setPackSize: (value: string) => void,
+  setOption: {
+    players: (value: string) => void,
+    timer: (value: string) => void,
+    packs: (value: string) => void,
+    packSize: (value: string) => void,
+  }
 }
 
-export default function CubeForm({ options, file, fileLoading, setFile, setPlayers, setTimer, setPacks, setPackSize }: Props) {
+export default function CubeForm({ options, setOption, file, fileLoading, setFile }: Props) {
   return (
       <InputWrapper>
         <FieldWrapper label="Options">
-          <RangeInput caption={<PlayersLabel />}  value={options.players}  setValue={setPlayers}  {...setupLimits.players}  />
-          <RangeInput caption={<PacksLabel />}    value={options.packs}    setValue={setPacks}    {...setupLimits.packs}    />
-          <RangeInput caption={<PackSizeLabel />} value={options.packSize} setValue={setPackSize} {...setupLimits.packSize} />
-          <RangeInput caption={<TimerLabel />}    value={options.timer}    setValue={setTimer}    {...setupLimits.timer}  
+          <RangeInput caption={<PlayersLabel />}  value={options.players}  setValue={setOption.players}  {...setupLimits.players}  />
+          <RangeInput caption={<PacksLabel />}    value={options.packs}    setValue={setOption.packs}    {...setupLimits.packs}    />
+          <RangeInput caption={<PackSizeLabel />} value={options.packSize} setValue={setOption.packSize} {...setupLimits.packSize} />
+          <RangeInput caption={<TimerLabel />}    value={options.timer}    setValue={setOption.timer}    {...setupLimits.timer}  
             keys={timerLabels} boxClass="w-16" />
         </FieldWrapper>
 

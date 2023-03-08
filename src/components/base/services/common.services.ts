@@ -11,6 +11,34 @@ export const formatBytes = (bytes: number, decimals = 2) => {
   return `${parseFloat((bytes/Math.pow(1024,d)).toFixed(c))} ${["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"][d]}`
 }
 
+export const clampText = (text: string, charactersPerLine: number, maxLines = 1,
+  { ellipsis = '…', wordBreak = '-', lineBreak = '\n', spaceChars = ' _-' } = {}
+) => {
+  if (text.length <= charactersPerLine) return text // short-circuit short input
+
+  let lines: string[] = []
+  while (text.length > 0 && lines.length < maxLines) {
+    // Find last space before charactersPerLine
+    let split = revIndexOfChar(text, spaceChars, charactersPerLine), lineEnd = ''
+
+    // If no space, set break to max size + word splitter (ie. hyphen)
+    if (text.length <= charactersPerLine) split = text.length
+    else if (split < 0) split = charactersPerLine - wordBreak.length, lineEnd = wordBreak
+
+    // Append next line 
+    lines.push(text.substring(0, split).trim() + lineEnd)
+
+    // Shrink buffer & trim whitespace
+    text = text.substring(split).trim()
+  }
+
+  // Add ellipsis if text is remaining in buffer
+  if (text.length)
+    lines[lines.length - 1] = lines[lines.length - 1].substring(0, charactersPerLine - ellipsis.length) + ellipsis
+  
+  return lines.join(lineBreak)
+}
+
 export const formatTime = (seconds: number) => {
   if (seconds < 60) return [ seconds ]
   if (seconds < 3600) return [ Math.floor(seconds / 60), ':', seconds % 60 ]
@@ -35,11 +63,17 @@ export const appendIfNotInList = (arrayList: any[][], newArray: any[]) => arrayL
   newArray.every((entry,i) => typeof entry === 'function' ? typeof array[i] === 'function' : entry.toString() === array[i].toString())
 ) ? -1 : arrayList.push(newArray)
 
-export const sameValueObject = <T extends { [key: string]: any }> (keys: (keyof T)[], value: T[keyof T]): T =>
-  Object.fromEntries(keys.map((key) => [key, value])) as T
+export const sameValueObject = <T> (keys: (keyof T)[], value: T[keyof T]): T => Object.fromEntries(keys.map((key) => [key, value])) as T
 
-export const getObjectSum = (obj: { [key: string]: number }) => Object.values(obj).reduce((sum, n) => sum + n, 0)
+export const getObjectSum = (obj: Record<string,number>) => Object.values(obj).reduce((sum, n) => sum + n, 0)
 
+export const revIndexOfChar = (str: string, charList: string, maxIndex = -1) => {
+  const end = maxIndex < 0 || maxIndex > str.length ? str.length : maxIndex
+  for (let i = end; i > 0; i--) {
+    if (charList.includes(str.charAt(i - 1))) return i
+  }
+  return -1
+}
 
 export const throttle = (delay: number) => {
   let pause: boolean

@@ -51,7 +51,16 @@ export const
     cubeSize: { max: 720 * 4    },
   }, 
 
-  setupDefaults: GameOptions = { type: "Cube", name: "", players: "8", timer: "4", packs: "3", packSize: "15", packList: ["KLD","KLD","AER"] },
+  setupDefaults: GameOptions = Object.freeze({
+    type: "Cube",
+    name: "",
+    players: "8",
+    timer: "4",
+    packs: "3",
+    packSize: "15",
+    packList: ["KLD","KLD","AER"],
+    basics: true
+  }),
 
   fileSettings = { id: "cubeFile", type: "text/plain", maxSize: 10 * 1024 * 1024 /* = 10 MB */, },
 
@@ -66,8 +75,7 @@ export const layoutDirection: { [layout in CardLayout]?: Direction } = {
   split: Direction.E,
   aftermath: Direction.W,
 }
-export const flippableLayouts: CardLayout[] = (Object.keys(layoutDirection) as CardLayout[]).concat(['modal_dfc', 'transform', 'meld'])
-
+export const flippableLayouts = [...Object.keys(layoutDirection),'modal_dfc', 'transform', 'meld'] as const
 
 // Advanced Tweaks + Debug Settings
 

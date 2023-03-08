@@ -4,7 +4,7 @@ import { FilterWrapper, FilterButton } from "./LogToolbarStyles"
 
 type Props<ID> = {
   label: string,
-  buttons: { id: ID, name?: ReactNode }[],
+  buttons: { id: ID, name?: string | null }[],
   baseList: ID[],
   offset?: number,
   invert?: boolean,
@@ -29,7 +29,7 @@ export default function LogFilter<ID extends Key = string>({ label, buttons, bas
           isSelected={!selected || selected.includes(id)} setSelected={updateSelection(id)}
           color={label ? idx + offset : -1} inverse={invert}
         >
-          {name ?? id}
+          {name ?? String(id)}
         </FilterButton>
       )}
       {!hideAll &&

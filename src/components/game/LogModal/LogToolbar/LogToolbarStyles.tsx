@@ -3,6 +3,7 @@ import DropdownMenu from "components/base/common/DropdownMenu"
 import FilterIcon from "components/svgs/FilterIcon"
 import GearIcon from "components/svgs/GearIcon"
 import getColorClass from "components/base/libs/colors"
+import { clampText } from "components/base/services/common.services"
 
 export const ToolbarWrapper = ({ children }: { children: ReactNode }) => (
   <div className="flex">{children}</div>
@@ -43,7 +44,7 @@ export const FilterWrapper = ({ label, children }: { label: ReactNode, children:
 
 export const FilterButton = (
   { color = -1, inverse, wide, isSelected, setSelected, children }:
-  { color?: number, inverse?: boolean, isSelected: boolean, wide?: boolean, setSelected: (selected: boolean) => void, children: ReactNode }
+  { color?: number, inverse?: boolean, isSelected: boolean, wide?: boolean, setSelected: (selected: boolean) => void, children: string }
 ) => (
   <button type="button" onClick={() => setSelected(!isSelected)}
     className={`btn btn-sm ${wide ? 'col-span-2 ' : ''}${
@@ -52,6 +53,6 @@ export const FilterButton = (
       ` btn-active ${getColorClass(color, 'bg', { inverse: !inverse, dim: true, hover: true })}` :
       ` bg-base-300 hover:bg-base-200 ${getColorClass(color, 'fg', { inverse, dim: true, hover: true })}`}`}
   >
-    {children}
+    {clampText(children, 8, 2)}
   </button>
 )

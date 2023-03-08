@@ -1,21 +1,13 @@
-import type { DraftType, GameOptions } from "types/setup"
-import { useState, useCallback, FormEventHandler } from "react"
+import type { FormEventHandler } from "react"
 import useCreateGame from "./createGame.controller"
 import useCubeFile from "./cubeFile.controller"
-import { setupDefaults } from "assets/constants"
-
+import { useSimpleReducer } from "components/base/libs/hooks"
+import { spliceInPlace } from "components/base/services/common.services"
+import { setupDefaults, setupLimits } from "assets/constants"
 
 export default function useSetupController() {
-  const [ options,   setOptions ] = useState(setupDefaults as GameOptions)
+  const [ options, setOption ] = useSimpleReducer(setupDefaults)
   const { file, setFile, loading: fileLoading } = useCubeFile()
-
-  const setType     = useCallback((type: DraftType)    => setOptions((curr) => ({ ...curr, type     })), [setOptions])
-  const setName     = useCallback((name: string)       => setOptions((curr) => ({ ...curr, name     })), [setOptions])
-  const setPlayers  = useCallback((players: string)    => setOptions((curr) => ({ ...curr, players  })), [setOptions])
-  const setTimer    = useCallback((timer: string)      => setOptions((curr) => ({ ...curr, timer    })), [setOptions])
-  const setPacks    = useCallback((packs: string)      => setOptions((curr) => ({ ...curr, packs    })), [setOptions])
-  const setPackSize = useCallback((packSize: string)   => setOptions((curr) => ({ ...curr, packSize })), [setOptions])
-  const setPackList = useCallback((packList: string[]) => setOptions((curr) => ({ ...curr, packList })), [setOptions])
 
   const { createGame, loading: gameLoading, error } = useCreateGame()
 
@@ -24,8 +16,19 @@ export default function useSetupController() {
     ev.preventDefault(); return createGame(options, file)
   }
 
+  const setPack = (idx: number) => (code: string) => setOption.packList(spliceInPlace(options.packList,idx,1,code))
+
+  const addPack = options.packList.length < setupLimits.packs.max && (
+    () => setOption.packList(options.packList.concat(options.packList[options.packList.length - 1]))
+  )
+  const rmvPack = options.packList.length > setupLimits.packs.min && (
+    () => setOption.packList(options.packList.slice(0,options.packList.length - 1))
+  )
+
   return {
-    options, file, fileLoading, submitForm, gameLoading, error,
-    setType, setName, setPlayers, setTimer, setPacks, setPackSize, setPackList, setFile,
+    submitForm,
+    gameLoading, error,
+    options, setOption, setPack, addPack, rmvPack,
+    file, fileLoading, setFile,
   }
 }

@@ -4,7 +4,7 @@ import type { GameProps, PartialGame, PickCard, PlayerFull, SwapCard } from 'typ
 import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 import CardContainer from "../CardContainer/CardContainer"
 import CardToolbar from '../CardToolbar/CardToolbar'
-import { PickCardButton, RoundButton, GameLayoutWrapper, TimerStyle } from './GameLayoutStyles'
+import { PickCardButton, RoundButton, GameBodyWrapper, GameBodyHeader, TimerStyle } from './GameBodyStyles'
 import { EmptyStyle } from 'components/base/styles/AppStyles'
 import usePickController from "./pick.controller"
 import ContainerTabs from './ContainerTabs'
@@ -15,6 +15,7 @@ type Props = {
   player: PlayerFull,
   pack?: GameProps['packs'][number],
   playerTimer?: number,
+  roundOver?: boolean,
   pickCard: PickCard,
   swapCard: SwapCard,
   clickRoundBtn?: () => void,
@@ -25,7 +26,7 @@ type Props = {
   notify: AlertsReturn['newToast'],
 }
 
-export default function GameLayout({ game, player, pack, playerTimer, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, onPackLoad, loadingPack, notify }: Props) {
+export default function GameBody({ game, player, pack, playerTimer, roundOver, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, onPackLoad, loadingPack, notify }: Props) {
 
   const {
     autopickCard, selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
@@ -33,27 +34,33 @@ export default function GameLayout({ game, player, pack, playerTimer, clickRound
   } = usePickController(pickCard, swapCard, notify, pack, game, player, playerTimer, onPackLoad)
   
   if (!('round' in game) || game.round < 1 || !player) return (
-    <GameLayoutWrapper>
+    <GameBodyWrapper>
       { clickRoundBtn && <RoundButton onClick={clickRoundBtn} label="start" /> }
       <EmptyStyle>{'round' in game ? "Waiting for draft to start." : "Loading game..."}</EmptyStyle>
-    </GameLayoutWrapper>
+    </GameBodyWrapper>
   )
 
   return (
-    <GameLayoutWrapper>
-      <ContainerTabs pack={pack?.cards} player={player} selectedTab={selectedTab} selectTab={selectTab} hidePack={hidePack} />
+    <GameBodyWrapper>
+      <GameBodyHeader>
+        <ContainerTabs pack={pack?.cards} player={player} selectedTab={selectedTab} selectTab={selectTab} hidePack={hidePack} />
 
-      <CardToolbar setCardOptions={setCardOptions} clickReload={clickReload} notify={notify} />
+        <CardToolbar setCardOptions={setCardOptions} clickReload={clickReload} notify={notify} />
+      </GameBodyHeader>
 
       {selectedTab === 'pack' ?
         <CardContainer
           label="pack" cardOptions={cardOptions} loading={loadingPack ? -1 : packLoading || undefined}
-          cards={pack?.cards} selectedId={selectedCard} highlightId={autopickCard}
+          cards={roundOver ? 'roundEnd' : pack?.cards} selectedId={selectedCard} highlightId={autopickCard}
           onClick={clickPackCard} onBgdClick={deselectCard} onCardLoad={handleCardLoad}
         >
           { clickRoundBtn ?
             <RoundButton onClick={clickRoundBtn} label={getGameStatus(game)} /> :
-            <PickCardButton disabled={loadingPack || !!packLoading || !pack || !pack.cards.length || !selectedCard} onClick={clickPickButton} />
+            <PickCardButton
+              disabled={loadingPack || !!packLoading || !pack || roundOver || !selectedCard}
+              isEmpty={!roundOver && pack && !pack.cards.length}
+              onClick={clickPickButton}
+            />
           }
         </CardContainer>
         :
@@ -64,6 +71,6 @@ export default function GameLayout({ game, player, pack, playerTimer, clickRound
       }
 
       { typeof timer === 'number' &&  <TimerStyle seconds={timer} /> }
-    </GameLayoutWrapper>
+    </GameBodyWrapper>
   )
 }

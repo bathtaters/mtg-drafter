@@ -10,11 +10,12 @@ const adaptCube = ({ name, players, timer, packs, packSize }: GameOptions, file:
   cardList: file?.data?.accepted || []
 })
 
-const adaptBooster = ({ name, players, timer, packList }: GameOptions): BoosterOptions => ({
+const adaptBooster = ({ name, players, timer, packList, basics }: GameOptions): BoosterOptions => ({
   name,
   playerCount: +players,
   timer: +timer,
   packList,
+  basics,
 })
 
 export const adaptOptions = (options: GameOptions, file: CubeFile|null) => 

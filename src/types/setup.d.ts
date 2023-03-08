@@ -38,6 +38,7 @@ export type GameOptions = {
   packs: string,
   packSize: string,
   packList: string[],
+  basics: boolean,
 }
 
 

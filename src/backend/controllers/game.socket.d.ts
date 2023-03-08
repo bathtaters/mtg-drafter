@@ -16,7 +16,7 @@ export interface GameClientToServer {
   setTitle:   (gameId: Game['id'], title: Game['name']) => void;
   nextRound:  (gameId: Game['id'], round: Game['round']) => void;
   setName:    (playerId: Player['id'], name: Player['name'], byHost: boolean) => void;
-  pickCard:   (playerId: Player['id'], gameCardId: GameCard['id'], callback: (pick?: Player['pick']) => void) => void;
+  pickCard:   (playerId: Player['id'], gameCardOrPack: GameCard['id'] | Pack['index'], callback: (pick?: Player['pick']) => void) => void;
   setStatus:  (playerId: Player['id'], status: PlayerStatus, byHost: boolean, callback: (player?: Player) => void) => void;
 
   swapBoards: (gameCardId: GameCard['id'], toBoard: Board, callback: (gameCardId: GameCard['id'] | void, toBoard?: Board | void) => void) => void;

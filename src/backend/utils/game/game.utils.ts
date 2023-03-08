@@ -1,8 +1,22 @@
 import type { Game, Player as DbPlayer } from '@prisma/client'
-import type { BasicLands, BasicPlayer, Player } from 'types/game'
+import type { BasicPlayer, BasicLands, Player } from 'types/game'
 import { gameUrlRegEx } from 'assets/urls'
 import { getNeighborIdx } from 'components/game/shared/game.utils'
 import { defaultTimer, setupDefaults, timerOptions } from 'assets/constants'
+
+export const getMaxPackSize = (packCounts: { packIdx: number, _count: number }[], round: number, roundCount: number, playerCount: number) => {
+  if (!round || !roundCount || !playerCount || round > roundCount) return 0
+  const rangeEnd = round * playerCount
+
+  let maxPackSize = 0
+  for (let pack = rangeEnd - playerCount; pack < rangeEnd; pack++) {
+    if (packCounts[pack]?.packIdx !== pack) throw new Error(`Pack ${pack} is missing!`)
+
+    if (packCounts[pack]._count > maxPackSize)
+      maxPackSize = packCounts[pack]._count
+  }
+  return maxPackSize
+}
 
 export const adaptDbPlayer = <P extends DbPlayer>(player?: P | null) => player ? ({
   ...player,
@@ -16,11 +30,11 @@ export const getNextPlayerId = (playerId: Player['id'], game?: Pick<Game, "round
   const playerIdx = game.players.findIndex(({ id }) => playerId === id)
   if (playerIdx === -1) return undefined
   
-  return game.players[getNeighborIdx(game, game.players.length, playerIdx)]?.id
+  return game.players[getNeighborIdx(game, game.players.length, playerIdx, true)]?.id
 }
 
-export const hasPack = (game: Pick<Game,"round"|"roundCount"|"packSize">, players: Pick<BasicPlayer,"id"|"pick">[], playerIdx: number) => {
-  if (!game || !players[playerIdx]?.pick || game.round < 1 || game.round > game.roundCount || players[playerIdx].pick > game.packSize) return false
+export const hasPack = (game: Pick<Game,"round"|"roundCount">, players: Pick<BasicPlayer,"id"|"pick">[], playerIdx: number, packSize: number) => {
+  if (!game || !players[playerIdx]?.pick || game.round < 1 || game.round > game.roundCount || players[playerIdx].pick > packSize) return false
 
   const neighborIdx = getNeighborIdx(game, players.length, playerIdx)
   return neighborIdx === -1 || players[playerIdx].pick <= players[neighborIdx].pick
