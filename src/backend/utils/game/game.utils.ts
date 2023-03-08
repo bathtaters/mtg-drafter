@@ -1,5 +1,6 @@
+import type { Merge } from 'types/global.d'
 import type { Game as DbGame, Player as DbPlayer } from '@prisma/client'
-import type { Game, BasicPlayer, BasicLands, Player } from 'types/game'
+import type { Game, BasicPlayer, Player } from 'types/game'
 import { gameUrlRegEx } from 'assets/urls'
 import { getNeighborIdx } from 'components/game/shared/game.utils'
 import { defaultTimer, setupDefaults, timerOptions } from 'assets/constants'
@@ -18,15 +19,19 @@ export const getMaxPackSize = (packCounts: { packIdx: number, _count: number }[]
   return maxPackSize
 }
 
-export const adaptDbGame = <G extends Partial<DbGame>>(game?: G | null) => game ? ({
-  ...game,
-  pause: typeof game.pause === 'bigint' ? Number(game.pause) : game.pause
-}) as Omit<G,'pause'> & { pause: number | null } : null
+export const adaptDbGame = <G extends Partial<DbGame>>(game?: G | null) => (
+  !game || typeof game.pause !== 'bigint' ? game : {
+    ...game,
+    pause: Number(game.pause)
+  }
+) as Merge<G, Game> | null | undefined
 
-export const adaptDbPlayer = <P extends Partial<DbPlayer>>(player?: P | null) => player ? ({
-  ...player,
-  timer: typeof player.timer === 'bigint' ? Number(player.timer) : player.timer
-}) as P & { timer: number | null, basics: BasicLands } : null
+export const adaptDbPlayer = <P extends Partial<DbPlayer>>(player?: P | null) => (
+  !player || typeof player.timer !== 'bigint' ? player : {
+    ...player,
+    timer: Number(player.timer)
+  }
+) as Merge<P, Player> | null | undefined
 
 export const parseGameURL = (url: string) => (url.match(gameUrlRegEx) || [])[1]
 
