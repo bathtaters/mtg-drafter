@@ -1,5 +1,4 @@
-import type { Game } from "@prisma/client"
-import type { BasicPlayer, LogFull } from "types/game"
+import type { Game, BasicPlayer, LogFull } from "types/game"
 import { useCallback, useMemo, useState } from "react"
 import { fetcher } from "components/base/libs/fetch"
 import { allActions, otherPlayers, filterLogs } from "./log.utils"

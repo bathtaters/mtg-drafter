@@ -15,6 +15,7 @@ const gameData = {
   board:   z.nativeEnum(Board),
   basics:  z.object(fillAndLowerCaseObject(Board, boardLands)),
   idOrNum: z.union([ z.string().cuid(), z.number() ]),
+  bool:    z.boolean().default(false)
 }
 
 export default gameData

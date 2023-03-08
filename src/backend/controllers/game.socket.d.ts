@@ -1,11 +1,12 @@
 import type { Event, Server, Socket } from 'socket.io'
 import type { Socket as Client } from 'socket.io-client'
-import type { Game, GameCard, Pack, PlayerStatus } from '@prisma/client'
-import type { Player, PlayerFull, BasicLands, Board } from 'types/game'
+import type { GameCard, Pack, PlayerStatus } from '@prisma/client'
+import type { Game, Player, PlayerFull, BasicLands, Board } from 'types/game'
 
 export interface GameServerToClient {
   updateTitle: (title: Game['name']) => void;
   updateRound: (round: Game['round']) => void;
+  updateTimer: (pauseTime?: Game['pause']) => void;
   updatePick:  (playerId: Player['id'], pick: Player['pick'], passingToId?: Player['id']) => void;
   updateName:  (playerId: Player['id'], name: Player['name']) => void;
   updateSlot:  (playerId: Player['id'], sessionId: Player['sessionId']) => void;
@@ -15,6 +16,7 @@ export interface GameServerToClient {
 export interface GameClientToServer {
   setTitle:   (gameId: Game['id'], title: Game['name']) => void;
   nextRound:  (gameId: Game['id'], round: Game['round']) => void;
+  pauseTimer: (gameId: Game['id'], resume: boolean) => void;
   setName:    (playerId: Player['id'], name: Player['name'], byHost: boolean) => void;
   pickCard:   (playerId: Player['id'], gameCardOrPack: GameCard['id'] | Pack['index'], callback: (pick?: Player['pick']) => void) => void;
   setStatus:  (playerId: Player['id'], status: PlayerStatus, byHost: boolean, callback: (player?: Player) => void) => void;

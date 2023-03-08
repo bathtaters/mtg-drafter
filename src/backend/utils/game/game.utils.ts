@@ -1,5 +1,5 @@
-import type { Game, Player as DbPlayer } from '@prisma/client'
-import type { BasicPlayer, BasicLands, Player } from 'types/game'
+import type { Game as DbGame, Player as DbPlayer } from '@prisma/client'
+import type { Game, BasicPlayer, BasicLands, Player } from 'types/game'
 import { gameUrlRegEx } from 'assets/urls'
 import { getNeighborIdx } from 'components/game/shared/game.utils'
 import { defaultTimer, setupDefaults, timerOptions } from 'assets/constants'
@@ -18,7 +18,12 @@ export const getMaxPackSize = (packCounts: { packIdx: number, _count: number }[]
   return maxPackSize
 }
 
-export const adaptDbPlayer = <P extends DbPlayer>(player?: P | null) => player ? ({
+export const adaptDbGame = <G extends Partial<DbGame>>(game?: G | null) => game ? ({
+  ...game,
+  pause: typeof game.pause === 'bigint' ? Number(game.pause) : game.pause
+}) as Omit<G,'pause'> & { pause: number | null } : null
+
+export const adaptDbPlayer = <P extends Partial<DbPlayer>>(player?: P | null) => player ? ({
   ...player,
   timer: typeof player.timer === 'bigint' ? Number(player.timer) : player.timer
 }) as P & { timer: number | null, basics: BasicLands } : null

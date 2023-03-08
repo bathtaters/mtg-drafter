@@ -4,7 +4,7 @@ import { hoverAfterClickDelay } from "assets/constants"
 const remaining = (end?: number|null, roundTo = 1, current = Date.now()) =>
   end && end > current ? Math.round((end - current) / roundTo) : undefined
 
-export function useTimer(endTime?: number|null, onEnd = () => {}, tickMs = 1000) {
+export function useTimer(endTime?: number|null, pauseTime?: number|null, onEnd = () => {}, tickMs = 1000) {
   const timer = useRef<NodeJS.Timer>()
   const stop = useCallback(() => { clearInterval(timer.current); timer.current = undefined }, [])
 
@@ -19,10 +19,13 @@ export function useTimer(endTime?: number|null, onEnd = () => {}, tickMs = 1000)
   }, [onEnd, tickMs])
 
   useEffect(() => {
-    if (update(endTime)) timer.current = setInterval(() => update(endTime) || stop(), tickMs / 2)
-    else stop()
+    if (!pauseTime && update(endTime)) timer.current = setInterval(() => update(endTime) || stop(), tickMs / 2)
+    else {
+      stop()
+      if (pauseTime && endTime) setCountdown(remaining(endTime, tickMs, pauseTime))
+    }
     return stop
-  }, [update, stop, endTime, tickMs])
+  }, [update, stop, endTime, pauseTime, tickMs])
 
   return countdown
 }

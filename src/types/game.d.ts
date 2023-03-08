@@ -1,4 +1,4 @@
-import type { Card, Game, Pack, GameCard, Player as DbPlayer, Board, Color, PlayerStatus, LogEntry, LogAction } from "@prisma/client"
+import type { Card, Game as DbGame, Pack, GameCard, Player as DbPlayer, Board, Color, PlayerStatus, LogEntry, LogAction } from "@prisma/client"
 import type { SortKey } from "components/base/services/cardSort.services"
 import z from "backend/libs/validation"
 import { boardLands } from "./game.validation"
@@ -14,6 +14,7 @@ export type BasicLands = { [board in Board]: BoardLands } & { pack: never }
 export interface Player extends DbPlayer { timer: number | null, basics: BasicLands }
 export type BasicPlayer = Pick<Player, "id"|"name"|"sessionId"|"pick">
 
+export interface Game extends DbGame { pause: number | null }
 export type PartialGame = Pick<Game,"id"|"name"|"url">
 
 export type CardFull = Card & { otherFaces: Array<{ card: Card }> }
@@ -91,6 +92,7 @@ export type GameProps = Omit<Required<ServerProps>, 'error'>
 
 export namespace Local {
   type NextRound    = (round: Game['round']) => void
+  type PauseGame    = (pauseTime?: Game['pause']) => void
   type RenamePlayer = (playerId: Player['id'], name: Player['name']) => void
   type PickCard     = (playerId: Player['id'], pick: Player['pick'], passingToId?: Player['id']) => void
   type SwapCard     = (gameCardId: GameCard['id'], board: Board) => void
@@ -102,6 +104,7 @@ export namespace Socket {
   type RenamePlayer  = (name: Player['name'], playerId?: Player['id'], byHost?: boolean) => void
   type SetTitle      = (title: Game['name']) => void
   type NextRound     = () => void
+  type PauseGame     = (resume?: boolean) => void
   type PickCard      = (gameCardOrPack: GameCard['id'] | Pack['index']) => void
   type SwapCard      = (gameCardId: GameCard['id'], toBoard: Board) => void
   type SetLands      = (lands: BasicLands) => void
@@ -112,6 +115,7 @@ export namespace Socket {
 export type RenamePlayer  = Socket.RenamePlayer
 export type SetTitle      = Socket.SetTitle
 export type NextRound     = Socket.NextRound
+export type PauseGame     = Socket.PauseGame
 export type PickCard      = Socket.PickCard
 export type SwapCard      = Socket.SwapCard
 export type SetLands      = Socket.SetLands

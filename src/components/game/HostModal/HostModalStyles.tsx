@@ -1,11 +1,11 @@
 import type { MouseEventHandler, ReactNode } from "react"
 import TextEditor, { Props as TextEditProps } from "components/base/common/FormElements/TextEditor"
+import IconToggle, { Props as IconToggleProps } from "components/base/common/FormElements/IconToggle"
+import { PauseIcon, PlayIcon } from "components/svgs/PlayPauseIcons"
 
 // Base
 
 export const Divider = () => <div className="divider" />
-
-// Game Editor
 
 export const FieldWrapper = ({ label, children }: { label: ReactNode, children: ReactNode }) => (
   <div className="form-control w-full mb-4">
@@ -14,10 +14,26 @@ export const FieldWrapper = ({ label, children }: { label: ReactNode, children: 
   </div>
 )
 
+
+// Game Editor
+
+export const GameContainer = ({ label, children }: { label: ReactNode, children: ReactNode }) => (
+  <FieldWrapper label={label}>
+    <div className="flex flex-row gap-4 items-center">{children}</div>
+  </FieldWrapper>
+)
+
 export const TitleEditor = (props: TextEditProps) => (
-  <div className="font-serif text-xl bg-base-300 border border-secondary rounded-lg">
+  <div className="font-serif text-xl bg-base-300 border border-secondary rounded-lg flex-grow">
     <TextEditor {...props} className="input-secondary bg-base-300 text-xl" />
   </div>
+)
+
+export const PauseButton = (props: Omit<IconToggleProps, "className"|"children">) => (
+  <IconToggle {...props} className="btn btn-secondary btn-circle">
+    <PlayIcon  className="fill-current w-8" />
+    <PauseIcon className="fill-current w-8" />
+  </IconToggle>
 )
 
 

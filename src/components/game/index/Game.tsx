@@ -1,5 +1,4 @@
-import type { Game } from '@prisma/client'
-import type { ServerProps, BasicLands, PartialGame } from 'types/game'
+import type { Game, ServerProps, BasicLands, PartialGame } from 'types/game'
 import GameHeader from 'components/game/GameHeader/GameHeader'
 import PlayerJoin from 'components/game/PlayerJoin/PlayerJoin'
 import GameBody from 'components/game/GameBody/GameBody'
@@ -12,7 +11,7 @@ import Loader from 'components/base/Loader'
 import Footer from 'components/base/Footer'
 import { BodyWrapperStyle, SetPageTitle } from 'components/base/styles/AppStyles'
 import useGameController from 'components/game/index/game.controller'
-import { gameIsEnded } from '../shared/game.utils'
+import { gameIsEnded, gameIsPaused } from '../shared/game.utils'
 
 
 export default function Game(props: ServerProps) {
@@ -20,7 +19,7 @@ export default function Game(props: ServerProps) {
     game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize,
     holding, canAdvance, pack, landModal, hostModal, logModal, slots, gameLog, timer, 
     saveDeck, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setTitle,
-    nextRound, pickCard, swapCard, setLands, setStatus, dropPlayer, reload, startTimer,
+    nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, dropPlayer, reload, startTimer,
     newError, newToast, ErrorComponent, ToastComponent,
   } = useGameController(props)
 
@@ -74,6 +73,7 @@ export default function Game(props: ServerProps) {
       <HostModal
         isOpen={hostModal} setOpen={toggleHostModal}
         title={game?.name} setTitle={setTitle}
+        paused={gameIsPaused(game)} pauseGame={pauseGame}
         players={players} renamePlayer={renamePlayer}
         hostId={(game as Game).hostId} setStatus={setStatus}
         setLog={toggleLogModal}

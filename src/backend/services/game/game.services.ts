@@ -1,8 +1,8 @@
-import type { Game, GameCard, Board, Pack } from '@prisma/client'
-import type { Player } from 'types/game'
+import type { GameCard, Board, Pack } from '@prisma/client'
+import type { Game, Player } from 'types/game'
 import prisma from '../../libs/db'
 import retry from '../../libs/retry'
-import { getMaxPackSize, getNextPlayerId } from '../../utils/game/game.utils'
+import { adaptDbGame, getMaxPackSize, getNextPlayerId } from '../../utils/game/game.utils'
 
 const basicPlayer /* Prisma.Game$playersArgs */ = { select: { id: true, name: true, sessionId: true, pick: true } }
 const basicGame /* Prisma.GameArgs */ = { select: { id: true, round: true, roundCount: true, players: { select: { id: true } } }}
@@ -24,7 +24,7 @@ export function getGame(url: Game['url'], includePacks = true) {
         }
       }
     }
-  })
+  }).then(adaptDbGame)
 }
 
 export function getRoundPackSize(gameId: Game["id"], round: number, roundCount: number, playerCount: number) {
@@ -47,7 +47,7 @@ export function getGameLog(url: Game['url']) {
         include: { card: { include: { card: true } } }
       }
     }
-  })
+  }).then(adaptDbGame)
 }
 
 
@@ -79,6 +79,51 @@ export async function nextRound(id: Game['id'], round: Game['round']) {
   } }))
 
   return game.round
+}
+
+
+export async function pauseGame(id: Game['id']) {
+  const game = await retry(() => prisma.$transaction([
+    prisma.game.update({
+      where: { id },
+      data: { pause: Date.now() },
+      select: { pause: true },
+    }),
+    prisma.logEntry.create({ data: {
+      gameId: id,
+      byHost: true,
+      action: 'pause',
+    } }),
+  ]))
+
+  return Number(game[0].pause ?? 0)
+}
+
+export async function resumeGame(id: Game['id']) {
+  const game = await prisma.game.findFirstOrThrow({
+    where: { id },
+    select: { id: true, pause: true },
+  })
+
+  const increment = Date.now() - Number(game.pause)
+
+  await retry(() => prisma.$transaction([
+    prisma.player.updateMany({
+      where: { gameId: game.id },
+      data: { timer: { increment } },
+    }),
+    prisma.game.update({
+      where: { id: game.id },
+      data: { pause: null },
+    }),
+    prisma.logEntry.create({ data: {
+      gameId: game.id,
+      byHost: true,
+      action: 'pause',
+      data: `${(increment / 1000).toFixed(1)}`
+    } })
+  ]))
+  return null
 }
 
 

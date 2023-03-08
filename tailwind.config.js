@@ -46,6 +46,18 @@ module.exports = {
         bgland: '#b19277',
       },
 
+      // Pause pulse
+      keyframes: {
+        pulse70: {
+          '0%': { opacity: '0.6' },
+          '50%': { opacity: '0.2' },
+          '100%': { opacity: '0.6' },
+        },
+      },
+      animation: {
+        'pulse-pause': 'pulse70 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
+
       // Rendered Card Custom Styles
       backgroundImage: { foil: 'linear-gradient(45deg, #c0fff0 20%, #b0c0f0 36%, #ffd0d0 52%, #ffffc0 67%, #ffafaf 80%)' },
       borderRadius: { card: '5%' },

@@ -1,6 +1,6 @@
 import type { MouseEvent } from "react"
-import type { GameCard, Board, Game, TabLabels } from "@prisma/client"
-import type { CardOptions, PackFull, PartialGame, PickCard, PlayerFull, SwapCard } from "types/game"
+import type { GameCard, Board, TabLabels } from "@prisma/client"
+import type { Game, CardOptions, PackFull, PartialGame, PickCard, PlayerFull, SwapCard } from "types/game"
 import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import { useCallback, useRef, useState, useEffect } from "react"
 import { useTimer, useLoadElements } from "components/base/libs/hooks"
@@ -62,7 +62,7 @@ export default function usePickController(
 
   const deselectCard = useCallback(() => { setSelectedCard(undefined) }, [])
 
-  const timer = useTimer(playerTimer, autoPick)
+  const timer = useTimer(playerTimer, (game as Game)?.pause, autoPick)
 
   const [ packLoading, handleCardLoad ] = useLoadElements(onPackLoad, pack?.cards.length, !cardOptions.showArt, [pack?.index])
 

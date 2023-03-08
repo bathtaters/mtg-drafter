@@ -59,7 +59,7 @@ export default function useGameController(props: ServerProps) {
     ({ message }) => newError({ title: 'Connection Error', message, button: 'Refresh' })
   )
 
-  const { renamePlayer, setTitle, nextRound, pickCard, swapCard, setLands, setStatus } = useGameEmitters(local, socket, newError)
+  const { renamePlayer, setTitle, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus } = useGameEmitters(local, socket, newError)
 
   const saveDeck = !local.player?.cards || !local.game ? undefined : () => { downloadDeck(local as Parameters<typeof downloadDeck>['0']) }
   
@@ -71,7 +71,7 @@ export default function useGameController(props: ServerProps) {
   return {
     ...local, gameLog,
     isConnected: socket.isConnected,
-    renamePlayer, setTitle, nextRound, pickCard, swapCard, setLands, setStatus,
+    renamePlayer, setTitle, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus,
     newError, newToast, ErrorComponent, ToastComponent,
 
     landModal, hostModal, logModal, saveDeck,

@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import type { Game } from '@prisma/client'
 import type { GameClient } from 'backend/controllers/game.socket.d'
 import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 import type { ErrorAlert } from 'components/base/common/Alerts/alerts.d'
 import type { LocalController } from './local.controller'
-import type { BasicLands, Player, Socket } from 'types/game'
+import type { Game, BasicLands, Player, Socket } from 'types/game'
 import type useSocket from 'components/base/libs/sockets'
 import { Dispatch, SetStateAction, useCallback } from 'react'
 import { clientErrorsInConsole, debugSockets } from 'assets/constants'
@@ -13,7 +12,7 @@ import { reloadData } from '../game.controller'
 const formatError = (message: string): ErrorAlert => ({ message: `${message}. Attempting to reconnect.`, title: 'Action Failed', theme: 'warning'  })
 
 export function getGameListeners(
-  { updateLocal, updateGame, renamePlayer, nextRound, pickCard, setStatus, setLoadingAll, setLoadingPack, game }: LocalController,
+  { updateLocal, updateGame, renamePlayer, nextRound, pauseGame, pickCard, setStatus, setLoadingAll, setLoadingPack, game }: LocalController,
   throwError: AlertsReturn['newError'],
   onConnect?: () => void,
   refreshLog?: () => void,
@@ -46,6 +45,15 @@ export function getGameListeners(
       setLoadingAll((v) => v + 1)
       debugSockets && console.debug('SOCKET','updateRound',round)
       nextRound(round)
+      reloadData(game?.url, updateLocal, throwError).finally(() => {
+        setLoadingAll((v) => v && v - 1)
+        updateLog && updateLog()
+      })
+    })
+    socket.on('updateTimer', (pauseTime) => {
+      setLoadingAll((v) => v + 1)
+      debugSockets && console.debug('SOCKET','updateTimer',pauseTime)
+      pauseGame(pauseTime)
       reloadData(game?.url, updateLocal, throwError).finally(() => {
         setLoadingAll((v) => v && v - 1)
         updateLog && updateLog()
@@ -107,6 +115,16 @@ export function useGameEmitters(local: LocalController, { emit, reconnect }: Ret
   }, [emit, local.game?.id, (local.game as Game)?.round, local.setLoadingPack, throwError])
 
 
+  const pauseGame: Socket.PauseGame = useCallback((resume = false) => {
+    if (!local.game?.id) return throwError(formatError('Error pausing game: Game not loaded'))
+
+    local.setLoadingAll((v) => v + 1)
+
+    emit('pauseTimer', local.game.id, resume)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [emit, local.game?.id, local.setLoadingAll, throwError])
+
+
   const pickCard: Socket.PickCard = useCallback((gameCardOrPack) => {
     if (!local.player?.id) return throwError(formatError('Error picking card: Not connected to server'))
     
@@ -155,7 +173,7 @@ export function useGameEmitters(local: LocalController, { emit, reconnect }: Ret
   }, [emit, local.game?.url, local.sessionId, local.setLoadingAll, local.setStatus, local.updatePlayer, local.updateLocal, throwError])
 
 
-  return { renamePlayer, setTitle, nextRound, pickCard, swapCard, setLands, setStatus }
+  return { renamePlayer, setTitle, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus }
 }
 
 
