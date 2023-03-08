@@ -1,5 +1,4 @@
 import type { FormEventHandler } from "react"
-import type { SetBasic } from "types/setup"
 import useCreateGame from "./createGame.controller"
 import useCubeFile from "./cubeFile.controller"
 import { useSimpleReducer } from "components/base/libs/hooks"
