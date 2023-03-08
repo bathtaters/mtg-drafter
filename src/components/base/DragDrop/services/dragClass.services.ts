@@ -19,7 +19,7 @@ function getDefaultClasses(customBorder: Partial<BorderClasses>, customBgd: Part
   const other   = Object.assign({}, classDefault.additional);
   
   // Add in additional classes
-  (Object.keys(additional) as Array<keyof Partial<OtherClasses>>).forEach((c) => { 
+  Object.keys(additional).forEach((c) => { 
     if (!other[c]) return;
     else if (typeof additional[c] === 'string') other[c].push(additional[c] as string)
     else if (Array.isArray(additional[c]))      other[c].push(...(additional[c] as string[]))
@@ -30,7 +30,7 @@ function getDefaultClasses(customBorder: Partial<BorderClasses>, customBgd: Part
 
 
 // Get class array from UI class objects
-function toClassArray(base: { [key: string]: string }, type: ClassPrefix = 'base', isBorder?: boolean) {
+function toClassArray(base: Record<string,string>, type: ClassPrefix = 'base', isBorder?: boolean) {
   // Set defaults
   return [
     base[type+'Color'] || base.baseColor,

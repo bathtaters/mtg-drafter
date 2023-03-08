@@ -150,29 +150,22 @@ export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependenci
 }
 
 
-type Obj = { [key: string ]: any }
-type Actions<T extends Obj, K = keyof T> = K extends keyof T ? { type: K, value: T[K] } : never
-type ReducerFunction<T extends Obj> = { [K in keyof T]: (value: T[K]) => void }
-
-const simpleReducer = <T extends Obj>(state: T, action: Actions<T>) =>
+const simpleReducer = <T>(state: T, action: { type: keyof T, value: T[keyof T] }): T =>
   ({ ...state, [action.type]: action.value })
 
-export function useSimpleReducer<T extends Obj>(initialValue: T) {
-  const [ state, updateState ] = useReducer(simpleReducer, initialValue)
+export function useSimpleReducer<T extends {}>(initialValue: T) {
+  const [ state, updateState ] = useReducer(simpleReducer<T>, { ...initialValue })
 
   const updaters = useMemo(() => 
-    Object.keys(initialValue).reduce((updaters, type) =>
-      Object.assign(updaters, {
-        [type]: (value: T[keyof T]) => updateState({ type, value })
+    Object.keys(initialValue)
+      .reduce((updaters, type) => ({
+        ...updaters, [type]: (value: T[keyof T]) => updateState({ type, value })
       }),
-      {} as ReducerFunction<T>
+      {} as { [K in keyof T]: (value: T[K]) => void }
     ),
   [initialValue])
   
-  return [
-    state,
-    updaters
-  ] as [ T, typeof updaters ]
+  return [ state, updaters ] as [ T, typeof updaters ]
 }
 
 

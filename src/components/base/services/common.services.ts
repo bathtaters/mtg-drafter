@@ -63,10 +63,9 @@ export const appendIfNotInList = (arrayList: any[][], newArray: any[]) => arrayL
   newArray.every((entry,i) => typeof entry === 'function' ? typeof array[i] === 'function' : entry.toString() === array[i].toString())
 ) ? -1 : arrayList.push(newArray)
 
-export const sameValueObject = <T extends { [key: string]: any }> (keys: (keyof T)[], value: T[keyof T]): T =>
-  Object.fromEntries(keys.map((key) => [key, value])) as T
+export const sameValueObject = <T> (keys: (keyof T)[], value: T[keyof T]): T => Object.fromEntries(keys.map((key) => [key, value])) as T
 
-export const getObjectSum = (obj: { [key: string]: number }) => Object.values(obj).reduce((sum, n) => sum + n, 0)
+export const getObjectSum = (obj: Record<string,number>) => Object.values(obj).reduce((sum, n) => sum + n, 0)
 
 export const revIndexOfChar = (str: string, charList: string, maxIndex = -1) => {
   const end = maxIndex < 0 || maxIndex > str.length ? str.length : maxIndex

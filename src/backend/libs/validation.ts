@@ -3,8 +3,8 @@ import { z } from "zod"
 export const nanoId = (size: number = 21) => z.string().length(size).regex(/^[A-Za-z0-9_-]+$/)
 
 
-export const fillAndLowerCaseObject = <V = any, O extends {} = {}>(object: O, value: V) => Object.keys(object)
-  .reduce((obj, key) => Object.assign(obj, { [key.toLowerCase()]: value }), {}) as { [Prop in keyof O as Lowercase<string & Prop>]: V }
+export const fillAndLowerCaseObject = <V = any, O extends Record<string,any> = {}>(object: O, value: V) => Object.keys(object)
+  .reduce((obj, key) => Object.assign(obj, { [key.toLowerCase()]: value }), {} as { [Prop in keyof O as Lowercase<string & Prop>]: V })
 
 
 export const file = ({ count, maxBytes, typeList }: { count?: number, maxBytes?: number, typeList?: string[] }) => {

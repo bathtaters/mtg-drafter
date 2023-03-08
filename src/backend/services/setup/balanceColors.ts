@@ -1,25 +1,22 @@
 import type { BoosterCardFull } from 'types/setup'
 import { Card, Color } from '@prisma/client'
 import { randomElemWeighted } from 'backend/libs/random'
-import { compareKeys, getReplaceIndex } from 'backend/utils/setup/booster.utils'
-
-const COLOR_BASE = Object.fromEntries(Object.keys(Color).concat("other").map((c) => [c, 0])) as Record<Color|"other", number>
+import { COLOR_BASE, OTHER, compareKeys, getReplaceIndex } from 'backend/utils/setup/booster.utils'
 
 const MAX_PER_COLOR = 4, MIN_PER_COLOR = 1, DEBUG = false
-
 
 /** Color balance pack (Drawing from pool if needed) */
 export default function balanceColors(pack: Card[], pool: BoosterCardFull[]) {
   DEBUG && console.log(`--Balancing colors for ${pool[0].setCode}`)
 
   const colorCount = pack.reduce((sums, card) => {
-    sums[card.monoColor || 'other']++
+    sums[card.monoColor || OTHER]++
     return sums
   }, { ...COLOR_BASE })
 
   
   for (let notChanged = false; notChanged = !notChanged; ) {
-    (Object.keys(Color) as Color[]).forEach((color) => {
+    Object.keys(Color).forEach((color) => {
       DEBUG && console.log(` > Pack color counts: ${Object.entries(colorCount).map(([c,n]) => `${c}${c === color ? '*' : ':'}${n}`).join(' ')}`)
 
       while (colorCount[color] < MIN_PER_COLOR) {
@@ -37,10 +34,10 @@ export default function balanceColors(pack: Card[], pool: BoosterCardFull[]) {
         const replIdx   = getReplaceIndex(pack, replColors)
         if (replIdx < 0) throw new Error('No valid replacement while color balancing (Perhaps due to empty pack)')
         
-        colorCount[pack[replIdx].monoColor || 'other']--
+        colorCount[pack[replIdx].monoColor || OTHER]--
         DEBUG && console.log(` >     - Removed card "${pack[replIdx].name}" (${pack[replIdx].colors.join('/')})`)
         pack[replIdx] = randomElemWeighted(subPool)?.card as Card
-        colorCount[pack[replIdx].monoColor || 'other']++
+        colorCount[pack[replIdx].monoColor || OTHER]++
         DEBUG && console.log(` >     - Added card "${pack[replIdx].name}" (${pack[replIdx].colors.join('/')})`)
         notChanged = false
       }
@@ -60,10 +57,10 @@ export default function balanceColors(pack: Card[], pool: BoosterCardFull[]) {
         const replIdx   = getReplaceIndex(pack, [color])
         if (replIdx < 0) throw new Error('No valid replacement while color balancing (Perhaps due to empty pack)')
         
-        colorCount[pack[replIdx].monoColor || 'other']--
+        colorCount[pack[replIdx].monoColor || OTHER]--
         DEBUG && console.log(` >     - Removed card "${pack[replIdx].name}" (${pack[replIdx].colors.join('/')})`)
         pack[replIdx] = randomElemWeighted(subPool)?.card as Card
-        colorCount[pack[replIdx].monoColor || 'other']++
+        colorCount[pack[replIdx].monoColor || OTHER]++
         DEBUG && console.log(` >     - Added card "${pack[replIdx].name}" (${pack[replIdx].colors.join('/')})`)
         notChanged = false
       }

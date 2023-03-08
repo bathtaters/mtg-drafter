@@ -1,5 +1,7 @@
 import type { Prisma, PrismaClient, PrismaPromise } from '@prisma/client'
 
+type KeyArr<T> = Extract<keyof T, string>[]
+
 const sleepOnFail = 1000 * 10
 
 const addQuotes = /[^a-z0-9]/ // Not tested w/ numbers yet
@@ -9,12 +11,10 @@ const catchSql = (err: any) => {
   return new Promise((res) => { setTimeout(() => res(0), sleepOnFail) })
 }
 
-type KeyArr<T> = (keyof T & string)[]
-type Obj = { [key: string]: any }
 
-export function createMultiUpdate<T extends Obj>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>): (updateObj: T[], prisma: PrismaClient) => PrismaPromise<number>
-export function createMultiUpdate<T extends Obj>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>, prisma: PrismaClient): (updateObj: T[]) => PrismaPromise<number>
-export function createMultiUpdate<T extends Obj>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>, prisma?: PrismaClient) {
+export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>): (updateObj: T[], prisma: PrismaClient) => PrismaPromise<number>
+export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>, prisma: PrismaClient): (updateObj: T[]) => PrismaPromise<number>
+export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>, prisma?: PrismaClient) {
   checkInjection([tableName, ...whereKeys, ...updateKeys], 'updateImages')
 
   let
@@ -63,9 +63,9 @@ export function createMultiUpdate<T extends Obj>(tableName: Prisma.ModelName, wh
 }
 
 
-export function createMultiUpsert<T extends Obj>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>): (updateObj: T[], prisma: PrismaClient) => PrismaPromise<number>
-export function createMultiUpsert<T extends Obj>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>, prisma: PrismaClient): (updateObj: T[]) => PrismaPromise<number>
-export function createMultiUpsert<T extends Obj>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>, prisma?: PrismaClient) {
+export function createMultiUpsert<T>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>): (updateObj: T[], prisma: PrismaClient) => PrismaPromise<number>
+export function createMultiUpsert<T>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>, prisma: PrismaClient): (updateObj: T[]) => PrismaPromise<number>
+export function createMultiUpsert<T>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>, prisma?: PrismaClient) {
   checkInjection([tableName, ...updateKeys], tableName)
 
   const table  = addQuotes.test(tableName) ? `"${tableName}"` : tableName,
@@ -117,10 +117,10 @@ const injectionErr = (val: any, isReserved: boolean, table: string) => new Error
     'contains non-alphanumeric characters:' : `is not a string: <${typeof val}>`
   } ${val}`)
 
-export const checkInjection = (val: any, tableName = '') => {
+export const checkInjection = (val: any, tableName = ''): false | void => {
   if (!val) return;
-  if (Array.isArray(val)) return val.forEach((v) => exports.checkInjection(v, tableName))
-  if (typeof val === 'object') Object.keys(val).forEach((v) => exports.checkInjection(v, tableName))
+  if (Array.isArray(val)) return val.forEach((v) => checkInjection(v, tableName))
+  if (typeof val === 'object') Object.keys(val).forEach((v) => checkInjection(v, tableName))
   else if (typeof val !== 'string' || illegalKeyRegex.test(val)) throw injectionErr(val, false, tableName)
   else if (illegalKeyList.includes(val.toUpperCase())) throw injectionErr(val, true, tableName)
   return false;

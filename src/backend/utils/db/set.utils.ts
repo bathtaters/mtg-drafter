@@ -79,14 +79,12 @@ export const getBoosterType = (booster?: JsonSet['booster']) => booster && boost
 
 export const isBoosterSet = (setData: Set): setData is JsonSet => Boolean(setData.code && setData.name && 'booster' in setData)
 
-export const flattenObjects = <T extends { [key: string]: any }>(objArr: T[]) => objArr.reduce((result, next) => {
+export const flattenObjects = <T extends Record<string,any>>(objArr: T[]) => objArr.reduce((result, next) => {
   Object.keys(next).forEach((key: keyof T) => {
-    result[key] = (result[key] || [])
-      // @ts-ignore
-      .concat(next[key])
+    result[key] = (result[key] || [] as any).concat(next[key])
   })
   return result
-}, {} as { [key in keyof T]: T[key] extends Array<any> ? T[key] : T[key][] })
+}, {} as { [K in keyof T]: T[K] extends Array<any> ? T[K] : T[K][] })
 
 
 
