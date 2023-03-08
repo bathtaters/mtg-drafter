@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient, PrismaPromise } from '@prisma/client'
+import type { Prisma, PrismaClient } from '@prisma/client'
 
 type KeyArr<T> = Extract<keyof T, string>[]
 
@@ -12,8 +12,8 @@ const catchSql = (err: any) => {
 }
 
 
-export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>): (updateObj: T[], prisma: PrismaClient) => PrismaPromise<number>
-export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>, prisma: PrismaClient): (updateObj: T[]) => PrismaPromise<number>
+export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>): (updateObj: T[], prisma: PrismaClient) => Promise<number>
+export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>, prisma: PrismaClient): (updateObj: T[]) => Promise<number>
 export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>, prisma?: PrismaClient) {
   checkInjection([tableName, ...whereKeys, ...updateKeys], 'updateImages')
 
@@ -63,8 +63,8 @@ export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: Key
 }
 
 
-export function createMultiUpsert<T>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>): (updateObj: T[], prisma: PrismaClient) => PrismaPromise<number>
-export function createMultiUpsert<T>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>, prisma: PrismaClient): (updateObj: T[]) => PrismaPromise<number>
+export function createMultiUpsert<T>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>): (updateObj: T[], prisma: PrismaClient) => Promise<number>
+export function createMultiUpsert<T>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>, prisma: PrismaClient): (updateObj: T[]) => Promise<number>
 export function createMultiUpsert<T>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>, prisma?: PrismaClient) {
   checkInjection([tableName, ...updateKeys], tableName)
 
