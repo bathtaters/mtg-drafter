@@ -54,7 +54,7 @@ export default function Game(props: ServerProps) {
 
     <Footer />
 
-    { (!!loadingAll || !isConnected) && <Overlay ><Spinner caption={loadingAll ? 'Loading...' : 'Connecting...'} /></Overlay> }
+    { (!!loadingAll || !isConnected) && <Overlay ><Spinner caption={loadingAll ? 'Loading...' : 'Reconnecting...'} /></Overlay> }
 
     {!!toggleLogModal &&
       <LogModal
