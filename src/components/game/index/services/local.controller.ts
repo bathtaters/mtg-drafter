@@ -1,7 +1,7 @@
 import type { PackFull, ServerProps, Local, PlayerFull } from 'types/game'
 import { useCallback, useMemo, useState } from 'react'
 import { spliceInPlace, updateArrayIdx } from 'components/base/services/common.services'
-import { getCanAdvance, getCurrentPack, getHolding, getPlayerIdx, getSlots, playerIsHost } from '../../shared/game.utils'
+import { gameIsPaused, getCanAdvance, getCurrentPack, getHolding, getPlayerIdx, getSlots, playerIsHost } from '../../shared/game.utils'
 import { reloadData } from '../game.controller'
 import { useTimerStore } from 'components/base/libs/hooks'
 import { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
@@ -17,7 +17,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   const [ players, updatePlayers ] = useState(props.players || [])
   const [ slots,   updateSlots   ] = useState(getSlots(props.players))
   const [ pack,    updatePack    ] = useState<PackFull>()
-  const [ maxPackSize, updatePackSize ] = useState(0)
+  const [ maxPackSize, updatePackSize ] = useState(props.packSize ?? 0)
   
   const { timer, startTimer, resetTimer, storeTimer } = useTimerStore(props.player?.timer, props.now)
   
@@ -32,6 +32,8 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     const newPack = getCurrentPack(data)
     if (newPack && data.player?.pick && data.player.pick <= (data.packSize ?? 0)) storeTimer(data.player?.timer, data.now)
     else resetTimer()
+
+    if (gameIsPaused(data.options) && data.now) data.options.pause += Date.now() - data.now
 
     updateGame(data.options)
     updatePacks(data.packs || [])
@@ -49,6 +51,12 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     updatePlayer((p) => p && ({ ...p, pick: 1 }))
     updatePack(undefined)
     isHost && setLoadingPack((v) => v && v - 1)
+  }, [isHost])
+
+
+  const pauseGame: Local.PauseGame = useCallback((pause) => {
+    if (pause) updateGame((g) => g && ({ ...g, pause }))
+    isHost && setLoadingAll((v) => v && v - 1)
   }, [isHost])
 
 
@@ -109,7 +117,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer, updateGame, updateLocal,
     game, player, players, playerIdx, maxPackSize, holding, isHost, canAdvance, pack, packs, slots, timer,
     sessionId: props.sessionId,
-    renamePlayer, nextRound, pickCard, swapCard, setLands, setStatus, reload, startTimer, 
+    renamePlayer, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, reload, startTimer, 
   }
 }
 

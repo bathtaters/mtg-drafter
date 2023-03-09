@@ -1,5 +1,5 @@
 import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
-import { nextRound, pickCard, renameGame } from './game.services'
+import { nextRound, pauseGame, resumeGame, pickCard, renameGame } from './game.services'
 import validation from 'types/game.validation'
 
 
@@ -36,6 +36,23 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
       // Handle Error
       } catch (err: any) {
         socket.emit('error', `Error changing rounds: ${err.message || 'Unknown'}`)
+      }
+    })
+
+
+    socket.on('pauseTimer', async (gameId, pause) => {
+      try {
+        // Validation
+        gameId = validation.id.parse(gameId)
+        pause = validation.bool.parse(pause)
+
+        // Update DB
+        const pauseTimer = await (pause ? pauseGame(gameId) : resumeGame(gameId))
+        io.emit('updateTimer', pauseTimer)
+
+      // Handle Error
+      } catch (err: any) {
+        socket.emit('error', `Error pausing game: ${err.message || 'Unknown'}`)
       }
     })
     

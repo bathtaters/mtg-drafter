@@ -3,7 +3,7 @@ import type { TabLabels } from "@prisma/client"
 import type { CardFull, CardOptions, BoardLands } from "types/game"
 import Card from "../Card/Card"
 import ContainerHeader from "./CardContainerHeader"
-import { CardContainerWrapper, CardsWrapper, NoPack, NoCards, RoundOver, LoadingPack } from "./CardContainerStyles"
+import { CardContainerWrapper, CardsWrapper, NoPack, NoCards, RoundOver, LoadingPack, PausedGame } from "./CardContainerStyles"
 import { packSort, sortKeys } from "components/base/services/cardSort.services"
 import cardZoomLevels from "../CardToolbar/cardZoomLevels"
 
@@ -12,6 +12,7 @@ type Props = {
   cards?: { id: string, foil?: boolean, card: CardFull }[] | "roundEnd",
   lands?: BoardLands,
   loading?: number,
+  paused?: boolean,
   children?: ReactNode,
   onCardLoad?: () => void,
   onClick?: (id: string, event: MouseEvent) => void,
@@ -22,7 +23,7 @@ type Props = {
   cardOptions: CardOptions,
 }
 
-export default function CardContainer({ label, cards, lands, loading = 0, children, onClick, onCardLoad, onBgdClick, onLandClick, selectedId, highlightId, cardOptions }: Props) {
+export default function CardContainer({ label, cards, lands, loading = 0, paused, children, onClick, onCardLoad, onBgdClick, onLandClick, selectedId, highlightId, cardOptions }: Props) {
   const count = typeof cards === 'string' ? undefined : cards?.length
   
   return (
@@ -34,13 +35,14 @@ export default function CardContainer({ label, cards, lands, loading = 0, childr
       }
       isPrimary={label !== 'pack'} onClick={onBgdClick}
     >
+      { paused && <PausedGame /> }
       <CardsWrapper hideCards={loading > 0}>
         {loading < 0 ? null : typeof cards === 'string' ? <RoundOver /> : !cards ? <NoPack /> : !count ? <NoCards /> :
           cards.slice().sort((a,b) => packSort[cardOptions.sort ?? sortKeys[0]](a.card, b.card)).map(({ id, foil, card }, idx) => 
             <Card
               card={card} key={id} isFoil={foil}
               showImage={cardOptions.showArt}
-              className={cardOptions.width || cardZoomLevels[0]}
+              className={paused ? "hidden" : cardOptions.width || cardZoomLevels[0]}
               onClick={onClick && ((ev) => onClick(id, ev))}
               onLoad={onCardLoad}
               isSelected={selectedId === id}

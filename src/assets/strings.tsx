@@ -1,5 +1,5 @@
-import type { CardLayout, Game, GameStatus, LogAction } from "@prisma/client"
-import type { BoardLands, LogData, LogOptions, PartialGame } from "types/game"
+import type { CardLayout, GameStatus, LogAction } from "@prisma/client"
+import type { Game, BoardLands, LogData, LogOptions, PartialGame } from "types/game"
 import type { ToastAlert } from "components/base/common/Alerts/alerts.d"
 import Link from "next/link"
 import { formatBytes, getObjectSum } from "components/base/services/common.services"
@@ -76,6 +76,8 @@ export const formatLogAction = (action: LogAction, data: LogData, byHost: boolea
       ).join(', ') || 'settings saved (Nothing changed)'} `
     
     case 'round': return data === 'END' ? 'Ended' : `Round ${data || '?'}`
+
+    case 'pause': return data ? 'Resumed' : 'Paused'
     default: return `${action}ed`
   }
 }

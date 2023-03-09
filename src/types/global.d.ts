@@ -1,3 +1,7 @@
+// -- TYPESCRIPT HELPERS -- \\
+
+type Merge<A, B> = Omit<A, keyof B> & Pick<B, keyof A & keyof B>
+
 // -- TYPESCRIPT FIX -- \\
 
 export declare global {

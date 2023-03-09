@@ -37,10 +37,12 @@ export const TabStyle = (
   </div>
 )
 
-export const TimerStyle = ({ seconds = 0 }: { seconds?: number }) => (
+export const TimerStyle = ({ seconds = 0, paused }: { seconds?: number, paused?: boolean }) => (
   <div className={`fixed bottom-4 right-4 z-50 flex flex-col items-center p-2 rounded-box ${
-    typeof seconds === 'number' && seconds < redTimerSeconds ? 'bg-error text-error-content' : 'bg-secondary text-secondary-content'
-  } text-xs md:text-base opacity-80`}>
+    seconds < redTimerSeconds ? 'bg-error text-error-content' : 'bg-secondary text-secondary-content'
+  } ${
+    paused ? 'animate-pulse-pause' : 'opacity-80'
+  } text-xs md:text-base`}>
     <TimerIcon className="w-5 fill-current" />
     
     <span className="countdown font-mono text-3xl md:text-5xl">

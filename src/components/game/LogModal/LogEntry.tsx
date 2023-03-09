@@ -31,6 +31,8 @@ export default function LogEntry({ entry, players, isFirst, isPrivate = false }:
       {action === 'join' && data && <EntryItem tip={data || 'N/A'} below={isFirst}><CookieIcon className="w-5 fill-current" /></EntryItem>}
       {action === 'rename' && data && <EntryItem>&quot;{data || ''}&quot;</EntryItem>}
 
+      {action === 'pause' && data && <EntryItem><i className="text-sm mr-2">(after {data}s)</i></EntryItem>}
+
       {(action === 'rename' || action === 'join') && byHost && <EntrySpace />}
 
       {byHost && <EntryItem color={-1} inv={true}>by host</EntryItem>}

@@ -1,5 +1,5 @@
-import type { Game, Board, Card } from "@prisma/client"
-import type { BoardLands, BasicLands, PlayerFull } from "types/game"
+import type { Board, Card } from "@prisma/client"
+import type { Game, BoardLands, BasicLands, PlayerFull } from "types/game"
 import { deckSort } from "components/base/services/cardSort.services"
 import downloadTextFile from "components/base/libs/download"
 import { colorOrder, landNames } from 'assets/sort.constants'

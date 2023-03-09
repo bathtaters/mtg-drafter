@@ -1,6 +1,5 @@
 import type { MouseEventHandler } from 'react'
-import type { Game } from '@prisma/client'
-import type { GameProps, PartialGame, PickCard, PlayerFull, SwapCard } from 'types/game'
+import type { Game, GameProps, PartialGame, PickCard, PlayerFull, SwapCard } from 'types/game'
 import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 import CardContainer from "../CardContainer/CardContainer"
 import CardToolbar from '../CardToolbar/CardToolbar'
@@ -50,14 +49,21 @@ export default function GameBody({ game, player, pack, playerTimer, roundOver, c
 
       {selectedTab === 'pack' ?
         <CardContainer
-          label="pack" cardOptions={cardOptions} loading={loadingPack ? -1 : packLoading || undefined}
-          cards={roundOver ? 'roundEnd' : pack?.cards} selectedId={selectedCard} highlightId={autopickCard}
-          onClick={clickPackCard} onBgdClick={deselectCard} onCardLoad={handleCardLoad}
+          loading={loadingPack ? -1 : packLoading || undefined}
+          label="pack"
+          cards={roundOver ? 'roundEnd' : pack?.cards}
+          cardOptions={cardOptions}
+          paused={!!game.pause}
+          selectedId={selectedCard}
+          highlightId={autopickCard}
+          onClick={clickPackCard}
+          onBgdClick={deselectCard}
+          onCardLoad={handleCardLoad}
         >
           { clickRoundBtn ?
             <RoundButton onClick={clickRoundBtn} label={getGameStatus(game)} /> :
             <PickCardButton
-              disabled={loadingPack || !!packLoading || !pack || roundOver || !selectedCard}
+              disabled={loadingPack || !!packLoading || !pack || !!game.pause || roundOver || !selectedCard}
               isEmpty={!roundOver && pack && !pack.cards.length}
               onClick={clickPickButton}
             />
@@ -65,12 +71,16 @@ export default function GameBody({ game, player, pack, playerTimer, roundOver, c
         </CardContainer>
         :
         <CardContainer
-          label={selectedTab} lands={player.basics[selectedTab]} cardOptions={cardOptions}
+          label={selectedTab}
           cards={getBoard(player.cards, selectedTab)}
-          onClick={clickBoardCard(selectedTab)} onLandClick={onLandClick} />
+          lands={player.basics[selectedTab]}
+          cardOptions={cardOptions}
+          onClick={clickBoardCard(selectedTab)}
+          onLandClick={onLandClick}
+        />
       }
 
-      { typeof timer === 'number' &&  <TimerStyle seconds={timer} /> }
+      { typeof timer === 'number' &&  <TimerStyle seconds={timer} paused={!!game.pause} /> }
     </GameBodyWrapper>
   )
 }

@@ -97,6 +97,8 @@ enum LogAction {
   leave
   rename
 
+  pause
+
   round
   settings
 }
@@ -132,7 +134,7 @@ model Game {
   packs       Pack[]
   roundCount  Int
   round       Int @default(0)
-  isPaused    Boolean @default(false)
+  pause       BigInt?
   timerBase   Int?
 
   players     Player[] @relation("GamePlayers")

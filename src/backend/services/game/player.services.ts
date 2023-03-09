@@ -1,5 +1,5 @@
-import type { GameCard, Board, Game } from '@prisma/client'
-import type { BasicLands, Player, BasicPlayer } from 'types/game'
+import type { GameCard, Board } from '@prisma/client'
+import type { Game, BasicLands, Player, BasicPlayer } from 'types/game'
 import prisma from '../../libs/db'
 import retry from '../../libs/retry'
 import { getTimerLength, adaptDbPlayer, hasPack } from 'backend/utils/game/game.utils'

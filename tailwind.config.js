@@ -10,8 +10,7 @@ module.exports = {
     { // Included from lib/colors.ts 
       pattern: /(text|bg|border)-(blue|yellow|emerald|red|fuchsia|orange|cyan|lime|violet|pink|sky|amber|green|rose|purple|teal|indigo)-(700|500|200|400)/,
       variants: ['hover'],
-    },
-    'tab-secondary'
+    }
   ],
   theme: {
     extend: {
@@ -45,6 +44,18 @@ module.exports = {
         bgc: '#afada2',
         bgmulti: '#c3b070',
         bgland: '#b19277',
+      },
+
+      // Pause pulse
+      keyframes: {
+        pulse70: {
+          '0%': { opacity: '0.6' },
+          '50%': { opacity: '0.2' },
+          '100%': { opacity: '0.6' },
+        },
+      },
+      animation: {
+        'pulse-pause': 'pulse70 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
 
       // Rendered Card Custom Styles
