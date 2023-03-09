@@ -17,7 +17,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   const [ players, updatePlayers ] = useState(props.players || [])
   const [ slots,   updateSlots   ] = useState(getSlots(props.players))
   const [ pack,    updatePack    ] = useState<PackFull>()
-  const [ maxPackSize, updatePackSize ] = useState(0)
+  const [ maxPackSize, updatePackSize ] = useState(props.packSize ?? 0)
   
   const { timer, startTimer, resetTimer, storeTimer } = useTimerStore(props.player?.timer, props.now)
   
