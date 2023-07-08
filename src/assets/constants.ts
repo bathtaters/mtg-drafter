@@ -30,11 +30,11 @@ export const
   timerOptions: Array<Partial<TimerOptions> | null> = [
     null,
     { secPerCard: 1, minSec: 24 * 60 * 60 }, // Daily: 24 hours
-    { secPerCard: 6.6, minSec: 10 }, // Casual: 90 sec / 15 cards
-    { secPerCard: 5.0, minSec: 10 }, // Slow: 60 sec / 15 cards
+    { secPerCard: 10, minSec: 15 }, // Casual: 150 sec / 15 cards
+    { secPerCard: 6.6, minSec: 10 }, // Slow: 90 sec / 15 cards
     {}, // Normal (Official rules): 40 sec / 15 cards
     { secPerCard: 2.6 }, // Fast: 30 sec / 15 cards
-    { secPerCard: 1.9 }, // Speed: 20 sec / 15 cards
+    { secPerCard: 1.9, minSec: 3 }, // Speed: 20 sec / 15 cards
   ]
 
 
