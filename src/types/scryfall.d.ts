@@ -241,7 +241,7 @@ export interface CardIdentifier {
 
 export type Modifier = `+${bigint}` | `-${bigint}`;
 
-export interface Card implements CardFaceMethods {
+export interface Card extends CardFaceMethods {
 	object: "card";
 
 	// core fields
