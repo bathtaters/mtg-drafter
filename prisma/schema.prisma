@@ -52,8 +52,10 @@ enum CardLayout {
   leveler
   meld
   modal_dfc
+  mutate
   normal
   planar
+  prototype
   reversible_card
   saga
   scheme
@@ -327,4 +329,5 @@ model Enums {
   PlayerStatus PlayerStatus
   LogAction    LogAction
   BoosterType  BoosterType
+  CardLayout   CardLayout
 }
