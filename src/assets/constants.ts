@@ -70,7 +70,7 @@ export const
 
 export const redTimerSeconds = 10
 
-export const layoutDirection: { [layout in CardLayout]?: Direction } = {
+export const layoutDirection: { [layout: string]: Direction } = {
   flip: Direction.S,
   split: Direction.E,
   aftermath: Direction.W,

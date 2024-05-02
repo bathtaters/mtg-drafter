@@ -40,7 +40,7 @@ export const maxSizeError = (size: number, maxSize: number) => `File exceeds ${f
 export const timerLabels = ['Off', '24hr', 'Casual', 'Slower', 'Normal', 'Faster', 'Speed']
 
 // Text to display on rendered card, key is card layout (auto displays <Layout> if card has multiple faces)
-export const cardLayoutText: {[layout in CardLayout]?: string} = {
+export const cardLayoutText: {[layout: string]: string} = {
   modal_dfc: 'Modal',
 }
 
