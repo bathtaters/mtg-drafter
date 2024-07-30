@@ -1,5 +1,6 @@
 import type { Side } from '@prisma/client'
 import type { Card as ScryfallCard, BulkData } from 'types/scryfall'
+import { scryfallHeaders } from 'assets/urls'
 
 const A_CHAR_CODE = 'a'.charCodeAt(0)
 
@@ -18,6 +19,6 @@ export const adaptScryfallToImage = ({ id, image_uris, card_faces }: ScryfallCar
     img: face_uris?.large || image_uris?.large || null,
   }))
 
-export const fetchBulkUrl = (apiUrl: string) => fetch(apiUrl)
+export const fetchBulkUrl = (apiUrl: string) => fetch(apiUrl, { 'headers': scryfallHeaders })
   .then((res) => res.json() as Promise<BulkData>)
   .then((data) => data.download_uri)
