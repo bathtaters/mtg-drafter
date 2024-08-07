@@ -1,4 +1,4 @@
-import type { GameOptions } from 'types/setup'
+import type { BoosterType, GameOptions } from 'types/setup'
 import type { RetryOptions } from 'backend/libs/retry'
 import type { Layout } from 'types/scryfall'
 import { LogOptions, TimerOptions, Direction } from 'types/game.d'
@@ -76,6 +76,8 @@ export const layoutDirection:  {[layout in Layout]?: Direction} = {
   aftermath: Direction.W,
 }
 export const flippableLayouts = [...Object.keys(layoutDirection),'modal_dfc', 'transform', 'meld'] as const
+
+export const hideBoosterTypes: BoosterType[] = ['default', 'draft']
 
 // Advanced Tweaks + Debug Settings
 

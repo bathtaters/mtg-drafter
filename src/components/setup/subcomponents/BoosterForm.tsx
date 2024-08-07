@@ -3,7 +3,7 @@ import { Fragment } from "react"
 import RangeInput from "components/base/common/FormElements/RangeInput"
 import ToggleSwitch from "components/base/common/FormElements/ToggleSwitch"
 import { FieldWrapper, InputWrapper, PlayersLabel, PackButton, PackButtonWrapper, PacksWrapper, PackSelector, TimerLabel, BasicsLabel } from "../styles/FormStyles" 
-import { setupLimits } from "assets/constants"
+import { hideBoosterTypes, setupLimits } from "assets/constants"
 import { timerLabels } from "assets/strings"
 
 type Props = {
@@ -36,7 +36,9 @@ export default function BoosterForm({ setList, options, setOption, setPack, addP
 
               <PackSelector key={idx} selected={setCode} setSelected={setPack(idx)}>
                 {setList.map(({ name, code, boosterType }) =>
-                  <Fragment key={code}>{name}{boosterType !== 'default' ? ` (${boosterType})` : ''}</Fragment>
+                  <Fragment key={code}>{name}{
+                    boosterType && hideBoosterTypes.includes(boosterType) ? '' : ` (${boosterType})`
+                  }</Fragment>
                 )}
               </PackSelector>
             ))}
