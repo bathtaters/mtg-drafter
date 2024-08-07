@@ -46,27 +46,30 @@ export enum Border {
 	white,
 }
 
-export enum Layout {
-	normal,
-	split,
-	flip,
-	transform,
-	modal_dfc,
-	meld,
-	leveler,
-	saga,
-	adventure,
-	planar,
-	scheme,
-	vanguard,
-	token,
-	double_faced_token,
-	emblem,
-	augment,
-	host,
-	art_series,
-	double_sided,
-}
+export type Layout = "normal" |
+	"adventure" |
+	"aftermath" |
+	"art_series" |
+	"augment" |
+	"case" |
+	"class" |
+	"double_faced_token" |
+	"emblem" |
+	"flip" |
+	"host" |
+	"leveler" |
+	"meld" |
+	"modal_dfc" |
+	"mutate" |
+	"planar" |
+	"prototype" |
+	"reversible_card" |
+	"saga" |
+	"scheme" |
+	"split" |
+	"token" |
+	"transform" |
+	"vanguard"
 
 export enum Format {
 	standard,
@@ -150,7 +153,7 @@ export interface CardFace extends CardFaceMethods {
 	flavor_text?: string | null;
 	illustration_id?: string | null;
 	image_uris?: ImageUris | null;
-	layout?: string;
+	layout?: Layout | null;
 	loyalty?: string | null;
 	mana_cost?: string | null;
 	name: string;
@@ -270,7 +273,7 @@ export interface Card extends CardFaceMethods {
 	edhrec_rank?: number | null;
 	hand_modifier?: Modifier | null;
 	keywords: string[];
-	layout: keyof typeof Layout;
+	layout: Layout | null;
 	legalities: Legalities;
 	life_modifier?: Modifier | null;
 	loyalty?: string | null;

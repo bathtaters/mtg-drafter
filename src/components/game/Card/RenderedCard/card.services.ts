@@ -1,11 +1,11 @@
 import type { Card, Color } from "@prisma/client"
-import { CardFull } from "types/game"
+import type { CardStrict, CardFull } from "types/game"
 import { titleCase } from "components/base/services/common.services"
 import { bgdClass } from "components/base/styles/manaIcons"
 import { flippableLayouts, layoutDirection } from "assets/constants"
 import { cardLayoutText } from "assets/strings"
 
-export const getArtBoxText = (layout: Card['layout'], sideCount: number): string | false | null => 
+export const getArtBoxText = (layout: CardStrict['layout'], sideCount: number): string | false | null => 
   layout && (cardLayoutText[layout] || 
     (sideCount > 1 && `${sideCount > 2 ? `${sideCount}-way ` : ''}${titleCase(layout)}`)
   )

@@ -1,12 +1,12 @@
-import type { Card } from "@prisma/client"
+import type { CardStrict } from "types/game"
 import { rarityClass } from "components/base/styles/manaIcons"
 import { getArtBoxText, symbolFix, splitLines, getBgdColor } from "./card.services"
 import {
-  Border, Layout, CardBox, ArtBox, TextBox, Footer, 
+  Border, CardLayout, CardBox, ArtBox, TextBox, Footer, 
   Name, Mana, Type, Rarity, TextLine, ArtMainText, ArtSubText, splitLayouts, CardBgd
 } from "./RenderedCardStyles"
 
-export type Props = { card: Card, isFoil?: boolean, side?: number, sideCount?: number }
+export type Props = { card: CardStrict, isFoil?: boolean, side?: number, sideCount?: number }
 
 export default function RenderedCard({ card, isFoil = false, side = 0, sideCount = 0 }: Props) {
   const artBoxText = getArtBoxText(card.layout, sideCount)
@@ -15,7 +15,7 @@ export default function RenderedCard({ card, isFoil = false, side = 0, sideCount
   return (
     <Border hide={layout && side > 1} flipSide={layout ? -1 : side}>
       <CardBgd color={side === 1 && card.layout === 'adventure' && getBgdColor(card)} />
-      <Layout layout={layout} side={side} className={getBgdColor(card)}>
+      <CardLayout layout={layout} side={side} className={getBgdColor(card)}>
 
         <CardBox>
           <Name>{card.faceName || card.name}</Name>
@@ -42,7 +42,7 @@ export default function RenderedCard({ card, isFoil = false, side = 0, sideCount
         
         {card.footer && <Footer>{card.footer}</Footer>}
 
-      </Layout>
+      </CardLayout>
     </Border>
   )
 }

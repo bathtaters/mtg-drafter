@@ -1,18 +1,18 @@
 import type { ReactElement, ReactNode } from "react"
+import type { Layout } from "types/scryfall"
 import type { Props } from './RenderedCard'
-import { Card } from "@prisma/client"
 import { splitRatios } from "components/game/CardToolbar/cardZoomLevels"
 
 /** Layout Array [ Base class, SideA class, SideB class, SideA is Half?, SideB is Half? ] */
-type Layout = [string, string, string, boolean, boolean]
+type LayoutData = [string, string, string, boolean, boolean]
 
 type Style = (props: { html?: string, className?: string, children?: ReactNode, small?: boolean }) => ReactElement
-type LayoutProps = { layout?: Layout, side: Props['side'], className?: string, children: ReactNode }
+type LayoutProps = { layout?: LayoutData, side: Props['side'], className?: string, children: ReactNode }
 
 
 // MAIN WRAPPERS \\
 
-export const splitLayouts: { [layout in NonNullable<Card['layout']>]?: Layout} = {
+export const splitLayouts: { [layout in Layout]?: LayoutData} = {
   split: [' left-[15%] -rotate-90 '+splitRatios.join(' '), ' -bottom-[9%]', ' -top-[9%]', false, false],
   aftermath: ['',' top-[1%] h-1/2',' -bottom-[9%] left-[15%] rotate-90 '+splitRatios.join(' '), true, false],
   flip: ['w-full h-1/2',' top-[1%]',' bottom-[1%] rotate-180', true, true],
@@ -30,7 +30,7 @@ export const Border = ({ hide, flipSide, children }: { flipSide?: number, childr
 export const CardBgd = ({ color }: { color?: string | false }) => !color ? null :
   <div className={`absolute top-[2.5%] left-[4%] w-[92%] h-[95%] z-0 ${color}`} />
 
-export const Layout = ({ layout, side, className = '', children }: LayoutProps) => (
+export const CardLayout = ({ layout, side, className = '', children }: LayoutProps) => (
   <div className={`absolute ${side && layout ? `${layout[0]} ${layout[side] ?? ''}` : 'w-full h-full'} flex`}>
     <div className={
       `grid ${side && layout?.[2 + side] ? 'grid-rows-split' : 'grid-rows-card'

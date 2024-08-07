@@ -1,6 +1,6 @@
-import { CardLayout } from '@prisma/client'
 import type { GameOptions } from 'types/setup'
 import type { RetryOptions } from 'backend/libs/retry'
+import type { Layout } from 'types/scryfall'
 import { LogOptions, TimerOptions, Direction } from 'types/game.d'
 import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
 
@@ -70,7 +70,7 @@ export const
 
 export const redTimerSeconds = 10
 
-export const layoutDirection: { [layout: string]: Direction } = {
+export const layoutDirection:  {[layout in Layout]?: Direction} = {
   flip: Direction.S,
   split: Direction.E,
   aftermath: Direction.W,
