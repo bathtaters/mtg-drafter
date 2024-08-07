@@ -7,3 +7,6 @@
 -- AlterTable
 ALTER TABLE "Game" DROP COLUMN "isPaused";
 ALTER TABLE "Game" ADD COLUMN     "pause" INT8;
+
+-- AlterEnum
+ALTER TYPE "LogAction"ADD VALUE 'pause';
