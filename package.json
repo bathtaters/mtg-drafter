@@ -13,7 +13,7 @@
     "update": "git pull && npm install && npm update && prisma migrate deploy && prisma generate && npm run build && pm2 restart mtg-drafter --update-env"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"commonjs\"} prisma/seed.ts"
+    "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
     "@next/font": "^13.0.7",
@@ -54,7 +54,7 @@
     "postcss": "^8.4.16",
     "prisma": "^5.5.0",
     "tailwindcss": "^3.1.8",
-    "ts-node": "^10.9.1",
+    "tsx": "^4.16.5",
     "typescript": "^5.1.6"
   }
 }
