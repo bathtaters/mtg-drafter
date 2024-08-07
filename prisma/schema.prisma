@@ -38,11 +38,6 @@ enum Side {
   e
 }
 
-enum BoosterType {
-  default
-  arena
-}
-
 enum Board {
   main
   side
@@ -171,7 +166,7 @@ model CardSet {
   block       String?
 
   totalWeight Int             @default(0)
-  boosterType BoosterType
+  boosterType String
   boosters    BoosterLayout[]
   sheets      BoosterSheet[]
 }
@@ -302,5 +297,4 @@ model Enums {
   GameStatus   GameStatus
   PlayerStatus PlayerStatus
   LogAction    LogAction
-  BoosterType  BoosterType
 }
