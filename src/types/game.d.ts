@@ -18,7 +18,7 @@ export type BasicPlayer = Pick<Player, "id"|"name"|"sessionId"|"pick">
 export interface Game extends DbGame { pause: number | null }
 export type PartialGame = Pick<Game,"id"|"name"|"url">
 
-export type CardStrict = Card & { layout: Layout | null }
+export type CardStrict = Omit<Card,"layout"> & { layout: Layout | null }
 export type CardFull = CardStrict & { otherFaces: Array<{ card: CardStrict }> }
 export type GameCardFull = GameCard & { card: CardFull }
 
