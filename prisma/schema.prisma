@@ -38,32 +38,6 @@ enum Side {
   e
 }
 
-enum CardLayout {
-  adventure
-  aftermath
-  art_series
-  augment
-  class
-  double_faced_token
-  emblem
-  flip
-  host
-  leveler
-  meld
-  modal_dfc
-  mutate
-  normal
-  planar
-  prototype
-  reversible_card
-  saga
-  scheme
-  split
-  token
-  transform
-  vanguard
-}
-
 enum BoosterType {
   default
   arena
@@ -329,5 +303,4 @@ model Enums {
   PlayerStatus PlayerStatus
   LogAction    LogAction
   BoosterType  BoosterType
-  CardLayout   CardLayout
 }
