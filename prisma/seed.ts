@@ -22,6 +22,12 @@ main()
     process.exit(1)
   })
 
-// STUDIO: npx prisma studio
-// SEED: npx prisma db seed
-// MIGRATE: npx prisma migrate dev --name update-reason
+// WEB GUI: npx prisma studio
+// REBUILD CONTENT: npx prisma db seed
+// UPDATE TABLES: npx prisma migrate dev --name update-reason
+// SYNC DB: npx prisma migrate deploy
+// REBUILD TS: npx prisma generate
+// FULL DB RESET: npx prisma migrate reset
+//  (drops db, deploys, generates, seeds)
+
+// CHECK FOR MISMATCH: npx prisma --version
