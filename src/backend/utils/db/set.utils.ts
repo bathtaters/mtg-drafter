@@ -1,9 +1,8 @@
-import type { Prisma, BoosterType } from '@prisma/client'
+import type { Prisma } from '@prisma/client'
 import type { Set } from 'mtggraphql'
+import { BoosterType, boosterPreference } from 'types/setup'
 
-// Preferred booster configuration from MTGJSON [ most -> least ]
-const boosterPreference: BoosterType[] = ['default', 'arena']
-
+// ** For preferred booster types, see types/setup.d.ts ** \\
 
 // DB Adapters
 

@@ -3,6 +3,11 @@ import type { ErrResponse, ListResponse } from "pages/api/setup/upload"
 import z from "backend/libs/validation"
 import { boosterOptions, commonOptions, cubeOptions } from "./setup.validation"
 
+// -- BOOSTER PACKS PREFERENCE -- \\
+// Use keys from MTGJSON Set.booster, ordered by preference [ most -> least ].
+export const boosterPreference = ["draft","default","arena"] as const
+export type BoosterType = (typeof boosterPreference)[number]
+
 // -- RELATED/PARITAL TYPES -- \\
 
 export const draftTypes = [ "Cube", "Booster" ] as const
@@ -14,12 +19,13 @@ export type BoosterCardFull = BoosterCard & { card: Card }
 export type BoosterLayoutFull = BoosterLayout & { sheets: SheetsInLayout[] }
 export type BoosterSheetFull = BoosterSheet & { cards: BoosterCardFull[] }
 
-export interface SetFull extends CardSet {
+export type SetStrict = Omit<CardSet, 'boosterType'> & { boosterType: BoosterType | null }
+export interface SetFull extends SetStrict {
   boosters: BoosterLayoutFull[],
   sheets: { [name in BoosterSheet['name']]: BoosterSheetFull | undefined }
 }
 
-export type SetBasic = Pick<CardSet, "code"|"name"|"block"|"boosterType">
+export type SetBasic = Pick<SetStrict, "code"|"name"|"block"|"boosterType">
 
 // -- USER OPTIONS -- \\
 
