@@ -22,6 +22,12 @@
 
   .btn { @apply font-sans; }
 
+  /* Fix number spin buttons in Chrome */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    @apply p-1;
+  }
+  
   /* Fix focus styling on ghost buttons (Modal X button) */
   .btn.btn-ghost:focus-visible { @apply outline-none bg-gray-500/40; }
 
