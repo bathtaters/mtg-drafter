@@ -1,10 +1,12 @@
 import { BulkData, BulkDataType } from 'types/scryfall.d';
 import fetchJson from '../../libs/fetchJson';
-import { setSettings } from '../../utils/db/settings.utils';
+import { setSettings, setSetting } from '../../utils/db/settings.utils';
 
-export type Settings = { [id: string]: any }
-
-// -- Specialized getters/setters -- \\
+export async function updateVersion(version: string, enableLog=false) {
+  version = version.split(".").slice(0, -1).join(".")
+  await setSetting("db.version", version)
+  if (enableLog) console.log(`Set DB version to current (${version})`)
+}
 
 const scryfallNames: { [type in BulkDataType]?: string } = { "default_cards": "image", "oracle_cards": "preferred" }
 

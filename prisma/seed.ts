@@ -2,7 +2,9 @@ import prisma from '../src/backend/libs/db'
 import updateCards from '../src/backend/services/db/updateCards'
 import updateImages from '../src/backend/services/db/updateImages'
 import updateSets from '../src/backend/services/db/updateSets'
+import { updateVersion } from 'backend/services/db/updateSettings'
 import { cardDbUrl, imageDbUrl, preferredDbUrl, setsDbUrl } from '../src/assets/urls'
+import { version } from "../package.json"
 
 const CONSOLE_LOGGING = true
 const FULL_REBUILD = false
@@ -11,6 +13,7 @@ async function main() {
   await updateCards(cardDbUrl, FULL_REBUILD, CONSOLE_LOGGING)
   await updateImages(imageDbUrl, preferredDbUrl, FULL_REBUILD, CONSOLE_LOGGING)
   await updateSets(setsDbUrl, FULL_REBUILD, CONSOLE_LOGGING)
+  await updateVersion(version, CONSOLE_LOGGING)
   console.log('DONE')
 }
 
