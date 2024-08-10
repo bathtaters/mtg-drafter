@@ -37,7 +37,7 @@ export const AutoLandsInput = ({ label, ...props }: HTMLProps<HTMLInputElement>)
     </span>
     <NumberInput {...props}
       className="input bg-[color-mix(in_oklab,oklch(var(--b1)),white_10%)]
-      w-full h-full p-1 text-sm md:text-base"
+      w-full h-full py-1 px-2 text-sm md:text-base hide-arrows md:show-arrows"
     />
   </>
 )
