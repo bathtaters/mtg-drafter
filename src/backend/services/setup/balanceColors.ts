@@ -1,4 +1,4 @@
-import type { BoosterCardFull } from 'types/setup'
+import type { SetBooster } from 'types/setup'
 import { Card, Color } from '@prisma/client'
 import { randomElemWeighted } from 'backend/libs/random'
 import { COLOR_BASE, OTHER, compareKeys, getReplaceIndex } from 'backend/utils/setup/booster.utils'
@@ -6,8 +6,8 @@ import { COLOR_BASE, OTHER, compareKeys, getReplaceIndex } from 'backend/utils/s
 const MAX_PER_COLOR = 4, MIN_PER_COLOR = 1, DEBUG = false
 
 /** Color balance pack (Drawing from pool if needed) */
-export default function balanceColors(pack: Card[], pool: BoosterCardFull[]) {
-  DEBUG && console.log(`--Balancing colors for ${pool[0].setCode}`)
+export default function balanceColors(pack: Card[], pool: Record<string, number>, cards: SetBooster['cards']) {
+  DEBUG && console.log(`--Balancing colors for ${pack[0].setCode}`)
 
   const colorCount = pack.reduce((sums, card) => {
     sums[card.monoColor || OTHER]++
@@ -22,21 +22,27 @@ export default function balanceColors(pack: Card[], pool: BoosterCardFull[]) {
       while (colorCount[color] < MIN_PER_COLOR) {
         DEBUG && console.log(` >   Too few ${color}:`)
         
-        const subPool = pool.filter(({ card }) => card.monoColor === color && !pack.find(({ uuid }) => uuid === card.uuid))
-        DEBUG && console.log(` >     - Found ${subPool.length} unique ${color} cards out of ${pool.length} to add`)
-        if (!subPool.length) {
+        const subPool = Object.keys(pool).reduce(
+          (sub, id) => cards[id].monoColor === color && !pack.find(({ uuid }) => uuid === id) ? { ...sub, [id]: pool[id] } : sub,
+          {} as Record<string, number>,
+        )
+
+        DEBUG && console.log(` >     - Found ${Object.keys(subPool).length} unique ${color} cards out of ${Object.keys(pool).length} to add`)
+        if (!Object.keys(subPool).length) {
           console.warn(`Unable to color-balance for ${color}: No new ${color} cards exist in pool.`)
           break // No cards of this color exist
         }
 
         const replColors = compareKeys(colorCount, (a,b) => a - b) // max
         DEBUG && console.log(` >     - Searching ${pack.length} cards for ${replColors.join('/')} card to remove`)
+
         const replIdx   = getReplaceIndex(pack, replColors)
         if (replIdx < 0) throw new Error('No valid replacement while color balancing (Perhaps due to empty pack)')
         
         colorCount[pack[replIdx].monoColor || OTHER]--
         DEBUG && console.log(` >     - Removed card "${pack[replIdx].name}" (${pack[replIdx].colors.join('/')})`)
-        pack[replIdx] = randomElemWeighted(subPool)?.card as Card
+
+        pack[replIdx] = cards[randomElemWeighted(subPool) as string]
         colorCount[pack[replIdx].monoColor || OTHER]++
         DEBUG && console.log(` >     - Added card "${pack[replIdx].name}" (${pack[replIdx].colors.join('/')})`)
         notChanged = false
@@ -46,9 +52,13 @@ export default function balanceColors(pack: Card[], pool: BoosterCardFull[]) {
         DEBUG && console.log(` >   Too many ${color}:`)
 
         const replColors = compareKeys(colorCount, (a,b) => b - a) // min
-        const subPool = pool.filter(({ card }) => card.monoColor && replColors.includes(card.monoColor) && !pack.find(({ uuid }) => uuid === card.uuid))
-        DEBUG && console.log(` >     - Found ${subPool.length} unique ${replColors.join('/')} cards out of ${pool.length} to add`)
-        if (!subPool.length) {
+        const subPool = Object.keys(pool).reduce(
+          (sub, id) => cards[id].monoColor === color && replColors.includes(cards[id].monoColor) && !pack.find(({ uuid }) => uuid === id) ? { ...sub, [id]: pool[id] } : sub,
+          {} as Record<string, number>,
+        )
+
+        DEBUG && console.log(` >     - Found ${Object.keys(subPool).length} unique ${replColors.join('/')} cards out of ${Object.keys(pool).length} to add`)
+        if (!Object.keys(subPool).length) {
           console.warn(`Unable to color-balance for ${color}: No new ${replColors.join('/')} cards exist in pool.`)
           break // No cards of this color exist
         }
@@ -59,7 +69,8 @@ export default function balanceColors(pack: Card[], pool: BoosterCardFull[]) {
         
         colorCount[pack[replIdx].monoColor || OTHER]--
         DEBUG && console.log(` >     - Removed card "${pack[replIdx].name}" (${pack[replIdx].colors.join('/')})`)
-        pack[replIdx] = randomElemWeighted(subPool)?.card as Card
+
+        pack[replIdx] = cards[randomElemWeighted(subPool) as string]
         colorCount[pack[replIdx].monoColor || OTHER]++
         DEBUG && console.log(` >     - Added card "${pack[replIdx].name}" (${pack[replIdx].colors.join('/')})`)
         notChanged = false

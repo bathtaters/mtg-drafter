@@ -1,4 +1,4 @@
-import type { BoosterLayoutFull } from 'types/setup'
+import type { BoosterPack } from 'types/setup'
 import { Card, Color } from '@prisma/client'
 import { randomElem } from 'backend/libs/random'
 import { boosterSortOrder } from 'assets/sort.constants'
@@ -21,7 +21,7 @@ export const getReplaceIndex = (cards: Card[], colors: Array<Color|typeof OTHER>
 }
 
 
-export const sortSheets = (layout: BoosterLayoutFull['sheets']) => layout.sort((a,b) =>
-  boosterSortOrder.indexOf(a.sheetName) - boosterSortOrder.indexOf(b.sheetName)
+export const sortSheets = (layout: BoosterPack['contents']) => Object.keys(layout).sort((a,b) =>
+  boosterSortOrder.indexOf(a) - boosterSortOrder.indexOf(b)
 )
 
