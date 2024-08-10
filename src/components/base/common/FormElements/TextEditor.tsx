@@ -8,9 +8,15 @@ export default function TextEditor(props: Props) {
 
   return isEditing ?
     <EditWrapper>
+      {props.btnLeft ? <>
+        <EditButton value="✓" className="btn-success join-item" onClick={handleSubmit} disabled={!canSave} />
+        <EditButton value="✕" className="btn-error join-item"   onClick={handleCancel} />
+      </> : null}
       <TextBox value={text} onChange={handleChange} onKeyUp={handleKeypress} className={props.className} {...charLimit} />
+      {props.btnLeft ? null : <>
         <EditButton value="✕" className="btn-error join-item"   onClick={handleCancel} />
         <EditButton value="✓" className="btn-success join-item" onClick={handleSubmit} disabled={!canSave} />
+      </>}
     </EditWrapper> :
     <StaticWrapper onClick={enableEdit}>{text}</StaticWrapper>
 }

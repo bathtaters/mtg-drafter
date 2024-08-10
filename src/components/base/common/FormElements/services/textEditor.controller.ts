@@ -10,6 +10,7 @@ export type EditorProps = {
   onSubmit: (value: string) => void,
   minLength?: number,
   maxLength?: number,
+  btnLeft?: boolean,
 }
 
 export default function useTextEditor({ value, onSubmit, minLength, maxLength, isEditing, setEditing }: EditorProps) {
