@@ -143,7 +143,6 @@ model Card {
 
   // Relation fields
   inGame       GameCard[]
-  inBooster    BoosterCard[]
   inOtherFaces FaceInCard[]  @relation("Face")
 
   @@index([name])
@@ -164,11 +163,16 @@ model CardSet {
   name        String
   releaseDate String?
   block       String?
+  boosters    Booster[]
+}
 
-  totalWeight BigInt  @default(0)
+model Booster {
+  setCode     String
   boosterType String
-  boosters    BoosterLayout[]
-  sheets      BoosterSheet[]
+  data        Json
+  set         CardSet @relation(fields: [setCode], references: [code], onDelete: Cascade, onUpdate: Cascade)
+  
+  @@id(name: "boosterCode", [setCode, boosterType])
 }
 
 // Embedded Models
@@ -234,61 +238,6 @@ model LogEntry {
   gameId   String
   playerId String?
   cardId   String?
-}
-
-// Set
-
-model BoosterLayout {
-  setCode String
-  index   Int
-
-  sheets SheetsInLayout[]
-  weight BigInt @default(0)
-
-  set CardSet @relation(fields: [setCode], references: [code], onDelete: Cascade, onUpdate: Cascade)
-
-  @@id([setCode, index])
-}
-
-model SheetsInLayout {
-  setCode   String
-  layoutIdx Int
-  sheetName String
-
-  selectCount Int @default(1)
-
-  layout BoosterLayout @relation(fields: [setCode, layoutIdx], references: [setCode, index], onDelete: Cascade, onUpdate: Cascade)
-  sheet  BoosterSheet  @relation(fields: [setCode, sheetName], references: [setCode, name], onDelete: Cascade, onUpdate: Cascade)
-
-  @@id([setCode, layoutIdx, sheetName])
-}
-
-model BoosterSheet {
-  setCode String
-  name    String
-
-  cards         BoosterCard[]
-  foil          Boolean       @default(false)
-  balanceColors Boolean       @default(false)
-  totalWeight   BigInt        @default(0)
-
-  set     CardSet          @relation(fields: [setCode], references: [code], onDelete: Cascade, onUpdate: Cascade)
-  layouts SheetsInLayout[]
-
-  @@id([setCode, name])
-}
-
-model BoosterCard {
-  id     String @id @default(cuid())
-  card   Card   @relation(fields: [cardId], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
-  weight BigInt @default(0)
-
-  sheet     BoosterSheet @relation(fields: [setCode, sheetName], references: [setCode, name], onDelete: Cascade, onUpdate: Cascade)
-  setCode   String
-  sheetName String
-  cardId    String
-
-  @@index([setCode, sheetName])
 }
 
 model Enums {
