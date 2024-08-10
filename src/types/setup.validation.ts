@@ -12,7 +12,7 @@ export const boosterOptions = z.object({
   ...commonOptionsObj,
   basics: z.boolean().default(false),
   packList: z.array(
-    z.string().min(setupLimits.setCode.min).max(setupLimits.setCode.max).transform((str) => str.toUpperCase())
+    z.string().min(setupLimits.boosterCode.min).max(setupLimits.boosterCode.max).includes(":")
   ).min(setupLimits.packs.min).max(setupLimits.packs.max)
 })
 

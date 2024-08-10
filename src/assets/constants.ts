@@ -1,6 +1,6 @@
-import type { BoosterType, GameOptions } from 'types/setup'
+import type { GameOptions } from 'types/setup'
 import type { RetryOptions } from 'backend/libs/retry'
-import type { Layout } from 'types/scryfall'
+import type { BoosterType, Layout } from 'types/scryfall'
 import { LogOptions, TimerOptions, Direction } from 'types/game.d'
 import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
 
@@ -47,7 +47,7 @@ export const
     timer:    { min: 0, max: timerOptions.length - 1 },
     packs:    { min: 1, max: 5  },
     packSize: { min: 1, max: 20 },
-    setCode:  { min: 3, max: 4  },
+    boosterCode: { min: 5, max: 30 },
     cubeSize: { max: 720 * 4    },
   }, 
 
@@ -58,7 +58,7 @@ export const
     timer: "4",
     packs: "3",
     packSize: "15",
-    packList: ["KLD","KLD","AER"],
+    packList: ["KLD:draft","KLD:draft","AER:draft"],
     basics: true
   }),
 
@@ -77,7 +77,9 @@ export const layoutDirection:  {[layout in Layout]?: Direction} = {
 }
 export const flippableLayouts = [...Object.keys(layoutDirection),'modal_dfc', 'transform', 'meld'] as const
 
-export const hideBoosterTypes: BoosterType[] = ['default', 'draft']
+export const hideBoosterNames: BoosterType[] = ['default', 'draft']
+
+export const skipBoosterTypes: BoosterType[] = []
 
 // Advanced Tweaks + Debug Settings
 
