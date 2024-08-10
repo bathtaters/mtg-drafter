@@ -1,6 +1,6 @@
 import type { Prisma } from '@prisma/client'
 import type { Set } from 'mtggraphql'
-import { BoosterType, boosterPreference } from 'types/setup'
+import { BoosterType, boosterPreference } from 'types/setup.d'
 
 // ** For preferred booster types, see types/setup.d.ts ** \\
 
