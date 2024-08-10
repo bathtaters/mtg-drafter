@@ -18,12 +18,13 @@ export type NumberInputProps = HTMLProps<HTMLInputElement>
 
 // export default function NumberInput({ wrapperClass, buttonClass, ...inputProps }: NumberInputProps) {
 //   const { decHandler, incHandler, changeHandler, invalidHandler } = useNumberPicker(inputProps)
+//   inputProps.className = `join-item ${inputProps?.className ?? ""}`
 
 //   return (
-//     <div className={`input-group ${wrapperClass}`}>
-//       <input type="button" value="－" data-action="decrement" className={`btn btn-ghost btn-sm sm:btn-md ${buttonClass}`} onClick={decHandler} />
+//     <div className={`join ${wrapperClass}`}>
+//       <input type="button" value="－" data-action="decrement" className={`btn join-item btn-ghost btn-sm sm:btn-md ${buttonClass}`} onClick={decHandler} />
 //       <input type="number" inputMode="decimal" pattern="\\d*" formNoValidate {...inputProps} onChange={changeHandler} onInvalid={invalidHandler} />
-//       <input type="button" value="＋" data-action="increment" className={`btn btn-ghost btn-sm sm:btn-md ${buttonClass}`} onClick={incHandler} />
+//       <input type="button" value="＋" data-action="increment" className={`btn join-item btn-ghost btn-sm sm:btn-md ${buttonClass}`} onClick={incHandler} />
 //     </div>
 //   )
 // }

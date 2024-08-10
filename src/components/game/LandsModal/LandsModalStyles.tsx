@@ -9,22 +9,22 @@ export function ColorsWrapper({ children }: { children: ReactNode }) {
 
 export function ColorInputWrapper({ label, children }: { label: Lowercase<Color>, children: ReactNode }) {
   return (
-    <div className="input-group input-group-vertical">
-      <label className={`text-center ms-3x py-1.5 h-12 ${colorPip[label]} ${colorClass[label]}`} aria-label={label.toUpperCase()} />
+    <div className="join join-vertical">
+      <label className={`join-item text-center ms-3x py-1.5 h-12 ${colorPip[label]} ${colorClass[label]}`} aria-label={label.toUpperCase()} />
       {children}
     </div>
   )
 }
 
 export const ColorLabels = ({ labels, className }: { labels: ReactNode[], className: string }) => (
-  <div className={`input-group input-group-vertical ${className} hidden md:flex`}>
+  <div className={`join join-vertical ${className} hidden md:flex`}>
     { labels.map((label, idx) => <div className="h-12 flex items-center" key={idx}>{label}</div>) }
   </div>
 )
 
 export const ColorInput = ({ label, value, setValue }: { label: Lowercase<Color>, value: number, setValue: (value: number) => void}) => (
   <NumberInput
-    className={`input border-t border-t-base-300/30 ${colorClass[label]} text-sm md:text-xl h-12`}
+    className={`input join-item border-t border-t-base-300/30 ${colorClass[label]} text-sm md:text-xl h-12 hide-arrows md:show-arrows`}
     value={value} min="0"
     onChange={(ev) => setValue(+ev.currentTarget.value)}
   />
@@ -32,26 +32,28 @@ export const ColorInput = ({ label, value, setValue }: { label: Lowercase<Color>
 
 export const AutoLandsInput = ({ label, ...props }: HTMLProps<HTMLInputElement>) => (
   <>
-    <span className="bg-accent col-span-2 px-0 mr-2 justify-self-end italic opacity-90">{label}</span>
+    <span className="px-0 mr-2 justify-self-end italic opacity-90">
+      {label}
+    </span>
     <NumberInput {...props}
-      className="input input-accent bg-accent-focus/50 !rounded-md
+      className="input bg-[color-mix(in_oklab,oklch(var(--b1)),white_10%)]
       w-full h-full p-1 text-sm md:text-base"
     />
   </>
 )
 
 export const AutoLandsWrapper = ({ button, children }: { button: ReactNode, children: ReactNode }) => (
-  <div className="input-group mr-auto">
+  <div className="join mr-auto">
     {button}
-    <div className="dropdown">
-      <div tabIndex={0}
-        className="dropdown-content rounded-md bg-accent text-accent-content
-        w-36 md:w-40 p-2 ml-1 bottom-0 left-full
-        grid grid-cols-3 items-center gap-y-1"
+    <details className="dropdown join-item">
+      <summary className="btn btn-accent rounded-l-none">▸</summary>
+      <div
+        className="dropdown-content rounded-md bg-base-300 text-base-content
+        w-44 sm:w-52 p-2 sm:px-3 sm:py-4 ml-1 left-full bottom-0
+        grid grid-cols-2 items-center gap-y-2"
       >
         {children}
       </div>
-      <label tabIndex={0} className="btn btn-accent rounded-l-none">▸</label>
-    </div>
+    </details>
   </div>
 )

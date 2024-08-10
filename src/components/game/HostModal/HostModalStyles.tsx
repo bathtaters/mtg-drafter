@@ -25,7 +25,7 @@ export const GameContainer = ({ label, children }: { label: ReactNode, children:
 
 export const TitleEditor = (props: TextEditProps) => (
   <div className="font-serif text-xl bg-base-300 border border-secondary rounded-lg flex-grow">
-    <TextEditor {...props} className="input-secondary bg-base-300 text-xl" />
+    <TextEditor {...props} className="input-secondary join-item bg-base-300 text-xl" />
   </div>
 )
 
@@ -46,18 +46,18 @@ export const PlayersContainer = ({ label, children }: { label: ReactNode, childr
 )
 
 export const PlayerWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="input-group items-center">{children}</div>
+  <div className="join items-center">{children}</div>
 )
 
 export const NameEditor = (props: TextEditProps) => (
   <div className="flex-grow h-full bg-base-300 rounded-lg text-right">
-    <TextEditor {...props} className="input-secondary text-sm sm:text-base text-right" />
+    <TextEditor {...props} className="input-secondary join-item text-sm sm:text-base text-right" />
   </div>
 )
 
 export const DropButton = ({ onClick, label }: { onClick?: MouseEventHandler, label: ReactNode }) => (
   <button type="button" onClick={onClick} disabled={!onClick}
-    className={`btn btn-sm btn-outline ${onClick ? 'btn-error' : 'btn-secondary'} p-2 h-full`}>
+    className={`btn join-item btn-sm btn-outline ${onClick ? 'btn-error' : 'btn-secondary'} p-2 h-full`}>
       {label}
   </button>
 )

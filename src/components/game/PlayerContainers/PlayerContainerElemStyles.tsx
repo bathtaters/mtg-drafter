@@ -48,12 +48,12 @@ export const StatsStyle = ({ type, isMini, count }: { type?: keyof typeof statsI
   </>)
 }
 
-export const PlayerNameEditor = (props: TextEditorProps) => <TextEditor {...props} className="input-primary text-lg sm:text-2xl " />
+export const PlayerNameEditor = (props: TextEditorProps) => <TextEditor {...props} className="input-primary join-item text-lg sm:text-2xl " />
 
 export const MenuItemStyle = ({ label, icon }: { label: string, icon?: ReactNode }) => (
-    <div className="flex justify-between w-full">
-      <span>{label}</span>
-      <span>{icon}</span>
-    </div>
+    <>
+      <span className="py-1">{label}</span>
+      <span className="justify-self-end">{icon}</span>
+    </>
   )
   
