@@ -1,12 +1,12 @@
-import type { BoosterCard, BoosterLayout, BoosterSheet, Card, CardSet, SheetsInLayout } from '@prisma/client'
+import type { Card, CardSet, Booster } from '@prisma/client'
 import type { ErrResponse, ListResponse } from "pages/api/setup/upload"
+import type { BoosterType } from './scryfall'
 import z from "backend/libs/validation"
 import { boosterOptions, commonOptions, cubeOptions } from "./setup.validation"
 
 // -- BOOSTER PACKS PREFERENCE -- \\
 // Use keys from MTGJSON Set.booster, ordered by preference [ most -> least ].
-export const boosterPreference = ["draft","default","arena"] as const
-export type BoosterType = (typeof boosterPreference)[number]
+
 
 // -- RELATED/PARITAL TYPES -- \\
 
@@ -15,17 +15,20 @@ export type DraftType = (typeof draftTypes)[number]
 
 export type PackCard = Pick<GameCard,'cardId'|'foil'>
 
-export type BoosterCardFull = BoosterCard & { card: Card }
-export type BoosterLayoutFull = BoosterLayout & { sheets: SheetsInLayout[] }
-export type BoosterSheetFull = BoosterSheet & { cards: BoosterCardFull[] }
-
-export type SetStrict = Omit<CardSet, 'boosterType'> & { boosterType: BoosterType | null }
-export interface SetFull extends SetStrict {
-  boosters: BoosterLayoutFull[],
-  sheets: { [name in BoosterSheet['name']]: BoosterSheetFull | undefined }
+export type BoosterData = { boosters: BoosterPack[], boostersTotalWeight: number, sheets: Record<string, BoosterSheet> }
+export type BoosterPack = { contents: Partial<Record<string, number>>, weight: number }
+export type BoosterSheet = {
+    allowDuplicates?: boolean,
+    balanceColors?: boolean,
+    cards: Record<string, number>,
+    foil: boolean,
+    fixed?: boolean,
+    totalWeight: number,
 }
 
-export type SetBasic = Pick<SetStrict, "code"|"name"|"block"|"boosterType">
+export type SetBooster = Omit<Booster, 'data'> & { data: BoosterData, set: CardSet, cards: Record<string,Card> }
+
+export type BoosterBasic = { boosterType: BoosterType, set: Pick<CardSet, "code"|"name"|"block"> }
 
 // -- USER OPTIONS -- \\
 
@@ -50,7 +53,7 @@ export type GameOptions = {
 
 // -- API TYPES -- \\
 
-export type SetupProps = { setList: SetBasic[] }
+export type SetupProps = { setList: BoosterBasic[] }
 
 export type UploadType = ListResponse | ErrResponse
 

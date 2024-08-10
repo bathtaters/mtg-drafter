@@ -1,7 +1,7 @@
 import prisma from '../../libs/db'
 import fetchJson from '../../libs/fetchJson'
 import Batcher from '../../libs/Batcher'
-import { adaptSetDataToDb, flattenObjects, getBoosterType, isBoosterSet, JsonSet } from '../../utils/db/set.utils'
+import { adaptSetDataToDb, flattenObjects, isBoosterSet, JsonSet } from '../../utils/db/set.utils'
 import { updateMtgJson } from '../../utils/db/settings.utils'
 
 const DL_THREADS = 1000, ENTRY_BATCH = 25
@@ -23,22 +23,17 @@ export default async function updateSets(url: string, fullUpdate = false, enable
   enableLog && console.time('Sets')
 
   const setUpdate = new Batcher(ENTRY_BATCH, async (data: ReturnType<typeof adaptSetDataToDb>[]) => {
-    const { base, boosters, sheets, joins, cards } = flattenObjects(data)
+    const { set, boosters } = flattenObjects(data)
     await prisma.$transaction([
-      prisma.cardSet.createMany(        { data: base     }),
-      prisma.boosterLayout.createMany(  { data: boosters }),
-      prisma.boosterSheet.createMany(   { data: sheets   }),
-      prisma.sheetsInLayout.createMany( { data: joins    }),
-      prisma.boosterCard.createMany(    { data: cards    }),
+      prisma.cardSet.createMany({ data: set      }),
+      prisma.booster.createMany({ data: boosters }),
     ])
   })
   
   await fetchJson<JsonSet>(url, async (incomingData) => {
     if ((existingSets && existingSets.includes(incomingData.code)) || !isBoosterSet(incomingData)) return
-    const boosterType = getBoosterType(incomingData.booster)
-    if (!boosterType) return
 
-    await setUpdate.add(adaptSetDataToDb(incomingData, boosterType))
+    await setUpdate.add(adaptSetDataToDb(incomingData))
 
   }, { jsonPath: 'data.*', maxThreads: DL_THREADS })
   

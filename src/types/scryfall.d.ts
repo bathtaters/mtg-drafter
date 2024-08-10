@@ -71,6 +71,82 @@ export type Layout = "normal" |
 	"transform" |
 	"vanguard"
 
+export type BoosterType = "default" |
+	"draft" |
+	"starter" |
+	"collector" |
+	"box-topper" |
+	"vip" |
+	"fat-pack" |
+	"tournament" |
+	"prerelease" |
+	"arena" |
+	"set" |
+	"theme-b" |
+	"theme-dungeons" |
+	"theme-g" |
+	"theme-r" |
+	"theme-u" |
+	"theme-w" |
+	"premium" |
+	"six" |
+	"collector-sample" |
+	"jumpstart" |
+	"theme-boros" |
+	"theme-dimir" |
+	"theme-golgari" |
+	"theme-izzet" |
+	"theme-selesnya" |
+	"prerelease-boros" |
+	"prerelease-dimir" |
+	"prerelease-gruul" |
+	"prerelease-orzhov" |
+	"prerelease-simic" |
+	"collector-jp" |
+	"jp" |
+	"theme-monsters" |
+	"theme-vikings" |
+	"box-topper-foil" |
+	"bundle-promo" |
+	"gift-bundle-promo" |
+	"collector-special" |
+	"jumpstart-v2" |
+	"duelspromo" |
+	"convention" |
+	"convention-2021" |
+	"theme-werewolves" |
+	"theme-ninjas" |
+	"compleat" |
+	"theme-azorius" |
+	"theme-gruul" |
+	"theme-orzhov" |
+	"theme-rakdos" |
+	"theme-simic" |
+	"prerelease-azorius" |
+	"prerelease-golgari" |
+	"prerelease-izzet" |
+	"prerelease-rakdos" |
+	"prerelease-selesnya" |
+	"prerelease-brokers" |
+	"prerelease-cabaretti" |
+	"prerelease-maestros" |
+	"prerelease-obscura" |
+	"prerelease-riveteers" |
+	"theme-brokers" |
+	"theme-cabaretti" |
+	"theme-maestros" |
+	"theme-obscura" |
+	"theme-riveteers" |
+	"set-jp" |
+	"theme-lorehold" |
+	"theme-prismari" |
+	"theme-quandrix" |
+	"theme-silverquill" |
+	"theme-witherbloom" |
+	"theme-vampires" |
+	"theme-party"
+	
+
 export enum Format {
 	standard,
 	future,
