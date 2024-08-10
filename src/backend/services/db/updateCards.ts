@@ -4,12 +4,15 @@ import fetchJson from '../../libs/fetchJson'
 import Batcher from '../../libs/Batcher'
 import { createMultiUpsert } from '../../utils/db/db.utils'
 import { adaptCardToDb, adaptFacesToDb, cardFields, JsonCard } from '../../utils/db/card.utils'
+import { updateMtgJson } from '../../utils/db/settings.utils'
 
 const DL_THREADS = 1000, CARD_BATCH = 5000, UPSERT_BATCH = Math.floor(32000 / cardFields.length)
 
 const multiUpsert = createMultiUpsert<Prisma.CardCreateManyInput>('Card', cardFields, prisma)
 
 export default async function updateCards(url: string, fullUpdate = false, enableLog = false) {
+
+  await updateMtgJson("cards", url)
 
   let existing: number | undefined
   if (!fullUpdate) existing = await prisma.card.count()

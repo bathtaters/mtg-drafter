@@ -2,11 +2,14 @@ import prisma from '../../libs/db'
 import fetchJson from '../../libs/fetchJson'
 import Batcher from '../../libs/Batcher'
 import { adaptSetDataToDb, flattenObjects, getBoosterType, isBoosterSet, JsonSet } from '../../utils/db/set.utils'
+import { updateMtgJson } from '../../utils/db/settings.utils'
 
 const DL_THREADS = 1000, ENTRY_BATCH = 25
 
 
 export default async function updateSets(url: string, fullUpdate = false, enableLog = false) {
+
+  await updateMtgJson("sets", url)
 
   let existingSets: string[] | undefined
   if (!fullUpdate) existingSets = await prisma.cardSet.findMany({ select: { code: true }})
@@ -40,7 +43,6 @@ export default async function updateSets(url: string, fullUpdate = false, enable
   }, { jsonPath: 'data.*', maxThreads: DL_THREADS })
   
   await setUpdate.finish()
-
   enableLog && console.timeEnd('Sets')
   enableLog && await prisma.cardSet.count().then((c) => console.log('Added',c-(existingSets?.length || 0),'/',c,'sets'))
 }
