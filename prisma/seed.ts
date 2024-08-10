@@ -25,9 +25,11 @@ main()
 // WEB GUI: npx prisma studio
 // REBUILD CONTENT: npx prisma db seed
 // UPDATE TABLES: npx prisma migrate dev --name update-reason
+// GENERATE UPDATE SQL: npx prisma migrate dev --create-only
 // SYNC DB: npx prisma migrate deploy
 // REBUILD TS: npx prisma generate
 // FULL DB RESET: npx prisma migrate reset
 //  (drops db, deploys, generates, seeds)
+// UPDATE TRACKING W/O CHANGE: npx prisma migrate --applied/rolled-back <migration folder>
 
 // CHECK FOR MISMATCH: npx prisma --version
