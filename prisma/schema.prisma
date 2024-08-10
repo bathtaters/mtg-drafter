@@ -165,7 +165,7 @@ model CardSet {
   releaseDate String?
   block       String?
 
-  totalWeight Int             @default(0)
+  totalWeight BigInt  @default(0)
   boosterType String
   boosters    BoosterLayout[]
   sheets      BoosterSheet[]
@@ -243,7 +243,7 @@ model BoosterLayout {
   index   Int
 
   sheets SheetsInLayout[]
-  weight Int              @default(0)
+  weight BigInt @default(0)
 
   set CardSet @relation(fields: [setCode], references: [code], onDelete: Cascade, onUpdate: Cascade)
 
@@ -270,7 +270,7 @@ model BoosterSheet {
   cards         BoosterCard[]
   foil          Boolean       @default(false)
   balanceColors Boolean       @default(false)
-  totalWeight   Int           @default(0)
+  totalWeight   BigInt        @default(0)
 
   set     CardSet          @relation(fields: [setCode], references: [code], onDelete: Cascade, onUpdate: Cascade)
   layouts SheetsInLayout[]
@@ -281,7 +281,7 @@ model BoosterSheet {
 model BoosterCard {
   id     String @id @default(cuid())
   card   Card   @relation(fields: [cardId], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
-  weight Int    @default(0)
+  weight BigInt @default(0)
 
   sheet     BoosterSheet @relation(fields: [setCode, sheetName], references: [setCode, name], onDelete: Cascade, onUpdate: Cascade)
   setCode   String
