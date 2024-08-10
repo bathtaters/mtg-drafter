@@ -46,27 +46,106 @@ export enum Border {
 	white,
 }
 
-export enum Layout {
-	normal,
-	split,
-	flip,
-	transform,
-	modal_dfc,
-	meld,
-	leveler,
-	saga,
-	adventure,
-	planar,
-	scheme,
-	vanguard,
-	token,
-	double_faced_token,
-	emblem,
-	augment,
-	host,
-	art_series,
-	double_sided,
-}
+export type Layout = "normal" |
+	"adventure" |
+	"aftermath" |
+	"art_series" |
+	"augment" |
+	"case" |
+	"class" |
+	"double_faced_token" |
+	"emblem" |
+	"flip" |
+	"host" |
+	"leveler" |
+	"meld" |
+	"modal_dfc" |
+	"mutate" |
+	"planar" |
+	"prototype" |
+	"reversible_card" |
+	"saga" |
+	"scheme" |
+	"split" |
+	"token" |
+	"transform" |
+	"vanguard"
+
+export type BoosterType = "default" |
+	"draft" |
+	"starter" |
+	"collector" |
+	"box-topper" |
+	"vip" |
+	"fat-pack" |
+	"tournament" |
+	"prerelease" |
+	"arena" |
+	"set" |
+	"theme-b" |
+	"theme-dungeons" |
+	"theme-g" |
+	"theme-r" |
+	"theme-u" |
+	"theme-w" |
+	"premium" |
+	"six" |
+	"collector-sample" |
+	"jumpstart" |
+	"theme-boros" |
+	"theme-dimir" |
+	"theme-golgari" |
+	"theme-izzet" |
+	"theme-selesnya" |
+	"prerelease-boros" |
+	"prerelease-dimir" |
+	"prerelease-gruul" |
+	"prerelease-orzhov" |
+	"prerelease-simic" |
+	"collector-jp" |
+	"jp" |
+	"theme-monsters" |
+	"theme-vikings" |
+	"box-topper-foil" |
+	"bundle-promo" |
+	"gift-bundle-promo" |
+	"collector-special" |
+	"jumpstart-v2" |
+	"duelspromo" |
+	"convention" |
+	"convention-2021" |
+	"theme-werewolves" |
+	"theme-ninjas" |
+	"compleat" |
+	"theme-azorius" |
+	"theme-gruul" |
+	"theme-orzhov" |
+	"theme-rakdos" |
+	"theme-simic" |
+	"prerelease-azorius" |
+	"prerelease-golgari" |
+	"prerelease-izzet" |
+	"prerelease-rakdos" |
+	"prerelease-selesnya" |
+	"prerelease-brokers" |
+	"prerelease-cabaretti" |
+	"prerelease-maestros" |
+	"prerelease-obscura" |
+	"prerelease-riveteers" |
+	"theme-brokers" |
+	"theme-cabaretti" |
+	"theme-maestros" |
+	"theme-obscura" |
+	"theme-riveteers" |
+	"set-jp" |
+	"theme-lorehold" |
+	"theme-prismari" |
+	"theme-quandrix" |
+	"theme-silverquill" |
+	"theme-witherbloom" |
+	"theme-vampires" |
+	"theme-party"
+	
 
 export enum Format {
 	standard,
@@ -150,7 +229,7 @@ export interface CardFace extends CardFaceMethods {
 	flavor_text?: string | null;
 	illustration_id?: string | null;
 	image_uris?: ImageUris | null;
-	layout?: string;
+	layout?: Layout | null;
 	loyalty?: string | null;
 	mana_cost?: string | null;
 	name: string;
@@ -241,7 +320,7 @@ export interface CardIdentifier {
 
 export type Modifier = `+${bigint}` | `-${bigint}`;
 
-export interface Card implements CardFaceMethods {
+export interface Card extends CardFaceMethods {
 	object: "card";
 
 	// core fields
@@ -270,7 +349,7 @@ export interface Card implements CardFaceMethods {
 	edhrec_rank?: number | null;
 	hand_modifier?: Modifier | null;
 	keywords: string[];
-	layout: keyof typeof Layout;
+	layout: Layout | null;
 	legalities: Legalities;
 	life_modifier?: Modifier | null;
 	loyalty?: string | null;

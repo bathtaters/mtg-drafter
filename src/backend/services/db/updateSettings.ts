@@ -1,0 +1,34 @@
+import { BulkData, BulkDataType } from 'types/scryfall.d';
+import fetchJson from '../../libs/fetchJson';
+import { setSettings, setSetting } from '../../utils/db/settings.utils';
+
+export async function updateVersion(version: string, enableLog=false) {
+  version = version.split(".").slice(0, -1).join(".")
+  await setSetting("db.version", version)
+  if (enableLog) console.log(`Set DB version to current (${version})`)
+}
+
+const scryfallNames: { [type in BulkDataType]?: string } = { "default_cards": "image", "oracle_cards": "preferred" }
+
+export async function updateScryfall({ id, type, download_uri, updated_at }: BulkData) {
+    const name = scryfallNames[type] || "scryfall"
+    await setSettings({
+        [`meta.${name}.id`]: id,
+        [`meta.${name}.date`]: new Date(updated_at),
+        [`meta.${name}.url`]: download_uri,
+        [`meta.${name}.timestamp`]: new Date(),
+    })
+}
+
+export async function updateMtgJson(name: string, url: string) {
+    await fetchJson(url, async (meta) => {
+      if (!meta) return;
+  
+      await setSettings({
+        [`meta.${name}.id`]: meta.version,
+        [`meta.${name}.date`]: new Date(meta.date),
+        [`meta.${name}.url`]: url,
+        [`meta.${name}.timestamp`]: new Date(),
+      })
+    }, { jsonPath: "meta" })
+}

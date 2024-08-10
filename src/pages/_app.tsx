@@ -7,7 +7,7 @@ import { AppWrapperStyle } from '../components/base/styles/AppStyles'
 import '../styles/globals.css'
 import 'mana-font/css/mana.min.css'
 
-import { Inter, EB_Garamond } from '@next/font/google'
+import { Inter, EB_Garamond } from "next/font/google"
 const inter = Inter({ subsets: ['latin'] })
 const garamond = EB_Garamond({ subsets: ['latin'] })
 

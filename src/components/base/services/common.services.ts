@@ -1,7 +1,13 @@
-export const titleCase = (camelCase: string) => camelCase
+export const camelToTitle = (camelCase: string) => camelCase
   .replace(/([A-Z])/g, (match) => ` ${match}`)
   .replace(/^./, (match) => match.toUpperCase())
   .trim()
+
+export const hyphenToTitle = (str: string) => str.charAt(0).toUpperCase() +
+  str.slice(1).replace(
+    /[- ][^- ]*/g,
+    (txt) => ` ${txt.charAt(1).toUpperCase()}${txt.slice(2).toLowerCase()}`
+  )
 
 export const mod = (n: number, m: number) => ((n % m) + m) % m
 

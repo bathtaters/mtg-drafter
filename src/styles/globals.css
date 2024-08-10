@@ -22,30 +22,69 @@
 
   .btn { @apply font-sans; }
 
-  /* Add Tab variants to daisyUI */
-  .tabs-boxed .tab.tab-secondary { --p: var(--s); --pc: var(--sc); }
-  .tabs-boxed .tab.tab-accent    { --p: var(--a); --pc: var(--ac); }
+  /* Fix number spin buttons in Chrome */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    @apply p-1;
+  }
   
   /* Fix focus styling on ghost buttons (Modal X button) */
   .btn.btn-ghost:focus-visible { @apply outline-none bg-gray-500/40; }
-
+  
   /* Fix combining tooltip w/ btn */
   .tooltip.btn { @apply before:normal-case before:font-normal before:content-[attr(data-tip)]; }
+  
+  /* Capitialized buttons for daisyUI v4  */
+  .btn { @apply uppercase; }
+  .file\:btn { @apply file:uppercase; }
 }
 
 @layer components {
+  /* Add Tab variants to daisyUI */
+  .tabs-boxed .tab, .tabs-boxed .tab.tab-primary  {
+    --tab-color: oklch(var(--p) / var(--tw-text-opacity));
+    --tab-bg: oklch(var(--pc) / var(--tw-bg-opacity));
+  }
+  .tabs-boxed .tab.tab-secondary {
+    --tab-color: oklch(var(--s) / var(--tw-text-opacity));
+    --tab-bg: oklch(var(--sc) / var(--tw-bg-opacity));
+  }
+  .tabs-boxed .tab.tab-accent    {
+    --tab-color: oklch(var(--a) / var(--tw-text-opacity));
+    --tab-bg: oklch(var(--ac) / var(--tw-bg-opacity));
+  }
+  .tabs-boxed .tab:is(.tab-active, [aria-selected="true"]):not(.tab-disabled):not([disabled]),
+  .tabs-boxed .tab:is(input:checked) {
+    background-color: var(--tab-color);
+    color: var(--tab-bg);
+  }
+
+  /* Shadows */
   .text-shadow { text-shadow: 0.03em 0.03em 0.05em rgba(0,0,0,0.231); }
   .icon-shadow { text-shadow: 0.03em 0.03em 0.01em rgba(0,0,0,0.439); }
+
+  /* Hide browser buttons in number input boxes */
+  .hide-arrows { appearance: textfield; }
+  .hide-arrows::-webkit-inner-spin-button,
+  .hide-arrows::-webkit-outer-spin-button {
+    @apply m-0 appearance-none;
+  }
+  .show-arrows { appearance: initial; }
+  .show-arrows::-webkit-inner-spin-button,
+  .show-arrows::-webkit-outer-spin-button {
+    @apply m-auto appearance-auto;
+  }
 }
 
 @layer utilities {
+  
   /* Style scrollbars */
   *::-webkit-scrollbar { @apply w-1 h-1; }
   *::-webkit-scrollbar-track { @apply my-1 bg-transparent; }
   *::-webkit-scrollbar-thumb { @apply rounded-full bg-base-content/80 hover:bg-base-content; }
-  .scrollbar-primary::-webkit-scrollbar-thumb   { @apply bg-primary-focus   hover:bg-primary;   }
-  .scrollbar-secondary::-webkit-scrollbar-thumb { @apply bg-secondary-focus hover:bg-secondary; }
-  .scrollbar-accent::-webkit-scrollbar-thumb    { @apply bg-accent-focus    hover:bg-accent;    }
+  .scrollbar-primary::-webkit-scrollbar-thumb   { @apply bg-[color-mix(in_oklab,oklch(var(--p)),black_10%)] hover:bg-primary;   }
+  .scrollbar-secondary::-webkit-scrollbar-thumb { @apply bg-[color-mix(in_oklab,oklch(var(--s)),black_10%)] hover:bg-secondary; }
+  .scrollbar-accent::-webkit-scrollbar-thumb    { @apply bg-[color-mix(in_oklab,oklch(var(--a)),black_10%)] hover:bg-accent;    }
 
   /* Add 3d card flip effect (w/ reduced & non-reduced motion options) */
   .flip-container {

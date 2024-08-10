@@ -55,7 +55,7 @@ export function ToastStyle({ children, theme, onClick }: { children: ReactNode, 
   return (
     <div className={`alert flex-row items-center justify-start min-w-[50%] w-auto pointer-events-auto cursor-pointer opacity-75 flex-shrink flex-grow-0 ${colorClasses[theme]}`} onClick={onClick}>
       <Icon />
-      <div className="!my-0">{children}</div>
+      {children}
     </div>
   )
 }

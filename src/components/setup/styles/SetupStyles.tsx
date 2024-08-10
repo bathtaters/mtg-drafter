@@ -11,7 +11,7 @@ export const FormWrapper = ({ onSubmit, children }: { onSubmit?: FormEventHandle
 )
 
 export const TypeTabs = (props: Pick<TabProps<DraftType>,"selected"|"setSelected">) => (
-  <Tabs {...props} tabs={draftTypes} className="tabs-boxed bg-opacity-0 justify-center gap-2" tabClass="tab-lg tab-secondary" />
+  <Tabs {...props} tabs={draftTypes} className="tabs-boxed tabs-lg bg-opacity-0 justify-center gap-2" tabClass="tab-secondary" />
 )
 
 export const SubmitButton = ({ disabled, children }: { disabled?: boolean, children: ReactNode }) => (

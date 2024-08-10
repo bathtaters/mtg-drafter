@@ -6,7 +6,7 @@ const remaining = (end?: number|null, roundTo = 1, current = Date.now()) =>
 
 export function useTimer(endTime?: number|null, pauseTime?: number|null, onEnd = () => {}, tickMs = 1000) {
   const timer = useRef<NodeJS.Timer>()
-  const stop = useCallback(() => { clearInterval(timer.current); timer.current = undefined }, [])
+  const stop = useCallback(() => { clearInterval(timer.current as any); timer.current = undefined }, [])
 
   const [ countdown, setCountdown ] = useState(remaining(endTime, tickMs))
 

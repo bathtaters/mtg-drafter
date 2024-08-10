@@ -3,3 +3,6 @@ CREATE TYPE "CardLayout" AS ENUM ('adventure', 'aftermath', 'art_series', 'augme
 
 -- AlterTable
 ALTER TABLE "Card" ADD COLUMN     "layout" "CardLayout";
+
+-- AlterTable
+ALTER TABLE "Enums" ADD COLUMN "CardLayout" "CardLayout";

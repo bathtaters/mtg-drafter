@@ -1,4 +1,5 @@
 import { DraftType } from "types/setup"
+import { name, version } from "../../package.json"
 
 export const INVALID_PATH = "_INVALID"
 
@@ -16,3 +17,8 @@ export const // DB Sources
   cardDbUrl = 'https://mtgjson.com/api/v5/AllIdentifiers.json',
   imageDbUrl = 'https://api.scryfall.com/bulk-data/default-cards',
   preferredDbUrl = 'https://api.scryfall.com/bulk-data/oracle-cards'
+
+export const scryfallHeaders = {
+  'User-Agent': `bathtaters-${name}/${version}`,
+  'Accept': 'application/json;q=0.9,*/*;q=0.8',
+}

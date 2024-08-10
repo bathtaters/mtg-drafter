@@ -1,4 +1,5 @@
-import type { CardLayout, GameStatus, LogAction } from "@prisma/client"
+import type { GameStatus, LogAction } from "@prisma/client"
+import type { Layout } from "types/scryfall"
 import type { Game, BoardLands, LogData, LogOptions, PartialGame } from "types/game"
 import type { ToastAlert } from "components/base/common/Alerts/alerts.d"
 import Link from "next/link"
@@ -40,7 +41,7 @@ export const maxSizeError = (size: number, maxSize: number) => `File exceeds ${f
 export const timerLabels = ['Off', '24hr', 'Casual', 'Slower', 'Normal', 'Faster', 'Speed']
 
 // Text to display on rendered card, key is card layout (auto displays <Layout> if card has multiple faces)
-export const cardLayoutText: {[layout in CardLayout]?: string} = {
+export const cardLayoutText: {[layout in Layout]?: string} = {
   modal_dfc: 'Modal',
 }
 

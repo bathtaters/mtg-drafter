@@ -11,7 +11,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 // Enums
 
 enum Color {
@@ -37,35 +36,6 @@ enum Side {
   c
   d
   e
-}
-
-enum CardLayout {
-  adventure
-  aftermath
-  art_series
-  augment
-  class
-  double_faced_token
-  emblem
-  flip
-  host
-  leveler
-  meld
-  modal_dfc
-  normal
-  planar
-  reversible_card
-  saga
-  scheme
-  split
-  token
-  transform
-  vanguard
-}
-
-enum BoosterType {
-  default
-  arena
 }
 
 enum Board {
@@ -117,214 +87,163 @@ enum DataType {
   TimestampList
 }
 
-
 // Main Models
 
 model Settings {
-  id      String @id
-  type    DataType
-  value   String?
+  id    String   @id
+  type  DataType
+  value String?
 }
 
 model Game {
-  id          String @id @default(cuid())
-  name        String
-  url         String @unique
+  id   String @id @default(cuid())
+  name String
+  url  String @unique
 
-  packs       Pack[]
-  roundCount  Int
-  round       Int @default(0)
-  pause       BigInt?
-  timerBase   Int?
+  packs      Pack[]
+  roundCount Int
+  round      Int     @default(0)
+  pause      BigInt?
+  timerBase  Int?
 
-  players     Player[] @relation("GamePlayers")
-  host        Player? @relation("GameHost", fields: [hostId], references: [id])
-  hostId      String? @unique
+  players Player[] @relation("GamePlayers")
+  host    Player?  @relation("GameHost", fields: [hostId], references: [id])
+  hostId  String?  @unique
 
-  log         LogEntry[]
+  log LogEntry[]
 }
 
 model Card {
   // NOTE: IF YOU CHANGE THIS, UPDATE backend/card.utils:cardFields
-  uuid        String @id
-  name        String
-  normalName  String?
-  setCode     String? // ref Set
-  manaCost    String?
-  type        String?
-  text        String?
-  footer      String? // power/toughness | loyalty
-  rarity      Rarity?
-  colors      Color[]
-  types       String[]
-  manaValue   Float?
-  monoColor   Color?
-  layout      CardLayout?
-  
+  uuid       String   @id
+  name       String
+  normalName String?
+  setCode    String? // ref Set
+  manaCost   String?
+  type       String?
+  text       String?
+  footer     String? // power/toughness | loyalty
+  rarity     Rarity?
+  colors     Color[]
+  types      String[]
+  manaValue  Float?
+  monoColor  Color?
+  layout     String?
+
   // Image data
-  img           String?
-  scryfallId    String?
-  multiverseId  String?
-  preferredArt  Boolean @default(false)
+  img          String?
+  scryfallId   String?
+  multiverseId String?
+  preferredArt Boolean @default(false)
 
   // Double-faced card data
-  faceName      String?
-  side          Side?
-  otherFaces    FaceInCard[] @relation("Self")
+  faceName   String?
+  side       Side?
+  otherFaces FaceInCard[] @relation("Self")
 
   // Relation fields
-  inGame        GameCard[]
-  inBooster     BoosterCard[]
-  inOtherFaces  FaceInCard[] @relation("Face")
+  inGame       GameCard[]
+  inOtherFaces FaceInCard[]  @relation("Face")
 
   @@index([name])
   @@index([name, setCode])
 }
 
 model FaceInCard {
-  self      Card @relation("Self", fields: [selfId], references: [uuid], onDelete: Cascade, onUpdate: Cascade)
-  selfId    String
-  card      Card @relation("Face", fields: [cardId], references: [uuid], onDelete: Cascade, onUpdate: Cascade)
-  cardId    String
+  self   Card   @relation("Self", fields: [selfId], references: [uuid], onDelete: Cascade, onUpdate: Cascade)
+  selfId String
+  card   Card   @relation("Face", fields: [cardId], references: [uuid], onDelete: Cascade, onUpdate: Cascade)
+  cardId String
+
   @@id([selfId, cardId])
 }
 
 model CardSet {
-  code        String @id
+  code        String  @id
   name        String
   releaseDate String?
   block       String?
-  
-  totalWeight   Int @default(0)
-  boosterType   BoosterType
-  boosters      BoosterLayout[]
-  sheets        BoosterSheet[]
+  boosters    Booster[]
 }
 
-
+model Booster {
+  setCode     String
+  boosterType String
+  data        Json
+  set         CardSet @relation(fields: [setCode], references: [code], onDelete: Cascade, onUpdate: Cascade)
+  
+  @@id(name: "boosterCode", [setCode, boosterType])
+}
 
 // Embedded Models
 
 // Game
 
 model Player {
-  id          String @id @default(cuid()) 
-  name        String?
-  sessionId   String?
-  pick        Int @default(0)
-  timer       BigInt?
-  cards       GameCard[]
-  basics      Json @default("{\"main\":{\"w\":0,\"u\":0,\"b\":0,\"r\":0,\"g\":0},\"side\":{\"w\":0,\"u\":0,\"b\":0,\"r\":0,\"g\":0}}")
+  id        String     @id @default(cuid())
+  name      String?
+  sessionId String?
+  pick      Int        @default(0)
+  timer     BigInt?
+  cards     GameCard[]
+  basics    Json       @default("{\"main\":{\"w\":0,\"u\":0,\"b\":0,\"r\":0,\"g\":0},\"side\":{\"w\":0,\"u\":0,\"b\":0,\"r\":0,\"g\":0}}")
 
-  game        Game @relation("GamePlayers", fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  hostOf      Game? @relation("GameHost")
-  gameId      String
-  logEntries  LogEntry[]
+  game       Game       @relation("GamePlayers", fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  hostOf     Game?      @relation("GameHost")
+  gameId     String
+  logEntries LogEntry[]
 
   @@unique([gameId, sessionId])
   @@index([gameId])
 }
 
 model Pack {
-  gameId    String
-  index     Int
+  gameId String
+  index  Int
+
+  cards GameCard[]
+
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
   @@id([gameId, index])
-
-  cards     GameCard[]
-
-  game      Game @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model GameCard {
-  id        String @id @default(cuid())
-  card      Card @relation(fields: [cardId], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
-  foil      Boolean @default(false)
+  id   String  @id @default(cuid())
+  card Card    @relation(fields: [cardId], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
+  foil Boolean @default(false)
 
-  pack      Pack @relation(fields: [gameId,packIdx], references: [gameId,index], onDelete: Cascade, onUpdate: Cascade)
-  player    Player? @relation(fields: [playerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  board     Board @default(main)
+  pack   Pack    @relation(fields: [gameId, packIdx], references: [gameId, index], onDelete: Cascade, onUpdate: Cascade)
+  player Player? @relation(fields: [playerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  board  Board   @default(main)
 
-  cardId    String
-  gameId    String
-  packIdx   Int
-  playerId  String?
-  logEntries  LogEntry[]
+  cardId     String
+  gameId     String
+  packIdx    Int
+  playerId   String?
+  logEntries LogEntry[]
 }
 
 model LogEntry {
-  id          String @id @default(cuid())
-  time        DateTime @default(now())
-  action      LogAction
-  data        String?
-  byHost      Boolean @default(false)
+  id     String    @id @default(cuid())
+  time   DateTime  @default(now())
+  action LogAction
+  data   String?
+  byHost Boolean   @default(false)
 
-  game        Game @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  player      Player? @relation(fields: [playerId], references: [id])
-  card        GameCard? @relation(fields: [cardId], references: [id])
+  game   Game      @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  player Player?   @relation(fields: [playerId], references: [id])
+  card   GameCard? @relation(fields: [cardId], references: [id])
 
-  gameId      String
-  playerId    String?
-  cardId      String?
+  gameId   String
+  playerId String?
+  cardId   String?
 }
-
-
-// Set
-
-model BoosterLayout {
-  setCode   String
-  index     Int
-  @@id([setCode, index])
-
-  sheets    SheetsInLayout[]
-  weight    Int @default(0)
-
-  set       CardSet @relation(fields: [setCode], references: [code], onDelete: Cascade, onUpdate: Cascade)
-}
-
-model SheetsInLayout {
-  setCode       String
-  layoutIdx     Int
-  sheetName     String
-  @@id([setCode, layoutIdx, sheetName])
-
-  selectCount   Int @default(1)
-
-  layout        BoosterLayout @relation(fields: [setCode,layoutIdx], references: [setCode,index], onDelete: Cascade, onUpdate: Cascade)
-  sheet         BoosterSheet @relation(fields: [setCode,sheetName], references: [setCode,name], onDelete: Cascade, onUpdate: Cascade) 
-}
-
-model BoosterSheet {
-  setCode       String
-  name          String
-  @@id([setCode, name])
-
-  cards         BoosterCard[]
-  foil          Boolean @default(false)
-  balanceColors Boolean @default(false)
-  totalWeight   Int @default(0)
-  
-  set           CardSet @relation(fields: [setCode], references: [code], onDelete: Cascade, onUpdate: Cascade)
-  layouts       SheetsInLayout[]
-}
-
-model BoosterCard {
-  id        String @id @default(cuid())
-  card      Card @relation(fields: [cardId], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
-  weight    Int @default(0)
-  
-  sheet     BoosterSheet @relation(fields: [setCode,sheetName], references: [setCode,name], onDelete: Cascade, onUpdate: Cascade)
-  setCode   String
-  sheetName String
-  cardId    String
-  @@index([setCode, sheetName])
-}
-
 
 model Enums {
-  id           String @id
+  id           String       @id
   TabLabels    TabLabels
   GameStatus   GameStatus
   PlayerStatus PlayerStatus
   LogAction    LogAction
-  BoosterType  BoosterType
 }

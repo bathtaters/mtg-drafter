@@ -1,6 +1,6 @@
-import { CardLayout } from '@prisma/client'
 import type { GameOptions } from 'types/setup'
 import type { RetryOptions } from 'backend/libs/retry'
+import type { BoosterType, Layout } from 'types/scryfall'
 import { LogOptions, TimerOptions, Direction } from 'types/game.d'
 import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
 
@@ -30,11 +30,11 @@ export const
   timerOptions: Array<Partial<TimerOptions> | null> = [
     null,
     { secPerCard: 1, minSec: 24 * 60 * 60 }, // Daily: 24 hours
-    { secPerCard: 6.6, minSec: 10 }, // Casual: 90 sec / 15 cards
-    { secPerCard: 5.0, minSec: 10 }, // Slow: 60 sec / 15 cards
+    { secPerCard: 10, minSec: 15 }, // Casual: 150 sec / 15 cards
+    { secPerCard: 6.6, minSec: 10 }, // Slow: 90 sec / 15 cards
     {}, // Normal (Official rules): 40 sec / 15 cards
     { secPerCard: 2.6 }, // Fast: 30 sec / 15 cards
-    { secPerCard: 1.9 }, // Speed: 20 sec / 15 cards
+    { secPerCard: 1.9, minSec: 3 }, // Speed: 20 sec / 15 cards
   ]
 
 
@@ -47,7 +47,7 @@ export const
     timer:    { min: 0, max: timerOptions.length - 1 },
     packs:    { min: 1, max: 5  },
     packSize: { min: 1, max: 20 },
-    setCode:  { min: 3, max: 4  },
+    boosterCode: { min: 5, max: 30 },
     cubeSize: { max: 720 * 4    },
   }, 
 
@@ -58,7 +58,7 @@ export const
     timer: "4",
     packs: "3",
     packSize: "15",
-    packList: ["KLD","KLD","AER"],
+    packList: ["KLD:draft","KLD:draft","AER:draft"],
     basics: true
   }),
 
@@ -70,12 +70,16 @@ export const
 
 export const redTimerSeconds = 10
 
-export const layoutDirection: { [layout in CardLayout]?: Direction } = {
+export const layoutDirection:  {[layout in Layout]?: Direction} = {
   flip: Direction.S,
   split: Direction.E,
   aftermath: Direction.W,
 }
 export const flippableLayouts = [...Object.keys(layoutDirection),'modal_dfc', 'transform', 'meld'] as const
+
+export const hideBoosterNames: BoosterType[] = ['default', 'draft']
+
+export const skipBoosterTypes: BoosterType[] = []
 
 // Advanced Tweaks + Debug Settings
 

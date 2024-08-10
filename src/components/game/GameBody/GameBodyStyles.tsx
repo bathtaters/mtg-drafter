@@ -2,21 +2,21 @@ import type { GameStatus, TabLabels } from "@prisma/client"
 import { ReactNode, MouseEventHandler, CSSProperties, Fragment } from "react"
 import PackIcon from "components/svgs/PackIcon"
 import DeckIcon from "components/svgs/DeckIcon"
-import { formatTime, titleCase } from "components/base/services/common.services"
+import { formatTime, camelToTitle } from "components/base/services/common.services"
 import { hostButtonLabel } from "assets/strings"
 import { redTimerSeconds } from "assets/constants"
 import TimerIcon from "components/svgs/TimerIcon"
 
 export const containerIcon: Record<TabLabels, ReactNode> = {
-  pack: <PackIcon className="h-5 md:h-7 fill-secondary-content stroke-secondary-focus mr-1 md:mr-2 hidden sm:block" />,
-  main: <DeckIcon className="h-5 md:h-7 fill-primary-content stroke-primary-focus mr-1 md:mr-2 hidden sm:block" />,
-  side: <DeckIcon className="h-5 md:h-7 fill-primary-focus stroke-primary-content opacity-70 mr-1 md:mr-2 hidden sm:block" />,
+  pack: <PackIcon className="h-5 md:h-7 fill-secondary-content stroke-secondary mr-1 md:mr-2 hidden sm:block" />,
+  main: <DeckIcon className="h-5 md:h-7 fill-primary-content stroke-primary mr-1 md:mr-2 hidden sm:block" />,
+  side: <DeckIcon className="h-5 md:h-7 fill-primary stroke-primary-content opacity-70 mr-1 md:mr-2 hidden sm:block" />,
 }
 
 
 export const GameBodyHeader = ({ children }: { children?: ReactNode }) => <div className="relative w-full max-w-6xl m-auto">{children}</div>
 
-export const TabsWrapper = ({ children }: { children: ReactNode }) => <div className="tabs tabs-boxed justify-center gap-2 mb-6 bg-transparent">{children}</div>
+export const TabsWrapper = ({ children }: { children: ReactNode }) => <div className="tabs tabs-lg tabs-boxed justify-center gap-2 mb-6 bg-transparent">{children}</div>
 
 
 export const TabStyle = (
@@ -24,13 +24,13 @@ export const TabStyle = (
   { label: TabLabels, count?: string, isSelected?: boolean, onClick?: MouseEventHandler }
 ) => (
   <div
-    className={`indicator flex-nowrap tab tab-lg ${label === "pack" ? " tab-secondary" : " tab-primary"}${isSelected ? " tab-active" : ""}`}
+    className={`indicator flex-nowrap tab ${label === "pack" ? " tab-secondary" : " tab-primary"}${isSelected ? " tab-active" : ""}`}
     onClick={onClick}
   >
     {containerIcon[label]}
-    <span className="text-xl md:text-2xl font-medium">{titleCase(label)}</span>
+    <span className="text-xl md:text-2xl font-medium">{camelToTitle(label)}</span>
     {count && 
-      <span className="indicator-item indicator-center indicator-bottom -bottom-1 whitespace-nowrap badge badge-sm sm:badge-md shadow shadow-black">
+      <span className="indicator-item indicator-center indicator-bottom -bottom-1 whitespace-nowrap badge badge-neutral badge-sm sm:badge-md shadow shadow-black">
         {count}
       </span>
     }

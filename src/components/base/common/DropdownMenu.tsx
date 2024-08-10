@@ -14,11 +14,11 @@ export default function DropdownMenu({
     <div className={`dropdown dropdown-end ${
       forceOpen === true ? 'dropdown-open' : isTouch || forceOpen === 'click' || forceOpen === false ? '' : 'dropdown-hover'
     }`}>
-      <label tabIndex={0} className={`btn ${labelClass}`}>
+      <label tabIndex={0} role="button" className={`btn ${labelClass}`}>
         {label}
       </label>
 
-      <ul tabIndex={0} className={`dropdown-content menu ${menuClass}${forceOpen === false ? ' hidden' : ''}`}>
+      <ul className={`dropdown-content menu text-base z-20 ${menuClass}${forceOpen === false ? ' hidden' : ''}`}>
         {children}
       </ul>
     </div>

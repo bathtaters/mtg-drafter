@@ -5,7 +5,7 @@ import UserIcon from "components/svgs/UserIcon"
 import OpponentIcon from "components/svgs/OpponentIcon"
 import CardIcon from "components/svgs/CardIcon"
 import PackIcon from "components/svgs/PackIcon"
-import { titleCase } from "components/base/services/common.services"
+import { camelToTitle } from "components/base/services/common.services"
 
 const statsIcon = { pick: CardIcon, holding: PackIcon }
 
@@ -37,23 +37,23 @@ export const StatsStyle = ({ type, isMini, count }: { type?: keyof typeof statsI
   const Icon = statsIcon[type]
 
   return isMini ? (<>
-    <span data-tip={titleCase(type)} className="w-full h-full tooltip tooltip-left before:text-2xs before:content-[attr(data-tip)]" >
+    <span data-tip={camelToTitle(type)} className="w-full h-full tooltip tooltip-left before:text-2xs before:content-[attr(data-tip)]" >
       <Icon className={`${type === 'pick' ? "h-3 mr-0.5 mt-0.5" : "h-4 mb-0.5"} stroke-current fill-base-100 self-center text-right ml-auto`} />
     </span>
     <span className="text-xs min-w-[1.1em] text-left mr-auto">{count ?? '-'}</span>
 
   </>) : (<>
     <Icon className={`inline-block ${type === 'pick' ? "h-4 pr-0.5" : "h-5"} stroke-current fill-base-100`} />
-    <span className="">{`${titleCase(type)} ${count ?? '-'}`}</span>
+    <span className="">{`${camelToTitle(type)} ${count ?? '-'}`}</span>
   </>)
 }
 
-export const PlayerNameEditor = (props: TextEditorProps) => <TextEditor {...props} className="input-primary text-lg sm:text-2xl " />
+export const PlayerNameEditor = (props: TextEditorProps) => <TextEditor {...props} className="input-primary join-item text-lg sm:text-2xl " />
 
 export const MenuItemStyle = ({ label, icon }: { label: string, icon?: ReactNode }) => (
-    <div className="flex justify-between w-full">
-      <span>{label}</span>
-      <span>{icon}</span>
-    </div>
+    <>
+      <span className="py-1">{label}</span>
+      <span className="justify-self-end">{icon}</span>
+    </>
   )
   

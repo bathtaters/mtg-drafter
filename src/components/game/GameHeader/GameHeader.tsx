@@ -27,7 +27,7 @@ export default function GameHeader({ game, players, playerIdx, holding, packSize
 
   const { oppIdx, handleShare, gameStatus, isRight } = useGameHeader(game, players, playerIdx, notify)
   
-  if (!game) return <Header><GameTitle title="Game Not Found" /></Header>
+  if (!game) return <Header><GameTitle title="MtG Drafter" /></Header>
 
   return (
     <Header>

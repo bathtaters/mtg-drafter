@@ -1,5 +1,6 @@
 import type { Card, Game as DbGame, Pack, GameCard, Player as DbPlayer, Board, Color, PlayerStatus, LogEntry, LogAction } from "@prisma/client"
 import type { SortKey } from "components/base/services/cardSort.services"
+import type { Layout } from "./scryfall"
 import z from "backend/libs/validation"
 import { boardLands } from "./game.validation"
 
@@ -17,7 +18,8 @@ export type BasicPlayer = Pick<Player, "id"|"name"|"sessionId"|"pick">
 export interface Game extends DbGame { pause: number | null }
 export type PartialGame = Pick<Game,"id"|"name"|"url">
 
-export type CardFull = Card & { otherFaces: Array<{ card: Card }> }
+export type CardStrict = Omit<Card,"layout"> & { layout: Layout | null }
+export type CardFull = CardStrict & { otherFaces: Array<{ card: CardStrict }> }
 export type GameCardFull = GameCard & { card: CardFull }
 
 export type PackMin = { cards: Pick<GameCard, "playerId">[] }

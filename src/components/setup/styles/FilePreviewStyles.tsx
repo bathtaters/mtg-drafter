@@ -12,7 +12,7 @@ export const PreviewWrapper = ({ label, children }: { label: string, children: R
 )
 
 export const PreviewResult = ({ children }: { children: ReactNode }) => (
-  <div className="w-full text-center text-xs text-secondary-focus italic">{children}</div>
+  <div className="w-full text-center text-xs text-[color-mix(in_oklab,oklch(var(--s)),black_10%)] italic">{children}</div>
 )
 
 export const PreviewError = ({ error }: { error?: string }) => (

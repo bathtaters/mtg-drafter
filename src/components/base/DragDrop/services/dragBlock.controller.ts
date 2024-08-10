@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useDrag, useDrop, ConnectableElement } from "react-dnd"
+import { useDrag, useDrop } from "react-dnd"
 
 function useDndController<DropItem, ThisItem>(type: Identifier, item: ThisItem | undefined, onDrop: DropHandler, dropCheck: DropTester, droppable: boolean, draggable: boolean, disabled: boolean) {
   // Simple data
@@ -30,7 +30,7 @@ function useDndController<DropItem, ThisItem>(type: Identifier, item: ThisItem |
 
   return {
     disable, isOver, canDrop,
-    ref: (node: ConnectableElement) => disable ? node : drag(drop(node)),
+    ref: (node: HTMLDivElement | null) => { !disable && drag(drop(node)) },
   }
 }
 

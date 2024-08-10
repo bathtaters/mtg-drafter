@@ -57,11 +57,11 @@ export const PacksWrapper = ({ children }: { children: ReactNode }) => (
 export const PackSelector = (props: Parameters<typeof Selector>['0']) => <Selector {...props} className="select-secondary max-w-[19rem] w-full" />
 
 export const PackButtonWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="btn-group place-self-stretch">{children}</div>
+  <div className="join place-self-stretch">{children}</div>
 )
 
 export const PackButton = ({ onClick, children }: { onClick?: MouseEventHandler, children: ReactNode }) => (
-  <button type="button" onClick={onClick} className="btn btn-secondary btn-outline text-lg flex-grow">
+  <button type="button" onClick={onClick} className="btn btn-secondary btn-outline join-item text-lg flex-grow">
     {children}
   </button>
 )

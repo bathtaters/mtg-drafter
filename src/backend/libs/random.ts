@@ -21,15 +21,25 @@ export function shuffle<T = any>(array: T[]) {
 
 /** Returns element in array using "weight" prop of each element to weigh randomness
  * (Only returns undef when array is empty) */
-export function randomElemWeighted<T extends { weight: number }>(array: T[], totalWeight = 0) {
-  if (!array.length) throw new Error('Called randomElemWeighted with empty array')
+export function randomElemWeighted<K extends number | string | symbol>(collection: Record<K, number>, totalWeight?: number): K;
+export function randomElemWeighted<T extends { weight: number }>(collection: T[], totalWeight?: number): T;
+export function randomElemWeighted<K extends number | string | symbol, T extends { weight: number }>(collection: T[] | Record<K, number>, totalWeight = 0): T|K {
+  const useProp = Array.isArray(collection)
+  const arr = useProp ? collection : Object.keys(collection) as K[]
+
+  const weight = useProp ? (entry: T|K) => (entry as T).weight : (entry: T|K) => collection[entry as K]
+
+  if (!arr.length) throw new Error('Called randomElemWeighted with empty array')
   
-  if (totalWeight < 1) totalWeight = array.reduce((sum,elem) => sum + elem.weight, 0)
+  if (totalWeight < 1) totalWeight = arr.reduce((sum,elem) => sum + weight(elem), 0)
   if (totalWeight < 1) { 
     console.warn('Unable to find weights for random choice, using equal weights.')
-    return randomElem(array)
+    return randomElem(arr as any) as T|K
   }
   
   let sum = 0, randomIndex = randomInt(totalWeight) + 1
-  return array.find(({ weight }) => (sum += weight) > randomIndex) ?? array[array.length - 1]
+  return arr.find((elem) => (sum += weight(elem)) > randomIndex) ?? arr[arr.length - 1]
+
+
+  
 }

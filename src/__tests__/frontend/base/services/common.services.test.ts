@@ -1,10 +1,10 @@
 import {
   debounce, formatBytes, getObjectSum, mod, sameValueObject,
-  spliceInPlace, throttle, titleCase, updateArrayIdx
+  spliceInPlace, throttle, camelToTitle, updateArrayIdx
 } from 'components/base/services/common.services'
 
 
-it.todo('titleCase')
+it.todo('camelToTitle')
 it.todo('mod')
 it.todo('formatBytes')
 
