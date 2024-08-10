@@ -2,7 +2,7 @@ import type { GameStatus, TabLabels } from "@prisma/client"
 import { ReactNode, MouseEventHandler, CSSProperties, Fragment } from "react"
 import PackIcon from "components/svgs/PackIcon"
 import DeckIcon from "components/svgs/DeckIcon"
-import { formatTime, titleCase } from "components/base/services/common.services"
+import { formatTime, camelToTitle } from "components/base/services/common.services"
 import { hostButtonLabel } from "assets/strings"
 import { redTimerSeconds } from "assets/constants"
 import TimerIcon from "components/svgs/TimerIcon"
@@ -28,7 +28,7 @@ export const TabStyle = (
     onClick={onClick}
   >
     {containerIcon[label]}
-    <span className="text-xl md:text-2xl font-medium">{titleCase(label)}</span>
+    <span className="text-xl md:text-2xl font-medium">{camelToTitle(label)}</span>
     {count && 
       <span className="indicator-item indicator-center indicator-bottom -bottom-1 whitespace-nowrap badge badge-neutral badge-sm sm:badge-md shadow shadow-black">
         {count}
