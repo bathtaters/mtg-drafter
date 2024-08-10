@@ -4,7 +4,7 @@ import fetchJson from '../../libs/fetchJson'
 import Batcher from '../../libs/Batcher'
 import { createMultiUpsert } from '../../utils/db/db.utils'
 import { adaptCardToDb, adaptFacesToDb, cardFields, JsonCard } from '../../utils/db/card.utils'
-import { updateMtgJson } from '../../utils/db/settings.utils'
+import { updateMtgJson } from './updateSettings'
 
 const DL_THREADS = 1000, CARD_BATCH = 5000, UPSERT_BATCH = Math.floor(32000 / cardFields.length)
 

@@ -1,7 +1,7 @@
 import type { Side } from '@prisma/client'
 import type { Card as ScryfallCard, BulkData } from 'types/scryfall'
 import { scryfallHeaders } from 'assets/urls'
-import { updateScryfall } from './settings.utils'
+import { updateScryfall } from '../../services/db/updateSettings'
 
 const A_CHAR_CODE = 'a'.charCodeAt(0)
 

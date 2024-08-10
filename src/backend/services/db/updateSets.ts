@@ -2,7 +2,7 @@ import prisma from '../../libs/db'
 import fetchJson from '../../libs/fetchJson'
 import Batcher from '../../libs/Batcher'
 import { adaptSetDataToDb, flattenObjects, isBoosterSet, JsonSet } from '../../utils/db/set.utils'
-import { updateMtgJson } from '../../utils/db/settings.utils'
+import { updateMtgJson } from './updateSettings'
 
 const DL_THREADS = 1000, ENTRY_BATCH = 25
 
