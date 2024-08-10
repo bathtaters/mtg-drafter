@@ -1,13 +1,15 @@
-import type { GameOptions, SetBasic } from "types/setup"
+import type { GameOptions, BoosterBasic } from "types/setup"
 import { Fragment } from "react"
 import RangeInput from "components/base/common/FormElements/RangeInput"
 import ToggleSwitch from "components/base/common/FormElements/ToggleSwitch"
 import { FieldWrapper, InputWrapper, PlayersLabel, PackButton, PackButtonWrapper, PacksWrapper, PackSelector, TimerLabel, BasicsLabel } from "../styles/FormStyles" 
-import { hideBoosterTypes, setupLimits } from "assets/constants"
+import { hideBoosterNames, setupLimits } from "assets/constants"
 import { timerLabels } from "assets/strings"
+import { getBoosterCode } from "backend/services/setup/sets.services"
+import { hyphenToTitle } from "components/base/services/common.services"
 
 type Props = {
-  setList: SetBasic[]
+  setList: BoosterBasic[]
   options: GameOptions,
   setOption: {
     players: (value: string) => void,
@@ -32,13 +34,15 @@ export default function BoosterForm({ setList, options, setOption, setPack, addP
 
         <FieldWrapper label="Packs">
           <PacksWrapper>
-            {options.packList.map((setCode,idx) => (
+            {options.packList.map((boosterCode,idx) => (
 
-              <PackSelector key={idx} selected={setCode} setSelected={setPack(idx)}>
-                {setList.map(({ name, code, boosterType }) =>
-                  <Fragment key={code}>{name}{
-                    boosterType && hideBoosterTypes.includes(boosterType) ? '' : ` (${boosterType})`
-                  }</Fragment>
+              <PackSelector key={idx} selected={boosterCode} setSelected={setPack(idx)}>
+                {setList.map(({ set, boosterType }) =>
+                  <Fragment key={getBoosterCode(set, boosterType)}>
+                    {set.name}{
+                      boosterType && hideBoosterNames.includes(boosterType) ? '' : ` (${hyphenToTitle(boosterType)} Pack)`
+                    }
+                  </Fragment>
                 )}
               </PackSelector>
             ))}
