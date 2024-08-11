@@ -1,4 +1,5 @@
 import { parseArgs } from 'node:util'
+import { config } from 'dotenv'
 import prisma from '../src/backend/libs/db'
 import updateCards from '../src/backend/services/db/updateCards'
 import updateImages from '../src/backend/services/db/updateImages'
@@ -19,13 +20,23 @@ const options /*: ParseArgsConfig['options']*/ = {
 } as const
 
 async function main() {
-  const { values: { quiet, reset, cards, images, sets, version } } = parseArgs({ options })
+  const { values: clArgs } = parseArgs({ options })
 
-  if (!cards)   await updateCards(cardDbUrl, reset, !quiet)
-  if (!images)  await updateImages(imageDbUrl, preferredDbUrl, reset, !quiet)
-  if (!sets)    await updateSets(setsDbUrl, reset, !quiet)
-  if (!version) await updateVersion(pkg.version, !quiet)
-  if (!quiet)   console.log('DONE')
+  // ENV Args -- Can be set via ENV Vars or .env
+  config()
+  const args = {
+    ...clArgs,                                          // ENV VAR           | DESCRIPTION
+    threads: +(process.env.JSON_THREAD_LIMIT ||  1000), // JSON_THREAD_LIMIT | Maximum number of threads to open when ingesting a JSON
+    batches: +(process.env.DB_BATCH_LIMIT    ||  5000), // DB_BATCH_LIMIT    | Maximum number of items to insert into the DB at once 
+    upserts: +(process.env.DB_UPSERT_LIMIT   || 32000), // DB_UPSERT_LIMIT   | Maximum number of upserts to perform (Divided by number of Card fields, ~2000)
+  }
+
+  if (!args.quiet)   console.log('Arguments:', args)
+  if (!args.cards)   await updateCards(cardDbUrl, args.reset, !args.quiet, args.threads, args.batches, args.upserts)
+  if (!args.images)  await updateImages(imageDbUrl, preferredDbUrl, args.reset, !args.quiet, args.threads, args.batches)
+  if (!args.sets)    await updateSets(setsDbUrl, args.reset, !args.quiet, args.threads, args.batches)
+  if (!args.version) await updateVersion(pkg.version, !args.quiet)
+  if (!args.quiet)   console.log('DONE')
 }
 
 main()
