@@ -1,10 +1,13 @@
-import type { GameCardFull, GameProps } from "types/game"
+import Link from 'next/link'
+import Image from 'next/image'
+import type { GameProps } from "types/game"
 import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import Header from "components/base/Header"
 import { PlayerContainerFull, PlayerContainerSmall } from "../PlayerContainers/PlayerContainers"
 import { GameHeaderWrapper, PlayerContainersWrapper, GameTitle, RoundCounter } from './GameHeaderStyles'
 import useGameHeader, { getPlayerColor } from "./header.controller"
 import { roundCounter } from "assets/strings"
+import logo from 'assets/media/logo-lg.png'
 
 
 type Props = {
@@ -27,12 +30,15 @@ export default function GameHeader({ game, players, playerIdx, holding, packSize
 
   const { oppIdx, handleShare, gameStatus, isRight } = useGameHeader(game, players, playerIdx, notify)
   
-  if (!game) return <Header><GameTitle title="MtG Drafter" /></Header>
+  if (!game) return <Header><GameTitle title="Mtg Drafter" /></Header>
 
   return (
     <Header>
         <GameHeaderWrapper>
-            <div>
+            <div className="grid grid-rows-2 [grid-template-columns:6rem_1fr] gap-x-4">
+              <Link href="/" className="row-span-2">
+                <Image className="w-16 sm:w-24 h-auto" src={logo} alt="Mtg-Drafter Logo" />
+              </Link>
               <GameTitle title={game.name} onClick={handleShare} />
               <RoundCounter status={gameStatus} label={roundCounter(gameStatus, game, !players[playerIdx])} />
             </div>

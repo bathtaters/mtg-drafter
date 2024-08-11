@@ -3,25 +3,27 @@ import Link from "next/link"
 import { GitHubLogo, MtgJsonLogo } from "components/svgs/FooterLogos"
 import { FooterWrapperStyle } from "./styles/AppStyles"
 import pkg from "../../../package.json"
+import LogoIcon from "components/svgs/LogoIcon"
 
-const SiteLink = ({ href, className = '', children }: { href: string, className?: string, children?: ReactNode }) => (
-  <a href={href} className={`link link-primary link-hover ${className}`} target="_blank" rel="noopener noreferrer">{children}</a>
+const SiteLink = ({ title, href, className = '', children }: { title?: string, href: string, className?: string, children?: ReactNode }) => (
+  <Link href={href} title={title} className={`link link-primary link-hover, inline-flex items-center ${className}`} target="_blank" rel="noopener noreferrer">{children}</Link>
 )
 
 export default function Footer() {
   return (
     <FooterWrapperStyle>
       <div className="flex justify-center items-center gap-2">
-        <Link href="/" title="Start New Game" className="link link-primary link-hover" target="_blank">
-          MtG Drafter v{pkg.version}
-        </Link>
+        <SiteLink href="/" title="Start New Game" className="link link-primary link-hover">
+          <LogoIcon className="w-6 h-6 fill-current" simple={true} />
+          <p className="ml-2">Mtg Drafter v{pkg.version}</p>
+        </SiteLink>
         <span className="opacity-80">|</span>
-        <SiteLink href="https://github.com/bathtaters/mtg-drafter" className="inline-flex items-center">
+        <SiteLink href="https://github.com/bathtaters/mtg-drafter" title="Mtg-Drafter on GitHub">
           <GitHubLogo className="w-6 h-6 fill-current" />
           <p className="ml-2">GitHub Repo</p>
         </SiteLink>
         <span className="opacity-80">|</span>
-        <SiteLink href="https://mtgjson.com" className="inline-flex items-center">
+        <SiteLink href="https://mtgjson.com" title="Everything Magic database">
           <MtgJsonLogo className="w-8 fill-current" />
           <p className="ml-2">Powered by MTGJSON</p>
         </SiteLink>
