@@ -20,15 +20,20 @@ export async function updateScryfall({ id, type, download_uri, updated_at }: Bul
     })
 }
 
-export async function updateMtgJson(name: string, url: string) {
-    await fetchJson(url, async (meta) => {
-      if (!meta) return;
-  
-      await setSettings({
-        [`meta.${name}.id`]: meta.version,
-        [`meta.${name}.date`]: new Date(meta.date),
-        [`meta.${name}.url`]: url,
-        [`meta.${name}.timestamp`]: new Date(),
-      })
-    }, { jsonPath: "meta" })
+/** Names of Keys to treat as meta-data */
+const mtgJsonKeys = ["version", "date"]
+export const isMtgJsonKey = (key: string | number): key is string => mtgJsonKeys.includes(key as any)
+
+export async function updateMtgJson(name: string, key: string, value: any, url: string) {
+    if (key === 'version') {
+        await setSettings({
+            [`meta.${name}.id`]: value,
+            [`meta.${name}.url`]: url,
+            [`meta.${name}.timestamp`]: new Date(),
+        })
+    } else if (key === 'date') {
+        await setSetting(`meta.${name}.date`, new Date(value))
+    } else {
+        console.error(` >> WARNING -- Unknown meta-data found: ${name}.${key} = ${value}`)
+    }
 }

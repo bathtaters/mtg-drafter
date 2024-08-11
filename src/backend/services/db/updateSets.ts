@@ -2,14 +2,12 @@ import prisma from '../../libs/db'
 import fetchJson from '../../libs/fetchJson'
 import Batcher from '../../libs/Batcher'
 import { adaptSetDataToDb, flattenObjects, isBoosterSet, JsonSet } from '../../utils/db/set.utils'
-import { updateMtgJson } from './updateSettings'
+import { isMtgJsonKey, updateMtgJson } from './updateSettings'
 
 const DL_THREADS = 1000, ENTRY_BATCH = 25
 
 
 export default async function updateSets(url: string, fullUpdate = false, enableLog = false) {
-
-  await updateMtgJson("sets", url)
 
   let existingSets: string[] | undefined
   if (!fullUpdate) existingSets = await prisma.cardSet.findMany({ select: { code: true }})
@@ -30,12 +28,14 @@ export default async function updateSets(url: string, fullUpdate = false, enable
     ])
   })
   
-  await fetchJson<JsonSet>(url, async (incomingData) => {
+  await fetchJson<JsonSet>(url, async (incomingData, key) => {
+    if (isMtgJsonKey(key)) return updateMtgJson("sets", key, incomingData, url)
+    
     if ((existingSets && existingSets.includes(incomingData.code)) || !isBoosterSet(incomingData)) return
 
     await setUpdate.add(adaptSetDataToDb(incomingData))
 
-  }, { jsonPath: 'data.*', maxThreads: DL_THREADS })
+  }, { jsonPath: /^meta|^data/, maxThreads: DL_THREADS })
   
   await setUpdate.finish()
   enableLog && console.timeEnd('Sets')

@@ -44,7 +44,7 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
     for (const card of adaptScryfallToImage(data)) {
       if (card.img) await batch.add(card)
     }
-  }, { jsonPath: '*', maxThreads: DL_THREADS })
+  }, { isArray: true, maxThreads: DL_THREADS })
 
   await batch.finish()
 
@@ -65,7 +65,7 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
   let preferred = [] as string[]
   await fetchJson<ScryfallCard>(prefUrl, async (card) => {
     if (isPreferredArt(card)) preferred.push(card.id)
-  }, { jsonPath: '*', maxThreads: DL_THREADS })
+  }, { isArray: true, maxThreads: DL_THREADS })
 
   enableLog && console.log('Downloaded',preferred.length,'Preferred Art IDs')
 
