@@ -146,8 +146,7 @@ model Card {
   inGame       GameCard[]
   inOtherFaces FaceInCard[]  @relation("Face")
 
-  @@index([name])
-  @@index([name, setCode])
+  @@index([normalName])
 }
 
 model FaceInCard {
