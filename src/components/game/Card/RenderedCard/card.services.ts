@@ -10,6 +10,13 @@ export const getArtBoxText = (layout: CardStrict['layout'], sideCount: number): 
     (sideCount > 1 && `${sideCount > 2 ? `${sideCount}-way ` : ''}${camelToTitle(layout)}`)
   )
 
+export const getCardNames = ({ name, flavorName, faceName, side }: CardStrict) => {
+  // Retuns: [Title Name, Subtitle Name]
+  if (!flavorName) return [faceName || name, null]
+  if (!side) return [flavorName, name]
+  return [flavorName.split(" // ")[side.charCodeAt(0) - 97] || flavorName, faceName]
+}
+
 
 // Special codes { 'BRACE CODE': 'mana.css code'  }
 const specials: Record<string,string> = {

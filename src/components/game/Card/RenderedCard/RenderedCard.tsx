@@ -1,6 +1,6 @@
 import type { CardStrict } from "types/game"
 import { rarityClass } from "components/base/styles/manaIcons"
-import { getArtBoxText, symbolFix, splitLines, getBgdColor } from "./card.services"
+import { getArtBoxText, symbolFix, splitLines, getBgdColor, getCardNames } from "./card.services"
 import {
   Border, CardLayout, CardBox, ArtBox, TextBox, Footer, 
   Name, Mana, Type, Rarity, TextLine, ArtMainText, ArtSubText, splitLayouts, CardBgd
@@ -12,17 +12,20 @@ export default function RenderedCard({ card, isFoil = false, side = 0, sideCount
   const artBoxText = getArtBoxText(card.layout, sideCount)
   const layout = sideCount === 2 ? splitLayouts[card.layout || 'normal'] : undefined
 
+  const [cardName, cardSubtitle] = getCardNames(card)
+
   return (
     <Border hide={layout && side > 1} flipSide={layout ? -1 : side}>
       <CardBgd color={side === 1 && card.layout === 'adventure' && getBgdColor(card)} />
       <CardLayout layout={layout} side={side} className={getBgdColor(card)}>
 
         <CardBox>
-          <Name>{card.faceName || card.flavorName || card.name}</Name>
+          <Name>{cardName}</Name>
           <Mana html={symbolFix(card.manaCost, true)} />
         </CardBox>
 
         <ArtBox>
+          <div className="absolute top-0 left-2 text-sm text-gray-700 text-center">{cardSubtitle}</div>
           <ArtMainText small={!!layout}>
             {(!layout || !side) && artBoxText && <div>{artBoxText}</div>}
             {isFoil && <div>Foil</div>}
