@@ -1,3 +1,4 @@
+import { parseArgs } from 'node:util'
 import prisma from '../src/backend/libs/db'
 import updateCards from '../src/backend/services/db/updateCards'
 import updateImages from '../src/backend/services/db/updateImages'
@@ -6,19 +7,32 @@ import { updateVersion } from 'backend/services/db/updateSettings'
 import { cardDbUrl, imageDbUrl, preferredDbUrl, setsDbUrl } from '../src/assets/urls'
 import pkg from "../package.json"
 
-const CONSOLE_LOGGING = true
-const FULL_REBUILD = false
+// CL Args
+const options /*: ParseArgsConfig['options']*/ = {
+  /* Command-Line Arguments */              // ARGUMENT  | DESCRIPTION
+  quiet:   { short: "q", type: "boolean" }, // (q)uiet   | Run without logging
+  reset:   { short: "r", type: "boolean" }, // (r)eset   | Full reset
+  cards:   { short: "c", type: "boolean" }, // (c)ards   | Ignore cards
+  images:  { short: "i", type: "boolean" }, // (i)mages  | Ignore scryfall images
+  sets:    { short: "s", type: "boolean" }, // (s)ets    | Ignore sets/boosters
+  version: { short: "v", type: "boolean" }, // (v)ersion | Ignore package version update
+} as const
 
 async function main() {
-  await updateCards(cardDbUrl, FULL_REBUILD, CONSOLE_LOGGING)
-  await updateImages(imageDbUrl, preferredDbUrl, FULL_REBUILD, CONSOLE_LOGGING)
-  await updateSets(setsDbUrl, FULL_REBUILD, CONSOLE_LOGGING)
-  await updateVersion(pkg.version, CONSOLE_LOGGING)
-  console.log('DONE')
+  const { values: { quiet, reset, cards, images, sets, version } } = parseArgs({ options })
+
+  if (!cards)   await updateCards(cardDbUrl, reset, !quiet)
+  if (!images)  await updateImages(imageDbUrl, preferredDbUrl, reset, !quiet)
+  if (!sets)    await updateSets(setsDbUrl, reset, !quiet)
+  if (!version) await updateVersion(pkg.version, !quiet)
+  if (!quiet)   console.log('DONE')
 }
 
 main()
-  .then(async () => { await prisma.$disconnect() })
+  .then(async () => {
+    await prisma.$disconnect()
+    process.exit(0)
+  })
   .catch(async (e) => {
     console.error(e)
     await prisma.$disconnect()
@@ -26,7 +40,7 @@ main()
   })
 
 // WEB GUI: npx prisma studio
-// REBUILD CONTENT: npx prisma db seed
+// REBUILD CONTENT: npx prisma db seed [-- -qrcisv] (See top for arguments)
 // UPDATE TABLES: npx prisma migrate dev --name update-reason
 // GENERATE UPDATE SQL: npx prisma migrate dev --create-only
 // SYNC DB: npx prisma migrate deploy
