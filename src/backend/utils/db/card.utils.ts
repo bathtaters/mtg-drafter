@@ -10,7 +10,10 @@ export const adaptCardToDb = ({
   types, manaValue, identifiers, layout,
   faceName, side, asciiName
 }: JsonCard): Prisma.CardCreateManyInput => ({
-  uuid, setCode, manaCost, type, text, manaValue, faceName, flavorName,
+
+  /* IF YOU ADD/REMOVE ANY FIELDS HERE, ALSO ADD/REMOVE THEM FROM 'cardFields' BELOW! */
+  
+  uuid, flavorName, setCode, manaCost, type, text, manaValue, faceName,
   
   name: name || 'N/A',
   types: types || [], 
@@ -34,7 +37,7 @@ export const adaptFacesToDb = ({ uuid, otherFaceIds }: JsonCard): Prisma.FaceInC
   otherFaceIds ? otherFaceIds.map((cardId) => ({ selfId: uuid, cardId })) : []
 
 export const cardFields: Array<keyof DBCard> = [
-  'uuid','name','setCode','manaCost','type','text','footer','rarity','colors','types','monoColor',
+  'uuid','name','flavorName','setCode','manaCost','type','text','footer','rarity','colors','types','monoColor',
   'scryfallId','multiverseId','faceName','side','manaValue','normalName','layout',//'preferredArt','img',
 ]
 
