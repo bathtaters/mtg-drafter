@@ -6,11 +6,10 @@ import { createMultiUpsert } from '../../utils/db/db.utils'
 import { adaptCardToDb, adaptFacesToDb, cardFields, JsonCard } from '../../utils/db/card.utils'
 import { isMtgJsonKey, updateMtgJson } from './updateSettings'
 
-const DL_THREADS = 1000, CARD_BATCH = 5000, UPSERT_BATCH = Math.floor(32000 / cardFields.length)
-
 const multiUpsert = createMultiUpsert<Prisma.CardCreateManyInput>('Card', cardFields, prisma)
 
-export default async function updateCards(url: string, fullUpdate = false, enableLog = false) {
+export default async function updateCards(url: string, fullUpdate = false, enableLog = false, maxThreads = 1000, dbBatchSize = 5000, upsertTxLimit = 32000) {
+  const batchSize = fullUpdate ? Math.min(Math.floor(upsertTxLimit / cardFields.length), dbBatchSize) : dbBatchSize
 
   let existing: number | undefined
   if (!fullUpdate) existing = await prisma.card.count()
@@ -23,11 +22,11 @@ export default async function updateCards(url: string, fullUpdate = false, enabl
   enableLog && console.log('Updating Cards',typeof existing === 'number' ? `(${existing} exisiting)` : '')
   enableLog && console.time('Cards')
 
-  const cardUpdate = new Batcher(fullUpdate ? UPSERT_BATCH : CARD_BATCH, async (data: Prisma.CardCreateManyInput[]) => {
+  const cardUpdate = new Batcher(batchSize, async (data: Prisma.CardCreateManyInput[]) => {
     if (fullUpdate) await multiUpsert(data)
     else await prisma.card.createMany({ data, skipDuplicates: true })
   })
-  const faceUpdate = new Batcher(2 * CARD_BATCH, async (data: Prisma.FaceInCardCreateManyInput[]) => {
+  const faceUpdate = new Batcher(2 * dbBatchSize, async (data: Prisma.FaceInCardCreateManyInput[]) => {
     await prisma.faceInCard.createMany({ data, skipDuplicates: true })
   })
   
@@ -37,7 +36,7 @@ export default async function updateCards(url: string, fullUpdate = false, enabl
     await cardUpdate.add(adaptCardToDb(data))
     for (const face of adaptFacesToDb(data)) { await faceUpdate.add(face) }
 
-  }, { jsonPath: /^meta|^data/, maxThreads: DL_THREADS })
+  }, { jsonPath: /^meta|^data/, maxThreads })
   
   await cardUpdate.finish()
   await faceUpdate.finish()
