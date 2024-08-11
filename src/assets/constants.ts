@@ -25,11 +25,14 @@ export const
 
   logOptions: LogOptions = { hideHost: false, hidePrivate: true },
 
-
+  // See strings: timerLabels for labels
   defaultTimer: TimerOptions = { secPerCard: 3.3, secOffset: -8, roundTo: 5, minSec: 5 },
   timerOptions: Array<Partial<TimerOptions> | null> = [
     null,
     { secPerCard: 1, minSec: 24 * 60 * 60 }, // Daily: 24 hours
+    { secPerCard: 40, minSec: 120 }, // Zen: 600 sec / 15 cards
+    { secPerCard: 30, minSec: 60 }, // Chill: 450 sec / 15 cards
+    { secPerCard: 20, minSec: 30 }, // Relaxed: 300 sec / 15 cards
     { secPerCard: 10, minSec: 15 }, // Casual: 150 sec / 15 cards
     { secPerCard: 6.6, minSec: 10 }, // Slow: 90 sec / 15 cards
     {}, // Normal (Official rules): 40 sec / 15 cards

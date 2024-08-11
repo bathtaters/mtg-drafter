@@ -38,7 +38,19 @@ export const sharingMessage: Record<string,ToastAlert> = {
 
 export const maxSizeError = (size: number, maxSize: number) => `File exceeds ${formatBytes(maxSize)} limit (${formatBytes(size)})`
 
-export const timerLabels = ['Off', '24hr', 'Casual', 'Slower', 'Normal', 'Faster', 'Speed']
+// See constants: timerOptions for settings
+export const timerText: Record<"value"|"tooltip", string>[] = [
+  { value: 'Off', tooltip: 'Off: No timer' },
+  { value: '24hr', tooltip: '24hr timer: 24 hrs per pick' },
+  { value: 'Zen', tooltip: 'Zen timer: 10:00 (15) -> 2:00 (1 card)' },
+  { value: 'Chill', tooltip: 'Chill timer: 7:30 (15) -> 1:00 (1 card)' },
+  { value: 'Relaxed', tooltip: 'Relaxed timer: 5:00 (15) -> 0:30 (1 card)' },
+  { value: 'Casual', tooltip: 'Casual timer: 2:30 (15) -> 0:15 (1 card)' },
+  { value: 'Slower', tooltip: 'Slower timer: 1:30 (15) -> 0:10 (1 card)' },
+  { value: 'Official', tooltip: 'Official timer: 0:40 (15) -> 0:05 (1 card)' },
+  { value: 'Faster', tooltip: 'Faster timer: 0:30 (15) -> 0:05 (1 card)' },
+  { value: 'Speed', tooltip: 'Speed timer: 0:20 (15) -> 0:03 (1 card)' },
+]
 
 // Text to display on rendered card, key is card layout (auto displays <Layout> if card has multiple faces)
 export const cardLayoutText: {[layout in Layout]?: string} = {
