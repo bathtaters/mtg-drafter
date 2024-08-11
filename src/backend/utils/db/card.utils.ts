@@ -5,17 +5,17 @@ import type { Layout } from 'types/scryfall'
 export const normalizeName = (name: string) => name.replace(/\s\/\/\s.+$/,'').replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase()
 
 export const adaptCardToDb = ({
-  uuid, name, setCode, manaCost, type, text,
+  uuid, name, flavorName, setCode, manaCost, type, text,
   power, toughness, loyalty, rarity, colors,
   types, manaValue, identifiers, layout,
   faceName, side, asciiName
 }: JsonCard): Prisma.CardCreateManyInput => ({
-  uuid, setCode, manaCost, type, text, manaValue, faceName,
+  uuid, setCode, manaCost, type, text, manaValue, faceName, flavorName,
   
   name: name || 'N/A',
   types: types || [], 
 
-  normalName: !side || side === 'a' ? normalizeName(asciiName || name || 'N/A') : null,
+  normalName: !side || side === 'a' ? normalizeName(flavorName || asciiName || name || 'N/A') : null,
 
   scryfallId: identifiers?.scryfallId,
   multiverseId: identifiers?.multiverseId,

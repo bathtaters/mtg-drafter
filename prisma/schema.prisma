@@ -117,6 +117,7 @@ model Card {
   // NOTE: IF YOU CHANGE THIS, UPDATE backend/card.utils:cardFields
   uuid       String   @id
   name       String
+  flavorName String?
   normalName String?
   setCode    String? // ref Set
   manaCost   String?

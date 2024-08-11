@@ -18,7 +18,7 @@ export default function RenderedCard({ card, isFoil = false, side = 0, sideCount
       <CardLayout layout={layout} side={side} className={getBgdColor(card)}>
 
         <CardBox>
-          <Name>{card.faceName || card.name}</Name>
+          <Name>{card.faceName || card.flavorName || card.name}</Name>
           <Mana html={symbolFix(card.manaCost, true)} />
         </CardBox>
 
