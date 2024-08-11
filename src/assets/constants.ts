@@ -16,7 +16,7 @@ export const
   }),
 
   shareGame = {
-    title: "MtG Drafter Game",
+    title: "Mtg Drafter Game",
     message: "Join the draft",
     url: (gameUrl: string) => `${window.location.origin}/game/${gameUrl}`,
     copyMsg: { message: "Copied link to clipboard", className: "alert-info" },

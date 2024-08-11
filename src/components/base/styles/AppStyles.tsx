@@ -29,9 +29,9 @@ export const FooterWrapperStyle = ({ children }: Children) => (
 
 export const SetPageTitle = ({ title }: { title: string }) => (
   <Head>
-    <title>{`MtG Drafter - ${title}`}</title>
-    <meta name="title" content={`MtG Drafter - ${title}`} />
-    <meta property="og:title" content={`MtG Drafter - ${title}`} />
+    <title>{`Mtg Drafter - ${title}`}</title>
+    <meta name="title" content={`Mtg Drafter - ${title}`} />
+    <meta property="og:title" content={`Mtg Drafter - ${title}`} />
   </Head>
 )
 

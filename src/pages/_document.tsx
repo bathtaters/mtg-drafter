@@ -5,7 +5,7 @@ function Document(props: DocumentProps) {
   return (
     <Html lang="en">
       <Head>
-        <meta property="og:site_name" content="MtG Drafter" />
+        <meta property="og:site_name" content="Mtg Drafter" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:description" content="Magic: the Gathering multi-player draft simulator." />
         <meta property="article:author" content="bathtaters" />
