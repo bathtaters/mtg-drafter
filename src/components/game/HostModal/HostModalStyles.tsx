@@ -61,3 +61,8 @@ export const DropButton = ({ onClick, label }: { onClick?: MouseEventHandler, la
       {label}
   </button>
 )
+
+
+// Log Watching Settings
+
+export const WatchContainer = ({ children }: { children?: any }) => <div className="flex">{children}</div>

@@ -16,11 +16,15 @@ export const
   }),
 
   shareGame = {
-    title: "Mtg Drafter Game",
+    title: "Mtg Drafter",
     message: "Join the draft",
     url: (gameUrl: string) => typeof window === "undefined" ? "" : `${window.location.origin}/game/${gameUrl}`,
-    copyMsg: { message: "Copied link to clipboard", className: "alert-info" },
-    failMsg: { message: "Clipboard access disabled by browser", className: "alert-warning" },
+  },
+
+  shareWatch = {
+    title: "Mtg Drafter",
+    message: "Observe the draft",
+    url: (gameUrl: string) => typeof window === "undefined" ? "" : `${window.location.origin}/game/watch/${gameUrl}`,
   },
 
   logOptions: LogOptions = { hideHost: false, hidePrivate: true },
