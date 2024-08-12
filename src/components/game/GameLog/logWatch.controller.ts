@@ -29,11 +29,11 @@ export default function useLogWatch(game?: Partial<Game>, refresh?: () => void, 
 
     // Refresh log every 1 second (Easier than making a socket connection for now)
     useEffect(() => {
-        if (refresh) {
+        if (authed && refresh) {
             const interval = setInterval(refresh, 1000)
             return () => clearInterval(interval)
         }
-    }, [refresh])
+    }, [refresh, authed])
 
     return { authed, message, handleSubmit }
 }
