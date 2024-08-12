@@ -37,3 +37,21 @@ export default function useLogWatch(game?: Partial<Game>, refresh?: () => void, 
 
     return { authed, message, handleSubmit }
 }
+
+
+export function useBasicGameController(props: ServerProps) {
+    const [loadingAll,  setLoadingAll] = useState(0)
+  
+    const game = props.options
+    const players = props.players || []
+    const maxPackSize = props.packSize ?? 0
+    
+    const gameLog = useGameLog(game?.url ?? "", players)
+  
+    return {
+      gameLog, loadingAll, setLoadingAll,
+      game, players, maxPackSize,
+      holding: getHolding(players, maxPackSize, game),
+      sessionId: props.sessionId,
+    }
+}

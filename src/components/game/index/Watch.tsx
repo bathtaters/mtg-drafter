@@ -12,7 +12,7 @@ import useGameController from 'components/game/index/game.controller'
 export default function Watch(props: ServerProps) {
   const {
     game, players, isConnected, loadingAll, maxPackSize, holding, gameLog, setLoadingAll,
-  } = useGameController(props)
+  } = useBasicGameController(props)
 
   return (<>
     <SetPageTitle title={game?.name || ""} />
