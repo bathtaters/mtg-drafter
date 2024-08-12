@@ -32,7 +32,7 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
   return {
     list: filterLogs(logs, players, actions, options),
     allActions, allPlayers,
-    error, refresh,
+    error, setError, refresh,
     players, setPlayers,
     actions, setActions,
     options, setOptions,

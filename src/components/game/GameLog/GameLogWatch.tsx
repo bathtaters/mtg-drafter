@@ -9,10 +9,11 @@ import useLogWatch from "./logWatch.controller"
 type Props = LogProps & {
     game?: Partial<Game>,
     setLoading?: SetNumber,
+    sessionId?: string,
 }
 
-export default function GameLogPage({ game, setLoading, ...props }: Props) {
-    const { authed, message, handleSubmit } = useLogWatch(game, props.log.refresh, setLoading)
+export default function GameLogWatch({ game, sessionId, setLoading, ...props }: Props) {
+    const { authed, message, handleSubmit } = useLogWatch(props.log, game, sessionId, setLoading)
 
     return (
         <GameLogWatchWrapper title="Live Game Watcher">{
