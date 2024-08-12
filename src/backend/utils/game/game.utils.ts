@@ -22,6 +22,7 @@ export const getMaxPackSize = (packCounts: { packIdx: number, _count: number }[]
 export const adaptDbGame = <G extends Partial<DbGame>>(game?: G | null) => (
   !game || typeof game.pause !== 'bigint' ? game : {
     ...game,
+    logKey: game.logKey && "Enabled",
     pause: Number(game.pause)
   }
 ) as Merge<G, Game> | null | undefined
