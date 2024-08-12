@@ -27,3 +27,14 @@ export default function ModalWrapper({ title, className, children, buttons, isOp
 export const ModalButton = ({ onClick, className = 'btn-neutral', children }: { onClick: MouseEventHandler, className?: string, children: ReactNode }) => (
   <button type="button" className={`btn ${className}`} onClick={onClick}>{children}</button>
 )
+
+export const LargeModal = ({ title, isOpen, setOpen, children }: { title: ReactNode, isOpen: boolean, setOpen: Dispatch<SetStateAction<boolean>>, children: ReactNode }) => (
+  <ModalWrapper isOpen={isOpen} setOpen={setOpen}
+      title={title}
+      wrapperClass="z-[1000]" bodyClass="min-h-0"
+      className="h-full md:!max-w-screen-2xl flex flex-col"
+      buttons={<ModalButton onClick={() => setOpen((s) => !s)}>Return</ModalButton>}
+    >
+      {children}
+    </ModalWrapper>
+)

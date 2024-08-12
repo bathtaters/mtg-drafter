@@ -1,18 +1,6 @@
-import type { Dispatch, ReactNode, SetStateAction } from "react"
-import ModalWrapper, { ModalButton } from "components/base/common/Modal"
+import type { ReactNode } from "react"
 import getColorClass from "components/base/libs/colors"
 
-
-export const LargeModal = ({ title, isOpen, setOpen, children }: { title: ReactNode, isOpen: boolean, setOpen: Dispatch<SetStateAction<boolean>>, children: ReactNode }) => (
-  <ModalWrapper isOpen={isOpen} setOpen={setOpen}
-      title={title}
-      wrapperClass="z-[1000]" bodyClass="min-h-0"
-      className="h-full md:!max-w-screen-2xl flex flex-col"
-      buttons={<ModalButton onClick={() => setOpen((s) => !s)}>Return</ModalButton>}
-    >
-      {children}
-    </ModalWrapper>
-)
 
 export const LogContainer = ({ children, toolbar }: { children: ReactNode, toolbar: ReactNode }) => (<>
   <div className="absolute top-4 right-4">{toolbar}</div>
