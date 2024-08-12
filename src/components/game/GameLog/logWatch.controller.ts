@@ -6,7 +6,7 @@ import { post } from "components/base/libs/fetch"
 import useGameLog, { GameLog } from '../GameLog/log.controller'
 import { getHolding } from '../shared/game.utils'
 
-
+const POLL_INTERVAL = 3 * 1000 // ms
 
 export type SetNumber = Dispatch<SetStateAction<number>>
 
@@ -45,7 +45,7 @@ export default function useLogWatch(log: GameLog, game?: Partial<Game>, sessionI
     // Refresh log every 1 second (Easier than making a socket connection for now)
     useEffect(() => {
         if (authed && log.refresh) {
-            const interval = setInterval(log.refresh, 1000)
+            const interval = setInterval(log.refresh, POLL_INTERVAL)
             return () => clearInterval(interval)
         }
     }, [log.refresh, authed])
