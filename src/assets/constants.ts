@@ -18,7 +18,7 @@ export const
   shareGame = {
     title: "Mtg Drafter Game",
     message: "Join the draft",
-    url: (gameUrl: string) => `${window.location.origin}/game/${gameUrl}`,
+    url: (gameUrl: string) => typeof window === "undefined" ? "" : `${window.location.origin}/game/${gameUrl}`,
     copyMsg: { message: "Copied link to clipboard", className: "alert-info" },
     failMsg: { message: "Clipboard access disabled by browser", className: "alert-warning" },
   },
