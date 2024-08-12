@@ -89,6 +89,7 @@ export type ServerProps = ServerSuccess | ServerFail | ServerUnreg
 
 export type GameProps = Omit<Required<ServerProps>, 'error'>
 
+export type LogAuthResponse = { success?: boolean, message?: string }
 
 // -- FRONTEND TYPES -- \\
 

@@ -108,6 +108,7 @@ model Game {
   players Player[] @relation("GamePlayers")
   host    Player?  @relation("GameHost", fields: [hostId], references: [id])
   hostId  String?  @unique
+  logKey  String?
 
   log LogEntry[]
 }
