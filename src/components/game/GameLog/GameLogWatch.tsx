@@ -17,7 +17,7 @@ export default function GameLogPage({ game, setLoading, ...props }: Props) {
     return (
         <GameLogWatchWrapper title="Live Game Watcher">{
             !game?.logKey ? <ErrorContainer text="Observing this game has been disabled by the host." /> :
-            !authed ? <PasswordForm label="Enter Password" message={message} onSubmit={handleSubmit} /> : 
+            !authed ? <PasswordForm label="Enter Password" message={message} onSubmit={handleSubmit} fullPage={true} /> : 
             <GameLog {...props} />
         }</GameLogWatchWrapper>
     )
