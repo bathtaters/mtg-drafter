@@ -1,6 +1,6 @@
 import type { Merge } from 'types/global.d'
 import type { Game as DbGame, Player as DbPlayer } from '@prisma/client'
-import type { Game, BasicPlayer, Player } from 'types/game'
+import type { Game, BasicPlayer, Player, PartialGame } from 'types/game'
 import { gameUrlRegEx } from 'assets/urls'
 import { getNeighborIdx } from 'components/game/shared/game.utils'
 import { defaultTimer, setupDefaults, timerOptions } from 'assets/constants'
@@ -51,7 +51,7 @@ export const hasPack = (game: Pick<Game,"round"|"roundCount">, players: Pick<Bas
   return neighborIdx === -1 || players[playerIdx].pick <= players[neighborIdx].pick
 }
 
-export const unregGameAdapter = ({ id, name, url }: Pick<Game,"id"|"name"|"url">) => ({ id, name, url })
+export const unregGameAdapter = ({ id, name, url, logKey }: PartialGame) => ({ id, name, url, logKey })
 
 const defaultTimerBase = +setupDefaults.timer
 export function getTimerLength(cardCount: number, timerBase: number) {
