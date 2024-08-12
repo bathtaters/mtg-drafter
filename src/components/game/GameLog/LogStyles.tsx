@@ -1,6 +1,16 @@
 import type { ReactNode } from "react"
 import getColorClass from "components/base/libs/colors"
 
+export const LogHeaderWrapper = ({ children }: { children: ReactNode }) => (
+  <div className="w-full flex flex-col md:flex-row items-start md:items-center gap-4">{children}</div>
+)
+
+export const GameLogWatchWrapper = ({ title, children }: { title: string, children: ReactNode }) => (
+  <div className="relative pt-14 w-full h-full -top-6">
+    <h2 className="absolute top-2 left-2 font-serif mb-6">{title}</h2>
+    {children}
+  </div>
+)
 
 export const LogContainer = ({ children, toolbar }: { children: ReactNode, toolbar: ReactNode }) => (<>
   <div className="absolute top-4 right-4">{toolbar}</div>
@@ -12,7 +22,6 @@ export const LogContainer = ({ children, toolbar }: { children: ReactNode, toolb
 </>)
 
 export const ErrorContainer = ({ text }: { text: string }) => <p className="opacity-80 italic">{text}</p>
-
 
 export const EntryWrapper = ({ children }: { children: ReactNode }) => <li className="flex flex-wrap items-center my-0.5 gap-y-0.5">{children}</li>
 

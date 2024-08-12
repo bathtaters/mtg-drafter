@@ -1,33 +1,16 @@
 import type { Dispatch, SetStateAction } from "react"
-import type { BasicPlayer } from "types/game"
-import type { GameLog } from "./log.controller"
-import LogToolbar from "./LogToolbar/LogToolbar"
-import LogEntry from "./LogEntry"
-import { LogContainer, ErrorContainer } from "./LogStyles"
+import GameLog, { Props as LogProps } from "./GameLog"
 import { LargeModal } from "components/base/common/Modal"
 
-type Props = {
-  players: BasicPlayer[],
-  log: GameLog,
-  gameEnded: boolean,
+type Props = LogProps & {
   isOpen: boolean,
   setOpen: Dispatch<SetStateAction<boolean>>,
 }
 
-export default function LogModal({ log, players, gameEnded, isOpen, setOpen }: Props) {
+export default function GameLogModal({ isOpen, setOpen, ...props }: Props) {
   return (
     <LargeModal isOpen={isOpen} setOpen={setOpen} title="Game Log">
-
-      { log.error ? <ErrorContainer text={log.error} /> : 
-
-        <LogContainer toolbar={<LogToolbar log={log} players={players} gameEnded={gameEnded} />}>
-
-          {!log.list ? "Loading..." : log.list.map((entry, idx) =>
-            <LogEntry key={entry.id} entry={entry} players={players} isFirst={!idx} isPrivate={log.options.hidePrivate} />
-          )}
-
-        </LogContainer>
-      }
+      <GameLog {...props} />
     </LargeModal>
   )
 }
