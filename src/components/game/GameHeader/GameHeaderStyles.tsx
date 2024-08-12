@@ -1,10 +1,10 @@
-import type { MouseEventHandler, ReactNode } from "react"
+import type { ReactNode } from "react"
 import type { GameStatus } from "@prisma/client"
 import type { StaticImport } from "next/dist/shared/lib/get-img-props"
 import Link from "next/link"
 import Image from "next/image"
-import LinkIcon from "components/svgs/LinkIcon"
 import PackIcon from "components/svgs/PackIcon"
+import CopyLink, { Props as CopyProps } from "components/base/common/CopyLink"
 
 const statusIcon: { [status in GameStatus]: ReactNode } = {
   'start':  <span     className="inline-block mr-2 opacity-80 text-base sm:text-2xl fill-base-content ms ms-dfc-day"   />,
@@ -32,14 +32,10 @@ export function LogoWrapper({ img, href = "", alt = "", children }: { img?: stri
   )
 }
 
-export const GameTitle = ({ title, onClick }: { title: string, onClick?: MouseEventHandler }) => (
+export const GameTitle = ({ header, ...props }: CopyProps & { header?: string }) => (
   <div>
-    <h1 className="font-serif inline">{title || "New Draft"}</h1>
-    {onClick &&
-      <a className="link align-top tooltip tooltip-bottom tooltip-primary" onClick={onClick} data-tip="Copy Link">
-        <LinkIcon className="w-5 h-auto ml-2 fill-primary hover:fill-[color-mix(in_oklab,oklch(var(--p)),black_10%)] inline-block" />
-      </a>
-    }
+    <h1 className="font-serif inline">{header || "New Draft"}</h1>
+    <CopyLink className="align-top tooltip-bottom" iconClass="w-5 ml-2" {...props} />
   </div>
 )
 

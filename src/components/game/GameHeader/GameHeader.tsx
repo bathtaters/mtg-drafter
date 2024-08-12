@@ -26,7 +26,7 @@ type Props = {
 
 export default function GameHeader({ game, players, playerIdx, holding, packSize, isConnected, notify, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
 
-  const { oppIdx, handleShare, gameStatus, isRight } = useGameHeader(game, players, playerIdx, notify)
+  const { oppIdx, gameStatus, isRight, copyProps } = useGameHeader(game, players, playerIdx)
   
   if (!game) return <Header><GameTitle title="Mtg Drafter" /></Header>
 
@@ -34,7 +34,7 @@ export default function GameHeader({ game, players, playerIdx, holding, packSize
     <Header>
         <GameHeaderWrapper>
             <LogoWrapper img={logo} href="/" alt="Mtg-Drafter Logo">
-              <GameTitle title={game.name} onClick={handleShare} />
+              <GameTitle header={game.name} {...copyProps} notify={notify} />
               <RoundCounter status={gameStatus} label={roundCounter(gameStatus, game, !players[playerIdx])} />
             </LogoWrapper>
 
