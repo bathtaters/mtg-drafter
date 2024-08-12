@@ -7,7 +7,7 @@ export const boardLands = z.object(fillAndLowerCaseObject(Color, z.number().nonn
 
 export const logAuth = {
   id:       z.string().cuid(),
-  password: z.string().min(1),
+  password: z.string().min(1).nullable(),
 }
 
 const gameData = {

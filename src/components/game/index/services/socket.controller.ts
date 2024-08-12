@@ -173,7 +173,20 @@ export function useGameEmitters(local: LocalController, { emit, reconnect }: Ret
   }, [emit, local.game?.url, local.sessionId, local.setLoadingAll, local.setStatus, local.updatePlayer, local.updateLocal, throwError])
 
 
-  return { renamePlayer, setTitle, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus }
+  const setWatchPw: Socket.SetWatchPw = useCallback((password) => {
+    if (!local.game?.id) return throwError(formatError('Error setting Watch password: Game not loaded'))
+    local.setLoadingAll((v) => v + 1)
+
+    emit('setWatchPw', local.game.id, password || null, (logKey: string | null) => {
+      if (logKey === 'error') reloadData(local.game?.url, local.updateLocal, throwError)
+      else local.updateGame((game) => game && ({ ...game, logKey }))
+      local.setLoadingAll((v) => v && v - 1)
+    })
+
+  }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
+
+
+  return { renamePlayer, setTitle, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw }
 }
 
 

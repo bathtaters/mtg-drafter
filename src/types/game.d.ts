@@ -112,6 +112,7 @@ export namespace Socket {
   type SwapCard      = (gameCardId: GameCard['id'], toBoard: Board) => void
   type SetLands      = (lands: BasicLands) => void
   type SetStatus     = (playerId: Player['id'], status?: PlayerStatus, byHost?: boolean) => void
+  type SetWatchPw    = (password: string | null) => void
 }
 
 // Aliases
@@ -123,3 +124,4 @@ export type PickCard      = Socket.PickCard
 export type SwapCard      = Socket.SwapCard
 export type SetLands      = Socket.SetLands
 export type SetStatus     = Socket.SetStatus
+export type SetWatchPw    = Socket.SetWatchPw

@@ -1,5 +1,5 @@
 import prisma from "backend/libs/db"
-import { validate } from "backend/utils/db/password.utils"
+import { validate, hash } from "backend/utils/db/password.utils"
 
 const LOG_SALT = "92c23bc8fd75cb3e2880b983ce84d736"
 
@@ -20,3 +20,18 @@ export async function testPassword(id: string, password: string) {
     return result ? undefined : "Incorrect password"
 }
 
+export async function setPassword(id: string, password: string | null) {
+    if (password) password = await hash(password, LOG_SALT)
+    try {
+        const result = await prisma.game.update({
+            where: { id },
+            data: { logKey: password },
+        })
+        return Boolean(result.logKey)
+
+    } catch (error: any) {
+        if (error.code === 'P2025') console.error('Setting password: Game not found', id)
+        else console.error('An unexpected error occurred:', error)
+    }
+    return null
+}
