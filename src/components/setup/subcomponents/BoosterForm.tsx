@@ -4,7 +4,7 @@ import RangeInput from "components/base/common/FormElements/RangeInput"
 import ToggleSwitch from "components/base/common/FormElements/ToggleSwitch"
 import { FieldWrapper, InputWrapper, PlayersLabel, PackButton, PackButtonWrapper, PacksWrapper, PackSelector, TimerLabel, BasicsLabel } from "../styles/FormStyles" 
 import { hideBoosterNames, setupLimits } from "assets/constants"
-import { timerLabels } from "assets/strings"
+import { timerText } from "assets/strings"
 import { getBoosterCode } from "backend/services/setup/sets.services"
 import { hyphenToTitle } from "components/base/services/common.services"
 
@@ -28,7 +28,7 @@ export default function BoosterForm({ setList, options, setOption, setPack, addP
         <FieldWrapper label="Options">
           <RangeInput caption={<PlayersLabel />}  value={options.players}  setValue={setOption.players}  {...setupLimits.players}  />
           <RangeInput caption={<TimerLabel />}    value={options.timer}    setValue={setOption.timer}    {...setupLimits.timer}  
-            keys={timerLabels} boxClass="w-16" />
+            keys={timerText} boxClass="w-16" />
           <ToggleSwitch label={<BasicsLabel />}   value={options.basics}   setValue={setOption.basics} />
         </FieldWrapper>
 
