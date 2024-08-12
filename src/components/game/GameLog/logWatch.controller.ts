@@ -14,7 +14,7 @@ export default function useLogWatch(game?: Partial<Game>, refresh?: () => void, 
         if (!password || !game?.id) return;
         setLoading && setLoading((v) => v + 1)
 
-        const res = await post<LogAuthResponse>(`/api/auth/${game?.id}`, { password })
+        const res = await post<LogAuthResponse>(`/api/game/auth/${game?.id}`, { password })
 
         if (typeof res === 'number') {
             setMessage("Unable to reach server")
