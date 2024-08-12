@@ -1,6 +1,6 @@
 import type { BasicPlayer, LogEntryFull } from "types/game"
 import CookieIcon from "components/svgs/CookieIcon"
-import { EntryWrapper, EntryItem, EntrySpace, MissingCard } from "./LogModalStyles"
+import { EntryWrapper, EntryItem, EntrySpace, MissingCard } from "./LogStyles"
 import { allActions } from "./log.utils"
 import { formatLogAction, logFullDate, logTimestamp } from "assets/strings"
 

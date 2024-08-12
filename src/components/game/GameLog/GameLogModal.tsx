@@ -3,7 +3,7 @@ import type { BasicPlayer } from "types/game"
 import type { GameLog } from "./log.controller"
 import LogToolbar from "./LogToolbar/LogToolbar"
 import LogEntry from "./LogEntry"
-import { LogContainer, ErrorContainer } from "./LogModalStyles"
+import { LogContainer, ErrorContainer } from "./LogStyles"
 import { LargeModal } from "components/base/common/Modal"
 
 type Props = {
