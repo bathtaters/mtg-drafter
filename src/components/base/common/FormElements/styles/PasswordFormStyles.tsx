@@ -1,22 +1,30 @@
-import type { HTMLProps } from "react"
+import type { HTMLProps, ReactNode } from "react"
 
-export const FormWrapper = (props: HTMLProps<HTMLFormElement>) => (
-    <form className="w-full h-full flex flex-col justify-center items-center gap-2 p-8 form-control" {...props} />
+export const FormWrapper = (props: HTMLProps<HTMLFormElement> & { full?: boolean }) => (
+    <form className={`w-full h-full flex flex-col ${props.full ? "items-center p-2" : ""} form-control`} {...props} />
 )
 
-export const LabelStyle = (props: HTMLProps<HTMLLabelElement>) => (
-    <label className="label justify-center label-text text-lg" {...props} />
+export const LabelStyle = (props: HTMLProps<HTMLLabelElement> & { full?: boolean }) => (
+    <label className={`label label-text ${props.full ? "justify-center text-lg" : ""}`} {...props} />
+)
+
+export const BoxBtnWrapper = ({ full, children }: { full?: boolean, children?: ReactNode }) => (
+    <div className={full ? "w-full max-w-sm flex flex-col gap-1 items-center" : "join w-full mb-2"}>
+        {children}
+    </div>
 )
 
 export const PasswordStyle = (props: HTMLProps<HTMLInputElement>) => (
-    <input type="password" className="input input-primary input-bordered w-full max-w-xs" {...props} />
+    <input type="password" className="join-item grow input input-secondary input-bordered" {...props} />
 )
 
 export const ButtonStyle = (props: HTMLProps<HTMLButtonElement>) => (
-    <button className="btn btn-primary" {...props as any} />
+    <button className="join-item btn btn-secondary" {...props as any} />
 )
 
 export const MessageStyle = (props: HTMLProps<HTMLDivElement>) => (
-    props.children ? <div className="badge badge-error" {...props} /> :
-    <div />
+    props.children ? <div className="badge badge-error m-1" {...props} /> :
+    <Spacer />
 )
+
+export const Spacer = () => <div className="h-5" />

@@ -1,11 +1,11 @@
 import type { ChangeEvent, FormEvent } from "react"
 import { useState } from "react"
-import { ButtonStyle, FormWrapper, LabelStyle, MessageStyle, PasswordStyle } from "./styles/PasswordFormStyles"
+import { BoxBtnWrapper, ButtonStyle, FormWrapper, LabelStyle, MessageStyle, PasswordStyle, Spacer } from "./styles/PasswordFormStyles"
 
 
 export default function PasswordForm(
-    { label="Enter Password", btnLabel="Submit", message="", onSubmit, id="password" }:
-    { label?: string, btnLabel?: string, message?: string, id?: string, onSubmit?: (password: string) => Promise<void> | void }
+    { label="Enter Password", fullPage, btnLabel="Submit", message="", onSubmit, id="password", placeholder="" }:
+    { label?: string, btnLabel?: string, message?: string, id?: string, placeholder?: string, fullPage?: boolean, onSubmit?: (password: string) => Promise<void> | void }
 ) {
     const [password, setPassword] = useState("")
 
@@ -18,12 +18,15 @@ export default function PasswordForm(
     }
 
     return (
-        <FormWrapper onSubmit={handleSubmit}>
-            <LabelStyle htmlFor={id}>{label}</LabelStyle>
-            <div />
-            <PasswordStyle id={id} value={password} onChange={handleChange} />
-            <MessageStyle>{message}</MessageStyle>
-            <ButtonStyle type="submit">{btnLabel}</ButtonStyle>
+        <FormWrapper full={fullPage} onSubmit={handleSubmit}>
+            <LabelStyle htmlFor={id} full={fullPage}>{label}</LabelStyle>
+            { fullPage && <Spacer /> }
+            <BoxBtnWrapper full={fullPage}>
+                <PasswordStyle id={id} value={password} placeholder={placeholder} onChange={handleChange} />
+                { fullPage && <MessageStyle>{message}</MessageStyle> }
+                <ButtonStyle type="submit">{btnLabel}</ButtonStyle>
+            </BoxBtnWrapper>
+            { !fullPage && <MessageStyle>{message}</MessageStyle> }
         </FormWrapper>
     )
 }
