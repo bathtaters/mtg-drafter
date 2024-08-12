@@ -17,7 +17,7 @@ export default function GameLogWatch({ game, sessionId, setLoading, ...props }: 
 
     return (
         <GameLogWatchWrapper title="Live Draft View">{
-            !game?.logKey ? <ErrorContainer text="Observing this game has been disabled by the host." /> :
+            !game?.watchKey ? <ErrorContainer text="Observing this game has been disabled by the host." /> :
             !authed ? <PasswordForm label="Enter Password" message={message} onSubmit={handleSubmit} fullPage={true} /> : 
             <GameLog {...props} logout={logout} />
         }</GameLogWatchWrapper>

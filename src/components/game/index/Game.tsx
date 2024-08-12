@@ -76,7 +76,7 @@ export default function Game(props: ServerProps) {
         paused={gameIsPaused(game)} pauseGame={pauseGame}
         players={players} renamePlayer={renamePlayer}
         hostId={(game as Game).hostId} setStatus={setStatus}
-        watchUrl={game?.logKey && game?.url}
+        watchUrl={game?.watchKey && game?.url}
         setLog={toggleLogModal} setWatchPw={setWatchPw}
         notify={newToast}
     />}

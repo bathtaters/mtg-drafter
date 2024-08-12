@@ -16,7 +16,7 @@ export interface Player extends DbPlayer { timer: number | null, basics: BasicLa
 export type BasicPlayer = Pick<Player, "id"|"name"|"sessionId"|"pick">
 
 export interface Game extends DbGame { pause: number | null }
-export type PartialGame = Pick<Game,"id"|"name"|"url"|"logKey">
+export type PartialGame = Pick<Game,"id"|"name"|"url"|"watchKey">
 
 export type CardStrict = Omit<Card,"layout"> & { layout: Layout | null }
 export type CardFull = CardStrict & { otherFaces: Array<{ card: CardStrict }> }

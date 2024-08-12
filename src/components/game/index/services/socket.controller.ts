@@ -177,9 +177,9 @@ export function useGameEmitters(local: LocalController, { emit, reconnect }: Ret
     if (!local.game?.id) return throwError(formatError('Error setting Watch password: Game not loaded'))
     local.setLoadingAll((v) => v + 1)
 
-    emit('setWatchPw', local.game.id, password || null, (logKey: string | null) => {
-      if (logKey === 'error') reloadData(local.game?.url, local.updateLocal, throwError)
-      else local.updateGame((game) => game && ({ ...game, logKey }))
+    emit('setWatchPw', local.game.id, password || null, (watchKey: string | null) => {
+      if (watchKey === 'error') reloadData(local.game?.url, local.updateLocal, throwError)
+      else local.updateGame((game) => game && ({ ...game, watchKey }))
       local.setLoadingAll((v) => v && v - 1)
     })
 

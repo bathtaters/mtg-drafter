@@ -24,9 +24,9 @@ async function getGameProps(query: ParsedUrlQuery, sessionId: string, includePac
   const now = Date.now()
   const player = await getPlayer(sessionId, players, game, packSize, now) as PlayerFullTimer | null // Convert type JSON value -> BasicLands
 
-  const watcher = !player && options.watcher === sessionId
+  const watchId = !player && options.watchId === sessionId
   
-  return !watcher && !player ?
+  return !watchId && !player ?
     { options: unregGameAdapter(options), players, sessionId } :
     { options, players, player, sessionId, now, packSize, packs: packs as PackFull[] || [] }
 }

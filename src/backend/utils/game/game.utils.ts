@@ -22,7 +22,7 @@ export const getMaxPackSize = (packCounts: { packIdx: number, _count: number }[]
 export const adaptDbGame = <G extends Partial<DbGame>>(game?: G | null) => (
   !game || typeof game.pause !== 'bigint' ? game : {
     ...game,
-    logKey: game.logKey && "Enabled",
+    watchKey: game.watchKey && "Enabled",
     pause: Number(game.pause)
   }
 ) as Merge<G, Game> | null | undefined
@@ -51,7 +51,7 @@ export const hasPack = (game: Pick<Game,"round"|"roundCount">, players: Pick<Bas
   return neighborIdx === -1 || players[playerIdx].pick <= players[neighborIdx].pick
 }
 
-export const unregGameAdapter = ({ id, name, url, logKey }: PartialGame) => ({ id, name, url, logKey })
+export const unregGameAdapter = ({ id, name, url, watchKey }: PartialGame) => ({ id, name, url, watchKey })
 
 const defaultTimerBase = +setupDefaults.timer
 export function getTimerLength(cardCount: number, timerBase: number) {

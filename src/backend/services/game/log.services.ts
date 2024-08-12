@@ -11,12 +11,12 @@ export const userInGame = (id: string, sessionId: string) => prisma.game.findFir
 export async function testPassword(id: string, password: string) {
     const game = await prisma.game.findFirst({
         where: { id },
-        select: { logKey: true },
+        select: { watchKey: true },
     })
     if (!game) return "Game not found"
-    if (!game.logKey) return "Log view is disabled"
+    if (!game.watchKey) return "Log view is disabled"
 
-    const result = await validate(password, LOG_SALT, game.logKey)
+    const result = await validate(password, LOG_SALT, game.watchKey)
     return result ? undefined : "Incorrect password"
 }
 
@@ -25,9 +25,9 @@ export async function setPassword(id: string, password: string | null) {
     try {
         const result = await prisma.game.update({
             where: { id },
-            data: { logKey: password, watcher: null },
+            data: { watchKey: password, watchId: null },
         })
-        return Boolean(result.logKey)
+        return Boolean(result.watchKey)
 
     } catch (error: any) {
         if (error.code === 'P2025') console.error('Setting password: Game not found', id)

@@ -21,7 +21,7 @@ export default async function apiHandler(req: NextApiRequest, res: NextApiRespon
     const game = await userInGame(id, sessionId)
     if (game && !gameIsEnded(game)) return "Active player cannot view log."
 
-    await prisma.game.update({ where: { id }, data: { watcher: sessionId } })
+    await prisma.game.update({ where: { id }, data: { watchId: sessionId } })
 
     return undefined
 }

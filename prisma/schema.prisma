@@ -105,11 +105,11 @@ model Game {
   pause      BigInt?
   timerBase  Int?
 
-  players Player[] @relation("GamePlayers")
-  host    Player?  @relation("GameHost", fields: [hostId], references: [id])
-  hostId  String?  @unique
-  logKey  String?
-  watcher String?
+  players   Player[] @relation("GamePlayers")
+  host      Player?  @relation("GameHost", fields: [hostId], references: [id])
+  hostId    String?  @unique
+  watchKey  String?
+  watchId   String?
 
   log LogEntry[]
 }
