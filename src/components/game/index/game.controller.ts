@@ -9,7 +9,7 @@ import { useFocusEffect } from 'components/base/libs/hooks'
 import useLocalController from './services/local.controller'
 import { getGameListeners, useGameEmitters } from './services/socket.controller'
 import downloadDeck from './services/downloadDeck.controller'
-import useGameLog from '../LogModal/log.controller'
+import useGameLog from 'components/game/GameLog/log.controller'
 import { gameAPI, socketEndpoint } from 'assets/urls'
 import { enableDropping, refreshOnRefocusDelay } from 'assets/constants'
 

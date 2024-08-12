@@ -4,7 +4,7 @@ import PlayerJoin from 'components/game/PlayerJoin/PlayerJoin'
 import GameBody from 'components/game/GameBody/GameBody'
 import LandsModal from 'components/game/LandsModal/LandsModal'
 import HostModal from 'components/game/HostModal/HostModal'
-import LogModal from '../LogModal/LogModal'
+import GameLogModal from 'components/game/GameLog/GameLogModal'
 import Overlay from 'components/base/common/Overlay'
 import Spinner from 'components/base/common/Spinner'
 import Loader from 'components/base/Loader'
@@ -57,7 +57,7 @@ export default function Game(props: ServerProps) {
     { (!!loadingAll || !isConnected) && <Overlay ><Spinner caption={loadingAll ? 'Loading...' : 'Reconnecting...'} /></Overlay> }
 
     {!!toggleLogModal &&
-      <LogModal
+      <GameLogModal
         isOpen={logModal} setOpen={toggleLogModal}
         log={gameLog} players={players} gameEnded={gameIsEnded(game)}
       /> }
