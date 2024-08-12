@@ -2,8 +2,16 @@ import type { ReactNode } from "react"
 import DropdownMenu from "components/base/common/DropdownMenu"
 import FilterIcon from "components/svgs/FilterIcon"
 import GearIcon from "components/svgs/GearIcon"
+import { ExitIcon } from "components/svgs/MenuIcons"
 import getColorClass from "components/base/libs/colors"
 import { clampText } from "components/base/services/common.services"
+
+export const LogoutLabel = () => (
+  <div className="flex justify-between">
+    <span>Logout</span>
+    <ExitIcon className="w-5 -mr-2" />
+  </div>
+)
 
 export const ToolbarWrapper = ({ children }: { children: ReactNode }) => (
   <div className="flex">{children}</div>
@@ -22,6 +30,12 @@ export const SettingToggle = ({ label, value, setValue }: { label: ReactNode, va
   <label className="label cursor-pointer">
     <input type="checkbox" className="toggle toggle-primary" checked={value} onChange={(ev) => setValue(ev.target.checked)} />
     <span className="label-text">{label}</span> 
+  </label>
+)
+
+export const SettingAction = ({ label, onClick }: { label: ReactNode, onClick: () => void }) => (
+  <label className="label cursor-pointer">
+    <a className="label-text block w-full h-full" onClick={onClick}>{label}</a>
   </label>
 )
 

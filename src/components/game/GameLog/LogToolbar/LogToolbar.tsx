@@ -1,19 +1,20 @@
 import type { BasicPlayer, LogOptions } from "types/game"
 import type { GameLog } from "../log.controller"
 import LogFilter from "./LogFilter"
-import { ToolbarWrapper, FilterDropdown, SettingsDropdown, SettingToggle } from "./LogToolbarStyles"
+import { ToolbarWrapper, FilterDropdown, SettingsDropdown, SettingToggle, SettingAction, LogoutLabel } from "./LogToolbarStyles"
 import { gameActionList, otherList, playerActionList } from "../log.utils"
 import { logOptionLabels } from "assets/strings"
 
-type Props = { log: GameLog, players: BasicPlayer[], gameEnded: boolean }
+type Props = { log: GameLog, players: BasicPlayer[], gameEnded: boolean, logout?: () => void }
 
-export default function LogToolbar({ log, players, gameEnded }: Props) {
+export default function LogToolbar({ log, players, gameEnded, logout }: Props) {
   return (
     <ToolbarWrapper>
       <SettingsDropdown>
         {Object.keys(log.options).map((key) => (key !== 'hidePrivate' || gameEnded) &&
           <SettingToggle key={key} label={logOptionLabels[key]} value={!log.options[key]} setValue={(val) => log.setOptions((opt) => ({ ...opt, [key]: !val }))} />
         )}
+        { logout && <SettingAction label={<LogoutLabel />} onClick={logout} /> }
       </SettingsDropdown>
 
       <FilterDropdown>

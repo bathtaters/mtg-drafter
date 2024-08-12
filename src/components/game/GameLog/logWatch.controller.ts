@@ -50,7 +50,7 @@ export default function useLogWatch(log: GameLog, game?: Partial<Game>, sessionI
         }
     }, [log.refresh, authed])
 
-    return { authed, message, handleSubmit }
+    return { authed, message, handleSubmit, logout: () => setAuth(false) }
 }
 
 
