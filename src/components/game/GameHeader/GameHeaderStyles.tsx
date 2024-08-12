@@ -32,9 +32,9 @@ export function LogoWrapper({ img, href = "", alt = "", children }: { img?: stri
   )
 }
 
-export const GameTitle = ({ header, ...props }: CopyProps & { header?: string }) => (
+export const GameTitle = ({ label, ...props }: CopyProps & { label?: ReactNode }) => (
   <div>
-    <h1 className="font-serif inline">{header || "New Draft"}</h1>
+    <h1 className="font-serif inline">{label || "New Draft"}</h1>
     <CopyLink className="align-top tooltip-bottom" iconClass="w-5 ml-2" {...props} />
   </div>
 )

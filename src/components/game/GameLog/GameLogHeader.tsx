@@ -20,13 +20,13 @@ export default function GameLogHeader({ game, players, holding, packSize }: Prop
 
     const { gameStatus, isRight } = useSimpleHeader(game)
     
-    if (!game) return <Header><GameTitle title="Mtg Drafter" /></Header>
+    if (!game) return <Header><GameTitle label="Mtg Drafter" /></Header>
 
     return (
         <Header>
             <LogHeaderWrapper>
                 <LogoWrapper img={logo} href="/" alt="Mtg-Drafter Logo">
-                    <GameTitle title={game.name} />
+                    <GameTitle label={game.name} />
                     <RoundCounter status={gameStatus} label={roundCounter(gameStatus, game)} />
                 </LogoWrapper>
         

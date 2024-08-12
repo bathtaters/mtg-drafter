@@ -28,13 +28,13 @@ export default function GameHeader({ game, players, playerIdx, holding, packSize
 
   const { oppIdx, gameStatus, isRight, copyProps } = useGameHeader(game, players, playerIdx)
   
-  if (!game) return <Header><GameTitle title="Mtg Drafter" /></Header>
+  if (!game) return <Header><GameTitle label="Mtg Drafter" /></Header>
 
   return (
     <Header>
         <GameHeaderWrapper>
             <LogoWrapper img={logo} href="/" alt="Mtg-Drafter Logo">
-              <GameTitle header={game.name} {...copyProps} notify={notify} />
+              <GameTitle label={game.name} {...copyProps} notify={notify} />
               <RoundCounter status={gameStatus} label={roundCounter(gameStatus, game, !players[playerIdx])} />
             </LogoWrapper>
 
