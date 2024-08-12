@@ -22,6 +22,7 @@ type Props = {
   pauseGame: Socket.PauseGame,
   renamePlayer: Socket.RenamePlayer,
   setStatus: Socket.SetStatus,
+  setWatchPw: Socket.SetWatchPw,
   notify: AlertsReturn['newToast'],
 }
 
@@ -32,7 +33,7 @@ export default function HostModal({
   paused, pauseGame,
   players, renamePlayer,
   hostId, setStatus,
-  watchUrl, notify
+  watchUrl, setWatchPw, notify
 }: Props) {
 
   return (
