@@ -25,7 +25,7 @@ export async function setPassword(id: string, password: string | null) {
     try {
         const result = await prisma.game.update({
             where: { id },
-            data: { logKey: password },
+            data: { logKey: password, watcher: null },
         })
         return Boolean(result.logKey)
 

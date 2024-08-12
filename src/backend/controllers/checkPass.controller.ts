@@ -1,3 +1,4 @@
+import prisma from 'backend/libs/db'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import type { LogAuthResponse } from 'types/game'
 import { getReqSessionId } from '../libs/auth'
@@ -19,6 +20,8 @@ export default async function apiHandler(req: NextApiRequest, res: NextApiRespon
     
     const game = await userInGame(id, sessionId)
     if (game && !gameIsEnded(game)) return "Active player cannot view log."
+
+    await prisma.game.update({ where: { id }, data: { watcher: sessionId } })
 
     return undefined
 }
