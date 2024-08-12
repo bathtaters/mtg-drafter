@@ -11,6 +11,11 @@ export const getPlayerColor = (curr: number, player: number, opp: number | undef
   curr === player ? 'self' : game && 'round' in game && game.round > game.roundCount && curr === opp ? 'opp' : undefined
 )
 
+export const useSimpleHeader = (game?: GameProps['options']) => ({
+  gameStatus: getGameStatus(game),
+  isRight: game && passingRight(game),
+})
+
 export default function useGameHeader(game: GameProps['options'] | undefined, players: GameProps['players'], playerIdx: number, notify: AlertsReturn['newToast']) {
   const [ shareable, setShareable ] = useState(false)
   const gameExists = Boolean(game)
