@@ -1,4 +1,5 @@
-import type { ReactNode } from "react"
+import type { MouseEventHandler, ReactNode } from "react"
+import ModalWrapper from "components/base/common/Modal"
 import getColorClass from "components/base/libs/colors"
 
 export const LogHeaderWrapper = ({ children }: { children: ReactNode }) => (
@@ -26,18 +27,29 @@ export const ErrorContainer = ({ text }: { text: string }) => <p className="opac
 export const EntryWrapper = ({ children }: { children: ReactNode }) => <li className="flex flex-wrap items-center my-0.5 gap-y-0.5">{children}</li>
 
 export const EntryItem = (
-  { tip, below, right, color, inv, children }:
-  { tip?: string, below?: boolean, right?: boolean, color?: number, inv?: boolean, children: ReactNode }
+  { tip, below, right, color, inv, children, onClick }:
+  { tip?: string, below?: boolean, right?: boolean, color?: number, inv?: boolean, children: ReactNode, onClick?: MouseEventHandler }
 ) => (
-  <span data-tip={tip}
-    className={`text-left ${tip ? `tooltip tooltip-primary ${below ? 'tooltip-bottom' : 'tooltip-top'}${
-      right ? ' before:content-[attr(data-tip)] before:translate-x-0 before:left-0' : ''} ` : ''}${
-      typeof color === 'number' ? `badge badge-lg text-ellipsis whitespace-nowrap ${getColorClass(color, 'all', { inverse: inv })}` : ''}`
+  <span data-tip={tip} onClick={onClick}
+    className={`text-left ${tip ? `tooltip tooltip-primary ${below ? 'tooltip-bottom' : 'tooltip-top'
+      }${right ?' before:content-[attr(data-tip)] before:translate-x-0 before:left-0' : ''} ` : ''}${
+      typeof color === 'number' ? `badge badge-lg text-ellipsis whitespace-nowrap ${getColorClass(color, 'all', { inverse: inv })}` : ''
+      }${onClick ? ' cursor-pointer badge badge-lg hover:badge-primary' : ''}`
   }>
     {children}
   </span>
 )
 
-export const MissingCard = () => <span className="italic opacity-50">Empty Pack</span>
+export const CardModal = ({ src, alt, close }: { src: string | null, alt?: string, close: () => void }) => (
+  <ModalWrapper
+    isOpen={!!src} setOpen={close}
+    defaultClass="p-0 rounded-card w-3/5 md:w-1/2"
+    bodyClass="flex-grow" wrapperClass="modal-middle"
+  >
+    {src && <img src={src} alt={alt} />}
+  </ModalWrapper>
+)
+
+export const MissingCard = () => <span className="italic opacity-50 w-">Empty Pack</span>
 
 export const EntrySpace = () => <span className="inline-block w-1"></span>
