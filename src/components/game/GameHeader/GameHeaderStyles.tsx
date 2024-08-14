@@ -21,7 +21,7 @@ export const GameHeaderWrapper = ({ children }: { children: ReactNode }) => (
 export function LogoWrapper({ img, href = "", alt = "", children }: { img?: string | StaticImport, href?: string, alt?: string, children?: ReactNode }) {
   const ImgWrapper = href ? Link : 'div'
   return (
-    <div className={`grid ${img ? '[grid-template-columns:6rem_1fr]' : 'grid-cols-1'} gap-x-4`}>
+    <div className={`grid ${img ? '[grid-template-columns:6rem_1fr]' : 'grid-cols-1'} gap-x-4 flex-shrink-0`}>
       { img &&
         <ImgWrapper href={href} className="row-span-2">
           <Image className="w-16 sm:w-24 h-auto" src={img} alt={alt} />
