@@ -39,7 +39,8 @@ export default function useLogWatch(log: GameLog, game?: Partial<Game>, players?
     }
 
     // Refresh log whenever the players array updates
-    useEffect(() => { authed && log.refresh && log.refresh() }, [log.refresh, players])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- just need log.refresh
+    useEffect(() => { authed && log.refresh?.() }, [log.refresh, players, authed])
 
     return { authed, message, handleSubmit, logout: () => setAuth(false) }
 }

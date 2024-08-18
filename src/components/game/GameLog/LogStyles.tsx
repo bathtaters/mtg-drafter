@@ -1,6 +1,7 @@
 import type { MouseEventHandler, ReactNode } from "react"
 import ModalWrapper from "components/base/common/Modal"
 import getColorClass from "components/base/libs/colors"
+import Image from "next/image"
 
 export const GameLogWatchWrapper = ({ title, children }: { title: string, children: ReactNode }) => (
   <div className="relative pt-14 w-full h-full -top-6">
@@ -36,13 +37,13 @@ export const EntryItem = (
   </span>
 )
 
-export const CardModal = ({ src, alt, close }: { src: string | null, alt?: string, close: () => void }) => (
+export const CardModal = ({ src, alt, close }: { src: string | null, alt: string, close: () => void }) => (
   <ModalWrapper
     isOpen={!!src} setOpen={close}
     defaultClass="p-0 rounded-card w-3/5 md:w-1/2"
     bodyClass="flex-grow" wrapperClass="modal-middle"
   >
-    {src && <img src={src} alt={alt} />}
+    {src && <Image src={src} alt={alt} />}
   </ModalWrapper>
 )
 
