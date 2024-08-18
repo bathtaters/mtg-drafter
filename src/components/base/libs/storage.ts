@@ -8,7 +8,7 @@ export type LocalKeys = keyof typeof storageDefaults
 
 export const getLocalVar = <T = any>(key: LocalKeys): T => {
   const stored = localStorage.getItem(storagePrefix + key)
-  if (typeof stored === 'string') return JSON.parse(stored) as T
+  if (typeof stored === 'string' && stored !== 'undefined') return JSON.parse(stored) as T
   setLocalVar(key, storageDefaults[key], true)
   return getLocalVar(key)
 }
