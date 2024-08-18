@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import Link from "next/link"
 import PackIcon from "components/svgs/PackIcon"
 import HostIcon from "components/svgs/HostIcon"
 
@@ -15,7 +16,7 @@ export const GameHistoryWrapper = ({ children }: { children: ReactNode }) => (
 
 export const GameButton = ({ game, player, link, isHost }: { game: ReactNode, player: ReactNode, link: string, isHost?: boolean }) => (
   <li className="px-12">
-    <a className="btn btn-lg btn-secondary w-full relative flex flex-col gap-0 normal-case" href={link}>
+    <Link className="btn btn-lg btn-secondary w-full relative flex flex-col gap-0 normal-case" href={link}>
       <div className="text-xl">
         {game}
       </div>
@@ -24,6 +25,6 @@ export const GameButton = ({ game, player, link, isHost }: { game: ReactNode, pl
       </div>
       <PackIcon className="h-10 fill-[color-mix(in_oklab,oklch(var(--s)),black_10%)] stroke-secondary-content absolute left-2" />
       {isHost && <HostIcon className="text-secondary-content ms-2x absolute right-2"  />}
-    </a>
+    </Link>
   </li>
 )
