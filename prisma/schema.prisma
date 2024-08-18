@@ -2,8 +2,7 @@
 
 generator client {
   provider      = "prisma-client-js"
-  engineType    = "binary"
-  binaryTargets = ["native", "darwin", "debian-openssl-1.1.x"]
+  binaryTargets = ["native", "darwin", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -106,9 +105,11 @@ model Game {
   pause      BigInt?
   timerBase  Int?
 
-  players Player[] @relation("GamePlayers")
-  host    Player?  @relation("GameHost", fields: [hostId], references: [id])
-  hostId  String?  @unique
+  players   Player[] @relation("GamePlayers")
+  host      Player?  @relation("GameHost", fields: [hostId], references: [id])
+  hostId    String?  @unique
+  watchKey  String?
+  watchId   String?
 
   log LogEntry[]
 }
@@ -117,6 +118,7 @@ model Card {
   // NOTE: IF YOU CHANGE THIS, UPDATE backend/card.utils:cardFields
   uuid       String   @id
   name       String
+  flavorName String?
   normalName String?
   setCode    String? // ref Set
   manaCost   String?
@@ -145,8 +147,7 @@ model Card {
   inGame       GameCard[]
   inOtherFaces FaceInCard[]  @relation("Face")
 
-  @@index([name])
-  @@index([name, setCode])
+  @@index([normalName])
 }
 
 model FaceInCard {

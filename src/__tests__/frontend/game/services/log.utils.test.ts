@@ -1,3 +1,3 @@
-import { filterLogs } from 'components/game/LogModal/log.utils'
+import { filterLogs } from 'components/game/GameLog/log.utils'
 
 it.todo('filterLogs')

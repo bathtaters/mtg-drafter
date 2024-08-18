@@ -1,24 +1,49 @@
+import { parseArgs } from 'node:util'
+import { config } from 'dotenv'
 import prisma from '../src/backend/libs/db'
 import updateCards from '../src/backend/services/db/updateCards'
 import updateImages from '../src/backend/services/db/updateImages'
 import updateSets from '../src/backend/services/db/updateSets'
 import { updateVersion } from 'backend/services/db/updateSettings'
 import { cardDbUrl, imageDbUrl, preferredDbUrl, setsDbUrl } from '../src/assets/urls'
-import { version } from "../package.json"
+import pkg from "../package.json"
 
-const CONSOLE_LOGGING = true
-const FULL_REBUILD = false
+// CL Args
+const options /*: ParseArgsConfig['options']*/ = {
+  /* Command-Line Arguments */              // ARGUMENT  | DESCRIPTION
+  quiet:   { short: "q", type: "boolean" }, // (q)uiet   | Run without logging
+  reset:   { short: "r", type: "boolean" }, // (r)eset   | Full reset
+  cards:   { short: "c", type: "boolean" }, // (c)ards   | Ignore cards
+  images:  { short: "i", type: "boolean" }, // (i)mages  | Ignore scryfall images
+  sets:    { short: "s", type: "boolean" }, // (s)ets    | Ignore sets/boosters
+  version: { short: "v", type: "boolean" }, // (v)ersion | Ignore package version update
+} as const
 
 async function main() {
-  await updateCards(cardDbUrl, FULL_REBUILD, CONSOLE_LOGGING)
-  await updateImages(imageDbUrl, preferredDbUrl, FULL_REBUILD, CONSOLE_LOGGING)
-  await updateSets(setsDbUrl, FULL_REBUILD, CONSOLE_LOGGING)
-  await updateVersion(version, CONSOLE_LOGGING)
-  console.log('DONE')
+  const { values: clArgs } = parseArgs({ options })
+
+  // ENV Args -- Can be set via ENV Vars or .env
+  config()
+  const args = {
+    ...clArgs,                                          // ENV VAR           | DESCRIPTION
+    threads: +(process.env.JSON_THREAD_LIMIT ||  1000), // JSON_THREAD_LIMIT | Maximum number of threads to open when ingesting a JSON
+    batches: +(process.env.DB_BATCH_LIMIT    ||  5000), // DB_BATCH_LIMIT    | Maximum number of items to insert into the DB at once 
+    upserts: +(process.env.DB_UPSERT_LIMIT   || 32000), // DB_UPSERT_LIMIT   | Maximum number of upserts to perform (Divided by number of Card fields, ~2000)
+  }
+
+  if (!args.quiet)   console.log('Arguments:', args)
+  if (!args.cards)   await updateCards(cardDbUrl, args.reset, !args.quiet, args.threads, args.batches, args.upserts)
+  if (!args.images)  await updateImages(imageDbUrl, preferredDbUrl, args.reset, !args.quiet, args.threads, args.batches)
+  if (!args.sets)    await updateSets(setsDbUrl, args.reset, !args.quiet, args.threads, args.batches)
+  if (!args.version) await updateVersion(pkg.version, !args.quiet)
+  if (!args.quiet)   console.log('DONE')
 }
 
 main()
-  .then(async () => { await prisma.$disconnect() })
+  .then(async () => {
+    await prisma.$disconnect()
+    process.exit(0)
+  })
   .catch(async (e) => {
     console.error(e)
     await prisma.$disconnect()
@@ -26,7 +51,7 @@ main()
   })
 
 // WEB GUI: npx prisma studio
-// REBUILD CONTENT: npx prisma db seed
+// REBUILD CONTENT: npx prisma db seed [-- -qrcisv] (See top for arguments)
 // UPDATE TABLES: npx prisma migrate dev --name update-reason
 // GENERATE UPDATE SQL: npx prisma migrate dev --create-only
 // SYNC DB: npx prisma migrate deploy

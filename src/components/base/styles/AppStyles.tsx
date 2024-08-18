@@ -13,7 +13,7 @@ export const AppWrapperStyle = ({ children }: Children) => (
 
 export const HeaderWrapperStyle = ({ children }: Children) => (
   <div className="p-0 sm:p-1 mb-1 sm:mb-2 bg-base-300 text-base-content w-full">
-    <nav className="navbar justify-center w-full max-w-6xl m-auto p-4">{children}</nav>
+    <nav className="navbar justify-around items-center w-full max-w-6xl m-auto p-4">{children}</nav>
   </div>
 )
 
@@ -29,9 +29,9 @@ export const FooterWrapperStyle = ({ children }: Children) => (
 
 export const SetPageTitle = ({ title }: { title: string }) => (
   <Head>
-    <title>{`MtG Drafter - ${title}`}</title>
-    <meta name="title" content={`MtG Drafter - ${title}`} />
-    <meta property="og:title" content={`MtG Drafter - ${title}`} />
+    <title>{`Mtg Drafter - ${title}`}</title>
+    <meta name="title" content={`Mtg Drafter - ${title}`} />
+    <meta property="og:title" content={`Mtg Drafter - ${title}`} />
   </Head>
 )
 

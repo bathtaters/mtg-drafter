@@ -47,7 +47,7 @@ export default function useCardImage(card: CardFull, zoomClass: string, showImag
           alt="" placeholder="empty" title={faceName || name}
           sizes={zoomLevelToWidth(zoomClass)}
           fill priority={!idx} unoptimized={!serverSideImageOptimize}
-          onLoadingComplete={idx ? undefined : onLoad}
+          onLoad={idx ? undefined : onLoad}
         />
       ))
     )

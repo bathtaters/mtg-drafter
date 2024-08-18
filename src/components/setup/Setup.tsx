@@ -1,14 +1,19 @@
 import type { SetupProps } from 'types/setup'
+import SetupForm from './SetupForm'
 import Header from 'components/base/Header'
 import Footer from 'components/base/Footer'
-import SetupForm from './SetupForm'
+import { HeaderLogo, HistoryLink, TitleStyle } from './SetupStyles'
 import { BodyWrapperStyle, SetPageTitle } from 'components/base/styles/AppStyles'
 
 export default function Setup({ setList }: SetupProps) {
   return (<>
     <SetPageTitle title="Create Game" />
 
-    <Header><h1 className="font-serif">Create New Draft</h1></Header>
+    <Header>
+      <HeaderLogo href="/" alt="Mtg-Drafter Logo" />
+      <TitleStyle>Create New Draft</TitleStyle>
+      <HistoryLink href="/game" tip="Game History" />
+    </Header>
     
     <BodyWrapperStyle>
       <SetupForm setList={setList} />

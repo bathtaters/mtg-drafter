@@ -4,10 +4,9 @@ import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 import type { ErrorAlert } from 'components/base/common/Alerts/alerts.d'
 import type { LocalController } from './local.controller'
 import type { Game, BasicLands, Player, Socket } from 'types/game'
-import type useSocket from 'components/base/libs/sockets'
 import { Dispatch, SetStateAction, useCallback } from 'react'
+import { reloadData, BasicController } from '../basic.controller'
 import { clientErrorsInConsole, debugSockets } from 'assets/constants'
-import { reloadData } from '../game.controller'
 
 const formatError = (message: string): ErrorAlert => ({ message: `${message}. Attempting to reconnect.`, title: 'Action Failed', theme: 'warning'  })
 
@@ -85,7 +84,8 @@ export function getGameListeners(
 }
 
 
-export function useGameEmitters(local: LocalController, { emit, reconnect }: ReturnType<typeof useSocket<GameClient>>, throwError: AlertsReturn['newError']) {
+export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorAlert) => any) {
+  const { emit, reconnect } = local.socket
   
   const renamePlayer: Socket.RenamePlayer = useCallback((name, playerId, byHost = false) => {
     if (!local.player?.id) return throwError(formatError('Error renaming player: Player not loaded'))
@@ -173,8 +173,29 @@ export function useGameEmitters(local: LocalController, { emit, reconnect }: Ret
   }, [emit, local.game?.url, local.sessionId, local.setLoadingAll, local.setStatus, local.updatePlayer, local.updateLocal, throwError])
 
 
-  return { renamePlayer, setTitle, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus }
+  const setWatchPw: Socket.SetWatchPw = useCallback((password) => {
+    if (!local.game?.id) return throwError(formatError('Error setting Watch password: Game not loaded'))
+    local.setLoadingAll((v) => v + 1)
+
+    emit('setWatchPw', local.game.id, password || null, (watchKey: string | null) => {
+      if (watchKey === 'error') reloadData(local.game?.url, local.updateLocal, throwError)
+      else local.updateGame((game) => game && ({ ...game, watchKey }))
+      local.setLoadingAll((v) => v && v - 1)
+    })
+
+  }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
+
+
+  return { renamePlayer, setTitle, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw }
 }
 
 
 export type SocketController = ReturnType<typeof useGameEmitters>
+
+export type LocalRequired = Pick<
+  BasicController,
+  "socket"|"player"|"game"|"sessionId"|
+  "updatePlayer"|"renamePlayer"|
+  "updateGame"|"setStatus"|"swapCard"|"setLands"|
+  "updateLocal"|"setLoadingPack"|"setLoadingAll"
+>

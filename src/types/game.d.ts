@@ -16,7 +16,8 @@ export interface Player extends DbPlayer { timer: number | null, basics: BasicLa
 export type BasicPlayer = Pick<Player, "id"|"name"|"sessionId"|"pick">
 
 export interface Game extends DbGame { pause: number | null }
-export type PartialGame = Pick<Game,"id"|"name"|"url">
+export type PartialGame = Pick<Game,"id"|"name"|"url"|"watchKey">
+export type ListedGame = Pick<Game,"id"|"name"|"url"|"hostId"> & { player?: BasicPlayer }
 
 export type CardStrict = Omit<Card,"layout"> & { layout: Layout | null }
 export type CardFull = CardStrict & { otherFaces: Array<{ card: CardStrict }> }
@@ -55,6 +56,8 @@ export type LogFull = LogEntryFull[]
 
 // -- API TYPES -- \\
 
+export type GameHistoryServerSideProps = { games?: ListedGame[], error?: string }
+
 export interface ServerSuccess {
   options: Game,
   players: BasicPlayer[],
@@ -89,6 +92,7 @@ export type ServerProps = ServerSuccess | ServerFail | ServerUnreg
 
 export type GameProps = Omit<Required<ServerProps>, 'error'>
 
+export type LogAuthResponse = { success?: boolean, message?: string }
 
 // -- FRONTEND TYPES -- \\
 
@@ -111,6 +115,7 @@ export namespace Socket {
   type SwapCard      = (gameCardId: GameCard['id'], toBoard: Board) => void
   type SetLands      = (lands: BasicLands) => void
   type SetStatus     = (playerId: Player['id'], status?: PlayerStatus, byHost?: boolean) => void
+  type SetWatchPw    = (password: string | null) => void
 }
 
 // Aliases
@@ -122,3 +127,4 @@ export type PickCard      = Socket.PickCard
 export type SwapCard      = Socket.SwapCard
 export type SetLands      = Socket.SetLands
 export type SetStatus     = Socket.SetStatus
+export type SetWatchPw    = Socket.SetWatchPw

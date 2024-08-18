@@ -1,7 +1,11 @@
-import type { MouseEventHandler, ReactNode } from "react"
+import type { ReactNode } from "react"
 import type { GameStatus } from "@prisma/client"
-import LinkIcon from "components/svgs/LinkIcon"
+import type { StaticImport } from "next/dist/shared/lib/get-img-props"
+import Link from "next/link"
+import Image from "next/image"
+import Header from "components/base/Header"
 import PackIcon from "components/svgs/PackIcon"
+import CopyLink, { Props as CopyProps } from "components/base/common/CopyLink"
 
 const statusIcon: { [status in GameStatus]: ReactNode } = {
   'start':  <span     className="inline-block mr-2 opacity-80 text-base sm:text-2xl fill-base-content ms ms-dfc-day"   />,
@@ -12,27 +16,39 @@ const statusIcon: { [status in GameStatus]: ReactNode } = {
 
 
 export const GameHeaderWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="w-full grid grid-cols-1 md:grid-cols-2 items-center gap-4">{children}</div>
+  <Header>
+    <div className="w-full grid grid-cols-1 md:grid-cols-2 items-center gap-4">
+      {children}
+    </div>
+  </Header>
 )
 
-export const GameTitle = ({ title, onClick }: { title: string, onClick?: MouseEventHandler }) => (
+export function LogoWrapper({ img, href = "", alt = "", children }: { img?: string | StaticImport, href?: string, alt?: string, children?: ReactNode }) {
+  const ImgWrapper = href ? Link : 'div'
+  return (
+    <div className={`grid ${img ? '[grid-template-columns:6rem_1fr]' : 'grid-cols-1'} gap-x-4 flex-shrink-0`}>
+      { img &&
+        <ImgWrapper href={href} className="row-span-2">
+          <Image className="w-16 sm:w-24 h-16 sm:h-24" src={img} alt={alt} />
+        </ImgWrapper>
+      }
+      { children }
+    </div>
+  )
+}
+
+export const GameTitle = ({ label, sublabel, ...props }: CopyProps & { label?: ReactNode, sublabel?: ReactNode }) => (<>
   <div>
-    <h1 className="font-serif inline">{title || "New Draft"}</h1>
-    {onClick &&
-      <a className="link align-top tooltip tooltip-bottom tooltip-primary" onClick={onClick} data-tip="Copy Link">
-        <LinkIcon className="w-5 h-auto ml-2 fill-primary hover:fill-[color-mix(in_oklab,oklch(var(--p)),black_10%)] inline-block" />
-      </a>
-    }
+    <h1 className="font-serif inline">{label}</h1>
+    <CopyLink className="align-top tooltip-bottom" iconClass="w-5 ml-2" {...props} />
   </div>
-)
+  <div className="m-1 text-base-content/80 text-lg font-light">{sublabel}</div>
+</>)
 
-export const RoundCounter = ({ label, status }: { label: ReactNode, status?: GameStatus }) => (
-  <div className="ml-1 mt-2 text-base-content/80 flex items-center">
+export const RoundCounter = ({ label, status }: { label: ReactNode, status?: GameStatus }) => (<>
     {status && statusIcon[status]}
     <span>{label}</span>
-  </div>
-)
-
+</>)
 
 
 const Arrow = ({ right, width = 1500, className }: { right?: boolean, width?: number, className?: string }) => (
@@ -44,8 +60,8 @@ const Arrow = ({ right, width = 1500, className }: { right?: boolean, width?: nu
   </svg>
 )
 
-export const PlayerContainersWrapper = ({ rightArrow, children }: { rightArrow?: boolean, children: ReactNode }) => (
-  <div className="w-full md:col-span-2">
+export const PlayerContainersWrapper = ({ rightArrow, sameLine, children }: { rightArrow?: boolean, sameLine?: boolean, children: ReactNode }) => (
+  <div className={`w-full col-span-1 ${sameLine ? "" : "md:col-span-2"}`}>
     <Arrow right={rightArrow} className="w-11/12 mb-1 mx-auto fill-base-content/50" />
     <div className="w-full max-h-28 overflow-y-auto">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 m-1">

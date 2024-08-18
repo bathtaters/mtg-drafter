@@ -65,6 +65,6 @@ interface ContainerFullProps extends ContainerProps {
   renamePlayer: ((name: string) => void),
 }
 interface ContainerSmallProps extends ContainerProps {
-  color: ColorTheme,
+  color?: ColorTheme,
   isHost: boolean,
 }

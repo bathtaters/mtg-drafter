@@ -5,12 +5,10 @@ import fetchJson from '../../libs/fetchJson'
 import { fetchBulkUrl, adaptScryfallToImage, ImageData, isPreferredArt } from '../../utils/db/image.utils'
 import { createMultiUpdate } from '../../utils/db/db.utils'
 
-const DL_THREADS = 1000, IMAGE_BATCH = 5000
-
 const multiUpdate = createMultiUpdate<ImageData>('Card', ['scryfallId', 'side'], ['img'], prisma)
 
 
-export default async function updateImages(imgJsonUrl: string, preferredJsonUrl: string, fullUpdate = false, enableLog = false) {
+export default async function updateImages(imgJsonUrl: string, preferredJsonUrl: string, fullUpdate = false, enableLog = false, maxThreads = 1000, dbBatchSize = 5000) {
 
   const imgUrl = await fetchBulkUrl(imgJsonUrl)
   if (!imgUrl) return console.error('Unable to retrieve ImageURI data')
@@ -36,7 +34,7 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
   enableLog && console.time('Image URIs')
 
   let count = 0
-  const batch = new Batcher(IMAGE_BATCH, (data: ImageData[]) => multiUpdate(data).then((c) => { count += c }))
+  const batch = new Batcher(dbBatchSize, (data: ImageData[]) => multiUpdate(data).then((c) => { count += c }))
 
   await fetchJson<ScryfallCard>(imgUrl, async (data) => {
     if (missingImgs && !missingImgs.includes(data.id)) return;
@@ -44,7 +42,7 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
     for (const card of adaptScryfallToImage(data)) {
       if (card.img) await batch.add(card)
     }
-  }, { jsonPath: '*', maxThreads: DL_THREADS })
+  }, { isArray: true, maxThreads })
 
   await batch.finish()
 
@@ -65,7 +63,7 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
   let preferred = [] as string[]
   await fetchJson<ScryfallCard>(prefUrl, async (card) => {
     if (isPreferredArt(card)) preferred.push(card.id)
-  }, { jsonPath: '*', maxThreads: DL_THREADS })
+  }, { isArray: true, maxThreads })
 
   enableLog && console.log('Downloaded',preferred.length,'Preferred Art IDs')
 

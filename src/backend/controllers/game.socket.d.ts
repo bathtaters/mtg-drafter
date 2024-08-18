@@ -20,6 +20,7 @@ export interface GameClientToServer {
   setName:    (playerId: Player['id'], name: Player['name'], byHost: boolean) => void;
   pickCard:   (playerId: Player['id'], gameCardOrPack: GameCard['id'] | Pack['index'], callback: (pick?: Player['pick']) => void) => void;
   setStatus:  (playerId: Player['id'], status: PlayerStatus, byHost: boolean, callback: (player?: Player) => void) => void;
+  setWatchPw: (gameId: Game['id'], password: string | null, callback: (watchKey: string | null) => void) => void
 
   swapBoards: (gameCardId: GameCard['id'], toBoard: Board, callback: (gameCardId: GameCard['id'] | void, toBoard?: Board | void) => void) => void;
   setLands:   (playerId: Player['id'], lands: BasicLands, callback: (lands: BasicLands | void) => void) => void;

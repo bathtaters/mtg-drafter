@@ -6,7 +6,7 @@ import RangeInput from "components/base/common/FormElements/RangeInput"
 import Spinner from "components/base/common/Spinner"
 import { FieldWrapper, InputWrapper, PlayersLabel, PacksLabel, PackSizeLabel, HelpButton, TimerLabel } from "../styles/FormStyles" 
 import { fileSettings, setupLimits } from "assets/constants"
-import { timerLabels, uploadHelp } from "assets/strings"
+import { timerText, uploadHelp } from "assets/strings"
 
 type Props = {
   options: GameOptions,
@@ -29,7 +29,7 @@ export default function CubeForm({ options, setOption, file, fileLoading, setFil
           <RangeInput caption={<PacksLabel />}    value={options.packs}    setValue={setOption.packs}    {...setupLimits.packs}    />
           <RangeInput caption={<PackSizeLabel />} value={options.packSize} setValue={setOption.packSize} {...setupLimits.packSize} />
           <RangeInput caption={<TimerLabel />}    value={options.timer}    setValue={setOption.timer}    {...setupLimits.timer}  
-            keys={timerLabels} boxClass="w-16" />
+            keys={timerText} boxClass="w-16" wrapperClass="tooltip-bottom" />
         </FieldWrapper>
 
         <FieldWrapper label="Cube File">

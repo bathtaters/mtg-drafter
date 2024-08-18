@@ -1,6 +1,7 @@
 import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
 import { nextRound, pauseGame, resumeGame, pickCard, renameGame } from './game.services'
-import validation from 'types/game.validation'
+import { setPassword } from './log.services'
+import validation, { logAuth } from 'types/game.validation'
 
 
 export default function addGameListeners(io: GameServer, socket: GameSocket) {
@@ -75,6 +76,25 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
       } catch (err: any) {
         socket.emit('error', `Error picking card: ${err.message || 'Unknown'}`)
         callback(undefined)
+      }
+    })
+    
+
+    socket.on('setWatchPw', async (gameId, password, callback) => {
+      try {
+        // Validation
+        gameId = validation.id.parse(gameId)
+        password = logAuth.password.parse(password) ?? null
+        
+        // Update DB
+        const exists = await setPassword(gameId, password)
+        if (exists === null) throw new Error('Failed to save password')
+        callback(exists ? 'Enabled' : null)
+
+      // Handle Error
+      } catch (err: any) {
+        socket.emit('error', `Error updating watch password: ${err.message || 'Unknown'}`)
+        callback('error')
       }
     })
 }

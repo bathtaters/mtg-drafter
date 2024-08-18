@@ -70,7 +70,7 @@ export default function usePickController(
   
   useEffect(() => {
     if (typeof pack?.index === 'number') {
-      selectTab('pack')
+      if (pack.cards.find(({ playerId }) => !playerId)) selectTab('pack')
       setAutopickCard(getAutopickCard(pack, player?.cards) || pack.index)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

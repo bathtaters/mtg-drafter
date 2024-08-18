@@ -4,7 +4,7 @@ import PlayerJoin from 'components/game/PlayerJoin/PlayerJoin'
 import GameBody from 'components/game/GameBody/GameBody'
 import LandsModal from 'components/game/LandsModal/LandsModal'
 import HostModal from 'components/game/HostModal/HostModal'
-import LogModal from '../LogModal/LogModal'
+import GameLogModal from 'components/game/GameLog/GameLogModal'
 import Overlay from 'components/base/common/Overlay'
 import Spinner from 'components/base/common/Spinner'
 import Loader from 'components/base/Loader'
@@ -19,8 +19,8 @@ export default function Game(props: ServerProps) {
     game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize,
     holding, canAdvance, pack, landModal, hostModal, logModal, slots, gameLog, timer, 
     saveDeck, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setTitle,
-    nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, dropPlayer, reload, startTimer,
-    newError, newToast, ErrorComponent, ToastComponent,
+    nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropPlayer,
+    reload, startTimer, newError, newToast, ErrorComponent, ToastComponent,
   } = useGameController(props)
 
   return (<>
@@ -57,7 +57,7 @@ export default function Game(props: ServerProps) {
     { (!!loadingAll || !isConnected) && <Overlay ><Spinner caption={loadingAll ? 'Loading...' : 'Reconnecting...'} /></Overlay> }
 
     {!!toggleLogModal &&
-      <LogModal
+      <GameLogModal
         isOpen={logModal} setOpen={toggleLogModal}
         log={gameLog} players={players} gameEnded={gameIsEnded(game)}
       /> }
@@ -76,7 +76,9 @@ export default function Game(props: ServerProps) {
         paused={gameIsPaused(game)} pauseGame={pauseGame}
         players={players} renamePlayer={renamePlayer}
         hostId={(game as Game).hostId} setStatus={setStatus}
-        setLog={toggleLogModal}
+        watchUrl={game?.watchKey && game?.url}
+        setLog={toggleLogModal} setWatchPw={setWatchPw}
+        notify={newToast}
     />}
 
     <ErrorComponent />
