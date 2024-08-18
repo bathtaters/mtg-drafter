@@ -1,12 +1,17 @@
-import type { BasicPlayer, Game, LogAuthResponse } from "types/game"
+import type { Game, LogAuthResponse } from "types/game"
 import type { Dispatch, SetStateAction } from "react"
+import type { Props as LogProps } from "./GameLog"
 import { useEffect, useState } from "react"
 import { post } from "components/base/libs/fetch"
-import { GameLog } from '../GameLog/log.controller'
 
-export type SetNumber = Dispatch<SetStateAction<number>>
+export type Props = LogProps & {
+    game?: Partial<Game>,
+    setLoading?: SetNumber,
+    sessionId?: string,
+    reload?: () => any,
+}
 
-export default function useLogWatch(log: GameLog, game?: Partial<Game>, players?: BasicPlayer[], sessionId?: string, setLoading?: SetNumber) {
+export default function useLogWatch({ log, players, game, sessionId, setLoading, reload }: Props) {
     const [authed, setAuth] = useState(game?.watchId ? game.watchId === sessionId : false)
     const [message, setMessage] = useState("")
 
@@ -42,7 +47,10 @@ export default function useLogWatch(log: GameLog, game?: Partial<Game>, players?
     // eslint-disable-next-line react-hooks/exhaustive-deps -- just need log.refresh
     useEffect(() => { authed && log.refresh?.() }, [log.refresh, players, authed])
 
+    // Refresh header when authorization updates
+    useEffect(() => { authed && reload?.() }, [reload, authed])
+
     return { authed, message, handleSubmit, logout: () => setAuth(false) }
 }
 
-
+type SetNumber = Dispatch<SetStateAction<number>>
