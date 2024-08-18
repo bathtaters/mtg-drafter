@@ -11,7 +11,7 @@ export const TitleStyle = ({ children }: { children: ReactNode }) => (
 
 export const HeaderLogo = ({ href, alt }: { href: string, alt: string }) => (
     <Link href={href}>
-        <Image className="w-16 sm:w-24 h-auto" src={logo} alt={alt} />
+        <Image className="w-16 sm:w-24 h-16 sm:h-24" src={logo} alt={alt} />
     </Link>
 )
 
