@@ -13,7 +13,7 @@ export const AppWrapperStyle = ({ children }: Children) => (
 
 export const HeaderWrapperStyle = ({ children }: Children) => (
   <div className="p-0 sm:p-1 mb-1 sm:mb-2 bg-base-300 text-base-content w-full">
-    <nav className="navbar justify-around w-full max-w-6xl m-auto p-4">{children}</nav>
+    <nav className="navbar justify-around items-center w-full max-w-6xl m-auto p-4">{children}</nav>
   </div>
 )
 
