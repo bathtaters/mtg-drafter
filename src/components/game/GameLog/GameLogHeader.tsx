@@ -1,11 +1,9 @@
 import type { GameProps } from "types/game"
-import Header from "components/base/Header"
+import GameHeaderBase from "../GameHeader/GameHeaderBase"
 import { PlayerContainerSmall } from "components/game/PlayerContainers/PlayerContainers"
-import { LogHeaderWrapper } from "./LogStyles"
-import { PlayerContainersWrapper, GameTitle, RoundCounter, LogoWrapper } from 'components/game/GameHeader/GameHeaderStyles'
+import { PlayerContainersWrapper, RoundCounter } from 'components/game/GameHeader/GameHeaderStyles'
 import { useSimpleHeader } from "../GameHeader/header.controller"
 import { roundCounter } from "assets/strings"
-import logo from 'assets/media/logo-lg.png'
 
 
 type Props = {
@@ -20,30 +18,23 @@ export default function GameLogHeader({ game, players, holding, packSize }: Prop
 
     const { gameStatus, isRight } = useSimpleHeader(game)
     
-    if (!game) return <Header><GameTitle label="Mtg Drafter" /></Header>
+    if (!game) return <GameHeaderBase />
 
     return (
-        <Header>
-            <LogHeaderWrapper>
-                <LogoWrapper img={logo} href="/" alt="Mtg-Drafter Logo">
-                    <GameTitle label={game.name} />
-                    <RoundCounter status={gameStatus} label={roundCounter(gameStatus, game)} />
-                </LogoWrapper>
-        
-                <PlayerContainersWrapper rightArrow={isRight}>
-                    { players.map((play, idx) =>
+        <GameHeaderBase label={game.name} sublabel={<RoundCounter status={gameStatus} label={roundCounter(gameStatus, game)} />} >
+            <PlayerContainersWrapper rightArrow={isRight} sameLine={true}>
+                { players.map((play, idx) =>
 
-                        <PlayerContainerSmall
-                            player={play} key={String(play.id)}
-                            isHost={'hostId' in game ? game.hostId === play.id : false}
-                            holding={holding[idx]}
-                            packSize={packSize}
-                            hideStats={gameStatus === 'end' || gameStatus === 'start'}
-                        />
-                        
-                    )}
-                </PlayerContainersWrapper>
-            </LogHeaderWrapper>
-        </Header>
+                    <PlayerContainerSmall
+                        player={play} key={String(play.id)}
+                        isHost={'hostId' in game ? game.hostId === play.id : false}
+                        holding={holding[idx]}
+                        packSize={packSize}
+                        hideStats={gameStatus === 'end' || gameStatus === 'start'}
+                    />
+                    
+                )}
+            </PlayerContainersWrapper>
+        </GameHeaderBase>
     )
 }

@@ -2,10 +2,6 @@ import type { MouseEventHandler, ReactNode } from "react"
 import ModalWrapper from "components/base/common/Modal"
 import getColorClass from "components/base/libs/colors"
 
-export const LogHeaderWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="w-full flex flex-col md:flex-row items-start md:items-center gap-4">{children}</div>
-)
-
 export const GameLogWatchWrapper = ({ title, children }: { title: string, children: ReactNode }) => (
   <div className="relative pt-14 w-full h-full -top-6">
     <h2 className="absolute top-2 left-2 font-serif mb-6">{title}</h2>
