@@ -18,7 +18,7 @@ export default function DropdownMenu({
         {label}
       </label>
 
-      <ul tabIndex={0} className={`dropdown-content menu text-base z-20 ${menuClass}${forceOpen === false ? ' hidden' : ''}`}>
+      <ul tabIndex={0} className={`dropdown-content menu text-base z-30 ${menuClass}${forceOpen === false ? ' hidden' : ''}`}>
         {children}
       </ul>
     </div>
