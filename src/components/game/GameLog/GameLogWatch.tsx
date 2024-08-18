@@ -13,7 +13,7 @@ type Props = LogProps & {
 }
 
 export default function GameLogWatch({ game, sessionId, setLoading, ...props }: Props) {
-    const { authed, message, handleSubmit, logout } = useLogWatch(props.log, game, sessionId, setLoading)
+    const { authed, message, handleSubmit, logout } = useLogWatch(props.log, game, props.players, sessionId, setLoading)
 
     return (
         <GameLogWatchWrapper title="Live Draft View">{

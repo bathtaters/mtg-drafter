@@ -6,7 +6,7 @@ import Spinner from 'components/base/common/Spinner'
 import Loader from 'components/base/Loader'
 import Footer from 'components/base/Footer'
 import { BodyWrapperStyle, SetPageTitle } from 'components/base/styles/AppStyles'
-import { useBasicGameController } from '../GameLog/logWatch.controller'
+import useBasicGameController from './basic.controller'
 
 
 export default function Watch(props: ServerProps) {
