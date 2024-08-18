@@ -14,6 +14,11 @@ export const FullGame = () => <p className="opacity-70 italic">
   Wait here for an opening or <Link href="/" className="link link-primary link-hover">start a new one</Link>.
 </p>
 
+export const NoGames = () => <p className="opacity-70 italic text-center">
+  <span>Unable to find any current games. </span>
+  <Link href="/" className="link link-primary link-hover">Click here start a new one</Link>.
+</p>
+
 export const roundCounter = (status?: GameStatus, game?: Game|PartialGame, isNotJoined = false) =>
   isNotJoined || !status || !game || !('round' in game) ? 'Waiting Room' :
   status === 'start' ? 'Starting Soon' :
