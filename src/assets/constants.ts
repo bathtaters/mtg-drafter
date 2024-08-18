@@ -3,16 +3,17 @@ import type { RetryOptions } from 'backend/libs/retry'
 import type { BoosterType, Layout } from 'types/scryfall'
 import { LogOptions, TimerOptions, Direction } from 'types/game.d'
 import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
+import { allActions } from 'components/game/GameLog/log.utils'
 
 //  Settings
 
-export const
-  storageDefaults = Object.freeze({
+export const storageDefaults = Object.freeze({
     zoom: Math.round(cardZoomLevels.length / 2),
     deckSize: 40,
     sideboardLands: 5,
     showArt: true,
     sortBy: 0,
+    logActions: allActions,
   }),
 
   shareGame = {
