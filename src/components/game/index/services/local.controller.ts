@@ -2,7 +2,7 @@ import type { PackFull, ServerProps, Local, PlayerFull } from 'types/game'
 import { useCallback, useMemo, useState } from 'react'
 import { spliceInPlace, updateArrayIdx } from 'components/base/services/common.services'
 import { gameIsPaused, getCanAdvance, getCurrentPack, getHolding, getPlayerIdx, getSlots, playerIsHost } from '../../shared/game.utils'
-import { reloadData } from '../game.controller'
+import { reloadData } from '../basic.controller'
 import { useTimerStore } from 'components/base/libs/hooks'
 import { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 
