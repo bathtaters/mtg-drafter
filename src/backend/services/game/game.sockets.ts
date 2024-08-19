@@ -80,7 +80,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
     })
     
 
-    socket.on('setWatchPw', async (gameId, password, callback) => {
+    socket.on('setWatchPw', async (gameId, password) => {
       try {
         // Validation
         gameId = validation.id.parse(gameId)
@@ -89,12 +89,12 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         // Update DB
         const exists = await setPassword(gameId, password)
         if (exists === null) throw new Error('Failed to save password')
-        callback(exists ? 'Enabled' : null)
+
+        io.emit('updateWatchPw', exists ? 'Enabled' : null)
 
       // Handle Error
       } catch (err: any) {
         socket.emit('error', `Error updating watch password: ${err.message || 'Unknown'}`)
-        callback('error')
       }
     })
 }

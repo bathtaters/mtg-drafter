@@ -63,6 +63,10 @@ export function getGameListeners(
       setStatus(playerId, sessionId)
       updateLog && updateLog()
     })
+    socket.on('updateWatchPw', (watchKey) => {
+      debugSockets && console.debug('SOCKET','updateWatchPw',watchKey)
+      updateGame((game) => game && ({ ...game, watchKey, watchId: watchKey ? (game as Game).watchId : null }))
+    })
     
     clientErrorsInConsole && socket.on('error', (msg) => { console.error('Server Error:',msg) })
 
@@ -175,14 +179,8 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
 
   const setWatchPw: Socket.SetWatchPw = useCallback((password) => {
     if (!local.game?.id) return throwError(formatError('Error setting Watch password: Game not loaded'))
-    local.setLoadingAll((v) => v + 1)
 
-    emit('setWatchPw', local.game.id, password || null, (watchKey: string | null) => {
-      if (watchKey === 'error') reloadData(local.game?.url, local.updateLocal, throwError)
-      else local.updateGame((game) => game && ({ ...game, watchKey }))
-      local.setLoadingAll((v) => v && v - 1)
-    })
-
+    emit('setWatchPw', local.game.id, password || null)
   }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
 
 

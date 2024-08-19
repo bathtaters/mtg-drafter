@@ -7,9 +7,9 @@ function Document(props: DocumentProps) {
       <Head>
         <meta property="og:site_name" content="Mtg Drafter" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:description" content="Magic: the Gathering multi-player draft simulator." />
+        <meta property="og:description" content="Multi-player TCG draft simulator." />
         <meta property="article:author" content="bathtaters" />
-        <meta name="description" content="Magic: the Gathering multi-player draft simulator." />
+        <meta name="description" content="Multi-player TCG draft simulator." />
 
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="white" />
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000033" />
