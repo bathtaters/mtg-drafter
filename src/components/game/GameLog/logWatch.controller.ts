@@ -18,9 +18,9 @@ export default function useLogWatch({ log, players, game, sessionId, setLoading,
     // Check for change in auth
     useEffect(() => {
         if (log.error) { setAuth(false); setMessage(log.error) }
-        else if (!game?.watchId) setAuth(false)
+        else if (!game?.watchId || !game?.watchKey) setAuth(false)
         else setAuth((a) => a || game.watchId === sessionId)
-    }, [game?.watchId, sessionId, log.error])
+    }, [game?.watchId, game?.watchKey, sessionId, log.error])
 
     // Submit password
     const handleSubmit = async (password: string) => {
