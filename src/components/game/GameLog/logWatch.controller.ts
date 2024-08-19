@@ -43,9 +43,12 @@ export default function useLogWatch({ log, players, game, sessionId, setLoading,
         setLoading && setLoading((v) => v && v - 1)
     }
 
-    // Refresh log whenever the players array updates
+    // Refresh log whenever the players array updates -- Logout if player has joined
+    useEffect(() => {
+        authed && log.refresh?.()
+        if (players.find((p) => sessionId == p.sessionId)) setAuth(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- just need log.refresh
-    useEffect(() => { authed && log.refresh?.() }, [log.refresh, players, authed])
+    }, [log.refresh, players, authed, sessionId])
 
     // Refresh header when authorization updates
     useEffect(() => { authed && reload?.() }, [reload, authed])
