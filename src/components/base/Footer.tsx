@@ -6,15 +6,15 @@ import pkg from "../../../package.json"
 import LogoIcon from "components/svgs/LogoIcon"
 
 const SiteLink = ({ title, href, className = '', children }: { title?: string, href: string, className?: string, children?: ReactNode }) => (
-  <Link href={href} title={title} className={`link link-primary link-hover, inline-flex items-center ${className}`} target="_blank" rel="noopener noreferrer">{children}</Link>
+  <Link href={href} title={title} className={`link link-primary link-hover inline-flex items-center ${className}`} target="_blank" rel="noopener noreferrer">{children}</Link>
 )
 
 export default function Footer() {
   return (
     <FooterWrapperStyle>
       <div className="flex justify-center items-center gap-2">
-        <SiteLink href="/" title="Start New Game" className="link link-primary link-hover">
-          <LogoIcon className="w-6 h-6 fill-current" simple={true} />
+        <SiteLink href="/" title="Start New Game">
+          <LogoIcon className="w-6 h-6 fill-current" />
           <p className="ml-2">Mtg Drafter v{pkg.version}</p>
         </SiteLink>
         <span className="opacity-80">|</span>

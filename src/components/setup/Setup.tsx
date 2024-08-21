@@ -10,7 +10,7 @@ export default function Setup({ setList }: SetupProps) {
     <SetPageTitle title="Create Game" />
 
     <Header>
-      <HeaderLogo href="/" alt="Mtg-Drafter Logo" />
+      <HeaderLogo />
       <TitleStyle>Create New Draft</TitleStyle>
       <HistoryLink href="/game" tip="Game History" />
     </Header>

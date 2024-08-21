@@ -1,11 +1,10 @@
 import type { ReactNode } from "react"
 import type { GameStatus } from "@prisma/client"
-import type { StaticImport } from "next/dist/shared/lib/get-img-props"
 import Link from "next/link"
-import Image from "next/image"
 import Header from "components/base/Header"
 import PackIcon from "components/svgs/PackIcon"
 import CopyLink, { Props as CopyProps } from "components/base/common/CopyLink"
+import LogoIcon from "components/svgs/LogoIcon"
 
 const statusIcon: { [status in GameStatus]: ReactNode } = {
   'start':  <span     className="inline-block mr-2 opacity-80 text-base sm:text-2xl fill-base-content ms ms-dfc-day"   />,
@@ -23,15 +22,13 @@ export const GameHeaderWrapper = ({ children }: { children: ReactNode }) => (
   </Header>
 )
 
-export function LogoWrapper({ img, href = "", alt = "", children }: { img?: string | StaticImport, href?: string, alt?: string, children?: ReactNode }) {
+export function LogoWrapper({ href = "", title, children }: { href?: string, title?: string, children?: ReactNode }) {
   const ImgWrapper = href ? Link : 'div'
   return (
-    <div className={`grid ${img ? '[grid-template-columns:6rem_1fr]' : 'grid-cols-1'} gap-x-4 flex-shrink-0`}>
-      { img &&
-        <ImgWrapper href={href} className="row-span-2">
-          <Image className="w-16 sm:w-24 h-16 sm:h-24" src={img} alt={alt} />
-        </ImgWrapper>
-      }
+    <div className="grid [grid-template-columns:6rem_1fr] gap-x-4 flex-shrink-0">
+      <ImgWrapper title={title} href={href} className="row-span-2 link link-primary">
+        <LogoIcon className="w-16 sm:w-24 h-auto fill-current p-2" />
+      </ImgWrapper>
       { children }
     </div>
   )
