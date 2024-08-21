@@ -22,11 +22,11 @@ export const GameHeaderWrapper = ({ children }: { children: ReactNode }) => (
   </Header>
 )
 
-export function LogoWrapper({ href = "", children }: { href?: string, children?: ReactNode }) {
+export function LogoWrapper({ href = "", title, children }: { href?: string, title?: string, children?: ReactNode }) {
   const ImgWrapper = href ? Link : 'div'
   return (
     <div className="grid [grid-template-columns:6rem_1fr] gap-x-4 flex-shrink-0">
-      <ImgWrapper href={href} className="row-span-2 link link-primary">
+      <ImgWrapper title={title} href={href} className="row-span-2 link link-primary">
         <LogoIcon className="w-16 sm:w-24 h-auto fill-current p-2" />
       </ImgWrapper>
       { children }
