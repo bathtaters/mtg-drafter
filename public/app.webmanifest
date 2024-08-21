@@ -1,0 +1,42 @@
+{
+  "id": "/?app-id=mtg-drafter",
+  "name": "Mtg-Drafter",
+  "short_name": "Mtg-Drafter",
+  "description": "Multi-player TCG draft simulator.",
+  "display": "standalone",
+  "theme_color": "#1C93FC",
+  "background_color": "#0F172A",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    { "src": "/icon-16.png", "sizes": "16x16", "type": "image/png" },
+    { "src": "/favicon.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "/icon-44.png", "sizes": "44x44", "type": "image/png" },
+    { "src": "/icon-71.png", "sizes": "71x71", "type": "image/png" },
+    { "src": "/icon-150.png", "sizes": "150x150", "type": "image/png" },
+    { "src": "/icon-310.png", "sizes": "310x310", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-120-ios.png", "sizes": "120x120", "type": "image/png" },
+    { "src": "/icon-180-ios.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/icon-76-ios.png", "sizes": "76x76", "type": "image/png" },
+    { "src": "/icon-152-ios.png", "sizes": "152x152", "type": "image/png" },
+    { "src": "/icon-167-ios.png", "sizes": "167x167", "type": "image/png" },
+    { "src": "/icon-1024-ios.png", "sizes": "1024x1024", "type": "image/png" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "2234x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshot-narrow.png",
+      "sizes": "769x1080",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ]
+}

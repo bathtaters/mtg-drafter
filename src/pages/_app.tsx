@@ -15,7 +15,6 @@ const garamond = EB_Garamond({ subsets: ['latin'] })
 function App({ Component, pageProps }: AppProps) {
   return (
     <AppWrapperStyle>
-      <Head><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" /></Head>
       <style jsx global>{`
         :root {
           --font-inter: ${inter.style.fontFamily};
