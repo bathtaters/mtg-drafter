@@ -7,7 +7,7 @@ type Props = { label?: ReactNode, sublabel?: ReactNode, children?: ReactNode } &
 export default function GameHeaderBase({ label = "Mtg Drafter", children, ...copyProps }: Props) {
     return (
         <GameHeaderWrapper>
-            <LogoWrapper href="/" title="Create New Game">
+            <LogoWrapper href="/" title="Start New Game">
                 <GameTitle label={label} {...copyProps} />
             </LogoWrapper>
             {children}
