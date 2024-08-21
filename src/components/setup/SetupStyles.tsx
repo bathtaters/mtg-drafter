@@ -8,10 +8,8 @@ export const TitleStyle = ({ children }: { children: ReactNode }) => (
     <h1 className="font-serif">{children}</h1>
 )
 
-export const HeaderLogo = ({ href }: { href: string }) => (
-    <Link href={href} className="link">
-        <LogoIcon className="w-16 sm:w-24 h-16 sm:h-24 fill-secondary p-1" />
-    </Link>
+export const HeaderLogo = () => (
+    <LogoIcon className="w-16 sm:w-24 h-16 sm:h-24 fill-secondary p-1" />
 )
 
 export const HistoryLink = ({ href, tip }: { href: string, tip?: string }) => (
