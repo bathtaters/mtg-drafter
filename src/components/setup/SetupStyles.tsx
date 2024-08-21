@@ -1,17 +1,16 @@
 import type { ReactNode } from "react"
 import Link from "next/link"
-import Image from "next/image"
-import logo from 'assets/media/logo-lg.png'
 import HistoryIcon from "components/svgs/HistoryIcon"
+import LogoIcon from "components/svgs/LogoIcon"
 
 
 export const TitleStyle = ({ children }: { children: ReactNode }) => (
     <h1 className="font-serif">{children}</h1>
 )
 
-export const HeaderLogo = ({ href, alt }: { href: string, alt: string }) => (
-    <Link href={href}>
-        <Image className="w-16 sm:w-24 h-16 sm:h-24" src={logo} alt={alt} />
+export const HeaderLogo = ({ href }: { href: string }) => (
+    <Link href={href} className="link">
+        <LogoIcon className="w-16 sm:w-24 h-16 sm:h-24 fill-secondary p-1" />
     </Link>
 )
 
