@@ -5,7 +5,7 @@ import type { Layout } from 'types/scryfall'
 export const normalizeName = (name: string) => name.replace(/\s\/\/\s.+$/,'').replace(/[^a-zA-Z0-9 ]/g, '').replace('&', 'and').toLowerCase()
 
 export const adaptCardToDb = ({
-  uuid, name, flavorName, setCode, manaCost, type, text,
+  uuid, name, number, flavorName, setCode, manaCost, type, text,
   power, toughness, loyalty, rarity, colors,
   types, manaValue, identifiers, layout,
   faceName, side, asciiName
@@ -16,6 +16,7 @@ export const adaptCardToDb = ({
   uuid, flavorName, setCode, manaCost, type, text, manaValue, faceName,
   
   name: name || 'N/A',
+  number: number || null,
   types: types || [], 
 
   normalName: !side || side === 'a' ? normalizeName(flavorName || asciiName || name || 'N/A') : null,
@@ -38,7 +39,7 @@ export const adaptFacesToDb = ({ uuid, otherFaceIds }: JsonCard): Prisma.FaceInC
 
 export const cardFields: Array<keyof DBCard> = [
   'uuid','name','flavorName','setCode','manaCost','type','text','footer','rarity','colors','types','monoColor',
-  'scryfallId','multiverseId','faceName','side','manaValue','normalName','layout',//'preferredArt','img',
+  'scryfallId','multiverseId','faceName','side','manaValue','normalName','layout','number',//'preferredArt','img',
 ]
 
 // TYPES
