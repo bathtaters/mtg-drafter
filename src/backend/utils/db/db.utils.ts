@@ -15,7 +15,7 @@ const catchSql = (err: any) => {
 export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>): (updateObj: T[], prisma: PrismaClient) => Promise<number>
 export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>, prisma: PrismaClient): (updateObj: T[]) => Promise<number>
 export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>, prisma?: PrismaClient) {
-  checkInjection([tableName, ...whereKeys, ...updateKeys], 'updateImages')
+  checkInjection([tableName, ...whereKeys, ...updateKeys], 'multiUpdate')
 
   let
     table  = addQuotes.test(tableName) ? `"${tableName}"` : tableName,
