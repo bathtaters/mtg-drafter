@@ -115,7 +115,6 @@ model Game {
 }
 
 model Card {
-  // NOTE: IF YOU CHANGE THIS, UPDATE backend/card.utils:cardFields
   uuid       String   @id
   name       String
   number     String?
@@ -156,6 +155,7 @@ model FaceInCard {
   selfId String
   card   Card   @relation("Face", fields: [cardId], references: [uuid], onDelete: Cascade, onUpdate: Cascade)
   cardId String
+  backImg String?
 
   @@id([selfId, cardId])
 }
