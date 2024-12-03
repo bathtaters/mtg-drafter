@@ -3,31 +3,30 @@ import type { CardSet as JsonCard } from '../../../types/json.d'
 import prisma from '../../libs/db'
 import fetchJson from '../../libs/fetchJson'
 import Batcher from '../../libs/Batcher'
-import { adaptCardToDb, adaptFacesToDb, cardFields } from '../../utils/db/card.utils'
+import { adaptCardToDb, adaptFacesToDb } from '../../utils/db/card.utils'
 import { isMtgJsonKey, updateMtgJson } from './updateSettings'
 
-const multiUpsert = createMultiUpsert<Prisma.CardCreateManyInput>('Card', cardFields, prisma)
-
 export default async function updateCards(url: string, fullUpdate = false, enableLog = false, maxThreads = 1000, dbBatchSize = 5000, upsertTxLimit = 32000) {
-  const batchSize = fullUpdate ? Math.min(Math.floor(upsertTxLimit / cardFields.length), dbBatchSize) : dbBatchSize
 
   let existing: number | undefined
   if (!fullUpdate) existing = await prisma.card.count()
   else {
     enableLog && console.log('Erasing All Cards')
-    // DOESNT WORK UNTIL COCKRAOCH IMPLEMENTS DEFERRING CONSTRAINTS >> await prisma.card.deleteMany()
-    await prisma.faceInCard.deleteMany() // CAN REMOVE THIS ONCE I ADD THAT ^
+    // TEMPORARY FIX UNTIL COCKRAOCH IMPLEMENTS DEFERRING CONSTRAINTS >> await prisma.card.deleteMany()
+    await prisma.faceInCard.deleteMany()
+    await prisma.$executeRaw`ALTER TABLE "GameCard" DROP CONSTRAINT IF EXISTS "GameCard_cardId_fkey";`
+    // TEMPORARY FIX END // NOTE: There is one more 'TEMPORARY FIX' at the end
+    await prisma.card.deleteMany()
   }
 
   enableLog && console.log('Updating Cards',typeof existing === 'number' ? `(${existing} exisiting)` : '')
   enableLog && console.time('Cards')
 
-  const cardUpdate = new Batcher(batchSize, async (data: Prisma.CardCreateManyInput[]) => {
-    if (fullUpdate) await multiUpsert(data)
-    else await prisma.card.createMany({ data, skipDuplicates: true })
+  const cardUpdate = new Batcher(dbBatchSize, async (data: Prisma.CardCreateManyInput[]) => {
+    await prisma.card.createMany({ data, skipDuplicates: !fullUpdate })
   })
   const faceUpdate = new Batcher(2 * dbBatchSize, async (data: Prisma.FaceInCardCreateManyInput[]) => {
-    await prisma.faceInCard.createMany({ data, skipDuplicates: true })
+    await prisma.faceInCard.createMany({ data, skipDuplicates: !fullUpdate })
   })
   
   await fetchJson<JsonCard>(url, async (data, key) => {
@@ -40,6 +39,10 @@ export default async function updateCards(url: string, fullUpdate = false, enabl
   
   await cardUpdate.finish()
   await faceUpdate.finish()
+
+  // TEMPORARY FIX -- Can remove when above lines are removed
+  //  Also, if this throws an error it is because an MTGJSON UUID has changed/disappeared.
+  await prisma.$executeRaw`ALTER TABLE "GameCard" ADD CONSTRAINT IF NOT EXISTS "GameCard_cardId_fkey" FOREIGN KEY ("cardId") REFERENCES public."Card"(uuid);`
 
   enableLog && console.timeEnd('Cards')
   enableLog && await prisma.card.count().then((c) => console.log('Added',c-(existing || 0),'/',c,'cards'))
