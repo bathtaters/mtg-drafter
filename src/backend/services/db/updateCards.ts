@@ -1,9 +1,9 @@
 import type { Prisma } from '@prisma/client'
+import type { CardSet as JsonCard } from '../../../types/json.d'
 import prisma from '../../libs/db'
 import fetchJson from '../../libs/fetchJson'
 import Batcher from '../../libs/Batcher'
-import { createMultiUpsert } from '../../utils/db/db.utils'
-import { adaptCardToDb, adaptFacesToDb, cardFields, JsonCard } from '../../utils/db/card.utils'
+import { adaptCardToDb, adaptFacesToDb, cardFields } from '../../utils/db/card.utils'
 import { isMtgJsonKey, updateMtgJson } from './updateSettings'
 
 const multiUpsert = createMultiUpsert<Prisma.CardCreateManyInput>('Card', cardFields, prisma)

@@ -1,5 +1,5 @@
 import type { Prisma, Color, Rarity, Side, Card as DBCard } from '@prisma/client'
-import type { Card } from 'mtggraphql'
+import type { CardSet as JsonCard } from '../../../types/json.d'
 import type { Layout } from 'types/scryfall'
 
 export const normalizeName = (name: string) => name.replace(/\s\/\/\s.+$/,'').replace(/[^a-zA-Z0-9 ]/g, '').replace('&', 'and').toLowerCase()
@@ -44,7 +44,3 @@ export const cardFields: Array<keyof DBCard> = [
 
 // TYPES
 
-export interface JsonCard extends Card {
-  variations: Card['variation'],
-  manaValue: Card['convertedManaCost']
-}
