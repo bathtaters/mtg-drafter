@@ -13,7 +13,10 @@ const zoomLevelToWidth = (zoomClass: string) => {
 
 export default function useCardImage(card: CardFull, zoomClass: string, showImages = true, onLoad?: () => Promise<void> | void) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const cardFaces = useMemo(() => [card, ...card.otherFaces.map(({ card }) => card)], [card.uuid])
+  const cardFaces = useMemo(() => [
+    card,
+    ...card.otherFaces.map(({ card, backImg: img }) => img ? { ...card, img } : card)
+  ], [card.uuid])
   const sideCount = cardFaces.length
 
   const [ images, setImages ] = useState([] as ReactNode[])
@@ -57,6 +60,7 @@ export default function useCardImage(card: CardFull, zoomClass: string, showImag
   return {
     images, cardFaces, handleFlip, direction,
     sideIdx, sideCount,
+    showBadge: card.layout === 'meld' && !card.otherFaces[0]?.backImg,
     reversed: isReversible(card) ? !!sideIdx : undefined,
     showFlip: showFlipButton(card, showImages),
   }

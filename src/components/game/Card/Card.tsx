@@ -18,7 +18,7 @@ type Props = {
 }
 
 export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, container, showImage, onClick, onLoad, className = '' }: Props) {
-  const { images, cardFaces, sideIdx, sideCount, direction, reversed, showFlip, handleFlip } = useCardImage(card, className, showImage, onLoad)
+  const { images, cardFaces, sideIdx, sideCount, direction, reversed, showBadge, showFlip, handleFlip } = useCardImage(card, className, showImage, onLoad)
   const isBoard = container in Board
 
   return (
@@ -29,7 +29,7 @@ export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, c
       image={showImage && images.map((side, idx) => (
         <Fragment key={idx}>
           <ImgWrapper isTop={images.length === 1 || idx === sideIdx} flipSide={typeof reversed === 'boolean' ? idx + 1 : 0}>{side}</ImgWrapper>
-          {idx === 1 && card.layout === 'meld' && <MeldBadge image={true} />}
+          {showBadge && idx === 1 && card.layout === 'meld' && <MeldBadge image={true} />}
         </Fragment>
       ))}
 
