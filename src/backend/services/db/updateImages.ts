@@ -14,30 +14,21 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
   if (!imgUrl) return console.error('Unable to retrieve ImageURI data')
   enableLog && console.log('Retrieved ImageURI data URL')
 
+  const missingImgs = await prisma.card.findMany({
+    where: { img: null, scryfallId: { not: null } },
+    select: { scryfallId: true },
+    distinct: 'scryfallId',
+    
+  }).then((c) => new Set(c.map(({ scryfallId }) => scryfallId as string)))
 
-  let missingImgs: string[] | undefined
-  if (!fullUpdate) {
-
-    missingImgs = await prisma.card.findMany({
-      where: { img: null, scryfallId: { not: null } },
-      select: { scryfallId: true },
-      distinct: 'scryfallId',
-      
-    }).then((c) => c.map(({ scryfallId }) => scryfallId as string))
-
-    enableLog && console.log('Missing',missingImgs?.length,'images')
-    if (!missingImgs?.length) return
-  }
-
-
-  enableLog && console.log('Getting Image URIs')
+  enableLog && console.log('Checking for',missingImgs.size,'missing Image URIs')
   enableLog && console.time('Image URIs')
 
   let count = 0
   const batch = new Batcher(dbBatchSize, (data: ImageData[]) => multiUpdate(data).then((c) => { count += c }))
 
   await fetchJson<ScryfallCard>(imgUrl, async (data) => {
-    if (missingImgs && !missingImgs.includes(data.id)) return;
+    if (!missingImgs.has(data.id)) return;
 
     for (const card of adaptScryfallToImage(data)) {
       if (card.img) await batch.add(card)
