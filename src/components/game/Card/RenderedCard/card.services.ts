@@ -2,7 +2,7 @@ import type { Card, Color } from "@prisma/client"
 import type { CardStrict, CardFull } from "types/game"
 import { camelToTitle } from "components/base/services/common.services"
 import { bgdClass } from "components/base/styles/manaIcons"
-import { flippableLayouts, layoutDirection } from "assets/constants"
+import { flippableLayouts, reversibleLayouts } from "assets/constants"
 import { cardLayoutText } from "assets/strings"
 
 export const getArtBoxText = (layout: CardStrict['layout'], sideCount: number): string | false | null => 
@@ -44,7 +44,7 @@ export const getBgdColor = ({ colors, types }: Card) =>
 
 export const getNextFace = (currentFace: number, faceCount: number) => (currentFace + 1) % faceCount
 
-export const isReversible = ({ layout, otherFaces }: CardFull) => otherFaces.length === 1 && !(layout && layout in layoutDirection)
+export const isReversible = ({ layout, otherFaces }: CardFull) => otherFaces.length === 1 && (!layout || reversibleLayouts.includes(layout))
 
 export const showFlipButton = ({ layout, otherFaces }: CardFull, showImages: boolean) =>
   otherFaces.length > 1 ? !showImages : otherFaces.length === 1 && flippableLayouts.includes(layout || 'normal')

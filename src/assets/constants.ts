@@ -83,7 +83,9 @@ export const layoutDirection:  {[layout in Layout]?: Direction} = {
   split: Direction.E,
   aftermath: Direction.W,
 }
-export const flippableLayouts = [...Object.keys(layoutDirection),'modal_dfc', 'transform', 'meld'] as const
+export const reversibleLayouts: Layout[] = ['meld', 'modal_dfc', 'transform']
+
+export const flippableLayouts: Layout[] = [...Object.keys(layoutDirection), ...reversibleLayouts]
 
 export const hideBoosterNames: BoosterType[] = ['default', 'draft']
 

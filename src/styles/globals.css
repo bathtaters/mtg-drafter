@@ -90,6 +90,13 @@
   .flip-container {
     @apply [perspective:62rem] motion-reduce:[perspective:none];
   }
+
+  .flip-inner {
+    transform: translate(var(--tw-translate-x),var(--tw-translate-y))
+      rotate(var(--tw-rotate)) rotateY(var(--mtgd-rotate-y))
+      skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y))
+      scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  }
   .flip-container > .flip-inner {
     @apply relative transition-transform duration-500 [transform-style:preserve-3d];
     @apply motion-reduce:transition-none motion-reduce:[transform-style:flat] will-change-transform;
@@ -99,7 +106,9 @@
     @apply absolute w-full h-full [transform:rotateX(0deg)] [backface-visibility:hidden];
     @apply motion-reduce:transition-opacity motion-reduce:duration-700 motion-reduce:[backface-visibility:unset];
   }
-  .flip-container > .flip-inner.flipped,
+  .flip-container > .flip-inner.flipped {
+    @apply [--mtgd-rotate-y:180deg] motion-reduce:[--mtgd-rotate-y:0deg];
+  }
   .flip-container > .flip-inner > .flip-back {
     @apply [transform:rotateY(180deg)] motion-reduce:[transform:rotateY(0deg)];
   }
