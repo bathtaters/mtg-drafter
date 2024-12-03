@@ -25,4 +25,7 @@ export const scryfallHeaders = {
   'Accept': 'application/json;q=0.9,*/*;q=0.8',
 }
 
+// Ignore these IDs when retrieving card back images
+export const ignoreScryfallBackIds = ['0aeebaf5-8c7d-4636-9e82-8c27447861f7']
+
 type ScryfallImgFmt = "large"|"normal"|"small"|"art_crop"|"border_crop"|"png"

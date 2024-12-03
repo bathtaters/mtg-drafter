@@ -5,6 +5,7 @@ import fetchJson from '../../libs/fetchJson'
 import Batcher from '../../libs/Batcher'
 import { adaptCardToDb, adaptFacesToDb } from '../../utils/db/card.utils'
 import { isMtgJsonKey, updateMtgJson } from './updateSettings'
+import { ignoreScryfallBackIds } from 'assets/urls'
 
 export default async function updateCards(url: string, fullUpdate = false, enableLog = false, maxThreads = 1000, dbBatchSize = 5000, upsertTxLimit = 32000) {
 
@@ -39,6 +40,9 @@ export default async function updateCards(url: string, fullUpdate = false, enabl
   
   await cardUpdate.finish()
   await faceUpdate.finish()
+
+  // Remove incorrect back IDs
+  prisma.faceInCard.updateMany({ where: { backImg: { in: ignoreScryfallBackIds } }, data: { backImg: null } })
 
   // TEMPORARY FIX -- Can remove when above lines are removed
   //  Also, if this throws an error it is because an MTGJSON UUID has changed/disappeared.
