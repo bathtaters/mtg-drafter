@@ -21,8 +21,8 @@ export default function CopyLink({ url, message, title, notify, tooltip = "Copy 
   const handleShare = !url || !shareable ? undefined : () => { browserShare(message || url, url, title || message || url)
     .then((res) => { notify && res in sharingMessage && notify(sharingMessage[res]) }) }
 
-  return !handleShare ? null : (
-    <a className={`link tooltip tooltip-primary ${className}`} onClick={handleShare} data-tip={tooltip}>
+  return (
+    <a className={`link tooltip tooltip-primary ${className}`} onClick={handleShare} data-tip={handleShare && tooltip} href={handleShare ? undefined : url}>
       <LinkIcon className={`${iconClass} h-auto fill-primary hover:fill-[color-mix(in_oklab,oklch(var(--p)),black_10%)] inline-block`} />
     </a>
   )
