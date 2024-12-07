@@ -67,7 +67,7 @@ export default function HostModal({
 
         <WatchContainer>
           <CopyLink {...shareWatch} url={watchUrl ? shareWatch.url(watchUrl) : undefined} notify={notify} />
-          <PasswordForm label="Live Watch Password" btnLabel="Set" emptyBtn="Clear" placeholder={watchUrl ? "••••••••" : ""} onSubmit={setWatchPw} />
+          <PasswordForm label="Live Watch Password" btnLabel="Set" emptyBtn="Clear" placeholder={watchUrl ? "••••••••" : ""} onSubmit={setWatchPw} isCreate={true} />
         </WatchContainer>
       </Loader>
     </ModalWrapper>

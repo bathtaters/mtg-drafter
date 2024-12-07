@@ -4,8 +4,8 @@ import { BoxBtnWrapper, ButtonStyle, FormWrapper, LabelStyle, MessageStyle, Pass
 
 
 export default function PasswordForm(
-    { label="Enter Password", fullPage, btnLabel="Submit", emptyBtn, message="", onSubmit, id="password", placeholder="" }:
-    { label?: string, btnLabel?: string, emptyBtn?: string, message?: string, id?: string, placeholder?: string, fullPage?: boolean, onSubmit?: (password: string) => Promise<void> | void }
+    { label="Enter Password", fullPage, btnLabel="Submit", emptyBtn, message="", onSubmit, id="password", placeholder="", isCreate=false }:
+    { label?: string, btnLabel?: string, emptyBtn?: string, message?: string, id?: string, placeholder?: string, fullPage?: boolean, isCreate?: boolean, onSubmit?: (password: string) => Promise<void> | void }
 ) {
     const [password, setPassword] = useState("")
 
@@ -22,7 +22,7 @@ export default function PasswordForm(
             <LabelStyle htmlFor={id} full={fullPage}>{label}</LabelStyle>
             { fullPage && <Spacer /> }
             <BoxBtnWrapper full={fullPage}>
-                <PasswordStyle id={id} value={password} placeholder={placeholder} onChange={handleChange} />
+                <PasswordStyle id={id} value={password} placeholder={placeholder} onChange={handleChange} autoComplete={isCreate ? 'new-password' : 'current-password'} />
                 { fullPage && <MessageStyle>{message}</MessageStyle> }
                 <ButtonStyle type="submit">{password || !emptyBtn ? btnLabel : emptyBtn}</ButtonStyle>
             </BoxBtnWrapper>
