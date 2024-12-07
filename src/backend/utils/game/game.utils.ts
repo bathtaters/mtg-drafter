@@ -3,7 +3,7 @@ import type { Game as DbGame, Player as DbPlayer } from '@prisma/client'
 import type { Game, BasicPlayer, Player, PartialGame } from 'types/game'
 import { gameUrlRegEx } from 'assets/urls'
 import { getNeighborIdx } from 'components/game/shared/game.utils'
-import { defaultTimer, setupDefaults, timerOptions } from 'assets/constants'
+import { defaultTimer, officialRulesIdx, timerOptions } from 'assets/constants'
 
 export const getMaxPackSize = (packCounts: { packIdx: number, _count: number }[], round: number, roundCount: number, playerCount: number) => {
   if (!round || !roundCount || !playerCount || round > roundCount) return 0
@@ -53,9 +53,8 @@ export const hasPack = (game: Pick<Game,"round"|"roundCount">, players: Pick<Bas
 
 export const unregGameAdapter = ({ id, name, url, watchKey }: PartialGame) => ({ id, name, url, watchKey })
 
-const defaultTimerBase = +setupDefaults.timer
 export function getTimerLength(cardCount: number, timerBase: number) {
-  if (timerBase === defaultTimerBase && cardCount === 11) return 25 // Fix for official rules
+  if (timerBase === officialRulesIdx && cardCount === 11) return 25 // Fix for official rules
 
   const { secPerCard, minSec, maxSec, secOffset = 0, roundTo } = timerOptions[timerBase] ? 
     { ...defaultTimer, ...timerOptions[timerBase] } : defaultTimer

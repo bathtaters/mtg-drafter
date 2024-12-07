@@ -43,7 +43,9 @@ export const storageDefaults = Object.freeze({
     {}, // Normal (Official rules): 40 sec / 15 cards
     { secPerCard: 2.6 }, // Fast: 30 sec / 15 cards
     { secPerCard: 1.9, minSec: 3 }, // Speed: 20 sec / 15 cards
-  ]
+  ],
+  // !! If you update the above table, set this to the index of the official rules in timerOptions !! //
+  officialRulesIdx = 7 // Fixes timer to match official rules on this timerOptions index (Force pick 4 = 25 sec)
 
 
 // Setup validation
@@ -63,7 +65,7 @@ export const
     type: "Cube",
     name: "",
     players: "8",
-    timer: "4",
+    timer: "7",
     packs: "3",
     packSize: "15",
     packList: ["KLD:draft","KLD:draft","AER:draft"],
