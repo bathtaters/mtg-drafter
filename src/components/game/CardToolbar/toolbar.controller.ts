@@ -31,7 +31,7 @@ export default function useToolbar({ setCardOptions, notify }: ToolbarProps) {
   }, [notify, setZoomValue])
 
   useEffect(() => {
-    const updateMax = () => (maxZoom.current = getMaxZoom()) < zoom && setTempZoom(maxZoom.current)
+    const updateMax = () => { (maxZoom.current = getMaxZoom()) < zoom && setTempZoom(maxZoom.current) }
 
     window.addEventListener('resize', updateMax)
     return () => window.removeEventListener('resize', updateMax)
