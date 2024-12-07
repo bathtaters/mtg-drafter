@@ -43,6 +43,10 @@ export const TimerStyle = ({ seconds = 0, paused }: { seconds?: number, paused?:
   } ${
     paused ? 'animate-pulse-pause' : 'opacity-80'
   } text-xs md:text-base`}>
+    <div className={`fixed z-0 w-full inset-0 border-8 border-red-500 pointer-events-none ${
+      seconds < redTimerSeconds && !paused ? 'border-opacity-80' : 'border-opacity-0'
+    } motion-reduce:hidden animate-pulse transition-colors duration-500 ease-in-out`} />
+
     <TimerIcon className="w-5 fill-current" />
     
     <span className="countdown font-mono text-3xl md:text-5xl">
