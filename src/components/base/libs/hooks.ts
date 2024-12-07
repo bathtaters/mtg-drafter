@@ -1,12 +1,20 @@
 import { DependencyList, useCallback, useEffect, useRef, useState, useReducer, useMemo, MouseEventHandler } from 'react'
-import { hoverAfterClickDelay } from "assets/constants"
+import useNotification from './notifications'
+import { hoverAfterClickDelay, redTimerSeconds } from "assets/constants"
+import { timerAlertMsg, timerAlertOpts } from 'assets/strings'
 
 const remaining = (end?: number|null, roundTo = 1, current = Date.now()) =>
   end && end > current ? Math.round((end - current) / roundTo) : undefined
 
-export function useTimer(endTime?: number|null, pauseTime?: number|null, onEnd = () => {}, tickMs = 1000) {
+export function useTimer(endTime?: number|null, pauseTime?: number|null, onEnd = () => {}, notifySec = redTimerSeconds, tickMs = 1000) {
   const timer = useRef<NodeJS.Timer>()
-  const stop = useCallback(() => { clearInterval(timer.current as any); timer.current = undefined }, [])
+  const notif = useNotification()
+
+  const stop = useCallback(() => {
+    clearInterval(timer.current as any)
+    timer.current = undefined
+    notif.current?.close()
+  }, [])
 
   const [ countdown, setCountdown ] = useState(remaining(endTime, tickMs))
 
@@ -14,9 +22,17 @@ export function useTimer(endTime?: number|null, pauseTime?: number|null, onEnd =
     const rem = remaining(end, tickMs)
     setCountdown(rem)
 
-    if (typeof rem !== 'number' && typeof end === 'number') onEnd()
+    if (typeof rem === 'number') {
+      // Open/close notification
+      notifySec && !notif.current && rem === notifySec && notif.send(timerAlertMsg(notifySec), timerAlertOpts)
+      rem > notifySec && notif.current?.close()
+
+    } else if (typeof end === 'number') {
+      notif.current?.close()
+      onEnd()
+    }
     return typeof rem === 'number'
-  }, [onEnd, tickMs])
+  }, [onEnd, tickMs, notif.current, notif.send])
 
   useEffect(() => {
     if (!pauseTime && update(endTime)) timer.current = setInterval(() => update(endTime) || stop(), tickMs / 2)

@@ -43,6 +43,9 @@ export const sharingMessage: Record<string,ToastAlert> = {
 
 export const maxSizeError = (size: number, maxSize: number) => `File exceeds ${formatBytes(maxSize)} limit (${formatBytes(size)})`
 
+export const timerAlertMsg = (sec: number) => `Under ${sec} seconds left to pick!`,
+  timerAlertOpts: NotificationOptions = { requireInteraction: true }
+
 // See constants: timerOptions for settings
 export const timerText: Record<"value"|"tooltip", string>[] = [
   { value: 'Off', tooltip: 'Off: No timer' },
