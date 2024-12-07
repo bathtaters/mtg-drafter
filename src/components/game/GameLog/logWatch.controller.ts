@@ -46,7 +46,10 @@ export default function useLogWatch({ log, players, game, sessionId, setLoading,
     // Refresh log whenever the players array updates -- Logout if player has joined
     useEffect(() => {
         authed && log.refresh?.()
-        if (players.find((p) => sessionId == p.sessionId)) setAuth(false)
+        if (
+            ((game?.round ?? 0) <= (game?.roundCount ?? 1)) &&
+            players.find((p) => sessionId == p.sessionId)
+        ) setAuth(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- just need log.refresh
     }, [log.refresh, players, authed, sessionId])
 
