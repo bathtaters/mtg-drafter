@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { type ReactEventHandler, useEffect, useState } from "react"
 import LinkIcon from "components/svgs/LinkIcon"
 import browserShare, { canShare } from "../libs/share"
 import { sharingMessage } from "assets/strings"
@@ -16,13 +16,17 @@ export type Props = {
 
 export default function CopyLink({ url, message, title, notify, tooltip = "Copy Link", className = "", iconClass = "w-4" }: Props) {
   const [shareable, setCanShare] = useState(false)
-  useEffect(() => { setCanShare(!!url && canShare()) }, [url]) // Needed for server-side hydration
+  useEffect(() => { setCanShare(typeof window !== 'undefined' && !!url && canShare()) }, [typeof window, url]) // Needed for server-side hydration
 
-  const handleShare = !url || !shareable ? undefined : () => { browserShare(message || url, url, title || message || url)
-    .then((res) => { notify && res in sharingMessage && notify(sharingMessage[res]) }) }
+  const handleShare: ReactEventHandler<HTMLAnchorElement> | undefined = !url || !shareable ? undefined : (ev) => {
+    ev.preventDefault()
+    const link = url.startsWith('/') ? `${window.location.origin}${url}` : url
+    browserShare(message || link, link, title || message || link)
+      .then((res) => { notify && res in sharingMessage && notify(sharingMessage[res])})
+  }
 
   return (
-    <a className={`link tooltip tooltip-primary ${className}`} onClick={handleShare} data-tip={handleShare && tooltip} href={handleShare ? undefined : url}>
+    <a href={url} className={`link tooltip tooltip-primary ${className}`} onClick={handleShare} data-tip={handleShare && tooltip}>
       <LinkIcon className={`${iconClass} h-auto fill-primary hover:fill-[color-mix(in_oklab,oklch(var(--p)),black_10%)] inline-block`} />
     </a>
   )

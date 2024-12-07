@@ -19,13 +19,13 @@ export const storageDefaults = Object.freeze({
   shareGame = {
     title: "Mtg Drafter",
     message: "Join the draft",
-    url: (gameUrl: string) => typeof window === "undefined" ? "" : `${window.location.origin}/game/${gameUrl}`,
+    url: (gameUrl: string) => `/game/${gameUrl}`,
   },
 
   shareWatch = {
     title: "Mtg Drafter",
     message: "Observe the draft",
-    url: (gameUrl: string) => typeof window === "undefined" ? "" : `${window.location.origin}/game/watch/${gameUrl}`,
+    url: (gameUrl: string) => `/game/watch/${gameUrl}`,
   },
 
   logOptions: LogOptions = { hideHost: false, hidePrivate: true },
