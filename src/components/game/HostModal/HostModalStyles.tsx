@@ -50,7 +50,7 @@ export const PlayerWrapper = ({ children }: { children: ReactNode }) => (
 )
 
 export const NameEditor = (props: TextEditProps) => (
-  <div className="flex-grow h-full bg-base-300 rounded-lg text-right">
+  <div className="flex-grow min-w-0 h-full bg-base-300 rounded-lg text-right">
     <TextEditor {...props} className="input-secondary join-item text-sm sm:text-base text-right" />
   </div>
 )

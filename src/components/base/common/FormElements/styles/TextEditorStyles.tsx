@@ -1,6 +1,6 @@
 import type { HTMLProps } from "react"
 
-export const StaticWrapper = (props: HTMLProps<HTMLDivElement>) => <div className="h-8 px-2 py-0.5 whitespace-nowrap text-ellipsis" {...props} />
+export const StaticWrapper = (props: HTMLProps<HTMLDivElement>) => <div className="h-8 px-2 py-0.5 truncate" {...props} />
 
 export const EditWrapper = (props: HTMLProps<HTMLDivElement>) => <div className="join h-8 w-full" {...props} />
 

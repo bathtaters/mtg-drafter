@@ -33,7 +33,7 @@ export const EntryItem = (
   <span data-tip={tip} onClick={onClick}
     className={`text-left ${tip ? `tooltip tooltip-primary ${below ? 'tooltip-bottom' : 'tooltip-top'
       }${right ?' before:content-[attr(data-tip)] before:translate-x-0 before:left-0' : ''} ` : ''}${
-      typeof color === 'number' ? `badge badge-lg text-ellipsis whitespace-nowrap ${getColorClass(color, 'all', { inverse: inv })}` : ''
+      typeof color === 'number' ? `badge badge-lg truncate ${getColorClass(color, 'all', { inverse: inv })}` : ''
       }${onClick ? ' cursor-pointer badge badge-lg hover:badge-primary' : ''}`
   }>
     {children}
