@@ -2,8 +2,10 @@ import type { Card, Color } from "@prisma/client"
 import type { CardStrict, CardFull } from "types/game"
 import { camelToTitle } from "components/base/services/common.services"
 import { bgdClass } from "components/base/styles/manaIcons"
-import { flippableLayouts, reversibleLayouts } from "assets/constants"
+import { layoutDirection, reversibleLayouts } from "assets/constants"
 import { cardLayoutText } from "assets/strings"
+
+export const flippableLayouts = [...Object.keys(layoutDirection), ...reversibleLayouts]
 
 export const getArtBoxText = (layout: CardStrict['layout'], sideCount: number): string | false | null => 
   layout && (cardLayoutText[layout] || 

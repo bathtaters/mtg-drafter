@@ -22,10 +22,11 @@ export default function useCardImage(card: CardFull, zoomClass: string, showImag
   const [ images, setImages ] = useState([] as ReactNode[])
   const [ sideIdx, setSideIdx ] = useState(sideCount > 1 ? 0 : -1)
 
-  const direction: Direction | undefined = sideIdx === 1 && sideCount === 2 ? layoutDirection[card.layout || 'normal'] : undefined
+  const direction: Direction | undefined = sideIdx === 1 && sideCount === 2 ?
+    layoutDirection[card.layout || 'normal']?.(card, showImages) : undefined
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleSideChange = useCallback(
+  const changeCardSide = useCallback(
     sideCount < 3 ?
       // Normal action
       (state: HoverAction) => setSideIdx(
@@ -39,7 +40,7 @@ export default function useCardImage(card: CardFull, zoomClass: string, showImag
         setSideIdx((idx) => getNextFace(idx, sideCount)),
     [sideCount]
   )
-  const handleFlip = useHoverClick(handleSideChange)()
+  const handleFlip = useHoverClick(changeCardSide)()
 
   // Pre-load images
   useEffect(() => {

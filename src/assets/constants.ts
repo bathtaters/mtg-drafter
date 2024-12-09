@@ -78,14 +78,23 @@ export const
 
 export const redTimerSeconds = 10
 
-export const layoutDirection:  {[layout in Layout]?: Direction} = {
-  flip: Direction.S,
-  split: Direction.E,
-  aftermath: Direction.W,
+const meldDirection: { [setCode: string]: Direction } = {
+  EMN: Direction.W,
+  PEMN: Direction.W,
+  V17: Direction.W,
+  BRO: Direction.E,
+  PBRO: Direction.E,
 }
-export const reversibleLayouts: Layout[] = ['meld', 'modal_dfc', 'transform']
 
-export const flippableLayouts: Layout[] = [...Object.keys(layoutDirection), ...reversibleLayouts]
+export const layoutDirection:  {[layout in Layout]?: ((card: CardFull, showImages: boolean) => Direction | undefined)} = {
+  /* Rotate back-faces */
+  flip: () => Direction.S,
+  split: () => Direction.E,
+  aftermath: () => Direction.W,
+  meld: ({ setCode }, showImages) => showImages && setCode ? meldDirection[setCode] : undefined
+}
+
+export const reversibleLayouts: Layout[] = ['meld', 'modal_dfc', 'transform'] /* Flip card over */
 
 export const hideBoosterNames: BoosterType[] = ['default', 'draft']
 
