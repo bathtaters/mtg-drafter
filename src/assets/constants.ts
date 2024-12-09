@@ -1,9 +1,10 @@
 import type { GameOptions } from 'types/setup'
 import type { RetryOptions } from 'backend/libs/retry'
 import type { BoosterType, Layout } from 'types/scryfall'
-import { LogOptions, TimerOptions, Direction } from 'types/game.d'
+import type { LogOptions, TimerOptions, CardFull } from 'types/game.d'
 import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
 import { allActions } from 'components/game/GameLog/log.utils'
+import { Direction } from 'types/game.d'
 
 //  Settings
 
@@ -87,11 +88,16 @@ const meldDirection: { [setCode: string]: Direction } = {
 }
 
 export const layoutDirection:  {[layout in Layout]?: ((card: CardFull, showImages: boolean) => Direction | undefined)} = {
-  /* Rotate back-faces */
+  /* Rotate otherFace */
   flip: () => Direction.S,
   split: () => Direction.E,
   aftermath: () => Direction.W,
   meld: ({ setCode }, showImages) => showImages && setCode ? meldDirection[setCode] : undefined
+}
+
+export const typeDirection: { [type: string]: Direction } = {
+  /* Rotate main face */
+  Battle: Direction.E,
 }
 
 export const reversibleLayouts: Layout[] = ['meld', 'modal_dfc', 'transform'] /* Flip card over */
