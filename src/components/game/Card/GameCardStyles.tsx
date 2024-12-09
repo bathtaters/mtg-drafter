@@ -3,7 +3,7 @@ import type { Board } from "@prisma/client"
 import { Direction } from "types/game.d"
 import DeckIcon from "components/svgs/DeckIcon"
 
-const dirClass: { [dir in Direction]: string } = { N: '', E: ' rotate-90', S: ' rotate-180', W: ' -rotate-90' }
+const dirClass: { [dir in Direction]: string } = { N: '', E: 'rotate-90', S: 'rotate-180', W: '-rotate-90' }
 
 export const CardWrapper = ({
   isSelected, isHighlighted, isFoil, direction = Direction.N, reversed,
@@ -14,9 +14,14 @@ export const CardWrapper = ({
     className={`flex justify-center items-center relative group hover:z-[31] rounded-card${
       typeof reversed === 'boolean' ? ' flip-container' : ''} ${className}`}
   >
-    <div className={`pointer-events-none select-none w-full h-full ${
-      typeof reversed === 'boolean' ? 'flip-inner' : 'transition-transform duration-300 motion-reduce:duration-700'} ${
-        reversed ? 'flipped ' : ''}${dirClass[direction]} ${direction !== Direction.N ? 'z-30' : ''
+    <div className={`pointer-events-none select-none w-full h-full transition-transform duration-300 motion-reduce:duration-700 ${
+      typeof reversed === 'boolean' ? 'flip-inner ' : ''
+    }${
+      reversed ? 'flipped ' : ''
+    }${
+      direction !== Direction.N ? 'z-30 ' : ''
+    }${
+      dirClass[direction]
     }`}>
       <div className={`absolute top-[-1.5%] left-[-2%] w-[104%] h-[103%] z-0 rounded-card ${
         isSelected ? 'bg-secondary' : isHighlighted ? 'bg-error' : 'bg-transparent'

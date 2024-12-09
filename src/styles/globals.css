@@ -91,6 +91,7 @@
     @apply [perspective:62rem] motion-reduce:[perspective:none];
   }
 
+  * { @apply [--mtgd-rotate-y:0deg] }
   .flip-inner {
     transform: translate(var(--tw-translate-x),var(--tw-translate-y))
       rotate(var(--tw-rotate)) rotateY(var(--mtgd-rotate-y))
