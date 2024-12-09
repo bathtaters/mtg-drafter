@@ -8,13 +8,13 @@ const remaining = (end?: number|null, roundTo = 1, current = Date.now()) =>
 
 export function useTimer(endTime?: number|null, pauseTime?: number|null, onEnd = () => {}, notifySec = redTimerSeconds, tickMs = 1000) {
   const timer = useRef<NodeJS.Timer>()
-  const notif = useNotification()
+  const { current, send } = useNotification()
 
   const stop = useCallback(() => {
     clearInterval(timer.current as any)
     timer.current = undefined
-    notif.current?.close()
-  }, [])
+    current?.close()
+  }, [current])
 
   const [ countdown, setCountdown ] = useState(remaining(endTime, tickMs))
 
@@ -24,15 +24,15 @@ export function useTimer(endTime?: number|null, pauseTime?: number|null, onEnd =
 
     if (typeof rem === 'number') {
       // Open/close notification
-      notifySec && !notif.current && rem === notifySec && notif.send(timerAlertMsg(notifySec), timerAlertOpts)
-      rem > notifySec && notif.current?.close()
+      notifySec && !current && rem === notifySec && send(timerAlertMsg(notifySec), timerAlertOpts)
+      rem > notifySec && current?.close()
 
     } else if (typeof end === 'number') {
-      notif.current?.close()
+      current?.close()
       onEnd()
     }
     return typeof rem === 'number'
-  }, [onEnd, tickMs, notif.current, notif.send])
+  }, [onEnd, tickMs, notifySec, current, send])
 
   useEffect(() => {
     if (!pauseTime && update(endTime)) timer.current = setInterval(() => update(endTime) || stop(), tickMs / 2)

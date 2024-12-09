@@ -53,7 +53,7 @@ export default function useNotification() {
             return notif
         }
         return null
-    }, [])
+    }, [current])
 
     return { send, current, canSend }
 }

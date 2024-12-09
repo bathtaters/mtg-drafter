@@ -16,7 +16,7 @@ export type Props = {
 
 export default function CopyLink({ url, message, title, notify, tooltip = "Copy Link", className = "", iconClass = "w-4" }: Props) {
   const [shareable, setCanShare] = useState(false)
-  useEffect(() => { setCanShare(typeof window !== 'undefined' && !!url && canShare()) }, [typeof window, url]) // Needed for server-side hydration
+  useEffect(() => { setCanShare(typeof window !== 'undefined' && !!url && canShare()) }, [url]) // Needed for server-side hydration
 
   const handleShare: ReactEventHandler<HTMLAnchorElement> | undefined = !url || !shareable ? undefined : (ev) => {
     ev.preventDefault()
