@@ -31,7 +31,7 @@ export const CardWrapper = ({
 
 
 export const ImgWrapper = ({ flipSide, isTop, children }: { flipSide: number, isTop: boolean, children: ReactNode }) => (
-  <div className={`absolute w-full h-full ${
+  <div className={`absolute top-0 w-full h-full ${
     flipSide === 1 ? 'flip-front ' : flipSide === 2 ? 'flip-back ' : ''}${flipSide || isTop ? 'z-20' : '-z-10'
   } rounded-card overflow-hidden`}>
     {children}
