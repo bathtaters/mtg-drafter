@@ -1,4 +1,4 @@
-import type { Card, Game as DbGame, Pack, GameCard, Player as DbPlayer, Board, Color, PlayerStatus, LogEntry, LogAction } from "@prisma/client"
+import type { Card, Game as DbGame, Pack, GameCard, Player as DbPlayer, Board, Color, PlayerStatus, LogEntry, LogAction, FaceInCard } from "@prisma/client"
 import type { SortKey } from "components/base/services/cardSort.services"
 import type { Layout } from "./scryfall"
 import z from "backend/libs/validation"
@@ -20,7 +20,7 @@ export type PartialGame = Pick<Game,"id"|"name"|"url"|"watchKey">
 export type ListedGame = Pick<Game,"id"|"name"|"url"|"hostId"> & { player?: BasicPlayer }
 
 export type CardStrict = Omit<Card,"layout"> & { layout: Layout | null }
-export type CardFull = CardStrict & { otherFaces: Array<{ card: CardStrict }> }
+export type CardFull = CardStrict & { otherFaces: Array<{ card: CardStrict, backImg: FaceInCard['backImg'] }> }
 export type GameCardFull = GameCard & { card: CardFull }
 
 export type PackMin = { cards: Pick<GameCard, "playerId">[] }

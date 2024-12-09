@@ -20,7 +20,7 @@ export const splitLayouts: { [layout in Layout]?: LayoutData} = {
 }
 
 export const Border = ({ hide, flipSide, children }: { flipSide?: number, children?: ReactNode, hide?: boolean }) => (
-  <div className={`absolute${hide ? '' : ' bg-black'} text-black rounded-card w-full h-full${
+  <div className={`absolute top-0${hide ? '' : ' bg-black'} text-black rounded-card w-full h-full${
     flipSide === 2 ? ' flip-back' : flipSide === 1 ? ' flip-front' : ''
   }`}>
     {children}

@@ -1,9 +1,9 @@
-import type { CardFull, Direction } from "types/game"
+import { CardFull, Direction } from "types/game"
 import Image from "next/image"
 import { useState, useEffect, useCallback, ReactNode, useMemo } from "react"
 import { showFlipButton, getNextFace, isReversible } from "./RenderedCard/card.services"
 import { HoverAction, useHoverClick } from "components/base/libs/hooks"
-import { layoutDirection, serverSideImageOptimize } from "assets/constants"
+import { layoutDirection, typeDirection, serverSideImageOptimize } from "assets/constants"
 import { matchWidth } from "../CardToolbar/cardZoomLevels"
 
 const zoomLevelToWidth = (zoomClass: string) => {
@@ -13,16 +13,23 @@ const zoomLevelToWidth = (zoomClass: string) => {
 
 export default function useCardImage(card: CardFull, zoomClass: string, showImages = true, onLoad?: () => Promise<void> | void) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const cardFaces = useMemo(() => [card, ...card.otherFaces.map(({ card }) => card)], [card.uuid])
+  const cardFaces = useMemo(() => [
+    card,
+    ...card.otherFaces.map(({ card, backImg: img }) => img ? { ...card, img } : card)
+  ], [card.uuid])
+  const frontRotate = useMemo(() => Object.entries(typeDirection).find(([type]) => card.types.includes(type))?.[1], [card.uuid])
   const sideCount = cardFaces.length
 
   const [ images, setImages ] = useState([] as ReactNode[])
   const [ sideIdx, setSideIdx ] = useState(sideCount > 1 ? 0 : -1)
+  const [ rotation, setRotation ] = useState<Direction>()
 
-  const direction: Direction | undefined = sideIdx === 1 && sideCount === 2 ? layoutDirection[card.layout || 'normal'] : undefined
+  const direction: Direction | undefined = sideIdx === 1 && sideCount === 2 ?
+    layoutDirection[card.layout || 'normal']?.(card, showImages) : 
+    sideIdx < 1 ? rotation :undefined
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleSideChange = useCallback(
+  const changeCardSide = useCallback(
     sideCount < 3 ?
       // Normal action
       (state: HoverAction) => setSideIdx(
@@ -36,7 +43,14 @@ export default function useCardImage(card: CardFull, zoomClass: string, showImag
         setSideIdx((idx) => getNextFace(idx, sideCount)),
     [sideCount]
   )
-  const handleFlip = useHoverClick(handleSideChange)()
+  const handleFlip = useHoverClick(changeCardSide)()
+
+  const rotateCard = useCallback((state: HoverAction) => setRotation(
+    state === HoverAction.Leave ? undefined :
+    state === HoverAction.Enter || state === HoverAction.FirstClick ? frontRotate :
+      (dir) => dir ? undefined : frontRotate
+  ), [frontRotate])
+  const handleRotate = useHoverClick(rotateCard)()
 
   // Pre-load images
   useEffect(() => {
@@ -55,9 +69,11 @@ export default function useCardImage(card: CardFull, zoomClass: string, showImag
   }, [cardFaces])
 
   return {
-    images, cardFaces, handleFlip, direction,
+    images, cardFaces, direction, handleFlip, handleRotate,
     sideIdx, sideCount,
+    showBadge: card.layout === 'meld' && !card.otherFaces[0]?.backImg,
     reversed: isReversible(card) ? !!sideIdx : undefined,
     showFlip: showFlipButton(card, showImages),
+    showRotate: !!frontRotate && sideIdx < 1,
   }
 }

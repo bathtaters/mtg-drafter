@@ -1,6 +1,7 @@
-import type { Prisma, Color, Rarity, Side, Card as DBCard } from '@prisma/client'
-import type { Card } from 'mtggraphql'
+import type { Prisma, Color, Rarity, Side } from '@prisma/client'
+import type { CardSet as JsonCard } from '../../../types/json.d'
 import type { Layout } from 'types/scryfall'
+import { scryfallImageUrl } from 'assets/urls'
 
 export const normalizeName = (name: string) => name.replace(/\s\/\/\s.+$/,'').replace(/[^a-zA-Z0-9 ]/g, '').replace('&', 'and').toLowerCase()
 
@@ -10,8 +11,6 @@ export const adaptCardToDb = ({
   types, manaValue, identifiers, layout,
   faceName, side, asciiName
 }: JsonCard): Prisma.CardCreateManyInput => ({
-
-  /* IF YOU ADD/REMOVE ANY FIELDS HERE, ALSO ADD/REMOVE THEM FROM 'cardFields' BELOW! */
   
   uuid, flavorName, setCode, manaCost, type, text, manaValue, faceName,
   
@@ -23,6 +22,7 @@ export const adaptCardToDb = ({
 
   scryfallId: identifiers?.scryfallId,
   multiverseId: identifiers?.multiverseId,
+  img: side && side !== 'a' ? null : identifiers?.scryfallId ? scryfallImageUrl(identifiers.scryfallId) : null,
 
   footer: toughness != null ? `${power}/${toughness}` : loyalty,
 
@@ -34,17 +34,7 @@ export const adaptCardToDb = ({
   layout: layout ? layout as Layout : null,
 })
 
-export const adaptFacesToDb = ({ uuid, otherFaceIds }: JsonCard): Prisma.FaceInCardCreateManyInput[] =>
-  otherFaceIds ? otherFaceIds.map((cardId) => ({ selfId: uuid, cardId })) : []
-
-export const cardFields: Array<keyof DBCard> = [
-  'uuid','name','flavorName','setCode','manaCost','type','text','footer','rarity','colors','types','monoColor',
-  'scryfallId','multiverseId','faceName','side','manaValue','normalName','layout','number',//'preferredArt','img',
-]
-
-// TYPES
-
-export interface JsonCard extends Card {
-  variations: Card['variation'],
-  manaValue: Card['convertedManaCost']
+export const adaptFacesToDb = ({ uuid, layout, side, otherFaceIds, identifiers }: JsonCard): Prisma.FaceInCardCreateManyInput[] => {
+  const backImg = side === 'a' && layout === 'meld' && identifiers?.scryfallCardBackId ? scryfallImageUrl(identifiers.scryfallCardBackId, false) : null
+  return otherFaceIds ? otherFaceIds.map((cardId) => ({ selfId: uuid, cardId, backImg })) : []
 }
