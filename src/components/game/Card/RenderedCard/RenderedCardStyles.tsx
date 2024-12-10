@@ -7,7 +7,7 @@ import { splitRatios } from "components/game/CardToolbar/cardZoomLevels"
 type LayoutData = [string, string, string, boolean, boolean]
 
 type Style = (props: { html?: string, className?: string, children?: ReactNode, small?: boolean }) => ReactElement
-type LayoutProps = { layout?: LayoutData, side: Props['side'], className?: string, children: ReactNode }
+type LayoutProps = { layout?: LayoutData, side: Props['side'], className?: string, isRotated?: boolean, children: ReactNode }
 
 
 // MAIN WRAPPERS \\
@@ -18,6 +18,8 @@ export const splitLayouts: { [layout in Layout]?: LayoutData} = {
   flip: ['w-full h-1/2',' top-[1%]',' bottom-[1%] rotate-180', true, true],
   adventure: ['',' top-[1%] w-full h-[63%]',' bottom-[1.75%] left-[1%] w-3/4 h-[45%]', true, true],
 }
+/* As of now, only for battles */
+export const rotateClass = `-rotate-90 w-[143%] ${splitRatios[0]} top-[15%] left-[-21.5%]`
 
 export const Border = ({ hide, flipSide, children }: { flipSide?: number, children?: ReactNode, hide?: boolean }) => (
   <div className={`absolute top-0${hide ? '' : ' bg-black'} text-black rounded-card w-full h-full${
@@ -30,12 +32,16 @@ export const Border = ({ hide, flipSide, children }: { flipSide?: number, childr
 export const CardBgd = ({ color }: { color?: string | false }) => !color ? null :
   <div className={`absolute top-[2.5%] left-[4%] w-[92%] h-[95%] z-0 ${color}`} />
 
-export const CardLayout = ({ layout, side, className = '', children }: LayoutProps) => (
-  <div className={`absolute ${side && layout ? `${layout[0]} ${layout[side] ?? ''}` : 'w-full h-full'} flex`}>
+export const CardLayout = ({ layout, side, isRotated, className = '', children }: LayoutProps) => (
+  <div className={`absolute ${
+    side && layout ? `${layout[0]} ${layout[side] ?? ''}` :
+    isRotated ? rotateClass : 'w-full h-full'
+  } flex`}>
     <div className={
-      `grid ${side && layout?.[2 + side] ? 'grid-rows-split' : 'grid-rows-card'
-    } grid-cols-card grid-flow-col place-items-stretch relative
-      w-[92%] h-[94%] m-auto p-[2%] font-serif ${className}`
+      `grid ${(side && layout?.[2 + side]) || isRotated ? 'grid-rows-split' : 'grid-rows-card'
+    } ${
+      isRotated ? 'grid-cols-rotate' : 'grid-cols-card'
+    } grid-flow-col place-items-stretch relative w-[92%] h-[94%] m-auto p-[2%] font-serif ${className}`
     }>{children}</div>
   </div>
 )
@@ -70,7 +76,7 @@ export const Name: Style = ({ children }) => (
 
 export const Mana: Style = ({ html = '' }) => (
   <span className="text-[0.78em] whitespace-nowrap z-[1] text-left leading-[0.9em]"
-    dangerouslySetInnerHTML={{__html: html}} />
+  dangerouslySetInnerHTML={{__html: html}} />
 )
 
 export const Subtitle: Style = ({ children }) => (

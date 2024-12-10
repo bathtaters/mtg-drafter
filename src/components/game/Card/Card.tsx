@@ -35,7 +35,7 @@ export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, c
 
       rendered={sideCount < 3 ? <>
         {/* 1-2 sided cards: */}
-        <RenderedCard card={cardFaces[0]} side={sideCount - 1} sideCount={sideCount} isFoil={isFoil}  />
+        <RenderedCard card={cardFaces[0]} side={sideCount - 1} sideCount={sideCount} isFoil={isFoil} isRotated={showRotate} />
         { sideCount === 2 && <RenderedCard card={cardFaces[1]} side={2} sideCount={sideCount} isFoil={isFoil} /> }
         { !showImage && card.layout === 'meld' && <MeldBadge image={false} /> }
       </>
