@@ -73,6 +73,10 @@ export const Mana: Style = ({ html = '' }) => (
     dangerouslySetInnerHTML={{__html: html}} />
 )
 
+export const Subtitle: Style = ({ children }) => (
+  <div className="absolute top-0 left-2 text-sm text-gray-700 text-center">{children}</div>
+)
+
 
 // TYPE STYLES \\
 

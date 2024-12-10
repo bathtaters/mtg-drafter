@@ -3,7 +3,8 @@ import { rarityClass } from "components/base/styles/manaIcons"
 import { getArtBoxText, symbolFix, splitLines, getBgdColor, getCardNames } from "./card.services"
 import {
   Border, CardLayout, CardBox, ArtBox, TextBox, Footer, 
-  Name, Mana, Type, Rarity, TextLine, ArtMainText, ArtSubText, splitLayouts, CardBgd
+  Name, Subtitle, Mana, Type, Rarity, TextLine, ArtMainText, ArtSubText,
+  splitLayouts, CardBgd
 } from "./RenderedCardStyles"
 
 export type Props = { card: CardStrict, isFoil?: boolean, side?: number, sideCount?: number }
@@ -25,7 +26,7 @@ export default function RenderedCard({ card, isFoil = false, side = 0, sideCount
         </CardBox>
 
         <ArtBox>
-          <div className="absolute top-0 left-2 text-sm text-gray-700 text-center">{cardSubtitle}</div>
+          <Subtitle>{cardSubtitle}</Subtitle>
           <ArtMainText small={!!layout}>
             {(!layout || !side) && artBoxText && <div>{artBoxText}</div>}
             {isFoil && <div>Foil</div>}
