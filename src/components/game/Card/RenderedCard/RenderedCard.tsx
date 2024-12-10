@@ -7,9 +7,9 @@ import {
   splitLayouts, CardBgd
 } from "./RenderedCardStyles"
 
-export type Props = { card: CardStrict, isFoil?: boolean, isRotated?: boolean, side?: number, sideCount?: number }
+export type Props = { card: CardStrict, isFoil?: boolean, isRotater?: boolean, side?: number, sideCount?: number }
 
-export default function RenderedCard({ card, isFoil = false, isRotated = false, side = 0, sideCount = 0 }: Props) {
+export default function RenderedCard({ card, isFoil = false, isRotater = false, side = 0, sideCount = 0 }: Props) {
   const artBoxText = getArtBoxText(card.layout, sideCount)
   const layout = sideCount === 2 ? splitLayouts[card.layout || 'normal'] : undefined
 
@@ -18,7 +18,7 @@ export default function RenderedCard({ card, isFoil = false, isRotated = false, 
   return (
     <Border hide={layout && side > 1} flipSide={layout ? -1 : side}>
       <CardBgd color={side === 1 && card.layout === 'adventure' && getBgdColor(card)} />
-      <CardLayout layout={layout} side={side} isRotated={isRotated} className={getBgdColor(card)}>
+      <CardLayout layout={layout} side={side} isRotater={isRotater} className={getBgdColor(card)}>
 
         <CardBox>
           <Name>{cardName}</Name>

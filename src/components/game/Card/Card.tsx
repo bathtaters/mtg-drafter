@@ -18,7 +18,7 @@ type Props = {
 }
 
 export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, container, showImage, onClick, onLoad, className = '' }: Props) {
-  const { images, cardFaces, sideIdx, sideCount, direction, reversed, showBadge, showFlip, handleFlip, showRotate, handleRotate } = useCardImage(card, className, showImage, onLoad)
+  const { images, cardFaces, sideIdx, sideCount, direction, reversed, showBadge, showFlip, handleFlip, isRotater, handleRotate } = useCardImage(card, className, showImage, onLoad)
   const isBoard = container in Board
 
   return (
@@ -35,7 +35,7 @@ export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, c
 
       rendered={sideCount < 3 ? <>
         {/* 1-2 sided cards: */}
-        <RenderedCard card={cardFaces[0]} side={sideCount - 1} sideCount={sideCount} isFoil={isFoil} isRotated={showRotate} />
+        <RenderedCard card={cardFaces[0]} side={sideCount - 1} sideCount={sideCount} isFoil={isFoil} isRotater={isRotater} />
         { sideCount === 2 && <RenderedCard card={cardFaces[1]} side={2} sideCount={sideCount} isFoil={isFoil} /> }
         { !showImage && card.layout === 'meld' && <MeldBadge image={false} /> }
       </>
@@ -45,7 +45,7 @@ export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, c
       }
     >
       {showFlip && <FlipButton onClick={handleFlip} isBack={sideIdx > 0} low={card.layout === 'flip'} />}
-      {showRotate && <RotateButton onClick={handleRotate} isRotated={!!direction || direction === Direction.N} />}
+      {isRotater && sideIdx < 1 && <RotateButton onClick={handleRotate} isRotater={!!direction || direction === Direction.N} />}
       {isBoard && <SwapButton board={container as Board} onClick={onClick} low={card.layout === 'flip'} />}
     </CardWrapper>
   )

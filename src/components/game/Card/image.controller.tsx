@@ -75,6 +75,6 @@ export default function useCardImage(card: CardFull, zoomClass: string, showImag
     showBadge: card.layout === 'meld' && !card.otherFaces[0]?.backImg,
     reversed: isReversible(card) ? !!sideIdx : undefined,
     showFlip: showFlipButton(card, showImages),
-    showRotate: !!frontRotate && sideIdx < 1,
+    isRotater: !!frontRotate,
   }
 }

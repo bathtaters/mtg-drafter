@@ -67,17 +67,16 @@ export const FlipButton = ({ isBack, low, onClick }: { isBack?: boolean, low?: b
     <i className={`ms ${isBack ? 'ms-untap' : 'ms-tap'} w-full`} />
   </button>
 
-export const RotateButton = ({ isRotated, onClick }: { isRotated?: boolean, onClick?: MouseEventHandler }) =>
+export const RotateButton = ({ isRotater, onClick }: { isRotater?: boolean, onClick?: MouseEventHandler }) =>
   <button type="button" onClick={onClick} onMouseEnter={onClick} onMouseLeave={onClick} className={
       `hidden group-hover:flex absolute top-[3.5em] left-[5em] z-30
       btn btn-circle w-[2em] h-[2em] text-[1.5em] p-0 m-0 min-h-0 ${
-        isRotated ? 'bg-base-content text-base-100 hover:bg-base-content' : ''
+        isRotater ? 'bg-base-content text-base-100 hover:bg-base-content' : ''
       } pointer-events-auto opacity-50 hover:opacity-60`
   }>
     <ReloadIcon className={`w-3/4 fill-current transition-transform duration-300 motion-reduce:duration-700 ${
-      isRotated ? 'rotate-180' : 'rotate-0'
+      isRotater ? 'rotate-180' : 'rotate-0'
     }`} />
-    {/* <i className={`ms ${isRotated ? 'ms-untap' : 'ms-tap'} w-full`} /> */}
   </button>
 
 export const MeldBadge = ({ image }: { image?: boolean }) => (

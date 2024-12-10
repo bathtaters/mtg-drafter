@@ -7,7 +7,7 @@ import { splitRatios } from "components/game/CardToolbar/cardZoomLevels"
 type LayoutData = [string, string, string, boolean, boolean]
 
 type Style = (props: { html?: string, className?: string, children?: ReactNode, small?: boolean }) => ReactElement
-type LayoutProps = { layout?: LayoutData, side: Props['side'], className?: string, isRotated?: boolean, children: ReactNode }
+type LayoutProps = { layout?: LayoutData, side: Props['side'], className?: string, isRotater?: boolean, children: ReactNode }
 
 
 // MAIN WRAPPERS \\
@@ -32,15 +32,15 @@ export const Border = ({ hide, flipSide, children }: { flipSide?: number, childr
 export const CardBgd = ({ color }: { color?: string | false }) => !color ? null :
   <div className={`absolute top-[2.5%] left-[4%] w-[92%] h-[95%] z-0 ${color}`} />
 
-export const CardLayout = ({ layout, side, isRotated, className = '', children }: LayoutProps) => (
+export const CardLayout = ({ layout, side, isRotater, className = '', children }: LayoutProps) => (
   <div className={`absolute ${
     side && layout ? `${layout[0]} ${layout[side] ?? ''}` :
-    isRotated ? rotateClass : 'w-full h-full'
+    isRotater ? rotateClass : 'w-full h-full'
   } flex`}>
     <div className={
-      `grid ${(side && layout?.[2 + side]) || isRotated ? 'grid-rows-split' : 'grid-rows-card'
+      `grid ${(side && layout?.[2 + side]) || isRotater ? 'grid-rows-split' : 'grid-rows-card'
     } ${
-      isRotated ? 'grid-cols-rotate' : 'grid-cols-card'
+      isRotater ? 'grid-cols-rotate' : 'grid-cols-card'
     } grid-flow-col place-items-stretch relative w-[92%] h-[94%] m-auto p-[2%] font-serif ${className}`
     }>{children}</div>
   </div>
