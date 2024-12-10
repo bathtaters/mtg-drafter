@@ -7,7 +7,7 @@ export const normalizeName = (name: string) => name.replace(/\s\/\/\s.+$/,'').re
 
 export const adaptCardToDb = ({
   uuid, name, number, flavorName, setCode, manaCost, type, text,
-  power, toughness, loyalty, rarity, colors,
+  power, toughness, loyalty, defense, rarity, colors,
   types, manaValue, identifiers, layout,
   faceName, side, asciiName
 }: JsonCard): Prisma.CardCreateManyInput => ({
@@ -24,7 +24,7 @@ export const adaptCardToDb = ({
   multiverseId: identifiers?.multiverseId,
   img: side && side !== 'a' ? null : identifiers?.scryfallId ? scryfallImageUrl(identifiers.scryfallId) : null,
 
-  footer: toughness != null ? `${power}/${toughness}` : loyalty,
+  footer: toughness != null ? `${power}/${toughness}` : loyalty || defense,
 
   monoColor: !colors || colors.length !== 1 ? null : colors[0] as Color, 
   
