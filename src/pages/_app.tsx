@@ -15,19 +15,24 @@ const garamond = EB_Garamond({ subsets: ['latin'] })
 
 function App({ Component, pageProps }: AppProps) {
   return (
+    <>
+    <Head>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </Head>
     <AppWrapperStyle>
       <style jsx global>{`
         :root {
           --font-inter: ${inter.style.fontFamily};
           --font-garamond: ${garamond.style.fontFamily};
           ${initialValues}
-        }
-      `}</style>
+          }
+          `}</style>
 
       <DndProvider backend={HTML5Backend}>
         <Component {...pageProps} />
       </DndProvider>
     </AppWrapperStyle>
+    </>
   )
 }
 

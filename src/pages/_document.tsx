@@ -5,7 +5,6 @@ function Document(props: DocumentProps) {
     <Html lang="en">
       <Head>
         <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
 
         <meta property="og:site_name" content="Mtg Drafter" />
