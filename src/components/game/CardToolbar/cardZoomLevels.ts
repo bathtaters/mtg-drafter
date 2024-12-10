@@ -1,23 +1,23 @@
-export const matchWidth = /w-\[([0-9\.]+)rem\]/
+export const matchWidth = /^\[--card-w:([0-9\.]+)rem\]/
 
 const cardZoomLevels = [
-  'w-[11.45rem] h-[16rem] text-[0.69rem]',
-  'w-[12.89rem] h-[18rem] text-[0.78rem]',
-  'w-[14.32rem] h-[20rem] text-[0.87rem]',
-  'w-[15.75rem] h-[22rem] text-[0.95rem]',
-  'w-[17.18rem] h-[24rem] text-[1.04rem]',
-  'w-[18.61rem] h-[26rem] text-[1.13rem]',
-  'w-[20.05rem] h-[28rem] text-[1.21rem]',
-  'w-[21.48rem] h-[30rem] text-[1.3rem]',
-  'w-[22.91rem] h-[32rem] text-[1.38rem]',
-  'w-[24.34rem] h-[34rem] text-[1.47rem]',
-  'w-[25.77rem] h-[36rem] text-[1.56rem]',
-  'w-[27.2rem]  h-[38rem] text-[1.64rem]',
-  'w-[28.64rem] h-[40rem] text-[1.73rem]',
-  'w-[30.07rem] h-[42rem] text-[1.82rem]',
-  'w-[31.5rem]  h-[44rem] text-[1.9rem]',
-  'w-[32.93rem] h-[46rem] text-[1.99rem]',
-  'w-[34.36rem] h-[48rem] text-[2.08rem]',
+  '[--card-w:11.45rem] [--card-h:16rem] [--card-sz:0.69rem]',
+  '[--card-w:12.89rem] [--card-h:18rem] [--card-sz:0.78rem]',
+  '[--card-w:14.32rem] [--card-h:20rem] [--card-sz:0.87rem]',
+  '[--card-w:15.75rem] [--card-h:22rem] [--card-sz:0.95rem]',
+  '[--card-w:17.18rem] [--card-h:24rem] [--card-sz:1.04rem]',
+  '[--card-w:18.61rem] [--card-h:26rem] [--card-sz:1.13rem]',
+  '[--card-w:20.05rem] [--card-h:28rem] [--card-sz:1.21rem]',
+  '[--card-w:21.48rem] [--card-h:30rem] [--card-sz:1.3rem]',
+  '[--card-w:22.91rem] [--card-h:32rem] [--card-sz:1.38rem]',
+  '[--card-w:24.34rem] [--card-h:34rem] [--card-sz:1.47rem]',
+  '[--card-w:25.77rem] [--card-h:36rem] [--card-sz:1.56rem]',
+  '[--card-w:27.2rem]  [--card-h:38rem] [--card-sz:1.64rem]',
+  '[--card-w:28.64rem] [--card-h:40rem] [--card-sz:1.73rem]',
+  '[--card-w:30.07rem] [--card-h:42rem] [--card-sz:1.82rem]',
+  '[--card-w:31.5rem]  [--card-h:44rem] [--card-sz:1.9rem]',
+  '[--card-w:32.93rem] [--card-h:46rem] [--card-sz:1.99rem]',
+  '[--card-w:34.36rem] [--card-h:48rem] [--card-sz:2.08rem]',
 ]
 // Ratio = 63[w]:88[h]
 

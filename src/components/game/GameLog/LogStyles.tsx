@@ -2,9 +2,6 @@ import type { MouseEventHandler, ReactNode } from "react"
 import Image from "next/image"
 import ModalWrapper from "components/base/common/Modal"
 import getColorClass from "components/base/libs/colors"
-import cardZoomLevels from "../CardToolbar/cardZoomLevels"
-
-const cardSize = cardZoomLevels[4]
 
 export const GameLogWatchWrapper = ({ title, children }: { title: string, children: ReactNode }) => (
   <div className="relative pt-14 w-full h-full -top-6">
@@ -43,7 +40,7 @@ export const EntryItem = (
 export const CardModal = ({ src, alt, close }: { src: string | null, alt: string, close: () => void }) => (
   <ModalWrapper
     isOpen={!!src} setOpen={close}
-    defaultClass={`p-0 rounded-card ${cardSize}`}
+    defaultClass={`p-0 rounded-card w-card h-card` /* Uses default card sizes from global.css */}
     bodyClass="flex-grow" wrapperClass="modal-middle"
   >
     {src && <Image src={src} alt={alt} fill />}

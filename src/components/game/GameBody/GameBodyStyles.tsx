@@ -77,6 +77,6 @@ export const RoundButton = ({ label, onClick }: { onClick: MouseEventHandler, la
 )
 
 
-export const GameBodyWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="flex flex-col text-center relative">{children}</div>
+export const GameBodyWrapper = ({ className = '', children }: { className?: string, children?: ReactNode }) => (
+  <div className={`flex flex-col text-center relative ${className}`}>{children}</div>
 )

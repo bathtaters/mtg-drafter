@@ -5,7 +5,6 @@ import { useLocalStorage } from "components/base/libs/storage"
 import { sortKeys } from "components/base/services/cardSort.services"
 import cardZoomLevels from "./cardZoomLevels"
 import { zoomToPixels, warn } from "./toolbar.utils"
-import { storageDefaults } from "assets/constants"
 
 export type ToolbarProps = { setCardOptions: Dispatch<SetStateAction<CardOptions>>, notify: AlertsReturn['newToast'], clickReload?: () => void }
 

@@ -40,7 +40,7 @@ export default function GameBody({ game, player, pack, playerTimer, roundOver, c
   )
 
   return (
-    <GameBodyWrapper>
+    <GameBodyWrapper className={cardOptions.width}>
       <GameBodyHeader>
         <ContainerTabs pack={pack?.cards} player={player} selectedTab={selectedTab} selectTab={selectTab} hidePack={hidePack} />
 

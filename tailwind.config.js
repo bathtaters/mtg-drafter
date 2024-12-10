@@ -59,6 +59,9 @@ module.exports = {
       },
 
       // Rendered Card Custom Styles
+      width: { card: 'var(--card-w)' },
+      height: { card: 'var(--card-h)' },
+      fontSize: { card: 'var(--card-sz)' },
       backgroundImage: { foil: 'linear-gradient(45deg, #c0fff0 20%, #b0c0f0 36%, #ffd0d0 52%, #ffffc0 67%, #ffafaf 80%)' },
       borderRadius: { card: '5%' },
       gridTemplateRows: { card: '10% 25% 9% 50% 6%', split: '17% 10% 14% 50% 9%' },
