@@ -95,7 +95,7 @@ model Settings {
 }
 
 model Game {
-  id   String @id @default(cuid())
+  id   String @id @default(cuid(2))
   name String
   url  String @unique
 
@@ -182,7 +182,7 @@ model Booster {
 // Game
 
 model Player {
-  id        String     @id @default(cuid())
+  id        String     @id @default(cuid(2))
   name      String?
   sessionId String?
   pick      Int        @default(0)
@@ -211,7 +211,7 @@ model Pack {
 }
 
 model GameCard {
-  id   String  @id @default(cuid())
+  id   String  @id @default(cuid(2))
   card Card    @relation(fields: [cardId], references: [uuid], onDelete: NoAction, onUpdate: NoAction)
   foil Boolean @default(false)
 
@@ -227,7 +227,7 @@ model GameCard {
 }
 
 model LogEntry {
-  id     String    @id @default(cuid())
+  id     String    @id @default(cuid(2))
   time   DateTime  @default(now())
   action LogAction
   data   String?
