@@ -27,12 +27,12 @@ export default function RenderedCard({ card, isFoil = false, isRotater = false, 
 
         <ArtBox>
           <Subtitle>{cardSubtitle}</Subtitle>
-          <ArtMainText small={!!layout}>
-            {(!layout || !side) && artBoxText && <div>{artBoxText}</div>}
+          <ArtMainText small={!!layout || isRotater}>
+            {((!layout && !isRotater) || !side) && artBoxText && <div>{artBoxText}</div>}
             {isFoil && <div>Foil</div>}
           </ArtMainText>
 
-          {!layout && !!side && <ArtSubText>{side}/{sideCount}</ArtSubText>}
+          {!layout && !isRotater && !!side && <ArtSubText>{side}/{sideCount}</ArtSubText>}
         </ArtBox>
 
         <CardBox>
