@@ -57,30 +57,61 @@ module.exports = {
         icon: '0.03em 0.03em 0.01em var(--tw-shadow-color)',
       },
 
-      // Pause pulse
+      // Pause pulse + Foil animation
       keyframes: {
         pulse70: {
           '0%': { opacity: '0.6' },
           '50%': { opacity: '0.2' },
           '100%': { opacity: '0.6' },
         },
+        moveBg: {
+          '0%': {
+            backgroundPosition: '0% 50%',
+            opacity: '1.0',
+          },
+          '50%': {
+            backgroundPosition: '100% 50%',
+            opacity: '0.8',
+          },
+          '100%': {
+            backgroundPosition: '0% 50%',
+            opacity: '1.0'
+          }
+        }
       },
       animation: {
         'pulse-pause': 'pulse70 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'foil': 'moveBg 8s both infinite',
+      },
+      backgroundImage: {
+        /* Copied from @wittyshizard MTGJSON Discord */
+        foil: `linear-gradient(
+          135deg,
+          rgba(154, 18, 179, 0.3),
+          rgba(44, 130, 201, 0.3),
+          rgba(42, 187, 155, 0.3),
+          rgba(233, 212, 96, 0.3),
+          rgba(240, 52, 52, 0.3),
+          rgba(154, 18, 179, 0.3),
+          rgba(44, 130, 201, 0.3),
+          rgba(42, 187, 155, 0.3),
+          rgba(233, 212, 96, 0.3),
+          rgba(240, 52, 52, 0.3),
+          rgba(154, 18, 179, 0.3)
+        )`
       },
 
       // Rendered Card Custom Styles
       width: { card: 'var(--card-w)' },
       height: { card: 'var(--card-h)' },
       fontSize: { card: 'var(--card-sz)' },
-      backgroundImage: { foil: 'linear-gradient(45deg, #c0fff0 20%, #b0c0f0 36%, #ffd0d0 52%, #ffffc0 67%, #ffafaf 80%)' },
       borderRadius: { card: '5%' },
       gridTemplateRows: { card: '10% 25% 9% 50% 6%', split: '17% 10% 14% 50% 9%' },
       gridTemplateColumns: { card: '77% 23%', rotate: '89% 11%' },
       boxShadow: {
         top: '0 0 0.15em 0 rgba(0,0,0,0.388)',
         inset: 'inset 0.2em 0.2em 1em -0.2em rgba(0,0,0,0.388)',
-      }
+      },
     },
   },
   plugins: [

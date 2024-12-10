@@ -27,7 +27,10 @@ export const CardWrapper = ({
       <div className={`absolute top-[-1.5%] left-[-2%] w-[104%] h-[103%] z-0 rounded-card ${
         isSelected ? 'bg-secondary' : isHighlighted ? 'bg-error' : 'bg-transparent'
       }`} />
-      {isFoil && <div className="absolute w-full h-full z-50 rounded-card bg-foil opacity-70 mix-blend-multiply" />}
+      {isFoil &&
+        <div className="animate-foil bg-foil rounded-card opacity-100
+          absolute top-0 left-0 bottom-0 right-0 z-50 bg-[length:200%_200%]
+          transition-all duration-300 motion-reduce:duration-700" />}
       {image}
       {rendered}
     </div>
