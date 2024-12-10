@@ -59,10 +59,6 @@
     color: var(--tab-bg);
   }
 
-  /* Shadows */
-  .text-shadow { text-shadow: 0.03em 0.03em 0.05em rgba(0,0,0,0.231); }
-  .icon-shadow { text-shadow: 0.03em 0.03em 0.01em rgba(0,0,0,0.439); }
-
   /* Hide browser buttons in number input boxes */
   .hide-arrows { appearance: textfield; }
   .hide-arrows::-webkit-inner-spin-button,

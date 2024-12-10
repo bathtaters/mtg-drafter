@@ -62,7 +62,7 @@ export const ArtBox: Style = ({ children }) => (
 export const Footer: Style = ({ children }) => (<>
   <div />
   <div className="flex justify-center items-center mt-[4%] mr-[15%]
-    text-[0.93em] tracking-wide bg-white/40 rounded-[0.3em] shadow-top text-shadow">
+    text-[0.93em] tracking-wide bg-white/40 rounded-[0.3em] shadow-top text-shadow-card shadow-black/25">
       {children}
   </div>
 </>)
@@ -87,11 +87,11 @@ export const Subtitle: Style = ({ children }) => (
 // TYPE STYLES \\
 
 export const Type: Style = ({ children }) => (
-  <span className="text-[0.7em] font-bold text-shadow z-[1] text-left leading-[0.9em]">{children}</span>
+  <span className="text-[0.7em] font-bold text-shadow-card shadow-black/25 z-[1] text-left leading-[0.9em]">{children}</span>
 )
 
 export const Rarity: Style = ({ className = '', children }) => (
-  <span className={`text-[0.6em] icon-shadow opacity-[0.85] z-[1] text-left leading-[0.9em] ${className}`}>{children}</span>
+  <span className={`text-[0.6em] text-shadow-icon shadow-black/45 opacity-[0.85] z-[1] text-left leading-[0.9em] ${className}`}>{children}</span>
 )
 
 
@@ -104,7 +104,7 @@ export const TextBox: Style = ({ children }) => (
 )
 
 export const TextLine: Style = ({ html = '' }) => (
-  <p className="text-shadow mt-0 mb-[0.4em] leading-[1.15em]" dangerouslySetInnerHTML={{__html: html}} />
+  <p className="text-shadow-card shadow-black/25 mt-0 mb-[0.4em] leading-[1.15em]" dangerouslySetInnerHTML={{__html: html}} />
 )
 
 export const ArtMainText: Style = ({ small, children }) => (
