@@ -21,7 +21,13 @@
   h4 { @apply font-bold    text-xs   sm:text-base print:text-xs; }
 
   .btn { @apply font-sans; }
+  
+  /* Capitialized buttons for daisyUI v4  */
+  .btn { @apply uppercase; }
+  .file\:btn { @apply file:uppercase; }
+}
 
+@layer components {
   /* Fix number spin buttons in Chrome */
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
@@ -34,12 +40,6 @@
   /* Fix combining tooltip w/ btn */
   .tooltip.btn { @apply before:normal-case before:font-normal before:content-[attr(data-tip)]; }
   
-  /* Capitialized buttons for daisyUI v4  */
-  .btn { @apply uppercase; }
-  .file\:btn { @apply file:uppercase; }
-}
-
-@layer components {
   /* Add Tab variants to daisyUI */
   .tabs-boxed .tab, .tabs-boxed .tab.tab-primary  {
     --tab-color: oklch(var(--p) / var(--tw-text-opacity));
