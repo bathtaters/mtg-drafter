@@ -6,20 +6,20 @@ import { setupLimits, urlLength } from "assets/constants"
 export const boardLands = z.object(fillAndLowerCaseObject(Color, z.number().nonnegative().int()))
 
 export const logAuth = {
-  id:       z.string().cuid(),
+  id:       z.string().cuid2(),
   password: z.string().min(1).nullable(),
 }
 
 const gameData = {
   session: nanoId(),
   url:     nanoId(urlLength),
-  id:      z.string().cuid(),
+  id:      z.string().cuid2(),
   name:    commonOptions.shape.name,
   round:   z.number().int().nonnegative().lte(setupLimits.packs.max + 1),
   status:  z.nativeEnum(PlayerStatus),
   board:   z.nativeEnum(Board),
   basics:  z.object(fillAndLowerCaseObject(Board, boardLands)),
-  idOrNum: z.union([ z.string().cuid(), z.number() ]),
+  idOrNum: z.union([ z.string().cuid2(), z.number() ]),
   bool:    z.boolean().default(false)
 }
 
