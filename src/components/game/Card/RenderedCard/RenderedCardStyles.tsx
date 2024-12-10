@@ -92,7 +92,7 @@ export const Rarity: Style = ({ className = '', children }) => (
 // TEXT BOX STYLES \\
 
 export const TextBox: Style = ({ children }) => (
-  <div className="col-span-2 flex overflow-y-visible overflow-x-auto m-[1%] py-[1%] px-[2%] text-[0.75em] text-left bg-white/95 shadow-inset">
+  <div className="col-span-2 flex overflow-y-visible overflow-x-auto m-[1%] py-[1%] px-[2%] text-[0.75em] text-left bg-white/95 shadow-inset pointer-events-auto">
     <div className="z-[1] text-left leading-[0.9em] my-auto mx-0">{children}</div>
   </div>
 )
