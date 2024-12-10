@@ -3,6 +3,7 @@ import Head from 'next/head'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { AppWrapperStyle } from '../components/base/styles/AppStyles'
+import { initialValues } from 'components/game/CardToolbar/cardZoomLevels'
 
 import '../styles/globals.css'
 import 'mana-font/css/mana.min.css'
@@ -19,6 +20,7 @@ function App({ Component, pageProps }: AppProps) {
         :root {
           --font-inter: ${inter.style.fontFamily};
           --font-garamond: ${garamond.style.fontFamily};
+          ${initialValues}
         }
       `}</style>
 

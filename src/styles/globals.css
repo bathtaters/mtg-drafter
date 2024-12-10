@@ -86,11 +86,6 @@
   .scrollbar-secondary::-webkit-scrollbar-thumb { @apply bg-[color-mix(in_oklab,oklch(var(--s)),black_10%)] hover:bg-secondary; }
   .scrollbar-accent::-webkit-scrollbar-thumb    { @apply bg-[color-mix(in_oklab,oklch(var(--a)),black_10%)] hover:bg-accent;    }
 
-  /* Add default card width/height/font-size */
-  body {
-    @apply [--card-w:17.18rem] [--card-h:24rem] [--card-sz:1.04rem]
-  }
-
   /* Add 3d card flip effect (w/ reduced & non-reduced motion options) */
   .flip-container {
     @apply [perspective:62rem] motion-reduce:[perspective:none];
