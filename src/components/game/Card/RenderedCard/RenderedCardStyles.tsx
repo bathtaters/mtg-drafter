@@ -6,7 +6,7 @@ import { splitRatios } from "components/game/CardToolbar/cardZoomLevels"
 /** Layout Array [ Base class, SideA class, SideB class, SideA is Half?, SideB is Half? ] */
 type LayoutData = [string, string, string, boolean, boolean]
 
-type Style = (props: { html?: string, className?: string, children?: ReactNode, small?: boolean }) => ReactElement
+type Style = (props: { html?: string, className?: string, children?: ReactNode, small?: boolean }) => ReactElement<any>
 type LayoutProps = { layout?: LayoutData, side: Props['side'], className?: string, isRotater?: boolean, children: ReactNode }
 
 
@@ -50,7 +50,9 @@ export const CardLayout = ({ layout, side, isRotater, className = '', children }
 // INNER CONTAINERS \\
 
 export const CardBox: Style = ({ children }) => ( // Header/Type Box
-  <div className="col-span-2 flex justify-between items-center m-[2%] py-[1%] px-[2%] bg-white/40 rounded-[0.3em] shadow-top">{children}</div>
+  <div className="col-span-2 flex justify-between items-center m-[2%] py-[1%] px-[2%] bg-white/40 rounded-[0.3em] shadow-top">
+    {children}
+  </div>
 )
 
 export const ArtBox: Style = ({ children }) => (

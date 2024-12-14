@@ -5,7 +5,7 @@ export type Props<ID extends string|number> = {
   selected: ID,
   setSelected: (key: string) => void,
   className?: string,
-  children: ReactElement[],
+  children: ReactElement<any>[],
 }
 
 export default function Selector<ID extends string|number = number>({ label, selected, setSelected, className, children }: Props<ID>) {

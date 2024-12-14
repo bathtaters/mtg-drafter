@@ -1,3 +1,4 @@
+import type { ReactElement } from "react"
 import type { ErrorAlert, ToastAlert, Defaults, AlertTheme } from "./alerts.d"
 import { ErrorIcon, InfoIcon, SuccessIcon, WarningIcon } from "components/svgs/AlertIcons"
 import { clientErrorsInConsole } from "assets/constants"
@@ -37,7 +38,7 @@ export const buttonClasses: { [theme in AlertTheme]: string } = {
   secondary: 'btn-secondary text-secondary bg-secondary-content hover:bg-secondary-content/60',
 }
 
-export const alertIcons: { [theme in AlertTheme]: (props: { className?: string }) => JSX.Element } = {
+export const alertIcons: { [theme in AlertTheme]: (props: { className?: string }) => ReactElement<any> } = {
   base:      InfoIcon,
   error:     ErrorIcon,
   warning:   WarningIcon,

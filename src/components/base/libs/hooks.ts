@@ -7,7 +7,7 @@ const remaining = (end?: number|null, roundTo = 1, current = Date.now()) =>
   end && end > current ? Math.round((end - current) / roundTo) : undefined
 
 export function useTimer(endTime?: number|null, pauseTime?: number|null, onEnd = () => {}, notifySec = redTimerSeconds, tickMs = 1000) {
-  const timer = useRef<NodeJS.Timer>()
+  const timer = useRef<NodeJS.Timer>(undefined)
   const { current, send } = useNotification()
 
   const stop = useCallback(() => {

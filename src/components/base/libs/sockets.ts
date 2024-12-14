@@ -17,7 +17,7 @@ export default function useSocket<S extends Socket = Socket>(
 ) {
   const socket = useRef<S | null>(null)
   const emitQueue = useRef([] as Parameters<S['emit']>[])
-  const destructor = useRef<ReturnType<EffectCallback>>()
+  const destructor = useRef<ReturnType<EffectCallback>>(undefined)
   const [ isConnected, setConnected ] = useState<boolean>(false)
 
 
