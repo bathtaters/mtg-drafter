@@ -1,4 +1,4 @@
-import {} from "types/global.d";
+import type {} from "types/global";
 import { COMMON_CLS, combineKeys } from "./dragDrop.custom";
 
 // ---- Class Helpers ---- \\

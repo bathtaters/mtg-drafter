@@ -1,6 +1,6 @@
 import type { MouseEventHandler, ReactNode } from "react"
 import type { Board } from "@prisma/client"
-import { Direction } from "types/game.d"
+import { Direction } from "types/game"
 import DeckIcon from "components/svgs/DeckIcon"
 import ReloadIcon from "components/svgs/ReloadIcon"
 

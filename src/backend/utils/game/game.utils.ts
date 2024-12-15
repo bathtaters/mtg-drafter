@@ -1,4 +1,4 @@
-import type { Merge } from 'types/global.d'
+import type { Merge } from 'types/global'
 import type { Game as DbGame, Player as DbPlayer } from '@prisma/client'
 import type { Game, BasicPlayer, Player, PartialGame } from 'types/game'
 import { gameUrlRegEx } from 'assets/urls'

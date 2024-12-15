@@ -1,4 +1,4 @@
-import type { PlayerFull } from 'types/game.d'
+import type { PlayerFull } from 'types/game'
 import { GameCard, TabLabels } from '@prisma/client'
 import { TabsWrapper, TabStyle } from './GameBodyStyles'
 import { getBoard } from '../shared/game.utils'

@@ -1,4 +1,4 @@
-import type { Card, CardSet, Booster } from '@prisma/client'
+import type { Card, CardSet, Booster, GameCard } from '@prisma/client'
 import type { ErrResponse, ListResponse } from "pages/api/setup/upload"
 import type { BoosterType } from './scryfall'
 import z from "backend/libs/validation"

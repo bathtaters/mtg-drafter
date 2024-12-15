@@ -1,5 +1,5 @@
 import type { ReactNode, FormEventHandler, InputHTMLAttributes } from "react"
-import { DraftType, draftTypes } from "types/setup.d"
+import { DraftType, draftTypes } from "types/setup"
 import Tabs, { Props as TabProps } from "components/base/common/Tabs"
 import { ErrorIcon } from "components/svgs/AlertIcons"
 

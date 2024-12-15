@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client'
-import type { Set as JsonSet } from '../../../types/json.d'
+import type { Set as JsonSet } from '../../../types/json'
 export { JsonSet }
 
 // DB Adapters

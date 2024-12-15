@@ -1,5 +1,5 @@
 import type { Prisma, Color, Rarity, Side } from '@prisma/client'
-import type { CardSet as JsonCard } from '../../../types/json.d'
+import type { CardSet as JsonCard } from '../../../types/json'
 import type { Layout } from 'types/scryfall'
 import { scryfallImageUrl } from 'assets/urls'
 

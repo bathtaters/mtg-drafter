@@ -1,12 +1,12 @@
 // -- TYPESCRIPT HELPERS -- \\
 
-type Merge<A, B> = Omit<A, keyof B> & Pick<B, keyof A & keyof B>
+export type Merge<A, B> = Omit<A, keyof B> & Pick<B, keyof A & keyof B>
 
 // -- TYPESCRIPT FIX -- \\
 
 export declare global {
     // Fix Object return types
-    interface ObjectConstructor {
+    export interface ObjectConstructor {
       keys<T>(o: T): T extends object ? (keyof T)[] :
         T extends number ? [] :
         T extends Array<any> | string ? string[] :

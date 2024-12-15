@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client'
-import type { CardSet as JsonCard } from '../../../types/json.d'
+import type { CardSet as JsonCard } from '../../../types/json'
 import prisma from '../../libs/db'
 import fetchJson from '../../libs/fetchJson'
 import Batcher from '../../libs/Batcher'

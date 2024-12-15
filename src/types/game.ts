@@ -1,4 +1,4 @@
-import type { Card, Game as DbGame, Pack, GameCard, Player as DbPlayer, Board, Color, PlayerStatus, LogEntry, LogAction, FaceInCard } from "@prisma/client"
+import type { Card, Game as DbGame, Pack, GameCard, Player as DbPlayer, Board, PlayerStatus, LogEntry, LogAction, FaceInCard } from "@prisma/client"
 import type { SortKey } from "components/base/services/cardSort.services"
 import type { Layout } from "./scryfall"
 import z from "backend/libs/validation"
@@ -12,10 +12,10 @@ export type BasicLands = { [board in Board]: BoardLands } & { pack: never }
 
 // -- RELATED/PARTIAL TYPES -- \\
 
-export interface Player extends DbPlayer { timer: number | null, basics: BasicLands }
+export interface Player extends Omit<DbPlayer, 'timer'> { timer: number | null, basics: BasicLands }
 export type BasicPlayer = Pick<Player, "id"|"name"|"sessionId"|"pick">
 
-export interface Game extends DbGame { pause: number | null }
+export interface Game extends Omit<DbGame, 'pause'> { pause: number | null }
 export type PartialGame = Pick<Game,"id"|"name"|"url"|"watchKey">
 export type ListedGame = Pick<Game,"id"|"name"|"url"|"hostId"> & { player?: BasicPlayer }
 
@@ -44,8 +44,8 @@ export type LogData<Action extends LogAction = LogAction> =
   Action extends 'leave' ? null :
   Action extends 'rename' ? string :
   Action extends 'round' ? `${number}` | 'END' :
-  Action extends 'settings' ? `${Partial<Game>}` :
-   undefined
+  Action extends 'settings' ? string :
+   null
 
 export interface LogEntryFull extends LogEntry {
   card: (GameCard & { card: Card }) | null,
@@ -97,25 +97,25 @@ export type LogAuthResponse = { success?: boolean, message?: string }
 // -- FRONTEND TYPES -- \\
 
 export namespace Local {
-  type NextRound    = (round: Game['round']) => void
-  type PauseGame    = (pauseTime?: Game['pause']) => void
-  type RenamePlayer = (playerId: Player['id'], name: Player['name']) => void
-  type PickCard     = (playerId: Player['id'], pick: Player['pick'], passingToId?: Player['id']) => void
-  type SwapCard     = (gameCardId: GameCard['id'], board: Board) => void
-  type SetLands     = (basics: BasicLands) => void
-  type SetStatus    = (playerId: Player['id'], sessionId: Player['sessionId'], isSelf?: boolean) => void
+  export type NextRound    = (round: Game['round']) => void
+  export type PauseGame    = (pauseTime?: Game['pause']) => void
+  export type RenamePlayer = (playerId: Player['id'], name: Player['name']) => void
+  export type PickCard     = (playerId: Player['id'], pick: Player['pick'], passingToId?: Player['id']) => void
+  export type SwapCard     = (gameCardId: GameCard['id'], board: Board) => void
+  export type SetLands     = (basics: BasicLands) => void
+  export type SetStatus    = (playerId: Player['id'], sessionId: Player['sessionId'], isSelf?: boolean) => void
 }
 
 export namespace Socket {
-  type RenamePlayer  = (name: Player['name'], playerId?: Player['id'], byHost?: boolean) => void
-  type SetTitle      = (title: Game['name']) => void
-  type NextRound     = () => void
-  type PauseGame     = (resume?: boolean) => void
-  type PickCard      = (gameCardOrPack: GameCard['id'] | Pack['index']) => void
-  type SwapCard      = (gameCardId: GameCard['id'], toBoard: Board) => void
-  type SetLands      = (lands: BasicLands) => void
-  type SetStatus     = (playerId: Player['id'], status?: PlayerStatus, byHost?: boolean) => void
-  type SetWatchPw    = (password: string | null) => void
+  export type RenamePlayer  = (name: Player['name'], playerId?: Player['id'], byHost?: boolean) => void
+  export type SetTitle      = (title: Game['name']) => void
+  export type NextRound     = () => void
+  export type PauseGame     = (resume?: boolean) => void
+  export type PickCard      = (gameCardOrPack: GameCard['id'] | Pack['index']) => void
+  export type SwapCard      = (gameCardId: GameCard['id'], toBoard: Board) => void
+  export type SetLands      = (lands: BasicLands) => void
+  export type SetStatus     = (playerId: Player['id'], status?: PlayerStatus, byHost?: boolean) => void
+  export type SetWatchPw    = (password: string | null) => void
 }
 
 // Aliases

@@ -1,5 +1,5 @@
 import { Fragment, MouseEventHandler } from "react"
-import { type CardFull, Direction } from "types/game.d"
+import { type CardFull, Direction } from "types/game"
 import { Board, TabLabels } from "@prisma/client"
 import RenderedCard from "./RenderedCard/RenderedCard"
 import { CardWrapper, FlipButton, ImgWrapper, MeldBadge, RotateButton, SwapButton } from "./GameCardStyles"
