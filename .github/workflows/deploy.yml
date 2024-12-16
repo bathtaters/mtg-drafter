@@ -18,6 +18,12 @@ jobs:
         with:
           node-version-file: '.nvmrc'
       
+      - name: Install Podman if not already installed
+        run: |
+          if ! command -v podman &> /dev/null; then
+            sudo apt-get install -y podman
+          fi
+      
       - name: Generate package-lock
         run: npm i --package-lock-only
 
@@ -25,16 +31,15 @@ jobs:
         run: echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > .env.prod
 
       - name: Build image
-        uses: redhat-actions/buildah-build@main
-        with:
-          image: mtg-drafter
-          containerfiles: Dockerfile
-          context: .
+        run: podman build -t mtg-drafter .
+
+      - name: Save image as tarball
+        run: podman save -o mtg-drafter.tar mtg-drafter
 
       - name: Upload image
         uses: actions/upload-artifact@main
         with:
-          name: docker-image
+          name: mtgd-image
           path: mtg-drafter.tar
 
   deploy:
@@ -42,10 +47,10 @@ jobs:
     needs: build
 
     steps:
-      - name: Download Docker image
+      - name: Download image
         uses: actions/download-artifact@main
         with:
-          name: docker-image
+          name: mtgd-image
           path: mtg-drafter.tar
       
       - name: Deploy to Server
