@@ -66,7 +66,7 @@ export const
     type: "Cube",
     name: "",
     players: "8",
-    timer: "7",
+    timer: "0",
     packs: "3",
     packSize: "15",
     packList: ["KLD:draft","KLD:draft","AER:draft"],
