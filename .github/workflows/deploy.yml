@@ -31,6 +31,12 @@ jobs:
 
       - name: Copy .env
         run: echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > .env.prod
+      
+      - name: Tar as root
+        run: |
+          sudo mv -fv /usr/bin/tar /usr/bin/tar.orig
+          echo -e '#!/bin/sh\n\nsudo /usr/bin/tar.orig "$@"' | sudo tee -a /usr/bin/tar
+          sudo chmod +x /usr/bin/tar
 
       - name: Build image
         run: podman build -t mtg-drafter .
@@ -65,7 +71,7 @@ jobs:
             REMOTE_USER: ${{ vars.REMOTE_USER }}
             TARGET: ${{ vars.REMOTE_TARGET }}/
             SCRIPT_AFTER: |
-              podman stop mtg-drafter || true
+              podman stop -i mtg-drafter
               podman rm -i mtg-drafter
               podman rmi -i mtg-drafter
               podman load -i mtg-drafter.tar
