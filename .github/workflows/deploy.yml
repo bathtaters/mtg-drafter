@@ -33,7 +33,7 @@ jobs:
       - name: Build image
         run: podman build -t mtg-drafter .
 
-      - name: Save image as tarball
+      - name: Compress image
         run: podman save -o mtg-drafter.tar mtg-drafter
 
       - name: Upload image
@@ -61,7 +61,7 @@ jobs:
             SOURCE: "mtg-drafter.tar"
             REMOTE_HOST: ${{ vars.REMOTE_HOST }}
             REMOTE_USER: ${{ vars.REMOTE_USER }}
-            TARGET: ${{ vars.REMOTE_TARGET }}
+            TARGET: ${{ vars.REMOTE_TARGET }}/
             SCRIPT_AFTER: |
               podman stop mtg-drafter
               podman rm -i mtg-drafter
