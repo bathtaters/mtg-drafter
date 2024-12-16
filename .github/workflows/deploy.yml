@@ -1,3 +1,5 @@
+# !! This workflow requires both podman & rsync are install on the remote host. !! #
+
 name: Deploy to Production
 
 on:
@@ -57,7 +59,7 @@ jobs:
         uses: easingthemes/ssh-deploy@main
         with:
             SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-            ARGS: "-avzc -i --delete"
+            ARGS: "-avzc -i"
             SOURCE: "mtg-drafter.tar"
             REMOTE_HOST: ${{ vars.REMOTE_HOST }}
             REMOTE_USER: ${{ vars.REMOTE_USER }}
