@@ -1,4 +1,4 @@
-# !! This workflow requires both podman & rsync are install on the remote host. !! #
+# !! This workflow requires podman & rsync installed on the remote host. !! #
 
 name: Deploy to Production
 
@@ -20,7 +20,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
       
-      - name: Install Podman if not already installed
+      - name: Install Podman
         run: |
           if ! command -v podman &> /dev/null; then
             sudo apt-get install -y podman
@@ -38,6 +38,14 @@ jobs:
           echo -e '#!/bin/sh\n\nsudo /usr/bin/tar.orig "$@"' | sudo tee -a /usr/bin/tar
           sudo chmod +x /usr/bin/tar
 
+      - name: Enable caching for podman-machine
+        uses: actions/cache@main
+        with:
+          path: |
+            ~/.local/share/containers
+            ~/.config/containers
+          key: ${{ runner.os }}-${{ github.workflow }}-${{ hashFiles('package.json') }}
+  
       - name: Build image
         run: podman build -t mtg-drafter .
 
