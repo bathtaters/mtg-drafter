@@ -27,7 +27,7 @@ jobs:
       - name: Build image
         uses: redhat-actions/buildah-build@main
         with:
-          image: mtg-drafter:latest
+          image: mtg-drafter
           containerfiles: Dockerfile
           context: .
 
