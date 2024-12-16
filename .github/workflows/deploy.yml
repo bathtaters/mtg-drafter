@@ -1,0 +1,65 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+      
+      - name: Generate package-lock
+        run: npm i --package-lock-only
+
+      - name: Copy .env
+        run: echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > .env.prod
+
+      - name: Build image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: mtg-drafter:latest
+          containerfiles: Dockerfile
+          context: .
+
+      - name: Upload image
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-image
+          path: mtg-drafter.tar
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download Docker image
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-image
+          path: mtg-drafter.tar
+      
+      - name: Deploy to Server
+        uses: easingthemes/ssh-deploy@main
+        with:
+            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+            ARGS: "-avzc -i --delete"
+            SOURCE: "mtg-drafter.tar"
+            REMOTE_HOST: ${{ vars.REMOTE_HOST }}
+            REMOTE_USER: ${{ vars.REMOTE_USER }}
+            TARGET: ${{ vars.REMOTE_TARGET }}
+            SCRIPT_AFTER: |
+              podman stop mtg-drafter
+              podman rm -i mtg-drafter
+              podman rmi -i mtg-drafter
+              podman load -i mtg-drafter.tar
+              podman run -d --name mtg-drafter -p 3041:3040 mtg-drafter
