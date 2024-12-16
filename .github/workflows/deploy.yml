@@ -61,18 +61,28 @@ jobs:
           name: mtgd-image
           path: .
       
-      - name: Deploy to Server
-        uses: easingthemes/ssh-deploy@main
-        with:
-            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-            ARGS: "-cvz"
-            SOURCE: "mtg-drafter.tar"
-            REMOTE_HOST: ${{ vars.REMOTE_HOST }}
-            REMOTE_USER: ${{ vars.REMOTE_USER }}
-            TARGET: ${{ vars.REMOTE_TARGET }}/
-            SCRIPT_AFTER: |
-              podman stop -i mtg-drafter
-              podman rm -i mtg-drafter
-              podman rmi -i mtg-drafter
-              podman load -i mtg-drafter.tar
-              podman run -d --name mtg-drafter -p 3041:3040 mtg-drafter
+      - name: Install SSH key
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ vars.REMOTE_HOST }} > ~/.ssh/known_hosts
+
+      - name: Copy image to host
+        run: rsync -cvz mtg-drafter.tar ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{ vars.REMOTE_TARGET }}/
+        
+      - name: Remove old container
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
+          cd ${{ vars.REMOTE_TARGET }}
+          podman stop -i mtg-drafter
+          podman rm -i mtg-drafter
+          podman rmi -i mtg-drafter
+          EOF
+      
+      - name: Deploy new container
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
+          cd ${{ vars.REMOTE_TARGET }}
+          podman load -i mtg-drafter.tar
+          podman run -d --name mtg-drafter -p 3041:3040 mtg-drafter
+          EOF
