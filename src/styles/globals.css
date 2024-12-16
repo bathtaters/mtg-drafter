@@ -24,7 +24,6 @@
   
   /* Capitialized buttons for daisyUI v4  */
   .btn { @apply uppercase; }
-  .file\:btn { @apply file:uppercase; }
 }
 
 @layer components {

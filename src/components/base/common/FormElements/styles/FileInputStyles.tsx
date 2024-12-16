@@ -9,7 +9,7 @@ export const InputWrapper = ({ label, children }: { label: string, children: Rea
 
 export const InputElem = (props: HTMLProps<HTMLInputElement>) => (
   <input type="file"
-    className="block w-full text-sm text-secondary bg-secondary-content rounded-xl file:btn file:btn-secondary file:mr-4"
+    className="block w-full text-sm text-secondary file-input file-input-secondary"
     {...props}
   />
 )
