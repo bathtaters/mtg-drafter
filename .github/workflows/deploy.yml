@@ -65,7 +65,7 @@ jobs:
             REMOTE_USER: ${{ vars.REMOTE_USER }}
             TARGET: ${{ vars.REMOTE_TARGET }}/
             SCRIPT_AFTER: |
-              podman stop mtg-drafter
+              podman stop mtg-drafter || true
               podman rm -i mtg-drafter
               podman rmi -i mtg-drafter
               podman load -i mtg-drafter.tar
