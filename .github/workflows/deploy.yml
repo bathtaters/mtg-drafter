@@ -1,4 +1,4 @@
-# !! This workflow requires podman & rsync installed on the remote host. !! #
+# !! This workflow requires podman & rsync installed on the remote host !! #
 
 name: Deploy to Production
 
