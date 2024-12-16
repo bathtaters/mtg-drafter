@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@main
       
       - name: Install Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@main
         with:
           node-version-file: '.nvmrc'
       
@@ -25,14 +25,14 @@ jobs:
         run: echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > .env.prod
 
       - name: Build image
-        uses: redhat-actions/buildah-build@v2
+        uses: redhat-actions/buildah-build@main
         with:
           image: mtg-drafter:latest
           containerfiles: Dockerfile
           context: .
 
       - name: Upload image
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@main
         with:
           name: docker-image
           path: mtg-drafter.tar
@@ -43,7 +43,7 @@ jobs:
 
     steps:
       - name: Download Docker image
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@main
         with:
           name: docker-image
           path: mtg-drafter.tar
