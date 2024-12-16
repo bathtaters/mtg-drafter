@@ -29,7 +29,7 @@ export default function CubeForm({ options, setOption, file, fileLoading, setFil
           <RangeInput caption={<PacksLabel />}    value={options.packs}    setValue={setOption.packs}    {...setupLimits.packs}    />
           <RangeInput caption={<PackSizeLabel />} value={options.packSize} setValue={setOption.packSize} {...setupLimits.packSize} />
           <RangeInput caption={<TimerLabel />}    value={options.timer}    setValue={setOption.timer}    {...setupLimits.timer}  
-            keys={timerText} boxClass="w-16" wrapperClass="tooltip-bottom" />
+            keys={timerText} boxClass="w-16" wrapperClass="px-4 pb-4 w-full tooltip-bottom" />
         </FieldWrapper>
 
         <FieldWrapper label="Cube File">
