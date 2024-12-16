@@ -5,7 +5,11 @@ name: Deploy to Production
 on:
   push:
     branches:
-      - test-actions
+      - prod
+  pull_request:
+    branches:
+      - prod
+  workflow_dispatch:
 
 jobs:
   build:
@@ -32,13 +36,14 @@ jobs:
       - name: Copy .env
         run: echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > .env.prod
       
-      - name: Tar as root
+      - name: Fix for podman cache
+        # Fixes permissions error during cleanup
         run: |
           sudo mv -fv /usr/bin/tar /usr/bin/tar.orig
           echo -e '#!/bin/sh\n\nsudo /usr/bin/tar.orig "$@"' | sudo tee -a /usr/bin/tar
           sudo chmod +x /usr/bin/tar
 
-      - name: Enable caching for podman-machine
+      - name: Cache podman-machine
         uses: actions/cache@main
         with:
           path: |
@@ -92,5 +97,5 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
           cd ${{ vars.REMOTE_TARGET }}
           podman load -i mtg-drafter.tar
-          podman run -d --name mtg-drafter -p 3041:3040 mtg-drafter
+          podman run -d --name mtg-drafter -p 3040:3040 mtg-drafter
           EOF
