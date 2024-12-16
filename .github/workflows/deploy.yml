@@ -59,13 +59,13 @@ jobs:
         uses: actions/download-artifact@main
         with:
           name: mtgd-image
-          path: mtg-drafter.tar
+          path: .
       
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
         with:
             SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-            ARGS: "-avzc -i"
+            ARGS: "-cvz"
             SOURCE: "mtg-drafter.tar"
             REMOTE_HOST: ${{ vars.REMOTE_HOST }}
             REMOTE_USER: ${{ vars.REMOTE_USER }}
