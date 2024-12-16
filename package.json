@@ -10,7 +10,10 @@
     "lint": "next lint",
     "test": "jest",
     "ssl": "npx local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3041 --target 3040",
-    "update": "git pull && npm install && npm update && prisma migrate deploy && prisma generate && npm run build && pm2 restart mtg-drafter --update-env"
+    "update": "git pull && npm install && npm update && prisma migrate deploy && prisma generate && npm run build && pm2 restart mtg-drafter --update-env",
+    "pod-build": "podman build -t mtg-drafter .",
+    "pod-start": "podman run -d --name mtg-drafter -p 3040:3040 mtg-drafter",
+    "pod-stop": "podman stop mtg-drafter && podman rm mtg-drafter"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
