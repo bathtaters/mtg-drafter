@@ -1,5 +1,4 @@
 # syntax=docker/dockerfile:1
-ARG ENV_FILE=.env.prod
 ARG NODE_VERSION=22.12.0
 FROM node:${NODE_VERSION}-alpine AS base
 RUN apk add --no-cache openssl
@@ -16,6 +15,7 @@ RUN npm ci
 # Build
 FROM base AS builder
 WORKDIR /app
+ARG ENV_FILE=.env.prod
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
