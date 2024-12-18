@@ -32,9 +32,13 @@ jobs:
       
       - name: Generate package-lock
         run: npm i --package-lock-only
+      
+      - name: Get Node.js version
+        id: node_version
+        run: echo "NODE_VERSION=$(node --version)" >> $GITHUB_OUTPUT
 
       - name: Copy .env
-        run: echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > .env.prod
+        run: echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > .env.tmp
       
       - name: Fix for podman cache
         # Fixes permissions error during cleanup
@@ -50,9 +54,9 @@ jobs:
             ~/.local/share/containers
             ~/.config/containers
           key: ${{ runner.os }}-${{ github.workflow }}-${{ hashFiles('package.json') }}
-  
+    
       - name: Build image
-        run: podman build -t mtg-drafter .
+        run: podman build --build-arg ENV_FILE=.env.tmp --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} -t mtg-drafter .
 
       - name: Compress image
         run: podman save -o mtg-drafter.tar mtg-drafter
@@ -97,5 +101,13 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
           cd ${{ vars.REMOTE_TARGET }}
           podman load -i mtg-drafter.tar
-          podman run -d --name mtg-drafter -p 3040:3040 mtg-drafter
+          podman run --memory 512m -d --name mtg-drafter -p ${{ vars.REMOTE_PORT }}:3000 mtg-drafter
+          EOF
+      
+      - name: Cleanup images
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
+          cd ${{ vars.REMOTE_TARGET }}
+          rm -f mtg-drafter.tar
+          podman image prune -a -f
           EOF
