@@ -14,7 +14,7 @@
 
 # production
 /build
-mtg-drafter.tar
+*.tar
 /deploy*.sh
 
 # misc
