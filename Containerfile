@@ -5,6 +5,7 @@
 ARG NODE_VERSION=22.12.0
 FROM node:${NODE_VERSION}-alpine AS base
 RUN apk add --no-cache openssl
+RUN npm install -g npm@latest
 
 ################################################################################
 # Install dependecies
