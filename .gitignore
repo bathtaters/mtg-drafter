@@ -15,6 +15,7 @@
 # production
 /build
 mtg-drafter.tar
+/deploy*.sh
 
 # misc
 .DS_Store
