@@ -27,5 +27,8 @@
 LICENSE
 README.md
 
+!/.env
 *.pem
+*.tar
+deploy*.sh
 next-env.d.ts
