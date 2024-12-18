@@ -1,4 +1,7 @@
 # syntax=docker/dockerfile:1
+#
+# build-arg: NODE_VERSION, ENV_FILE, LISTEN_PORT
+
 ARG NODE_VERSION=22.12.0
 FROM node:${NODE_VERSION}-alpine AS base
 RUN apk add --no-cache openssl
@@ -15,7 +18,7 @@ RUN npm ci
 # Build
 FROM base AS builder
 WORKDIR /app
-ARG ENV_FILE=.env.prod
+ARG ENV_FILE=.env
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -26,7 +29,7 @@ RUN npm run build
 # Run
 FROM base AS runner
 WORKDIR /app
-ARG LISTEN_PORT=3040
+ARG LISTEN_PORT=3000
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
