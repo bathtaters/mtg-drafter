@@ -1,22 +1,40 @@
 # !! This workflow requires podman & rsync installed on the remote host !! #
 
-name: Deploy Base
+name: Build & Deploy
 
 on:
+  push:
+    branches:
+      - prod
+  pull_request:
+    branches:
+      - prod
   workflow_call:
     inputs:
-      name:
+      # Defaults to DEV (For testing workflow)
+      proc_name:
         required: true
         type: string
-      environment:
+        default: "mtg-drafter-test"
+      db_name:
         required: true
         type: string
+        default: "mtgdrafter_dev"
+      remote_port:
+        required: true
+        type: number
+        default: 3041
 
+env:
+  # Default to PROD (For push/pull workflow)
+  PROC_NAME: ${{ inputs.proc_name || 'mtg-drafter' }}
+  DB_NAME: ${{ inputs.db_name || 'mtgdrafter' }}
+  REMOTE_PORT: ${{ inputs.remote_port || 3040 }}
+  REMOTE_DIR: /tmp
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
 
     steps:
       - name: Checkout code
@@ -41,9 +59,7 @@ jobs:
         run: echo "NODE_VERSION=$(node --version | grep --color=never -o -E '[0-9]+(\.[0-9]+)*')" >> $GITHUB_OUTPUT
 
       - name: Copy .env
-        run: |
-          echo 'DATABASE_URL="${{ secrets.DB_BASE_URL }}/${{ vars.DB_NAME }}?${{ vars.DB_OPTIONS }}"' > .env.tmp
-          cat .env.tmp
+        run: echo 'DATABASE_URL="${{ secrets.DB_BASE_URL }}/'$DB_NAME'?${{ vars.DB_OPTIONS }}"' > .env.tmp
       
       - name: Fix for podman cache
         # Fixes permissions error during cleanup
@@ -61,27 +77,26 @@ jobs:
           key: ${{ runner.os }}-${{ github.workflow }}-${{ hashFiles('package.json') }}
     
       - name: Build image
-        run: podman build --build-arg ENV_FILE=.env.tmp --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} -t ${{ inputs.name }} .
+        run: podman build --build-arg ENV_FILE=.env.tmp --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} -t $PROC_NAME .
 
       - name: Compress image
-        run: podman save -o ${{ inputs.name }}.tar ${{ inputs.name }}
+        run: podman save -o $PROC_NAME.tar $PROC_NAME
 
       - name: Upload image
         uses: actions/upload-artifact@main
         with:
-          name: ${{ inputs.name }}-image
-          path: ${{ inputs.name }}.tar
+          name: $PROC_NAME-image
+          path: $PROC_NAME.tar
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment: ${{ inputs.environment }}
 
     steps:
       - name: Download image
         uses: actions/download-artifact@main
         with:
-          name: ${{ inputs.name }}-image
+          name: $PROC_NAME-image
           path: .
       
       - name: Install SSH key
@@ -91,29 +106,26 @@ jobs:
           ssh-keyscan -H ${{ vars.REMOTE_HOST }} > ~/.ssh/known_hosts
 
       - name: Copy image to host
-        run: rsync -cvz ${{ inputs.name }}.tar ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{ vars.REMOTE_TARGET }}/
+        run: rsync -cvz $PROC_NAME.tar ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:$REMOTE_DIR/
         
       - name: Remove old container
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
-          cd ${{ vars.REMOTE_TARGET }}
-          podman stop -i ${{ inputs.name }}
-          podman rm -i ${{ inputs.name }}
-          podman rmi -i ${{ inputs.name }}
+          podman stop -i $PROC_NAME
+          podman rm -i $PROC_NAME
+          podman rmi -i $PROC_NAME
           EOF
       
       - name: Deploy new container
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
-          cd ${{ vars.REMOTE_TARGET }}
-          podman load -i ${{ inputs.name }}.tar
-          podman run --memory 512m -d --name ${{ inputs.name }} -p ${{ vars.REMOTE_PORT }}:3000 ${{ inputs.name }}
+          podman load -i $REMOTE_DIR/$PROC_NAME.tar
+          podman run --memory 512m -d --name $PROC_NAME -p $REMOTE_PORT:3000 $PROC_NAME
           EOF
       
       - name: Cleanup images
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
-          cd ${{ vars.REMOTE_TARGET }}
-          rm -f ${{ inputs.name }}.tar
+          rm -f $REMOTE_DIR/$PROC_NAME.tar
           podman image prune -a -f
           EOF
