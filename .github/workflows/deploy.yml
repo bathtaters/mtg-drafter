@@ -80,13 +80,15 @@ jobs:
         run: podman build --build-arg ENV_FILE=.env.tmp --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} -t $PROC_NAME .
 
       - name: Compress image
-        run: podman save -o $PROC_NAME.tar $PROC_NAME
+        run: |
+          podman save -o $PROC_NAME.tar $PROC_NAME
+          echo "procName=$PROC_NAME" >> $GITHUB_ENV
 
       - name: Upload image
         uses: actions/upload-artifact@main
         with:
-          name: $PROC_NAME-image
-          path: $PROC_NAME.tar
+          name: ${{ env.PROC_NAME }}-image
+          path: ${{ env.PROC_NAME }}.tar
 
   deploy:
     runs-on: ubuntu-latest
