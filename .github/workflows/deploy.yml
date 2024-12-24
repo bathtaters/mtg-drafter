@@ -1,6 +1,6 @@
 # !! This workflow requires podman & rsync installed on the remote host !! #
 
-name: Deploy to Production
+name: Build & Deploy
 
 on:
   push:
@@ -10,6 +10,27 @@ on:
     branches:
       - prod
   workflow_dispatch:
+    inputs:
+      # Defaults to DEV (For testing workflow)
+      proc_name:
+        required: true
+        type: string
+        default: "mtg-drafter-test"
+      db_name:
+        required: true
+        type: string
+        default: "mtgdrafter_dev"
+      remote_port:
+        required: true
+        type: number
+        default: 3041
+
+env:
+  # Default to PROD (For push/pull workflow)
+  PROC_NAME: ${{ inputs.proc_name || 'mtg-drafter' }}
+  DB_NAME: ${{ inputs.db_name || 'mtgdrafter' }}
+  REMOTE_PORT: ${{ inputs.remote_port || 3040 }}
+  REMOTE_DIR: /tmp
 
 jobs:
   build:
@@ -38,7 +59,7 @@ jobs:
         run: echo "NODE_VERSION=$(node --version | grep --color=never -o -E '[0-9]+(\.[0-9]+)*')" >> $GITHUB_OUTPUT
 
       - name: Copy .env
-        run: echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > .env.tmp
+        run: echo 'DATABASE_URL="${{ secrets.DB_BASE_URL }}/${{ env.DB_NAME }}?${{ vars.DB_OPTIONS }}"' > .env.tmp
       
       - name: Fix for podman cache
         # Fixes permissions error during cleanup
@@ -56,16 +77,16 @@ jobs:
           key: ${{ runner.os }}-${{ github.workflow }}-${{ hashFiles('package.json') }}
     
       - name: Build image
-        run: podman build --build-arg ENV_FILE=.env.tmp --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} -t mtg-drafter .
+        run: podman build --build-arg ENV_FILE=.env.tmp --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} -t ${{ env.PROC_NAME }} .
 
       - name: Compress image
-        run: podman save -o mtg-drafter.tar mtg-drafter
+        run: podman save -o ${{ env.PROC_NAME }}.tar ${{ env.PROC_NAME }}
 
       - name: Upload image
         uses: actions/upload-artifact@main
         with:
-          name: mtgd-image
-          path: mtg-drafter.tar
+          name: ${{ env.PROC_NAME }}-image
+          path: ${{ env.PROC_NAME }}.tar
 
   deploy:
     runs-on: ubuntu-latest
@@ -75,7 +96,7 @@ jobs:
       - name: Download image
         uses: actions/download-artifact@main
         with:
-          name: mtgd-image
+          name: ${{ env.PROC_NAME }}-image
           path: .
       
       - name: Install SSH key
@@ -85,29 +106,26 @@ jobs:
           ssh-keyscan -H ${{ vars.REMOTE_HOST }} > ~/.ssh/known_hosts
 
       - name: Copy image to host
-        run: rsync -cvz mtg-drafter.tar ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{ vars.REMOTE_TARGET }}/
+        run: rsync -cvz ${{ env.PROC_NAME }}.tar ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{ env.REMOTE_DIR }}/
         
       - name: Remove old container
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
-          cd ${{ vars.REMOTE_TARGET }}
-          podman stop -i mtg-drafter
-          podman rm -i mtg-drafter
-          podman rmi -i mtg-drafter
+          podman stop -i ${{ env.PROC_NAME }}
+          podman rm -i ${{ env.PROC_NAME }}
+          podman rmi -i ${{ env.PROC_NAME }}
           EOF
       
       - name: Deploy new container
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
-          cd ${{ vars.REMOTE_TARGET }}
-          podman load -i mtg-drafter.tar
-          podman run --memory 512m -d --name mtg-drafter -p ${{ vars.REMOTE_PORT }}:3000 mtg-drafter
+          podman load -i ${{ env.REMOTE_DIR }}/${{ env.PROC_NAME }}.tar
+          podman run --memory 512m -d --name ${{ env.PROC_NAME }} -p ${{ env.REMOTE_PORT }}:3000 ${{ env.PROC_NAME }}
           EOF
       
       - name: Cleanup images
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
-          cd ${{ vars.REMOTE_TARGET }}
-          rm -f mtg-drafter.tar
+          rm -f ${{ env.REMOTE_DIR }}/${{ env.PROC_NAME }}.tar
           podman image prune -a -f
           EOF
