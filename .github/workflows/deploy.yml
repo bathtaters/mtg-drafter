@@ -77,10 +77,10 @@ jobs:
           key: ${{ runner.os }}-${{ github.workflow }}-${{ hashFiles('package.json') }}
     
       - name: Build image
-        run: podman build --build-arg ENV_FILE=.env.tmp --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} -t $PROC_NAME .
+        run: podman build --build-arg ENV_FILE=.env.tmp --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} -t ${{ env.PROC_NAME }} .
 
       - name: Compress image
-        run: podman save -o $PROC_NAME.tar $PROC_NAME
+        run: podman save -o ${{ env.PROC_NAME }}.tar ${{ env.PROC_NAME }}
 
       - name: Upload image
         uses: actions/upload-artifact@main
@@ -106,26 +106,26 @@ jobs:
           ssh-keyscan -H ${{ vars.REMOTE_HOST }} > ~/.ssh/known_hosts
 
       - name: Copy image to host
-        run: rsync -cvz $PROC_NAME.tar ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:$REMOTE_DIR/
+        run: rsync -cvz ${{ env.PROC_NAME }}.tar ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{ env.REMOTE_DIR }}/
         
       - name: Remove old container
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
-          podman stop -i $PROC_NAME
-          podman rm -i $PROC_NAME
-          podman rmi -i $PROC_NAME
+          podman stop -i ${{ env.PROC_NAME }}
+          podman rm -i ${{ env.PROC_NAME }}
+          podman rmi -i ${{ env.PROC_NAME }}
           EOF
       
       - name: Deploy new container
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
-          podman load -i $REMOTE_DIR/$PROC_NAME.tar
-          podman run --memory 512m -d --name $PROC_NAME -p $REMOTE_PORT:3000 $PROC_NAME
+          podman load -i ${{ env.REMOTE_DIR }}/${{ env.PROC_NAME }}.tar
+          podman run --memory 512m -d --name ${{ env.PROC_NAME }} -p ${{ env.REMOTE_PORT }}:3000 ${{ env.PROC_NAME }}
           EOF
       
       - name: Cleanup images
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
-          rm -f $REMOTE_DIR/$PROC_NAME.tar
+          rm -f ${{ env.REMOTE_DIR }}/${{ env.PROC_NAME }}.tar
           podman image prune -a -f
           EOF
