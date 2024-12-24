@@ -59,7 +59,7 @@ jobs:
         run: echo "NODE_VERSION=$(node --version | grep --color=never -o -E '[0-9]+(\.[0-9]+)*')" >> $GITHUB_OUTPUT
 
       - name: Copy .env
-        run: echo 'DATABASE_URL="${{ secrets.DB_BASE_URL }}/'$DB_NAME'?${{ vars.DB_OPTIONS }}"' > .env.tmp
+        run: echo 'DATABASE_URL="${{ secrets.DB_BASE_URL }}/${{ env.DB_NAME }}?${{ vars.DB_OPTIONS }}"' > .env.tmp
       
       - name: Fix for podman cache
         # Fixes permissions error during cleanup
@@ -80,9 +80,7 @@ jobs:
         run: podman build --build-arg ENV_FILE=.env.tmp --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} -t $PROC_NAME .
 
       - name: Compress image
-        run: |
-          podman save -o $PROC_NAME.tar $PROC_NAME
-          echo "procName=$PROC_NAME" >> $GITHUB_ENV
+        run: podman save -o $PROC_NAME.tar $PROC_NAME
 
       - name: Upload image
         uses: actions/upload-artifact@main
@@ -98,7 +96,7 @@ jobs:
       - name: Download image
         uses: actions/download-artifact@main
         with:
-          name: $PROC_NAME-image
+          name: ${{ env.PROC_NAME }}-image
           path: .
       
       - name: Install SSH key
