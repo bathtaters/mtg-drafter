@@ -1,19 +1,22 @@
 # !! This workflow requires podman & rsync installed on the remote host !! #
 
-name: Deploy to Production
+name: Deploy Base
 
 on:
-  push:
-    branches:
-      - prod
-  pull_request:
-    branches:
-      - prod
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
 
     steps:
       - name: Checkout code
@@ -38,7 +41,7 @@ jobs:
         run: echo "NODE_VERSION=$(node --version)" >> $GITHUB_OUTPUT
 
       - name: Copy .env
-        run: echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' > .env.tmp
+        run: echo 'DATABASE_URL=${{ secrets.DB_BASE_URL }}/${{ vars.DB_NAME }}?${{ vars.DB_OPTIONS }}' > .env.tmp
       
       - name: Fix for podman cache
         # Fixes permissions error during cleanup
@@ -56,26 +59,27 @@ jobs:
           key: ${{ runner.os }}-${{ github.workflow }}-${{ hashFiles('package.json') }}
     
       - name: Build image
-        run: podman build --build-arg ENV_FILE=.env.tmp --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} -t mtg-drafter .
+        run: podman build --build-arg ENV_FILE=.env.tmp --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} -t ${{ inputs.name }} .
 
       - name: Compress image
-        run: podman save -o mtg-drafter.tar mtg-drafter
+        run: podman save -o ${{ inputs.name }}.tar ${{ inputs.name }}
 
       - name: Upload image
         uses: actions/upload-artifact@main
         with:
-          name: mtgd-image
-          path: mtg-drafter.tar
+          name: ${{ inputs.name }}-image
+          path: ${{ inputs.name }}.tar
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    environment: ${{ inputs.environment }}
 
     steps:
       - name: Download image
         uses: actions/download-artifact@main
         with:
-          name: mtgd-image
+          name: ${{ inputs.name }}-image
           path: .
       
       - name: Install SSH key
@@ -85,29 +89,29 @@ jobs:
           ssh-keyscan -H ${{ vars.REMOTE_HOST }} > ~/.ssh/known_hosts
 
       - name: Copy image to host
-        run: rsync -cvz mtg-drafter.tar ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{ vars.REMOTE_TARGET }}/
+        run: rsync -cvz ${{ inputs.name }}.tar ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{ vars.REMOTE_TARGET }}/
         
       - name: Remove old container
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
           cd ${{ vars.REMOTE_TARGET }}
-          podman stop -i mtg-drafter
-          podman rm -i mtg-drafter
-          podman rmi -i mtg-drafter
+          podman stop -i ${{ inputs.name }}
+          podman rm -i ${{ inputs.name }}
+          podman rmi -i ${{ inputs.name }}
           EOF
       
       - name: Deploy new container
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
           cd ${{ vars.REMOTE_TARGET }}
-          podman load -i mtg-drafter.tar
-          podman run --memory 512m -d --name mtg-drafter -p ${{ vars.REMOTE_PORT }}:3000 mtg-drafter
+          podman load -i ${{ inputs.name }}.tar
+          podman run --memory 512m -d --name ${{ inputs.name }} -p ${{ vars.REMOTE_PORT }}:3000 ${{ inputs.name }}
           EOF
       
       - name: Cleanup images
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
           cd ${{ vars.REMOTE_TARGET }}
-          rm -f mtg-drafter.tar
+          rm -f ${{ inputs.name }}.tar
           podman image prune -a -f
           EOF
