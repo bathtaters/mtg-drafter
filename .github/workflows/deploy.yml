@@ -9,7 +9,7 @@ on:
   pull_request:
     branches:
       - prod
-  workflow_call:
+  workflow_dispatch:
     inputs:
       # Defaults to DEV (For testing workflow)
       proc_name:
