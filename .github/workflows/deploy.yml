@@ -41,7 +41,9 @@ jobs:
         run: echo "NODE_VERSION=$(node --version | grep --color=never -o -E '[0-9]+(\.[0-9]+)*')" >> $GITHUB_OUTPUT
 
       - name: Copy .env
-        run: echo 'DATABASE_URL="${{ secrets.DB_BASE_URL }}/${{ vars.DB_NAME }}?${{ vars.DB_OPTIONS }}"' > .env.tmp
+        run: |
+          echo 'DATABASE_URL="${{ secrets.DB_BASE_URL }}/${{ vars.DB_NAME }}?${{ vars.DB_OPTIONS }}"' > .env.tmp
+          cat .env.tmp
       
       - name: Fix for podman cache
         # Fixes permissions error during cleanup
