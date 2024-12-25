@@ -24,7 +24,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 COPY ${ENV_FILE} .env
-RUN npm run build
+RUN npx prisma generate && npx next build
 
 ################################################################################
 # Run
