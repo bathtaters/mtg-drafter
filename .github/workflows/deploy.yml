@@ -28,8 +28,8 @@ on:
 env:
   # Default to PROD (For push/pull workflow)
   PROC_NAME: ${{ inputs.proc_name || 'mtg-drafter' }}
-  DB_NAME: ${{ inputs.db_name || 'mtgdrafter' }}
-  REMOTE_PORT: ${{ inputs.remote_port || 3040 }}
+  DB_NAME: ${{ vars.DB_NAME || inputs.db_name || 'mtgdrafter' }}
+  REMOTE_PORT: ${{ vars.REMOTE_PORT || inputs.remote_port || 3040 }}
   REMOTE_DIR: /tmp
 
 jobs:
