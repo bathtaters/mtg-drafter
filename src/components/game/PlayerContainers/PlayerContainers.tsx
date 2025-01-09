@@ -1,8 +1,6 @@
 import type { BasicPlayer } from "types/game"
-import PlayerMenu from "./PlayerMenu"
 import PlayerContainerStyle, { ColorTheme } from "./PlayerContainerStyle"
 import { EmptyPlayerContainer, StatsStyle, PlayerNameEditor, UserHeader, FullStatsWrapper, FullStatsDivider } from "./PlayerContainerElemStyles"
-import usePlayerMenu from "./playerMenu.controller"
 import { setupLimits } from "assets/constants"
 
 
@@ -16,55 +14,44 @@ export const PlayerContainerSmall = ({ player, holding, packSize, color, isHost,
 )
 
 
-export const PlayerContainerFull = ({ player, holding, packSize, isConnected, hideStats, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: ContainerFullProps) => {
-  const { showMenu, editingName, setEditingName, enableEdit, pickValue, holdingValue } = usePlayerMenu(player, packSize, holding, hideStats)
+export const PlayerContainerFull = ({ player, holding, packSize, isHost, hideStats, isConnected, isEditing, setEditing, renamePlayer }: ContainerFullProps) => {
   
   if (!player) return <EmptyPlayerContainer />
   
   return (
-    <PlayerContainerStyle color="self" isHost={!!openHost}
+    <PlayerContainerStyle color="self" isHost={isHost}
 
       title={<PlayerNameEditor
         value={player.name || 'Player'} {...setupLimits.name}
-        isEditing={editingName} setEditing={setEditingName} onSubmit={renamePlayer}
+        isEditing={isEditing} setEditing={setEditing} onSubmit={renamePlayer}
       />}
 
-      header={<UserHeader isHost={!!openHost} isConnected={isConnected} />}
+      header={<UserHeader isHost={isHost} isConnected={isConnected} />}
 
       subtitle={<FullStatsWrapper>{ hideStats ? <span /> : <>
-        <StatsStyle type="pick" count={pickValue} />
+        <StatsStyle type="pick" count={!player.pick || player.pick > packSize ? undefined : player.pick} />
         <FullStatsDivider />
-        <StatsStyle type="holding" count={holdingValue} />
+        <StatsStyle type="holding" count={typeof holding === 'number' ? Math.max(holding,0) : holding} />
       </>}</FullStatsWrapper>}
-    >
-
-      <PlayerMenu
-        saveDeck={saveDeck} openLands={openLands}
-        editName={enableEdit} forceShow={showMenu}
-        openHost={openHost} dropPlayer={dropPlayer}
-      />
-      
-    </PlayerContainerStyle>
+    />
   )
 }
 
 
 interface ContainerProps {
   player: BasicPlayer,
+  isHost: boolean,
   packSize: number,
   holding?: number,
   hideStats: boolean,
 }
 
 interface ContainerFullProps extends ContainerProps {
-  isConnected: boolean
-  saveDeck?:  (() => void),
-  openLands?:  (() => void)
-  openHost?: (() => void),
-  dropPlayer?: (() => void),
+  isConnected: boolean,
+  isEditing: boolean,
+  setEditing?:  ((isEditing: boolean) => void),
   renamePlayer: ((name: string) => void),
 }
 interface ContainerSmallProps extends ContainerProps {
   color?: ColorTheme,
-  isHost: boolean,
 }

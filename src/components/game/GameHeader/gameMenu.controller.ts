@@ -1,8 +1,9 @@
 import type { BasicPlayer } from "types/game"
 import { useState } from "react"
+import { GameStatus } from "@prisma/client"
 
 
-export default function usePlayerMenu(player: BasicPlayer, maxPick: number, holding?: number, hideStats = false) {
+export default function useGameMenu(gameStatus?: GameStatus) {
   const [ showMenu, setShowMenu ] = useState<boolean>()
   const [ editingName, setEditingName ] = useState(false)
   
@@ -13,9 +14,7 @@ export default function usePlayerMenu(player: BasicPlayer, maxPick: number, hold
   }
 
   return {
-    pickValue: hideStats || !player?.pick || player.pick > maxPick ? undefined : player.pick,
-    holdingValue: hideStats ? undefined : typeof holding === 'number' ? Math.max(holding,0) : holding,
-    
+    hideStats: gameStatus === 'end' || gameStatus === 'start',    
     showMenu, editingName, setEditingName, enableEdit,
   }
 }

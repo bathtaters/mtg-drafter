@@ -1,6 +1,5 @@
-import DropdownMenu from "components/base/common/DropdownMenu"
 import { ExitIcon, ExportIcon, LandIcon, RenameIcon, ToolsIcon } from "components/svgs/MenuIcons"
-import { MenuItemStyle } from "./PlayerContainerElemStyles"
+import { DropdownMenuStyle, MenuItemStyle } from "./GameHeaderStyles"
 
 type Props = {
   forceShow?: boolean,
@@ -11,9 +10,9 @@ type Props = {
   dropPlayer?: (() => void),
 }
 
-export default function PlayerMenu({ forceShow, saveDeck, openLands, editName, openHost, dropPlayer }: Props) {
+export default function GameMenu({ forceShow, saveDeck, openLands, editName, openHost, dropPlayer }: Props) {
   return (
-    <DropdownMenu label="☰" forceOpen={forceShow}>
+    <DropdownMenuStyle forceOpen={forceShow}>
       {!!saveDeck   && <li><a onClick={saveDeck  }><MenuItemStyle label="Export Deck" icon={<ExportIcon />} /></a></li> }
       {!!openLands  && <li><a onClick={openLands }><MenuItemStyle label="Set Lands"   icon={<LandIcon   />} /></a></li> }
       {<li className={editName ? "" : "disabled"}>
@@ -21,6 +20,6 @@ export default function PlayerMenu({ forceShow, saveDeck, openLands, editName, o
       </li> }
       {!!openHost   && <li><a onClick={openHost  }><MenuItemStyle label="Host Tools"  icon={<ToolsIcon  />} /></a></li> }
       {!!dropPlayer && <li><a onClick={dropPlayer}><MenuItemStyle label="Drop Game"   icon={<ExitIcon   />} /></a></li> }
-    </DropdownMenu>
+    </DropdownMenuStyle>
   )
 }

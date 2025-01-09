@@ -68,3 +68,18 @@ export const PlayerContainersWrapper = ({ rightArrow, sameLine, children }: { ri
   </div>
 )
 
+export const DropdownMenuStyle = (props: DropdownProps) => (
+  <DropdownMenu {...props}
+    label="☰"
+    className=""
+    labelClass="btn-md w-12 md:w-16 text-4xl md:text-5xl pb-1 pb-12 md:pb-14
+    text-[color-mix(in_oklab,oklch(var(--p)),black_10%)] hover:text-primary"
+  />
+)
+
+export const MenuItemStyle = ({ label, icon }: { label: string, icon?: ReactNode }) => (
+  <>
+    <span className="py-1">{label}</span>
+    <span className="justify-self-end">{icon}</span>
+  </>
+)
