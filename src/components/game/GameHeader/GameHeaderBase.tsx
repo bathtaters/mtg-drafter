@@ -4,7 +4,7 @@ import { GameHeaderWrapper, UpperContainer, LowerContainer, GameTitle, LogoWrapp
 
 type Props = { label?: ReactNode, leftChild?: ReactNode, rightChild?: ReactNode, children?: ReactNode } & CopyProps
 
-export default function GameHeaderBase({ label = "Mtg Drafter", leftChild = <div />, rightChild, children, ...copyProps }: Props) {
+export default function GameHeaderBase({ label = "", leftChild = <div />, rightChild, children, ...copyProps }: Props) {
     return (
         <GameHeaderWrapper>
             <UpperContainer>
