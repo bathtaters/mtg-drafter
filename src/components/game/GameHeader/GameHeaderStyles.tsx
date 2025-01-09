@@ -5,46 +5,60 @@ import Header from "components/base/Header"
 import PackIcon from "components/svgs/PackIcon"
 import CopyLink, { Props as CopyProps } from "components/base/common/CopyLink"
 import LogoIcon from "components/svgs/LogoIcon"
+import DropdownMenu, { Props as DropdownProps } from "components/base/common/DropdownMenu"
 
 const statusIcon: { [status in GameStatus]: ReactNode } = {
-  'start':  <span     className="inline-block mr-2 opacity-80 text-base sm:text-2xl fill-base-content ms ms-dfc-day"   />,
-  'end':    <span     className="inline-block mr-2 opacity-80 text-base sm:text-2xl fill-base-content ms ms-dfc-night" />,
-  'active': <PackIcon className="inline-block mr-2 opacity-80 h-6 sm:h-8 fill-base-100 stroke-base-content" />,
-  'last':   <PackIcon className="inline-block mr-2 opacity-80 h-6 sm:h-8 fill-base-100 stroke-base-content" />,
+  'start':  <span     className="text-base sm:text-2xl fill-base-content ms ms-dfc-day"   />,
+  'end':    <span     className="text-base sm:text-2xl fill-base-content ms ms-dfc-night" />,
+  'active': <PackIcon className="h-6 sm:h-8 fill-base-100 stroke-base-content" />,
+  'last':   <PackIcon className="h-6 sm:h-8 fill-base-100 stroke-base-content" />,
 }
 
 
 export const GameHeaderWrapper = ({ children }: { children: ReactNode }) => (
   <Header>
-    <div className="w-full grid grid-cols-1 md:grid-cols-2 items-center gap-4">
+    <div className="w-full grid grid-cols-1 items-center gap-4">
       {children}
     </div>
   </Header>
 )
 
-export function LogoWrapper({ href = "", title, children }: { href?: string, title?: string, children?: ReactNode }) {
+export const UpperContainer = ({ children }: { children: ReactNode }) => (
+  <div className="w-full grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_1fr_auto_1fr] items-center">
+    {children}
+  </div>
+)
+
+export const LowerContainer = ({ children }: { children: ReactNode }) => (
+  <div className="w-full flex justify-evenly items-center">
+    {children}
+  </div>
+)
+
+export function LogoWrapper({ href = "", title }: { href?: string, title?: string }) {
   const ImgWrapper = href ? Link : 'div'
   return (
-    <div className="grid [grid-template-columns:6rem_1fr] gap-x-4 flex-shrink-0">
-      <ImgWrapper title={title} href={href} className="row-span-2 link link-primary">
-        <LogoIcon className="w-16 sm:w-24 h-auto fill-current p-2" />
-      </ImgWrapper>
-      { children }
-    </div>
+    <ImgWrapper title={title} href={href} className="link link-primary hidden md:block">
+      <LogoIcon className="w-12 sm:w-20 h-auto fill-current p-2 m-auto" />
+    </ImgWrapper>
   )
 }
 
-export const GameTitle = ({ label, sublabel, ...props }: CopyProps & { label?: ReactNode, sublabel?: ReactNode }) => (<>
-  <div>
-    <h1 className="font-serif inline">{label}</h1>
-    <CopyLink className="align-top tooltip-bottom" iconClass="w-5 ml-2" {...props} />
+export const GameTitle = ({ label, children, ...props }: CopyProps & { label?: ReactNode, children?: ReactNode }) => (<>
+  <div className="flex items-center">
+    {children}
+    <h1 className="font-serif inline ml-2">{label}</h1>
+    <CopyLink className="self-baseline tooltip-bottom" iconClass="w-5 ml-2" {...props} />
   </div>
-  <div className="m-1 text-base-content/80 text-lg font-light">{sublabel}</div>
 </>)
 
+export const RightChildWrapper = ({ children }: { children: ReactNode }) => (
+  <div className="flex gap-2 justify-self-end items-center opacity-80">{children}</div>
+)
+
 export const RoundCounter = ({ label, status }: { label: ReactNode, status?: GameStatus }) => (<>
-    {status && statusIcon[status]}
-    <span>{label}</span>
+  <span>{label}</span>
+  {status && statusIcon[status]}
 </>)
 
 

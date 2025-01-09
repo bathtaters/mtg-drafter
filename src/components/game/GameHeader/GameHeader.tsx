@@ -1,9 +1,11 @@
 import type { GameProps } from "types/game"
 import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import GameHeaderBase from "./GameHeaderBase"
+import GameMenu from "./GameMenu"
 import { PlayerContainerFull, PlayerContainerSmall } from "../PlayerContainers/PlayerContainers"
 import { PlayerContainersWrapper, RoundCounter } from './GameHeaderStyles'
 import useGameHeader, { getPlayerColor } from "./header.controller"
+import useGameMenu from "./gameMenu.controller"
 import { roundCounter } from "assets/strings"
 
 
@@ -26,27 +28,30 @@ type Props = {
 export default function GameHeader({ game, players, playerIdx, holding, packSize, isConnected, notify, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
 
   const { oppIdx, gameStatus, isRight, copyProps } = useGameHeader(game, players, playerIdx)
+  const { hideStats, showMenu, editingName, setEditingName, enableEdit } = useGameMenu(gameStatus)
   
   if (!game) return <GameHeaderBase />
 
   return (
     <GameHeaderBase
       label={game.name}
-      sublabel={<RoundCounter status={gameStatus} label={roundCounter(gameStatus, game, !players[playerIdx])} />}
+      leftChild={players[playerIdx] &&
+        <GameMenu forceShow={showMenu} saveDeck={saveDeck} openLands={openLands} editName={enableEdit} openHost={openHost} dropPlayer={dropPlayer} />
+      }
+      rightChild={<RoundCounter status={gameStatus} label={roundCounter(gameStatus, game, !players[playerIdx])} />}
       notify={notify}
       {...copyProps}
     >
       <PlayerContainerFull
         player={players[playerIdx]}
         holding={holding[playerIdx]}
-        isConnected={isConnected}
-        saveDeck={saveDeck}
-        openLands={openLands}
-        openHost={openHost}
-        dropPlayer={dropPlayer}
-        renamePlayer={renamePlayer}
         packSize={packSize}
-        hideStats={gameStatus === 'end' || gameStatus === 'start'}
+        isHost={!!openHost}
+        isConnected={isConnected}
+        isEditing={editingName}
+        setEditing={setEditingName}
+        renamePlayer={renamePlayer}
+        hideStats={hideStats}
       />
   
       <PlayerContainersWrapper rightArrow={isRight}>
