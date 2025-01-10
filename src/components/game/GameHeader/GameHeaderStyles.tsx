@@ -15,7 +15,7 @@ const statusIcon: { [status in GameStatus]: ReactNode } = {
 }
 
 
-export const GameHeaderWrapper = ({ children }: { children: ReactNode }) => (
+export const GameHeaderWrapper = ({ children }: { children?: ReactNode }) => (
   <Header>
     <div className="w-full grid grid-cols-1 items-center gap-4">
       {children}
@@ -23,32 +23,34 @@ export const GameHeaderWrapper = ({ children }: { children: ReactNode }) => (
   </Header>
 )
 
-export const UpperContainer = ({ children }: { children: ReactNode }) => (
-  <div className="w-full grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_1fr_auto_1fr] items-center">
+export const UpperContainer = ({ children }: { children?: ReactNode }) => (
+  <div className="w-full grid grid-cols-[1fr_auto_1fr] items-center">
     {children}
   </div>
 )
 
-export const LowerContainer = ({ children }: { children: ReactNode }) => (
-  <div className="w-full flex justify-evenly items-center">
-    {children}
+export const LowerContainer = ({ end, children }: { end?: ReactNode, children?: ReactNode }) => (
+  <div className="flex w-full items-center py-2">
+    <div className="flex w-full flex-grow justify-evenly items-center">
+      {children}
+    </div>
+    { end && <div className="flex-shrink">{end}</div> }
   </div>
 )
 
 export function LogoWrapper({ href = "", title }: { href?: string, title?: string }) {
   const ImgWrapper = href ? Link : 'div'
   return (
-    <ImgWrapper title={title} href={href} className="link link-primary hidden md:block">
-      <LogoIcon className="w-12 sm:w-20 h-auto fill-current p-2 m-auto" />
+    <ImgWrapper title={title} href={href} className="link link-primary">
+      <LogoIcon className="w-12 sm:w-20 h-auto fill-current p-2" />
     </ImgWrapper>
   )
 }
 
-export const GameTitle = ({ label, children, ...props }: CopyProps & { label?: ReactNode, children?: ReactNode }) => (<>
-  <div className="flex items-center">
-    {children}
-    <h1 className="font-serif inline ml-2">{label}</h1>
-    <CopyLink className="self-baseline tooltip-bottom" iconClass="w-5 ml-2" {...props} />
+export const GameTitle = ({ label, ...props }: CopyProps & { label?: ReactNode }) => (<>
+  <div className="flex items-center justify-self-center">
+    <h1 className="font-serif inline">{label}</h1>
+    <CopyLink className="self-baseline tooltip-bottom" iconClass="w-5 ml-1" {...props} />
   </div>
 </>)
 

@@ -30,18 +30,16 @@ export default function GameHeader({ game, players, playerIdx, holding, packSize
   const { oppIdx, gameStatus, isRight, copyProps } = useGameHeader(game, players, playerIdx)
   const { hideStats, showMenu, editingName, setEditingName, enableEdit } = useGameMenu(gameStatus)
   
-  if (!game) return <GameHeaderBase />
+  if (!game) return <GameHeaderBase left={<div />} />
 
   return (
-    <GameHeaderBase
-      label={game.name}
-      leftChild={players[playerIdx] &&
-        <GameMenu forceShow={showMenu} saveDeck={saveDeck} openLands={openLands} editName={enableEdit} openHost={openHost} dropPlayer={dropPlayer} />
+    <GameHeaderBase {...copyProps} notify={notify} title={game.name}
+      left={players[playerIdx] &&
+        <GameMenu forceShow={showMenu} editName={enableEdit} {...menuProps} />
       }
-      rightChild={<RoundCounter status={gameStatus} label={roundCounter(gameStatus, game, !players[playerIdx])} />}
-      notify={notify}
-      {...copyProps}
+      right={<RoundCounter label={roundCounter(gameStatus, game, !players[playerIdx])} status={gameStatus} />}
     >
+      
       <PlayerContainerFull
         player={players[playerIdx]}
         holding={holding[playerIdx]}

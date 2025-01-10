@@ -1,19 +1,23 @@
 import type { ReactNode } from "react"
-import { Props as CopyProps } from "components/base/common/CopyLink"
-import { GameHeaderWrapper, UpperContainer, LowerContainer, GameTitle, LogoWrapper, RightChildWrapper } from "components/game/GameHeader/GameHeaderStyles"
+import type { Props as CopyProps } from "components/base/common/CopyLink"
+import { GameHeaderWrapper, UpperContainer, GameTitle, LogoWrapper } from "components/game/GameHeader/GameHeaderStyles"
 
-type Props = { label?: ReactNode, leftChild?: ReactNode, rightChild?: ReactNode, children?: ReactNode } & CopyProps
+type Props = { title?: ReactNode, left?: ReactNode, right?: ReactNode, children?: ReactNode } & CopyProps
 
-export default function GameHeaderBase({ label = "", leftChild = <div />, rightChild, children, ...copyProps }: Props) {
+export default function GameHeaderBase({ title, left, right, children, ...copyProps }: Props) {
     return (
         <GameHeaderWrapper>
             <UpperContainer>
-                {leftChild}
-                <GameTitle label={label} {...copyProps} />
-                <LogoWrapper href="/" title="Start New Game" />
-                <RightChildWrapper>{rightChild}</RightChildWrapper>
+                {left ? left :
+                    <LogoWrapper href="/" title="Start New Game" />
+                }
+                {title ?
+                    <GameTitle label={title} {...copyProps} /> :
+                    <LogoWrapper href="/" title="Start New Game" />
+                }
+                { right || <div /> }
             </UpperContainer>
-            { children && <LowerContainer>{children}</LowerContainer> }
+            {children}
         </GameHeaderWrapper>
     )
 }
