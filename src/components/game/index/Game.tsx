@@ -32,8 +32,9 @@ export default function Game(props: ServerProps) {
       isOpen={sidebarVisible} setOpen={setSidebar}
     >
       <GameHeader
-        game={game} players={players} playerIdx={playerIdx} holding={holding} packSize={maxPackSize} isConnected={isConnected} saveDeck={saveDeck}
+        game={game} players={players} playerIdx={playerIdx} holding={holding} packSize={maxPackSize} isConnected={isConnected}
         openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer} dropPlayer={dropPlayer} notify={newToast}
+        saveDeck={saveDeck} sidebarVisible={sidebarVisible} setSidebar={setSidebar}
       />
       
       <BodyWrapperStyle>

@@ -1,11 +1,12 @@
-import type { ReactNode } from "react"
+import type { MouseEventHandler, ReactNode } from "react"
 import type { GameStatus } from "@prisma/client"
 import Link from "next/link"
 import Header from "components/base/Header"
-import PackIcon from "components/svgs/PackIcon"
+import DropdownMenu, { type Props as DropdownProps } from "components/base/common/DropdownMenu"
 import CopyLink, { Props as CopyProps } from "components/base/common/CopyLink"
+import PackIcon from "components/svgs/PackIcon"
 import LogoIcon from "components/svgs/LogoIcon"
-import DropdownMenu, { Props as DropdownProps } from "components/base/common/DropdownMenu"
+import UserIcon from "components/svgs/UserIcon"
 
 const statusIcon: { [status in GameStatus]: ReactNode } = {
   'start':  <span     className="text-base sm:text-2xl fill-base-content ms ms-dfc-day"   />,
@@ -54,34 +55,19 @@ export const GameTitle = ({ label, ...props }: CopyProps & { label?: ReactNode }
   </div>
 </>)
 
-export const RightChildWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="flex gap-2 justify-self-end items-center opacity-80">{children}</div>
-)
-
-export const RoundCounter = ({ label, status }: { label: ReactNode, status?: GameStatus }) => (<>
-  <span>{label}</span>
-  {status && statusIcon[status]}
-</>)
-
-
-const Arrow = ({ right, width = 1500, className }: { right?: boolean, width?: number, className?: string }) => (
-  <svg viewBox={`${right ? 10000 - width : 0} 0 ${width} 30`} className={className}>
-    { typeof right === 'boolean' && <path d={
-      right ? "M 0 30 L 10000 30 L 9960 0 L 9960 15 L 0 15 L 0 30 Z" :
-        "M 0 30 L 10000 30 L 10000 15 L 40 15 L 40 0 L 0 30 Z"
-    } /> }
-  </svg>
-)
-
-export const PlayerContainersWrapper = ({ rightArrow, sameLine, children }: { rightArrow?: boolean, sameLine?: boolean, children: ReactNode }) => (
-  <div className={`w-full col-span-1 ${sameLine ? "" : "md:col-span-2"}`}>
-    <Arrow right={rightArrow} className="w-11/12 mb-1 mx-auto fill-base-content/50" />
-    <div className="w-full max-h-28 overflow-y-auto">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 m-1">
-        {children}
-      </div>
-    </div>
+export const RoundCounter = ({ label, status }: { label: ReactNode, status?: GameStatus }) => (
+  <div className="flex gap-2 justify-self-end items-center opacity-80">
+    <span className=" text-nowrap whitespace-nowrap">{label}</span>
+    {status && statusIcon[status]}
   </div>
+)
+
+export const SidebarButton = ({ active, onClick }: { active?: boolean, onClick?: MouseEventHandler<HTMLButtonElement> }) => (
+  // ◀ ▶
+  <button type="button" onClick={onClick} className={`btn btn-secondary btn-outline btn-square swap swap-rotate${active ? ' swap-active' : ''}`}>
+    <div className="swap-off"><UserIcon className="w-full p-3 fill-current" /></div>
+    <div className="swap-on text-4xl">▶</div> 
+  </button>
 )
 
 export const DropdownMenuStyle = (props: DropdownProps) => (
