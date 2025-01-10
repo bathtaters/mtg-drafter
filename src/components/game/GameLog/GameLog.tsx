@@ -1,3 +1,4 @@
+import type { Dispatch, SetStateAction } from "react"
 import type { BasicPlayer } from "types/game"
 import type { GameLog } from "./log.controller"
 import { useState } from "react"
@@ -10,14 +11,21 @@ export type Props = {
   log: GameLog,
   gameEnded: boolean,
   logout?: () => void,
+  sidebarVisible?: boolean,
+  setSidebar?: Dispatch<SetStateAction<boolean>>,
 }
 
-export default function GameLog({ log, players, gameEnded, logout }: Props) {
+export default function GameLog({ log, players, gameEnded, logout, sidebarVisible, setSidebar }: Props) {
   const [cardImg, setCardImg] = useState<string|null>(null)
 
   return log.error ? <ErrorContainer text={log.error} /> : 
 
-    <LogContainer toolbar={<LogToolbar log={log} players={players} gameEnded={gameEnded} logout={logout} />}>
+    <LogContainer toolbar={
+      <LogToolbar
+        log={log} players={players} gameEnded={gameEnded} logout={logout}
+        sidebarVisible={sidebarVisible} setSidebar={setSidebar}
+      />
+    }>
       {!log.list ? "Loading..." : log.list.map((entry, idx) =>
         <LogEntry
           key={entry.id}
