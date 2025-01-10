@@ -22,7 +22,7 @@ export const BodyWrapperStyle = ({ children }: Children) => (
 )
 
 export const FooterWrapperStyle = ({ children }: Children) => (
-  <footer className="footer footer-center bg-base-300 text-base-content w-full">
+  <footer className="footer footer-center bg-base-300 text-base-content w-full mt-6">
     <div className="w-full max-w-6xl m-auto p-4">{children}</div>
   </footer>
 )
