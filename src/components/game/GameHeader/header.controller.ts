@@ -1,11 +1,10 @@
 import type { GameProps } from "types/game"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { shareGame } from "assets/constants"
-import { getGameStatus, passingRight } from "../shared/game.utils"
+import { getGameStatus, getAllIndexes, passingRight } from "../shared/game.utils"
 
 export const useSimpleHeader = (game?: GameProps['options']) => ({
   gameStatus: getGameStatus(game),
-  isRight: game && passingRight(game),
 })
 
 export default function useGameHeader(game: GameProps['options'] | undefined, players: GameProps['players'], playerIdx: number) {
@@ -20,8 +19,13 @@ export default function useGameHeader(game: GameProps['options'] | undefined, pl
 
   const gameStatus = players[playerIdx] ? getGameStatus(game) : undefined
 
+  const indexes = useMemo(() =>
+    gameStatus ? getAllIndexes(playerIdx, players.length) : undefined,
+    [gameStatus, playerIdx, players.length]
+  )
+
   return {
-    gameStatus,
+    gameStatus, indexes,
     showMenu, editingName, setEditingName, enableEdit,
     hideStats: gameStatus === undefined || gameStatus === 'end' || gameStatus === 'start',
     isRight: game && players[playerIdx] && passingRight(game),

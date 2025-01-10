@@ -17,11 +17,11 @@ const themes = {
 }
 
 export default function PlayerContainerStyle(
-  { title, header, subtitle, children, isMini, isHost, disconnected, color }:
+  { title, header, subtitle, children, isMini, isHost, disconnected, color, className = "" }:
   PlayerContainerStyleProps
 ) {
   return (
-    <div className={`stats shadow-sm shadow-black ${isMini ? 'rounded-lg overflow-hidden' : 'overflow-visible'} ${color ? themes[color][0] : ''}`}>
+    <div className={`stats shadow-sm shadow-black ${isMini ? 'h-12 rounded-lg overflow-hidden' : 'min-h-24 overflow-visible'} ${color ? themes[color][0] : ''} ${className}`}>
       <div className={`stat ${isMini ? 'p-0 gap-0' : 'rounded-2xl'} ${color ? themes[color][1] : ''}`}>
         
         <div className={`stat-figure ${
@@ -60,4 +60,5 @@ type PlayerContainerStyleProps = {
   isHost?: boolean,
   disconnected?: boolean,
   color?: ColorTheme,
+  className?: string,
 }

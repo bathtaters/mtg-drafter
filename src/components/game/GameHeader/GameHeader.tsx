@@ -1,10 +1,12 @@
 import type { Dispatch, SetStateAction } from "react"
+import type { GameStatus } from "@prisma/client"
 import type { GameProps } from "types/game"
 import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import GameHeaderBase from "./GameHeaderBase"
 import GameMenu from "./GameMenu"
 import { PlayerContainerFull, PlayerContainerSmall } from "../PlayerContainers/PlayerContainers"
-import { RoundCounter, SidebarButton, LowerContainer } from './GameHeaderStyles'
+import { RoundCounter, SidebarButton, LowerContainer, PlayerSeperator } from './GameHeaderStyles'
+import { getPlayerColor } from "../PlayerSidebar/playersidebar.controller"
 import useGameHeader from "./header.controller"
 import { roundCounter } from "assets/strings"
 
@@ -27,11 +29,13 @@ type Props = {
 }
 
 
-export default function GameHeader({ game, players, playerIdx, holding, packSize, isConnected, notify, openHost, renamePlayer, sidebarVisible, setSidebar, ...menuProps }: Props) {
+export default function GameHeader({ game, players, playerIdx, holding, packSize, isConnected, notify, renamePlayer, sidebarVisible, setSidebar, ...menuProps }: Props) {
 
-  const { gameStatus, copyProps, hideStats, showMenu, editingName, setEditingName, enableEdit } = useGameHeader(game, players, playerIdx)
+  const { gameStatus, isRight, indexes, copyProps, hideStats, showMenu, editingName, setEditingName, enableEdit } = useGameHeader(game, players, playerIdx)
   
   if (!game) return <GameHeaderBase left={<div />} />
+
+  const playerProps = { game, players, gameStatus, holding, packSize, playerIdx, opp: indexes?.opp }
 
   return (
     <GameHeaderBase {...copyProps} notify={notify} title={game.name}
@@ -41,34 +45,58 @@ export default function GameHeader({ game, players, playerIdx, holding, packSize
       right={<RoundCounter label={roundCounter(gameStatus, game, !players[playerIdx])} status={gameStatus} />}
     >
       
-      {playerIdx >= 0 &&
+      {indexes &&
         <LowerContainer end={<SidebarButton active={sidebarVisible} onClick={() => setSidebar((show) => !show)} />}>
+          <HeaderPlayerContainer idx={indexes.prev} {...playerProps} />
+          {indexes.prev !== undefined && <PlayerSeperator passRight={isRight} />}
+
           <PlayerContainerFull
             player={players[playerIdx]}
             holding={holding[playerIdx]}
             packSize={packSize}
-            isHost={!!openHost}
+            isHost={!!menuProps.openHost}
             isConnected={isConnected}
             isEditing={editingName}
             setEditing={setEditingName}
             renamePlayer={renamePlayer}
             hideStats={hideStats}
+            className={players.length > 1 ? "sm:flex-grow" : "min-w-96"}
           />
 
-            {/* { players[playerIdx] && players.map((play, idx) =>
+          {indexes.next !== undefined && <PlayerSeperator passRight={isRight} bothWays={!indexes.prev} />}
+          <HeaderPlayerContainer idx={indexes.next} {...playerProps} />
 
-              <PlayerContainerSmall
-                player={play} key={String(play.id)}
-                isHost={'hostId' in game ? game.hostId === play.id : false}
-                color={getPlayerColor(idx, playerIdx, oppIdx, game)}
-                holding={holding[idx]}
-                packSize={packSize}
-                hideStats={gameStatus === 'end' || gameStatus === 'start'}
-              />
-              
-            )} */}
+          {![undefined, indexes.prev, indexes.next].includes(indexes.opp) && <>
+            <PlayerSeperator passRight={players.length === 4 ? isRight : undefined} alt="..." />
+            <HeaderPlayerContainer idx={indexes.opp} isOpp={true} {...playerProps} />
+          </>}
         </LowerContainer>
       }
     </GameHeaderBase>
   )
+}
+
+
+const HeaderPlayerContainer = ({ game, players, gameStatus, holding, packSize, playerIdx, opp, idx, isOpp }: PlayerContainerProps) => idx !== undefined && (
+  <PlayerContainerSmall
+    player={players[idx]}
+    isHost={'hostId' in game ? game.hostId === players[idx].id : false}
+    color={getPlayerColor(idx, playerIdx, opp, game)}
+    holding={holding[idx]}
+    packSize={packSize}
+    hideStats={gameStatus === 'end' || gameStatus === 'start'}
+    className={`flex-grow hidden ${isOpp ? 'md:grid' : 'sm:grid'}`}
+  />
+)
+
+type PlayerContainerProps = {
+  game: NonNullable<Props['game']>,
+  players: Props['players'],
+  gameStatus?: GameStatus,
+  holding: number[],
+  packSize: number,
+  playerIdx: number,
+  opp?: number,
+  idx?: number,
+  isOpp?: boolean,
 }

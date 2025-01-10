@@ -15,9 +15,24 @@ export const getGameStatus = (game?: Partial<Game>): GameStatus | undefined =>
     game.round === game.roundCount ? 'last' : 'active'
 
 export const getOppIdx = (playerIdx: number, playerCount: number) => {
+  if (playerIdx < 0) return;
   const f = Math.floor(playerCount / 2);
   if (!f || playerIdx >= 2 * f) return;
   return (playerIdx + f) % (2 * f);
+}
+
+export const getAllIndexes = (playerIdx: number, playerCount: number) => {
+  if (playerIdx < 0) return undefined
+  
+  const opp = getOppIdx(playerIdx, playerCount),
+    prev = (playerIdx + playerCount - 1) % playerCount,
+    next = (playerIdx + 1) % playerCount
+
+  return {
+    opp: playerIdx === opp ? undefined : opp,
+    next: playerIdx === next ? undefined : next,
+    prev: playerIdx === prev || prev  === next ? undefined : prev,
+  }
 }
 
 export const passingRight = ({ round, roundCount }: Partial<Game>) =>

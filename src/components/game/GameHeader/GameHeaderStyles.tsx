@@ -32,10 +32,10 @@ export const UpperContainer = ({ children }: { children?: ReactNode }) => (
 
 export const LowerContainer = ({ end, children }: { end?: ReactNode, children?: ReactNode }) => (
   <div className="flex w-full items-center py-2">
-    <div className="flex w-full flex-grow justify-evenly items-center">
+    <div className="flex gap-2 w-full flex-grow justify-evenly items-center">
       {children}
     </div>
-    { end && <div className="flex-shrink">{end}</div> }
+    { end && <div className="ml-4 flex-shrink">{end}</div> }
   </div>
 )
 
@@ -84,4 +84,10 @@ export const MenuItemStyle = ({ label, icon }: { label: string, icon?: ReactNode
     <span className="py-1">{label}</span>
     <span className="justify-self-end">{icon}</span>
   </>
+)
+
+export const PlayerSeperator = ({ passRight, bothWays, alt = "" }: { passRight?: boolean, bothWays?: boolean, alt?: string }) => (
+  <div className={`text-lg opacity-70 hidden ${alt ? 'md:block' : 'sm:block'}`}>
+    {bothWays ? "↔" : passRight === undefined ? alt : passRight ? "→" : "←"}
+  </div>
 )
