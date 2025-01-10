@@ -3,9 +3,7 @@ import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import GameHeaderBase from "./GameHeaderBase"
 import GameMenu from "./GameMenu"
 import { PlayerContainerFull, PlayerContainerSmall } from "../PlayerContainers/PlayerContainers"
-import { PlayerContainersWrapper, RoundCounter } from './GameHeaderStyles'
-import useGameHeader, { getPlayerColor } from "./header.controller"
-import useGameMenu from "./gameMenu.controller"
+import useGameHeader from "./header.controller"
 import { roundCounter } from "assets/strings"
 
 
@@ -27,8 +25,7 @@ type Props = {
 
 export default function GameHeader({ game, players, playerIdx, holding, packSize, isConnected, notify, saveDeck, openLands, openHost, dropPlayer, renamePlayer }: Props) {
 
-  const { oppIdx, gameStatus, isRight, copyProps } = useGameHeader(game, players, playerIdx)
-  const { hideStats, showMenu, editingName, setEditingName, enableEdit } = useGameMenu(gameStatus)
+  const { gameStatus, copyProps, hideStats, showMenu, editingName, setEditingName, enableEdit } = useGameHeader(game, players, playerIdx)
   
   if (!game) return <GameHeaderBase left={<div />} />
 
