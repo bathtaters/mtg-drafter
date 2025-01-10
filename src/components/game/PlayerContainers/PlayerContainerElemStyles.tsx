@@ -22,9 +22,18 @@ export const HostBadge = () => (
   </span>
 )
 
-export const UserHeader = ({ isConnected, isHost }: { isConnected: boolean, isHost: boolean }) => (
+export const ByeBadge = () => (
+  <span className="badge badge-info badge-md align-top ml-2 pl-1">
+    <UserIcon className="opacity-40 stroke-current stroke-[4] fill-none h-3 inline-block" />
+    <span className="ml-1">Bye</span>
+  </span>
+)
+
+export const UserHeader = ({ isConnected, isHost, isBye }: { isConnected: boolean, isHost: boolean, isBye?: boolean }) => (
   <span>
-    <UserIcon className={`${isConnected ? "fill-success" : "fill-error"} h-4 sm:h-5 inline-block`} />{isHost && <HostBadge />}
+    <UserIcon className={`${isConnected ? "fill-success" : "fill-error"} h-4 sm:h-5 inline-block`} />
+    {isHost && <HostBadge />}
+    {isBye && <ByeBadge />}
   </span>
 )
 

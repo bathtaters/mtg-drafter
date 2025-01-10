@@ -55,6 +55,7 @@ export default function GameHeader({ game, players, playerIdx, holding, packSize
             holding={holding[playerIdx]}
             packSize={packSize}
             isHost={!!menuProps.openHost}
+            isBye={players.length > 1 && indexes.opp === undefined}
             isConnected={isConnected}
             isEditing={editingName}
             setEditing={setEditingName}
