@@ -7,7 +7,6 @@ import useBasicGameController from './basic.controller'
 
 
 export default function useGameController(props: ServerProps) {
-  const [sidebarVisible, setSidebar] = useState(false)
   const [landModal, setLandModal] = useState(false)
   const [hostModal, setHostModal] = useState(false)
   const [logModal,  setLogModal ] = useState(false)
@@ -29,7 +28,6 @@ export default function useGameController(props: ServerProps) {
     ...local,
     renamePlayer, setTitle, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw,
     
-    sidebarVisible, setSidebar,
     landModal, hostModal, logModal, saveDeck,
     toggleLandModal, toggleHostModal, toggleLogModal,
     dropPlayer: enableDropping && local.player ? () => setStatus((local.player as PlayerFull).id, 'leave') : undefined,
