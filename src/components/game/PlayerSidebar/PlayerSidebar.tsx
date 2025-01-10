@@ -30,7 +30,7 @@ export default function PlayerSidebar({ game, players, playerIdx, holding, packS
                 <Arrow isDown={passRight} />
 
                 <PlayerListWrapper title="Players">
-                    { players[playerIdx] && players.map((play, idx) =>
+                    { players.map((play, idx) =>
 
                         <PlayerContainerSmall
                             player={play} key={String(play.id)}
