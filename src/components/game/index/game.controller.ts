@@ -24,12 +24,16 @@ export default function useGameController(props: ServerProps) {
 
   const saveDeck = !local.player?.cards || !local.game ? undefined : () => { downloadDeck(local as Parameters<typeof downloadDeck>['0']) }
 
+  const dropPlayer = !enableDropping || !local.player ? undefined : () => {
+    local.setSidebar(false)
+    setStatus((local.player as PlayerFull).id, 'leave')
+  }
+
   return {
     ...local,
     renamePlayer, setTitle, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw,
     
-    landModal, hostModal, logModal, saveDeck,
+    landModal, hostModal, logModal, saveDeck, dropPlayer,
     toggleLandModal, toggleHostModal, toggleLogModal,
-    dropPlayer: enableDropping && local.player ? () => setStatus((local.player as PlayerFull).id, 'leave') : undefined,
   }
 }
