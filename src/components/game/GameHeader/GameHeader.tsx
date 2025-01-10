@@ -46,7 +46,7 @@ export default function GameHeader({ game, players, playerIdx, holding, packSize
     >
       
       {indexes &&
-        <LowerContainer end={<SidebarButton active={sidebarVisible} onClick={() => setSidebar((show) => !show)} />}>
+        <LowerContainer end={<SidebarButton hide={players.length < 4} active={sidebarVisible} onClick={() => setSidebar((show) => !show)} />}>
           <HeaderPlayerContainer idx={indexes.prev} {...playerProps} />
           {indexes.prev !== undefined && <PlayerSeperator passRight={isRight} />}
 

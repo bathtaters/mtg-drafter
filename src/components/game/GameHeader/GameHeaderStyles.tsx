@@ -50,22 +50,25 @@ export function LogoWrapper({ href = "", title }: { href?: string, title?: strin
 
 export const GameTitle = ({ label, ...props }: CopyProps & { label?: ReactNode }) => (<>
   <div className="flex items-center justify-self-center">
-    <h1 className="font-serif inline">{label}</h1>
+    <h1 className="font-serif inline text-3xl sm:text-4xl">{label}</h1>
     <CopyLink className="self-baseline tooltip-bottom" iconClass="w-5 ml-1" {...props} />
   </div>
 </>)
 
 export const RoundCounter = ({ label, status }: { label: ReactNode, status?: GameStatus }) => (
   <div className="flex gap-2 justify-self-end items-center opacity-80">
-    <span className=" text-nowrap whitespace-nowrap">{label}</span>
+    <span className="text-xs sm:text-base text-nowrap whitespace-nowrap">{label}</span>
     {status && statusIcon[status]}
   </div>
 )
 
-export const SidebarButton = ({ active, onClick }: { active?: boolean, onClick?: MouseEventHandler<HTMLButtonElement> }) => (
+export const SidebarButton = ({ hide, active, onClick }: { hide?: boolean, active?: boolean, onClick?: MouseEventHandler<HTMLButtonElement> }) => (
   // ◀ ▶
-  <button type="button" onClick={onClick} className={`btn btn-secondary btn-outline btn-square swap swap-rotate${active ? ' swap-active' : ''}`}>
-    <div className="swap-off"><UserIcon className="w-full p-3 fill-current" /></div>
+  <button
+    type="button" onClick={onClick}
+    className={`btn btn-secondary btn-outline btn-square btn-sm sm:btn-md swap swap-rotate${active ? ' swap-active' : ''}${hide ? ' sm:hidden inline-grid' : ''}`}
+  >
+    <div className="swap-off"><UserIcon className="w-full p-2 sm:p-3 fill-current" /></div>
     <div className="swap-on text-4xl">▶</div> 
   </button>
 )

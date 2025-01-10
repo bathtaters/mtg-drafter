@@ -39,6 +39,7 @@ export default function PlayerSidebar({ game, players, playerIdx, holding, packS
                             holding={holding[idx]}
                             packSize={packSize}
                             hideStats={hideStats}
+                            className="flex-shrink-0"
                         />
                         
                     )}

@@ -9,7 +9,7 @@ import { camelToTitle } from "components/base/services/common.services"
 
 const statsIcon = { pick: CardIcon, holding: PackIcon }
 
-export const EmptyPlayerContainer = () => <div className="h-20" />
+export const EmptyPlayerContainer = ({ className = "h-20" }: { className?: string }) => <div className={className} />
 
 export const HostMarker = () => <span className="-mr-0.5 ml-0.5 mb-1 text-base sm:text-lg opacity-70"><HostIcon /></span>
 export const UserMarker = () => <UserIcon className="fill-current opacity-70 h-2 sm:h-3 inline-block ml-1 sm:mr-px" />

@@ -25,12 +25,12 @@ export default function PlayerContainerStyle(
       <div className={`stat ${isMini ? 'p-0 gap-0' : 'rounded-2xl'} ${color ? themes[color][1] : ''}`}>
         
         <div className={`stat-figure ${
-          isMini ? 'grid grid-cols-2 grid-rows-2 gap-x-1 opacity-70' : '-mr-3 sm:mr-0'
+          isMini ? 'grid grid-cols-2 grid-rows-2 gap-x-1 opacity-70' : '-mr-3 lg:mr-0'
         } ${color ? themes[color][3] : ''}`}>
           {children}
         </div>
 
-        {header && <div className="stat-title text-xs sm:text-base opacity-80">{header}</div>}
+        {header && <div className="stat-title text-xs lg:text-base opacity-80">{header}</div>}
         
         <div className={`stat-value font-medium min-w-0 ${
           isMini ? 'row-span-3 self-center text-base flex items-center overflow-hidden' : 'flex items-center'
@@ -38,7 +38,7 @@ export default function PlayerContainerStyle(
           disconnected && isMini ? "opacity-60 italic" : ''} ${color ? themes[color][2] : ''
         }`}>
           {!isMini ? null : color === 'self' ? <UserMarker /> : color === 'opp' ? <OppMarker /> : isHost ? <HostMarker /> : <span className="w-1" />}
-          <span className={isMini ? "ml-1 flex-grow truncate" : "text-lg sm:text-2xl flex-grow min-w-0 -ml-2 mb-1"}>{title}</span>
+          <span className={isMini ? "text-xs lg:text-base ml-1 mr-2 flex-grow truncate" : "text-lg lg:text-2xl flex-grow min-w-0 -ml-2 mb-1"}>{title}</span>
         </div>
 
         {subtitle && <div className={`stat-desc ${color ? themes[color][3] : ''}`}>{subtitle}</div>}

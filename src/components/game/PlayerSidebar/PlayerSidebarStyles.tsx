@@ -17,7 +17,7 @@ export const SidebarContainer = ({ children }: { children?: ReactNode }) => (
 )
 
 export const PlayerListWrapper = ({ title = "Draft Order", children }: { title?: string, children?: ReactNode }) => (
-    <div className="flex flex-col gap-2 py-4 pr-4 overflow-y-auto">
+    <div className="flex flex-col gap-2 py-4 pr-4 overflow-y-auto min-w-48">
       <h2 className="text-center font-serif mb-4 font-normal opacity-80">{title}</h2>
       {children}
     </div>
