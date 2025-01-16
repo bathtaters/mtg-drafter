@@ -26,7 +26,7 @@ export default function PlayerSidebar({ game, players, playerIdx, holding, packS
   return (
     <SidebarDrawerStyle isOpen={isOpen} overlayClick={setOpen && (() => setOpen(false))}
         sidebarContent={
-            <SidebarContainer>
+            <SidebarContainer isOpen={isOpen}>
                 <Arrow isDown={passRight} />
 
                 <PlayerListWrapper title="Players">
