@@ -9,7 +9,7 @@ const themes = {
     /* Other */ 'text-primary',
   ],
   opp: [
-    /* Outer */ 'bg-accent-content/50',
+    /* Outer */ 'bg-[color-mix(in_oklab,oklch(var(--a)),oklch(var(--b1))_85%)]',
     /* Inner */ '',
     /* Title */ '',
     /* Other */ '',
