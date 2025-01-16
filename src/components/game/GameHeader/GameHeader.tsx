@@ -86,7 +86,7 @@ const HeaderPlayerContainer = ({ game, players, gameStatus, holding, packSize, p
     holding={holding[idx]}
     packSize={packSize}
     hideStats={gameStatus === 'end' || gameStatus === 'start'}
-    className={`flex-grow hidden ${isOpp ? 'md:grid' : 'sm:grid'}`}
+    className={`flex-grow hidden ${isOpp ? 'lg:grid' : 'sm:grid'}`}
   />
 )
 

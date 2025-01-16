@@ -66,9 +66,9 @@ export const SidebarButton = ({ hide, active, onClick }: { hide?: boolean, activ
   // ◀ ▶
   <button
     type="button" onClick={onClick}
-    className={`btn btn-secondary btn-outline btn-square btn-sm sm:btn-md swap swap-rotate${active ? ' swap-active' : ''}${hide ? ' sm:hidden inline-grid' : ''}`}
+    className={`btn btn-secondary btn-outline btn-square btn-sm lg:btn-md swap swap-rotate${active ? ' swap-active' : ''}${hide ? ' lg:hidden inline-grid' : ''}`}
   >
-    <div className="swap-off"><UserIcon className="w-full p-2 sm:p-3 fill-current" /></div>
+    <div className="swap-off"><UserIcon className="w-full p-2 lg:p-3 fill-current" /></div>
     <div className="swap-on text-4xl">▶</div> 
   </button>
 )
@@ -90,7 +90,7 @@ export const MenuItemStyle = ({ label, icon }: { label: string, icon?: ReactNode
 )
 
 export const PlayerSeperator = ({ passRight, bothWays, alt = "" }: { passRight?: boolean, bothWays?: boolean, alt?: string }) => (
-  <div className={`text-lg opacity-70 hidden ${alt ? 'md:block' : 'sm:block'}`}>
+  <div className={`text-lg opacity-70 hidden ${alt ? 'lg:block' : 'sm:block'}`}>
     {bothWays ? "↔" : passRight === undefined ? alt : passRight ? "→" : "←"}
   </div>
 )

@@ -18,7 +18,7 @@ export default function SidebarDrawer({
     children,
 }: Props) {
   return (
-    <div className={`drawer${isOpen ? ' md:drawer-open' : ''} ${className}`}>
+    <div className={`drawer${isOpen ? ' xl:drawer-open' : ''} ${className}`}>
         <input type="checkbox" className="drawer-toggle" checked={isOpen} />
 
         <div className="drawer-content">
