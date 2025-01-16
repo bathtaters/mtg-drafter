@@ -29,7 +29,7 @@ export default function PlayerSidebar({ game, players, playerIdx, holding, packS
             <SidebarContainer isOpen={isOpen}>
                 <Arrow isDown={passRight} />
 
-                <PlayerListWrapper title="Players">
+                <PlayerListWrapper title="Pick Order">
                     { players.map((play, idx) =>
 
                         <PlayerContainerSmall
