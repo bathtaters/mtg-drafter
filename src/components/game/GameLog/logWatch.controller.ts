@@ -59,7 +59,7 @@ export default function useLogWatch({ log, players, game, sessionId, setLoading,
     useEffect(() => {
         authed && reload?.()
         !authed && setSidebar?.(false)
-    }, [reload, authed])
+    }, [reload, setSidebar, authed])
 
     return { authed, message, handleSubmit, logout: () => setAuth(false) }
 }

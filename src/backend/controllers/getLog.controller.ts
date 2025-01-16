@@ -10,12 +10,11 @@ export default async function apiHandler(req: NextApiRequest, res: NextApiRespon
   const game = await getGameLog(url)
   if (!game) {
     console.error('Error with game',url,'player',getReqSessionId(req,res),'Game not found!')
-    return res.status(404).end()
-  } 
-  if (currentSessionId !== game.watchId && game.players.find(({ sessionId }) => sessionId === currentSessionId)?.id !== game.hostId) {
+    res.status(404).end()
+  } else if (currentSessionId !== game.watchId && game.players.find(({ sessionId }) => sessionId === currentSessionId)?.id !== game.hostId) {
     console.error('Error with game',url,'player',getReqSessionId(req,res),'Player is not host or was not found in game!')
-    return res.status(403).end()
+    res.status(403).end()
+  } else {
+    res.status(200).json(game.log)
   }
-
-  return res.status(200).json(game.log)
 }
