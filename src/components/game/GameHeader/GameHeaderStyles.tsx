@@ -50,7 +50,7 @@ export function LogoWrapper({ href = "", title }: { href?: string, title?: strin
 
 export const GameTitle = ({ label, ...props }: CopyProps & { label?: ReactNode }) => (<>
   <div className="flex items-center justify-self-center">
-    <h1 className="font-serif inline text-3xl sm:text-4xl">{label}</h1>
+    <h1 className="font-serif inline text-3xl sm:text-4xl text-right">{label}</h1>
     <CopyLink className="self-baseline tooltip-bottom" iconClass="w-5 ml-1" {...props} />
   </div>
 </>)
