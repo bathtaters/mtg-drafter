@@ -18,7 +18,7 @@ export const HeaderWrapperStyle = ({ children }: Children) => (
 )
 
 export const BodyWrapperStyle = ({ children }: Children) => (
-  <main className="flex-grow w-full py-2 px-4 md:px-12">{children}</main>
+  <main className="flex-grow w-full py-2 px-4 md:px-6">{children}</main>
 )
 
 export const FooterWrapperStyle = ({ children }: Children) => (

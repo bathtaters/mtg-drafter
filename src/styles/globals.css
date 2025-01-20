@@ -69,6 +69,15 @@
   .show-arrows::-webkit-outer-spin-button {
     @apply m-auto appearance-auto;
   }
+
+  /* Add player-drawer-offset to allow drawer button to popout */
+  .drawer-end > .drawer-toggle ~ .drawer-side > .player-drawer-offset:not(.drawer-overlay) {
+    @apply translate-x-[calc(100%-2rem)] md:translate-x-[calc(100%-3rem)]
+  }
+
+  .drawer-end > .drawer-toggle:checked ~ .drawer-side > .player-drawer-offset:not(.drawer-overlay) {
+    @apply translate-x-0
+  }
 }
 
 @layer utilities {

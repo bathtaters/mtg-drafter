@@ -1,19 +1,21 @@
-import type { ReactNode } from "react";
+import type { MouseEventHandler, ReactNode } from "react";
 import SidebarDrawer, { type Props as SidebarProps } from "components/base/common/SidebarDrawer";
+import UserIcon from "components/svgs/UserIcon";
 
 export const SidebarDrawerStyle = (props: Pick<SidebarProps, "isOpen"|"overlayClick"|"sidebarContent"|"children">) => (
   <SidebarDrawer {...props}
     className="drawer-end w-full h-full"
-    sidebarClass="!static z-40"
+    sidebarClass="!relative z-40"
   >
     <div className="w-full h-full flex flex-col">{props.children}</div>
   </SidebarDrawer>
 )
 
-export const SidebarContainer = ({ isOpen, children }: { isOpen: boolean, children?: ReactNode }) => (<>
-  <div className={`relative ${isOpen ? 'xl:ml-80' : ''}`} />
-  <div className="fixed top-0 right-0 xl:w-80 h-full overflow-y-auto">
-    <div className="flex justify-start gap-1 bg-base-300 w-full min-h-full">
+export const SidebarContainer = ({ isOpen, button, children }: { isOpen: boolean, button?: ReactNode, children?: ReactNode }) => (<>
+  <div className={`relative h-full ${isOpen ? 'xl:w-[21rem]' : ''}`} />
+  <div className="fixed top-0 right-0 flex xl:w-96 h-full overflow-y-auto player-drawer-offset">
+    {button}
+    <div className="flex justify-start gap-1 min-w-60 md:min-w-72 bg-base-200 border-l-2 border-secondary w-full min-h-full">
       {children}
     </div>
   </div>
@@ -21,7 +23,7 @@ export const SidebarContainer = ({ isOpen, children }: { isOpen: boolean, childr
 )
 
 export const PlayerListWrapper = ({ title = "Draft Order", children }: { title?: string, children?: ReactNode }) => (
-    <div className="flex-grow flex flex-col gap-2 py-4 pr-4 overflow-y-auto min-w-48">
+    <div className="flex-grow flex flex-col gap-2 py-4 pr-4 overflow-y-auto">
       <h2 className="text-center font-serif mb-4 font-normal opacity-80">{title}</h2>
       {children}
     </div>

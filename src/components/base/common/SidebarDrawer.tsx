@@ -27,7 +27,7 @@ export default function SidebarDrawer({
 
         <div className={`drawer-side ${sidebarClass}`}>
             {overlayClick &&
-                <label aria-label="close sidebar" className="drawer-overlay !absolute left-0 w-full h-full xl:hidden" onClick={overlayClick} />
+                <label aria-label="close sidebar" className="drawer-overlay !fixed left-0 w-full h-full xl:hidden" onClick={overlayClick} />
             }
             {sidebarContent}
         </div>
