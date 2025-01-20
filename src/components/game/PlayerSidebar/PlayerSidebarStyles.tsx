@@ -11,7 +11,7 @@ export const SidebarDrawerStyle = ({ children, ...props }: Pick<SidebarProps, "i
   </SidebarDrawer>
 )
 
-export const SidebarContainer = ({ isOpen, button, children }: { isOpen: boolean, button?: ReactNode, children?: ReactNode }) => (<>
+export const SidebarContainer = ({ isOpen, button = <ButtonSpacer />, children }: { isOpen: boolean, button?: ReactNode, children?: ReactNode }) => (<>
   <div className={`relative h-full ${isOpen ? 'xl:w-[21rem]' : ''}`} />
   <div className="fixed top-0 right-0 flex xl:w-96 h-full pointer-events-none player-drawer-offset">
     {button}
@@ -28,6 +28,8 @@ export const PlayerListWrapper = ({ title = "Draft Order", children }: { title?:
       {children}
     </div>
   )
+
+export const ButtonSpacer = () => <div className="invisible btn-sm md:btn-md btn-square ml-2" />
 
 export const SidebarButton = ({ hide, active, onClick }: { hide?: boolean, active?: boolean, onClick?: MouseEventHandler<HTMLButtonElement> }) => (
     <button
