@@ -15,6 +15,7 @@ type Props = {
 export default function GameMenu({ forceShow, saveDeck, openLands, editName, openHost, dropPlayer }: Props) {
   return (
     <DropdownMenuStyle forceOpen={forceShow}>
+      <MenuItemStyle action="/"          label="New Game"   icon={<NewGameIcon />} />
       <MenuItemStyle action={openHost}   label="Host Tools" icon={<ToolsIcon   />} />
       <MenuItemStyle action={dropPlayer} label="Drop Game"  icon={<ExitIcon    />} /> 
       <Divider />

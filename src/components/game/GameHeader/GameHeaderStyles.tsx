@@ -14,6 +14,8 @@ const statusIcon: { [status in GameStatus]: ReactNode } = {
   'last':   <PackIcon className="h-6 sm:h-8 fill-base-100 stroke-base-content" />,
 }
 
+export const NewGameIcon = () => <LogoIcon className="inline-block w-6 h-6 fill-current" />
+
 export const Divider = () => <hr className="m-2 opacity-30" />
 
 export const GameHeaderWrapper = ({ children }: { children?: ReactNode }) => (
