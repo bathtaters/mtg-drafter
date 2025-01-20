@@ -5,7 +5,7 @@ import HostIcon from "components/svgs/HostIcon"
 
 
 export const GameSelectContainer = ({ children }: { children: ReactNode }) => (
-  <div className="w-full flex flex-col justify-center items-center gap-4">
+  <div className="w-full flex flex-col justify-center items-center gap-4 py-2">
     {children}
   </div>
 )

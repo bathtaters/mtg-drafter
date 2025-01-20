@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 const defaultTheme = require('tailwindcss/defaultTheme')
 const plugin = require('tailwindcss/plugin')
+const daisyThemes = require('daisyui/src/theming/themes')
 
 module.exports = {
   content: [
@@ -125,7 +126,21 @@ module.exports = {
     }),
   ],
   daisyui: {
-    themes: [ "winter", "night" ],
+    themes: [
+      {
+        winter: {
+          ...daisyThemes.winter,
+          accent: '#DB7070', // Opponent color (Red)
+        },
+      },
+      {
+        night: {
+          ...daisyThemes.night,
+          accent: '#7A0808', // Opponent color (Red)
+        },
+      },
+      "night"
+    ],
     darkTheme: "night",
   },
 }

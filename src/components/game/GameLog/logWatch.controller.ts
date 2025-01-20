@@ -9,9 +9,11 @@ export type Props = LogProps & {
     setLoading?: SetNumber,
     sessionId?: string,
     reload?: () => any,
+    sidebarVisible: boolean,
+    setSidebar?: Dispatch<SetStateAction<boolean>>,
 }
 
-export default function useLogWatch({ log, players, game, sessionId, setLoading, reload }: Props) {
+export default function useLogWatch({ log, players, game, sessionId, setLoading, reload, setSidebar }: Props) {
     const [authed, setAuth] = useState(game?.watchId ? game.watchId === sessionId : false)
     const [message, setMessage] = useState("")
 
@@ -53,8 +55,11 @@ export default function useLogWatch({ log, players, game, sessionId, setLoading,
     // eslint-disable-next-line react-hooks/exhaustive-deps -- just need log.refresh
     }, [log.refresh, players, authed, sessionId])
 
-    // Refresh header when authorization updates
-    useEffect(() => { authed && reload?.() }, [reload, authed])
+    // Refresh header/sidebar when authorization updates
+    useEffect(() => {
+        authed && reload?.()
+        !authed && setSidebar?.(false)
+    }, [reload, setSidebar, authed])
 
     return { authed, message, handleSubmit, logout: () => setAuth(false) }
 }

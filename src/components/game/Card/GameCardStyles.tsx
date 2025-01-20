@@ -29,7 +29,7 @@ export const CardWrapper = ({
       }`} />
       {isFoil &&
         <div className="animate-foil bg-foil rounded-card opacity-100
-          absolute top-0 left-0 bottom-0 right-0 z-50 bg-[length:200%_200%]
+          absolute top-0 left-0 bottom-0 right-0 z-[35] bg-[length:200%_200%]
           transition-all duration-300 motion-reduce:duration-700" />}
       {image}
       {rendered}

@@ -12,13 +12,14 @@ import Footer from 'components/base/Footer'
 import { BodyWrapperStyle, SetPageTitle } from 'components/base/styles/AppStyles'
 import useGameController from 'components/game/index/game.controller'
 import { gameIsEnded, gameIsPaused } from '../shared/game.utils'
+import PlayerSidebar from '../PlayerSidebar/PlayerSidebar'
 
 
 export default function Game(props: ServerProps) {
   const {
     game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize,
-    holding, canAdvance, pack, landModal, hostModal, logModal, slots, gameLog, timer, 
-    saveDeck, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setTitle,
+    holding, canAdvance, pack, sidebarVisible, landModal, hostModal, logModal, slots, gameLog, timer, 
+    saveDeck, setSidebar, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setTitle,
     nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropPlayer,
     reload, startTimer, newError, newToast, ErrorComponent, ToastComponent,
   } = useGameController(props)
@@ -26,35 +27,40 @@ export default function Game(props: ServerProps) {
   return (<>
     <SetPageTitle title={game?.name || ""} />
 
-    <GameHeader
-      game={game} players={players} playerIdx={playerIdx} holding={holding} packSize={maxPackSize} isConnected={isConnected} saveDeck={saveDeck}
-      openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer} dropPlayer={dropPlayer} notify={newToast}
-    />
-    
-    <BodyWrapperStyle>
-      <Loader data={game || 404} message={props.error}>
-        { !player ?
-          <PlayerJoin slots={slots} players={players} selectPlayer={setStatus} /> :
-          
-          <GameBody
-            game={game as Game|PartialGame}
-            player={player} playerTimer={timer}
-            roundOver={player.pick > maxPackSize}
-            pack={pack} pickCard={pickCard} swapCard={swapCard}
-            clickRoundBtn={canAdvance ? () => nextRound() : undefined}
-            onLandClick={toggleLandModal}
-            clickReload={reload}
-            onPackLoad={startTimer}
-            loadingPack={!!loadingPack}
-            notify={newToast}
-          />
-        }
-      </Loader>
-    </BodyWrapperStyle>
+    <PlayerSidebar
+      game={game} players={players} playerIdx={playerIdx} holding={holding} packSize={maxPackSize}
+      isOpen={sidebarVisible} setOpen={setSidebar}
+    >
+      <GameHeader
+        game={game} players={players} playerIdx={playerIdx} holding={holding} packSize={maxPackSize} isConnected={isConnected} saveDeck={saveDeck}
+        openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer} dropPlayer={dropPlayer} notify={newToast}
+      />
+      
+      <BodyWrapperStyle>
+        <Loader data={game || 404} message={props.error}>
+          { !player ?
+            <PlayerJoin slots={slots} players={players} selectPlayer={setStatus} /> :
+            
+            <GameBody
+              game={game as Game|PartialGame}
+              player={player} playerTimer={timer}
+              roundOver={player.pick > maxPackSize}
+              pack={pack} pickCard={pickCard} swapCard={swapCard}
+              clickRoundBtn={canAdvance ? () => nextRound() : undefined}
+              onLandClick={toggleLandModal}
+              clickReload={reload}
+              onPackLoad={startTimer}
+              loadingPack={!!loadingPack}
+              notify={newToast}
+            />
+          }
+        </Loader>
+      </BodyWrapperStyle>
 
-    <Footer />
+      <Footer />
+    </PlayerSidebar>
 
-    { (!!loadingAll || !isConnected) && <Overlay ><Spinner caption={loadingAll ? 'Loading...' : 'Reconnecting...'} /></Overlay> }
+    { (!!loadingAll || !isConnected) && <Overlay ><Spinner caption={!loadingAll ?  'Reconnecting' : 'Loading'} /></Overlay> }
 
     {!!toggleLogModal &&
       <GameLogModal

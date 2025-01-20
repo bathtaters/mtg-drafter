@@ -12,7 +12,7 @@ export default function GameHistory({ games, error }: GameHistoryServerSideProps
   return (<>
     <SetPageTitle title="My Games" />
 
-    <GameHeaderBase label="My Games" sublabel="Local User Game History" />
+    <GameHeaderBase title="My Games" />
     
     <BodyWrapperStyle>
       <Loader data={games || 404} message={error}>

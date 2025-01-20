@@ -7,6 +7,7 @@ import { formatBytes, getObjectSum } from "components/base/services/common.servi
 import { ReactNode } from "react"
 import CardIcon from "components/svgs/CardIcon"
 import HostIcon from "components/svgs/HostIcon"
+import UserIcon from "components/svgs/UserIcon"
 
 export const uploadHelp = "Expects a .txt of card names. \nOne per line with no formatting."
 
@@ -65,9 +66,10 @@ export const cardLayoutText: {[layout in Layout]?: string} = {
   modal_dfc: 'Modal',
 }
 
-export const logOptionLabels: Record<keyof LogOptions, ReactNode> = {
+export const logOptionLabels: Record<keyof LogOptions | "showSidebar", ReactNode> = {
   hideHost: <span>Show Host<HostIcon className="ml-2 w-5 ms-2x" /></span>,
   hidePrivate: <span>Show Secrets<CardIcon className="ml-2 w-5 stroke-current fill-primary-content inline" /></span>,
+  showSidebar: <span>Show Players<UserIcon className="ml-2 w-5 fill-current inline" /></span>,
 }
 
 export const logFullDate = (dt: Date) => dt.toLocaleString(undefined, { timeStyle: 'medium', dateStyle: 'medium'})

@@ -8,7 +8,7 @@ import { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 
 
 export default function useLocalController(props: ServerProps, throwError: AlertsReturn['newError'], notify: AlertsReturn['newToast']) {
-  const [loadingAll,  setLoadingAll] = useState(0)
+  const [loadingAll,  setLoadingAll] = useState(1)
   const [loadingPack, setLoadingPack] = useState(1)
 
   const [ game,    updateGame    ] = useState(props.options)

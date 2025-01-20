@@ -39,8 +39,8 @@ export async function apiHandler(req: NextApiRequest, res: NextApiResponse<Serve
   const props = await getGameProps(req.query, getReqSessionId(req, res), true)
   if (props.error) {
     console.error('Game API Error -- game:',req.query.url,', player:',getReqSessionId(req,res),'--',props.error)
-    return res.writeHead(props.error === NOTFOUND ? 404 : 400, props.error)
+    res.writeHead(props.error === NOTFOUND ? 404 : 400, props.error)
+  } else {
+    res.status(200).json(props as ServerSuccess)
   }
-
-  res.status(200).json(props as ServerSuccess)
 }

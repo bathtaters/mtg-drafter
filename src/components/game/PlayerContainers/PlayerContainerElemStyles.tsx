@@ -9,22 +9,45 @@ import { camelToTitle } from "components/base/services/common.services"
 
 const statsIcon = { pick: CardIcon, holding: PackIcon }
 
-export const EmptyPlayerContainer = () => <div className="h-20" />
+export const EmptyPlayerContainer = ({ className = "h-20" }: { className?: string }) => <div className={className} />
 
-export const HostMarker = () => <span className="-mr-0.5 ml-0.5 mb-1 text-base sm:text-lg opacity-70"><HostIcon /></span>
-export const UserMarker = () => <UserIcon className="fill-current opacity-70 h-2 sm:h-3 inline-block ml-1 sm:mr-px" />
-export const OppMarker = () => <span className="mr-0.5 ml-1.5 mb-1 text-base sm:text-lg opacity-70"><OpponentIcon /></span>
+export const UserMarker = () => (
+  <span className="inline-block ml-1 sm:mr-px tooltip tooltip-right" data-tip="You">
+    <UserIcon className="fill-primary/70 h-2 sm:h-3" />
+  </span>
+)
+export const HostMarker = () => (
+  <span className="-mr-0.5 ml-0.5 mb-1 text-base/70 sm:text-lg tooltip tooltip-right" data-tip="Host">
+    <HostIcon className="opacity-70" />
+  </span>
+)
+export const OppMarker = () => (
+  <span className="mr-0.5 ml-1.5 mb-1 text-base sm:text-lg tooltip tooltip-right" data-tip="Opponent">
+    <OpponentIcon className="opacity-70" />
+  </span>
+)
 
 export const HostBadge = () => (
-  <span className="badge badge-info badge-md align-top ml-2 pl-1">
+  <span className="badge badge-info badge-md align-top ml-2 pl-1 opacity-80">
     <HostIcon className="opacity-70 text-lg" />
     <span className="ml-0.5">Host</span>
   </span>
 )
 
-export const UserHeader = ({ isConnected, isHost }: { isConnected: boolean, isHost: boolean }) => (
+export const ByeBadge = () => (
+  <span className="badge badge-info badge-md align-top ml-2 pl-1 opacity-80">
+    <UserIcon className="opacity-40 stroke-current stroke-[4] fill-none h-3 inline-block" />
+    <span className="ml-1">Bye</span>
+  </span>
+)
+
+export const UserHeader = ({ isConnected, isHost, isBye }: { isConnected: boolean, isHost: boolean, isBye?: boolean }) => (
   <span>
-    <UserIcon className={`${isConnected ? "fill-success" : "fill-error"} h-4 sm:h-5 inline-block`} />{isHost && <HostBadge />}
+    <span className="inline-block tooltip" data-tip="You">
+      <UserIcon className={`${isConnected ? "fill-success" : "fill-error"} opacity-80 h-4 sm:h-5`} />
+    </span>
+    {isHost && <HostBadge />}
+    {isBye && <ByeBadge />}
   </span>
 )
 
@@ -37,10 +60,13 @@ export const StatsStyle = ({ type, isMini, count }: { type?: keyof typeof statsI
   const Icon = statsIcon[type]
 
   return isMini ? (<>
-    <span data-tip={camelToTitle(type)} className="w-full h-full tooltip tooltip-left before:text-2xs before:content-[attr(data-tip)]" >
-      <Icon className={`${type === 'pick' ? "h-3 mr-0.5 mt-0.5" : "h-4 mb-0.5"} stroke-current fill-base-100 self-center text-right ml-auto`} />
+    <span data-tip={camelToTitle(type)} className="w-full h-full tooltip tooltip-left" >
+      <Icon className={
+        `${type === 'pick' ? "h-3 mr-0.5 mt-0.5" : "h-4 mb-0.5"
+        } stroke-current fill-base-100 ml-auto opacity-70`
+      } />
     </span>
-    <span className="text-xs min-w-[1.1em] text-left mr-auto">{count ?? '-'}</span>
+    <span className="text-xs min-w-[1.1em] text-left mr-auto opacity-70">{count ?? '-'}</span>
 
   </>) : (<>
     <Icon className={`inline-block ${type === 'pick' ? "h-4 pr-0.5" : "h-5"} stroke-current fill-base-100`} />
@@ -50,10 +76,4 @@ export const StatsStyle = ({ type, isMini, count }: { type?: keyof typeof statsI
 
 export const PlayerNameEditor = (props: TextEditorProps) => <TextEditor {...props} className="input-primary join-item text-lg sm:text-2xl " />
 
-export const MenuItemStyle = ({ label, icon }: { label: string, icon?: ReactNode }) => (
-    <>
-      <span className="py-1">{label}</span>
-      <span className="justify-self-end">{icon}</span>
-    </>
-  )
   

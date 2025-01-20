@@ -38,6 +38,9 @@
   
   /* Fix combining tooltip w/ btn */
   .tooltip.btn { @apply before:normal-case before:font-normal before:content-[attr(data-tip)]; }
+
+  /* Fix scrollable sidebar */
+  html:has(.drawer-toggle:checked) { scrollbar-gutter: auto; }
   
   /* Add Tab variants to daisyUI */
   .tabs-boxed .tab, .tabs-boxed .tab.tab-primary  {
@@ -69,17 +72,36 @@
   .show-arrows::-webkit-outer-spin-button {
     @apply m-auto appearance-auto;
   }
+
+  /* Add player-drawer-offset to allow drawer button to popout */
+  .drawer-end > .drawer-toggle ~ .drawer-side > .player-drawer-offset:not(.drawer-overlay) {
+    @apply translate-x-[calc(100%-2rem)] md:translate-x-[calc(100%-3rem)]
+  }
+
+  .drawer-end > .drawer-toggle:checked ~ .drawer-side > .player-drawer-offset:not(.drawer-overlay) {
+    @apply translate-x-0
+  }
 }
 
 @layer utilities {
   
   /* Style scrollbars */
-  *::-webkit-scrollbar { @apply w-1 h-1; }
-  *::-webkit-scrollbar-track { @apply my-1 bg-transparent; }
-  *::-webkit-scrollbar-thumb { @apply rounded-full bg-base-content/80 hover:bg-base-content; }
-  .scrollbar-primary::-webkit-scrollbar-thumb   { @apply bg-[color-mix(in_oklab,oklch(var(--p)),black_10%)] hover:bg-primary;   }
-  .scrollbar-secondary::-webkit-scrollbar-thumb { @apply bg-[color-mix(in_oklab,oklch(var(--s)),black_10%)] hover:bg-secondary; }
-  .scrollbar-accent::-webkit-scrollbar-thumb    { @apply bg-[color-mix(in_oklab,oklch(var(--a)),black_10%)] hover:bg-accent;    }
+  *, :hover {
+    scrollbar-color: auto auto;
+    scrollbar-width: thin;
+  }
+  *::-webkit-scrollbar       { @apply w-1.5 h-1; }
+  *::-webkit-scrollbar-track { @apply my-1.5 bg-transparent; }
+  *::-webkit-scrollbar-thumb { @apply rounded-full bg-base-content/60 hover:bg-base-content; }
+  .scrollbar-primary::-webkit-scrollbar-thumb   { @apply bg-[color-mix(in_oklab,oklch(var(--p)),black_20%)] hover:bg-primary;   }
+  .scrollbar-secondary::-webkit-scrollbar-thumb { @apply bg-[color-mix(in_oklab,oklch(var(--s)),black_20%)] hover:bg-secondary; }
+  .scrollbar-accent::-webkit-scrollbar-thumb    { @apply bg-[color-mix(in_oklab,oklch(var(--a)),black_20%)] hover:bg-accent;    }
+  .scrollbar-primary   { scrollbar-color: color-mix(in oklab, oklch(var(--p)), black 20%) transparent; }
+  .scrollbar-secondary { scrollbar-color: color-mix(in oklab, oklch(var(--s)), black 20%) transparent; }
+  .scrollbar-accent    { scrollbar-color: color-mix(in oklab, oklch(var(--a)), black 20%) transparent; }
+  .scrollbar-primary:hover   { scrollbar-color: oklch(var(--p)) transparent; }
+  .scrollbar-secondary:hover { scrollbar-color: oklch(var(--s)) transparent; }
+  .scrollbar-accent:hover    { scrollbar-color: oklch(var(--a)) transparent; }
 
   /* Add 3d card flip effect (w/ reduced & non-reduced motion options) */
   .flip-container {

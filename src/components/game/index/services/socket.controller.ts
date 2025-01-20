@@ -68,7 +68,7 @@ export function getGameListeners(
       updateGame((game) => game && ({ ...game, watchKey, watchId: watchKey ? (game as Game).watchId : null }))
     })
     
-    clientErrorsInConsole && socket.on('error', (msg) => { console.error('Server Error:',msg) })
+    clientErrorsInConsole && socket.on('error', console.error)
 
     onConnect && socket.on('connect', onConnect)
 
@@ -78,6 +78,7 @@ export function getGameListeners(
       if (!socket) return;
 
       onConnect && socket.off('connect', onConnect)
+      clientErrorsInConsole && socket.off('connect', console.error)
       socket.removeAllListeners('updateTitle')
       socket.removeAllListeners('updateName')
       socket.removeAllListeners('updatePick')

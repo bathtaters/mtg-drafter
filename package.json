@@ -5,14 +5,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack -p 3040",
-    "build": "prisma generate && next build",
-    "start": "next start -p 3040",
+    "build": "podman build -t mtg-drafter .",
+    "start": "podman run -d --name mtg-drafter -p 3040:3000 mtg-drafter",
+    "stop": "podman stop mtg-drafter && podman rm mtg-drafter",
+    "clean": "podman stop -i mtg-drafter && podman rm -i mtg-drafter && podman rmi mtg-drafter",
     "lint": "next lint",
     "test": "jest",
-    "ssl": "npx local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3041 --target 3040",
-    "pod-build": "podman build -t mtg-drafter .",
-    "pod-start": "podman run -d --name mtg-drafter -p 3040:3040 mtg-drafter",
-    "pod-stop": "podman stop mtg-drafter && podman rm mtg-drafter"
+    "ssl": "npx local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3041 --target 3040"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"

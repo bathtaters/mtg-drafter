@@ -13,7 +13,7 @@ export const GameLogWatchWrapper = ({ title, children }: { title: string, childr
 export const LogContainer = ({ children, toolbar }: { children: ReactNode, toolbar: ReactNode }) => (<>
   <div className="absolute top-4 right-4">{toolbar}</div>
   <div className="card w-full h-full bg-base-300 border border-base-content">
-    <ul className="card-body overflow-y-auto py-4 px-6">
+    <ul className="card-body overflow-y-auto py-4 px-6 min-h-full max-h-80">
       {children}
     </ul>
   </div>
