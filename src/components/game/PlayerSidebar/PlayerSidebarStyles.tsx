@@ -35,7 +35,7 @@ export const SidebarButton = ({ hide, active, onClick }: { hide?: boolean, activ
       className={
         `btn btn-secondary btn-outline btn-square btn-sm md:btn-md bg-base-200/80${
           active ? ' swap-active' : ''}${hide ? ' sm:invisible inline-grid' : ''
-        } z-50 rounded-e-none border-r-0 mt-[4.5rem] md:mt-20 pointer-events-auto swap swap-rotate`
+        } z-40 rounded-e-none border-r-0 mt-[4.5rem] md:mt-20 pointer-events-auto swap swap-rotate`
       }
     >
       <div className="swap-off"><UserIcon className="w-full p-2 md:p-3 fill-current" /></div>
