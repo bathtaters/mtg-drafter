@@ -65,12 +65,14 @@ export const RoundCounter = ({ label, status }: { label: ReactNode, status?: Gam
 )
 
 export const DropdownMenuStyle = (props: DropdownProps) => (
-  <DropdownMenu {...props}
-    label="☰"
-    className=""
-    labelClass="btn-md w-12 md:w-16 text-4xl md:text-5xl pb-1 pb-12 md:pb-14
-    text-[color-mix(in_oklab,oklch(var(--p)),black_10%)] hover:text-primary"
-  />
+  <div>
+    <DropdownMenu {...props}
+      label="☰"
+      className=""
+      labelClass="btn-md w-12 md:w-16 text-4xl md:text-5xl pb-1 pb-12 md:pb-14
+      text-[color-mix(in_oklab,oklch(var(--p)),black_10%)] hover:text-primary"
+    />
+  </div>
 )
 
 export const MenuItemStyle = ({ label, icon, action }: { label: string, icon?: ReactNode, action?: MouseEventHandler<HTMLAnchorElement> | string | false }) => 
