@@ -2,12 +2,12 @@ import type { MouseEventHandler, ReactNode } from "react";
 import SidebarDrawer, { type Props as SidebarProps } from "components/base/common/SidebarDrawer";
 import UserIcon from "components/svgs/UserIcon";
 
-export const SidebarDrawerStyle = (props: Pick<SidebarProps, "isOpen"|"overlayClick"|"sidebarContent"|"children">) => (
+export const SidebarDrawerStyle = ({ children, ...props }: Pick<SidebarProps, "isOpen"|"overlayClick"|"sidebarContent"|"children">) => (
   <SidebarDrawer {...props}
     className="drawer-end w-full h-full"
     sidebarClass="!relative z-40"
   >
-    <div className="w-full h-full flex flex-col">{props.children}</div>
+    <div className="w-full h-full flex flex-col">{children}</div>
   </SidebarDrawer>
 )
 
