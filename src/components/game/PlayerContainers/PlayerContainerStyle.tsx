@@ -21,7 +21,7 @@ export default function PlayerContainerStyle(
   PlayerContainerStyleProps
 ) {
   return (
-    <div className={`stats shadow-sm shadow-black ${isMini ? 'h-10 md:h-12 rounded-lg overflow-hidden' : 'min-h-24 overflow-visible'} ${color ? themes[color][0] : ''} ${className}`}>
+    <div className={`stats shadow-sm shadow-black overflow-visible ${isMini ? 'h-10 md:h-12 rounded-lg' : 'min-h-24'} ${color ? themes[color][0] : ''} ${className}`}>
       <div className={`stat ${isMini ? 'p-0 gap-0' : 'rounded-2xl'} ${color ? themes[color][1] : ''}`}>
         
         <div className={`stat-figure ${
@@ -30,10 +30,10 @@ export default function PlayerContainerStyle(
           {children}
         </div>
 
-        {header && <div className="stat-title text-xs md:text-base opacity-80">{header}</div>}
+        {header && <div className="stat-title text-xs md:text-base">{header}</div>}
         
         <div className={`stat-value font-medium min-w-0 ${
-          isMini ? 'row-span-3 self-center text-base flex items-center overflow-hidden' : 'flex items-center'
+          isMini ? 'row-span-3 self-center text-base flex items-center' : 'flex items-center'
         } ${
           disconnected && isMini ? "opacity-60 italic" : ''} ${color ? themes[color][2] : ''
         }`}>

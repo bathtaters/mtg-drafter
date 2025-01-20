@@ -11,19 +11,31 @@ const statsIcon = { pick: CardIcon, holding: PackIcon }
 
 export const EmptyPlayerContainer = ({ className = "h-20" }: { className?: string }) => <div className={className} />
 
-export const HostMarker = () => <span className="-mr-0.5 ml-0.5 mb-1 text-base sm:text-lg opacity-70"><HostIcon /></span>
-export const UserMarker = () => <UserIcon className="fill-current opacity-70 h-2 sm:h-3 inline-block ml-1 sm:mr-px" />
-export const OppMarker = () => <span className="mr-0.5 ml-1.5 mb-1 text-base sm:text-lg opacity-70"><OpponentIcon /></span>
+export const UserMarker = () => (
+  <span className="inline-block ml-1 sm:mr-px tooltip tooltip-right" data-tip="You">
+    <UserIcon className="fill-primary/70 h-2 sm:h-3" />
+  </span>
+)
+export const HostMarker = () => (
+  <span className="-mr-0.5 ml-0.5 mb-1 text-base/70 sm:text-lg tooltip tooltip-right" data-tip="Host">
+    <HostIcon className="opacity-70" />
+  </span>
+)
+export const OppMarker = () => (
+  <span className="mr-0.5 ml-1.5 mb-1 text-base sm:text-lg tooltip tooltip-right" data-tip="Opponent">
+    <OpponentIcon className="opacity-70" />
+  </span>
+)
 
 export const HostBadge = () => (
-  <span className="badge badge-info badge-md align-top ml-2 pl-1">
+  <span className="badge badge-info badge-md align-top ml-2 pl-1 opacity-80">
     <HostIcon className="opacity-70 text-lg" />
     <span className="ml-0.5">Host</span>
   </span>
 )
 
 export const ByeBadge = () => (
-  <span className="badge badge-info badge-md align-top ml-2 pl-1">
+  <span className="badge badge-info badge-md align-top ml-2 pl-1 opacity-80">
     <UserIcon className="opacity-40 stroke-current stroke-[4] fill-none h-3 inline-block" />
     <span className="ml-1">Bye</span>
   </span>
@@ -31,7 +43,9 @@ export const ByeBadge = () => (
 
 export const UserHeader = ({ isConnected, isHost, isBye }: { isConnected: boolean, isHost: boolean, isBye?: boolean }) => (
   <span>
-    <UserIcon className={`${isConnected ? "fill-success" : "fill-error"} h-4 sm:h-5 inline-block`} />
+    <span className="inline-block tooltip" data-tip="You">
+      <UserIcon className={`${isConnected ? "fill-success" : "fill-error"} opacity-80 h-4 sm:h-5`} />
+    </span>
     {isHost && <HostBadge />}
     {isBye && <ByeBadge />}
   </span>
