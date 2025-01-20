@@ -45,7 +45,7 @@ export const SidebarButton = ({ hide, active, onClick }: { hide?: boolean, activ
 
 export const Arrow = ({ isDown }: { isDown?: boolean }) => (
     <div className="w-8 px-1 overflow-hidden">
-        <div className={`relative ${isDown ? '-mt-16 ' : 'mt-16 '}transition-all duration-500`}>
+        <div className={`relative h-full ${isDown ? '-mt-16 ' : 'mt-16 '}transition-all duration-500`}>
             <svg viewBox="0 0 30 10000" className={`absolute w-full ${isDown ? 'bottom-0' : 'top-0'} fill-base-content/50`}>
                 { typeof isDown === 'boolean' && <path d={
                     isDown ? "M 30 0 L 30 10000 L 0 9960 L 15 9960 L 15 0 L 30 0 Z" :
