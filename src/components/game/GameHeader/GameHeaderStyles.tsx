@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import type { MouseEventHandler, ReactNode } from "react"
 import type { GameStatus } from "@prisma/client"
 import Link from "next/link"
 import Header from "components/base/Header"
@@ -14,6 +14,7 @@ const statusIcon: { [status in GameStatus]: ReactNode } = {
   'last':   <PackIcon className="h-6 sm:h-8 fill-base-100 stroke-base-content" />,
 }
 
+export const Divider = () => <hr className="m-2 opacity-30" />
 
 export const GameHeaderWrapper = ({ children }: { children?: ReactNode }) => (
   <Header>
@@ -70,12 +71,24 @@ export const DropdownMenuStyle = (props: DropdownProps) => (
   />
 )
 
-export const MenuItemStyle = ({ label, icon }: { label: string, icon?: ReactNode }) => (
-  <>
-    <span className="py-1">{label}</span>
-    <span className="justify-self-end">{icon}</span>
-  </>
-)
+export const MenuItemStyle = ({ label, icon, action }: { label: string, icon?: ReactNode, action?: MouseEventHandler<HTMLAnchorElement> | string | false }) => 
+  typeof action === 'undefined' ? undefined :
+  typeof action === 'string' ? (
+    <li className={action ? "" : "disabled"}>
+      <Link title={label} href={action || "#"}>
+        <span className="py-1">{label}</span>
+        <span className="justify-self-end">{icon}</span>
+      </Link>
+    </li>
+  ) : (
+    <li className={action ? "" : "disabled"}>
+      <a title={label} onClick={action || undefined}>
+        <span className="py-1">{label}</span>
+        <span className="justify-self-end">{icon}</span>
+      </a>
+    </li>
+  )
+
 
 export const PlayerSeperator = ({ passRight, bothWays, alt = "" }: { passRight?: boolean, bothWays?: boolean, alt?: string }) => (
   <div className={`text-lg opacity-70 hidden ${alt ? 'lg:block' : 'sm:block'}`}>

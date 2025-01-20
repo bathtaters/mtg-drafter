@@ -1,5 +1,7 @@
+import Link from "next/link"
 import { ExitIcon, ExportIcon, LandIcon, RenameIcon, ToolsIcon } from "components/svgs/MenuIcons"
-import { DropdownMenuStyle, MenuItemStyle } from "./GameHeaderStyles"
+import { Divider, DropdownMenuStyle, MenuItemStyle, NewGameIcon } from "./GameHeaderStyles"
+import LogoIcon from "components/svgs/LogoIcon"
 
 type Props = {
   forceShow?: boolean,
@@ -13,13 +15,12 @@ type Props = {
 export default function GameMenu({ forceShow, saveDeck, openLands, editName, openHost, dropPlayer }: Props) {
   return (
     <DropdownMenuStyle forceOpen={forceShow}>
-      {!!saveDeck   && <li><a onClick={saveDeck  }><MenuItemStyle label="Export Deck" icon={<ExportIcon />} /></a></li> }
-      {!!openLands  && <li><a onClick={openLands }><MenuItemStyle label="Set Lands"   icon={<LandIcon   />} /></a></li> }
-      {<li className={editName ? "" : "disabled"}>
-        <a onClick={editName}><MenuItemStyle label="Edit Name" icon={<RenameIcon />} /></a>
-      </li> }
-      {!!openHost   && <li><a onClick={openHost  }><MenuItemStyle label="Host Tools"  icon={<ToolsIcon  />} /></a></li> }
-      {!!dropPlayer && <li><a onClick={dropPlayer}><MenuItemStyle label="Drop Game"   icon={<ExitIcon   />} /></a></li> }
+      <MenuItemStyle action={openHost}   label="Host Tools" icon={<ToolsIcon   />} />
+      <MenuItemStyle action={dropPlayer} label="Drop Game"  icon={<ExitIcon    />} /> 
+      <Divider />
+      <MenuItemStyle action={editName ?? false} label="Edit Name"   icon={<RenameIcon />} />
+      <MenuItemStyle action={openLands }        label="Set Lands"   icon={<LandIcon   />} />
+      <MenuItemStyle action={saveDeck  }        label="Export Deck" icon={<ExportIcon />} />
     </DropdownMenuStyle>
   )
 }
