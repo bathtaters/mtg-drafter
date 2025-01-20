@@ -37,7 +37,7 @@ export const getAllIndexes = (playerIdx: number, playerCount: number) => {
 
 export const passingRight = ({ round, roundCount }: Partial<Game>) =>
   typeof round !== 'number' || round < 1 || round > (roundCount || 0) ? undefined :
-    round % 2 === 0
+    round % 2 === 1
 
 export const getPlayerIdx = (players: Pick<BasicPlayer,"id">[], player?: Pick<BasicPlayer,"id"> | null) => !player?.id ? -1 :
   players.findIndex(({ id }) => id === player.id)
