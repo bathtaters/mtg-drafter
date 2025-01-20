@@ -38,6 +38,9 @@
   
   /* Fix combining tooltip w/ btn */
   .tooltip.btn { @apply before:normal-case before:font-normal before:content-[attr(data-tip)]; }
+
+  /* Fix scrollable sidebar */
+  html:has(.drawer-toggle:checked) { scrollbar-gutter: auto; }
   
   /* Add Tab variants to daisyUI */
   .tabs-boxed .tab, .tabs-boxed .tab.tab-primary  {
