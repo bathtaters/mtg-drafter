@@ -13,7 +13,7 @@ export const SidebarDrawerStyle = (props: Pick<SidebarProps, "isOpen"|"overlayCl
 
 export const SidebarContainer = ({ isOpen, button, children }: { isOpen: boolean, button?: ReactNode, children?: ReactNode }) => (<>
   <div className={`relative h-full ${isOpen ? 'xl:w-[21rem]' : ''}`} />
-  <div className="fixed top-0 right-0 flex xl:w-96 h-full overflow-y-auto player-drawer-offset">
+  <div className="fixed top-0 right-0 flex xl:w-96 h-full player-drawer-offset">
     {button}
     <div className="flex justify-start gap-1 min-w-60 md:min-w-72 bg-base-200 border-l-2 border-secondary w-full min-h-full">
       {children}
@@ -23,7 +23,7 @@ export const SidebarContainer = ({ isOpen, button, children }: { isOpen: boolean
 )
 
 export const PlayerListWrapper = ({ title = "Draft Order", children }: { title?: string, children?: ReactNode }) => (
-    <div className="flex-grow flex flex-col gap-2 py-4 pr-4 overflow-y-auto">
+    <div className="flex-grow flex flex-col gap-2 py-4 pr-4 overflow-y-auto scrollbar-secondary">
       <h2 className="text-center font-serif mb-4 font-normal opacity-80">{title}</h2>
       {children}
     </div>

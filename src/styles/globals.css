@@ -83,12 +83,22 @@
 @layer utilities {
   
   /* Style scrollbars */
-  *::-webkit-scrollbar { @apply w-1 h-1; }
-  *::-webkit-scrollbar-track { @apply my-1 bg-transparent; }
-  *::-webkit-scrollbar-thumb { @apply rounded-full bg-base-content/80 hover:bg-base-content; }
-  .scrollbar-primary::-webkit-scrollbar-thumb   { @apply bg-[color-mix(in_oklab,oklch(var(--p)),black_10%)] hover:bg-primary;   }
-  .scrollbar-secondary::-webkit-scrollbar-thumb { @apply bg-[color-mix(in_oklab,oklch(var(--s)),black_10%)] hover:bg-secondary; }
-  .scrollbar-accent::-webkit-scrollbar-thumb    { @apply bg-[color-mix(in_oklab,oklch(var(--a)),black_10%)] hover:bg-accent;    }
+  *, :hover {
+    scrollbar-color: auto auto;
+    scrollbar-width: thin;
+  }
+  *::-webkit-scrollbar       { @apply w-1.5 h-1; }
+  *::-webkit-scrollbar-track { @apply my-1.5 bg-transparent; }
+  *::-webkit-scrollbar-thumb { @apply rounded-full bg-base-content/60 hover:bg-base-content; }
+  .scrollbar-primary::-webkit-scrollbar-thumb   { @apply bg-[color-mix(in_oklab,oklch(var(--p)),black_20%)] hover:bg-primary;   }
+  .scrollbar-secondary::-webkit-scrollbar-thumb { @apply bg-[color-mix(in_oklab,oklch(var(--s)),black_20%)] hover:bg-secondary; }
+  .scrollbar-accent::-webkit-scrollbar-thumb    { @apply bg-[color-mix(in_oklab,oklch(var(--a)),black_20%)] hover:bg-accent;    }
+  .scrollbar-primary   { scrollbar-color: color-mix(in oklab, oklch(var(--p)), black 20%) transparent; }
+  .scrollbar-secondary { scrollbar-color: color-mix(in oklab, oklch(var(--s)), black 20%) transparent; }
+  .scrollbar-accent    { scrollbar-color: color-mix(in oklab, oklch(var(--a)), black 20%) transparent; }
+  .scrollbar-primary:hover   { scrollbar-color: oklch(var(--p)) transparent; }
+  .scrollbar-secondary:hover { scrollbar-color: oklch(var(--s)) transparent; }
+  .scrollbar-accent:hover    { scrollbar-color: oklch(var(--a)) transparent; }
 
   /* Add 3d card flip effect (w/ reduced & non-reduced motion options) */
   .flip-container {
