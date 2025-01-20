@@ -58,6 +58,13 @@ export default function useSocket<S extends Socket = Socket>(
 
     onFail && socket.current.io.on('reconnect_failed', () => onFail({ message: 'Unable to re-establish connection to server' }))
   
+    socket.current.on('error', (error) => {
+      debugSockets && console.error('Sockets error:', error)
+      disconnectFromSocket()
+      onFail && onFail({ message: 'Connection interrupted, please refresh the page' })
+      updateIsConnected()
+    }) as S;
+  
     if (res.status !== 200 || !socket.current) {
       debugSockets && console.error('Error connecting sockets',res.statusText,res.status)
       disconnectFromSocket()
