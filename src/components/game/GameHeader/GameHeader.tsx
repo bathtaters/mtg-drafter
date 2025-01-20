@@ -1,11 +1,10 @@
-import type { Dispatch, SetStateAction } from "react"
 import type { GameStatus } from "@prisma/client"
 import type { GameProps } from "types/game"
 import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import GameHeaderBase from "./GameHeaderBase"
 import GameMenu from "./GameMenu"
 import { PlayerContainerFull, PlayerContainerSmall } from "../PlayerContainers/PlayerContainers"
-import { RoundCounter, SidebarButton, LowerContainer, PlayerSeperator } from './GameHeaderStyles'
+import { RoundCounter, LowerContainer, PlayerSeperator } from './GameHeaderStyles'
 import { getPlayerColor } from "../PlayerSidebar/playersidebar.controller"
 import useGameHeader from "./header.controller"
 import { roundCounter } from "assets/strings"
@@ -24,12 +23,10 @@ type Props = {
   openLands?:  (() => void),
   openHost?:   (() => void),
   renamePlayer: ((name: string) => void),
-  sidebarVisible: boolean,
-  setSidebar: Dispatch<SetStateAction<boolean>>,
 }
 
 
-export default function GameHeader({ game, players, playerIdx, holding, packSize, isConnected, notify, renamePlayer, sidebarVisible, setSidebar, ...menuProps }: Props) {
+export default function GameHeader({ game, players, playerIdx, holding, packSize, isConnected, notify, renamePlayer, ...menuProps }: Props) {
 
   const { gameStatus, isRight, indexes, copyProps, hideStats, showMenu, editingName, setEditingName, enableEdit } = useGameHeader(game, players, playerIdx)
   
@@ -46,7 +43,7 @@ export default function GameHeader({ game, players, playerIdx, holding, packSize
     >
       
       {indexes &&
-        <LowerContainer end={<SidebarButton hide={players.length < 4} active={sidebarVisible} onClick={() => setSidebar((show) => !show)} />}>
+        <LowerContainer>
           <HeaderPlayerContainer idx={indexes.prev} {...playerProps} />
           {indexes.prev !== undefined && <PlayerSeperator passRight={isRight} />}
 

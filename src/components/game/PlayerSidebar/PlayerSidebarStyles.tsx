@@ -29,6 +29,20 @@ export const PlayerListWrapper = ({ title = "Draft Order", children }: { title?:
     </div>
   )
 
+export const SidebarButton = ({ hide, active, onClick }: { hide?: boolean, active?: boolean, onClick?: MouseEventHandler<HTMLButtonElement> }) => (
+    <button
+      type="button" onClick={onClick}
+      className={
+        `btn btn-secondary btn-outline btn-square btn-sm md:btn-md bg-base-200/80${
+          active ? ' swap-active' : ''}${hide ? ' sm:invisible inline-grid' : ''
+        } z-50 rounded-e-none border-r-0 mt-[4.5rem] md:mt-20 pointer-events-auto swap swap-rotate`
+      }
+    >
+      <div className="swap-off"><UserIcon className="w-full p-2 md:p-3 fill-current" /></div>
+      <div className="swap-on text-2xl md:text-4xl">▶</div> 
+    </button>
+  )
+
 export const Arrow = ({ isDown }: { isDown?: boolean }) => (
     <div className="w-8 px-1 overflow-hidden">
         <div className={`relative ${isDown ? '-mt-16 ' : 'mt-16 '}transition-all duration-500`}>

@@ -1,7 +1,7 @@
 import type { Dispatch, ReactNode, SetStateAction } from "react"
 import type { GameProps } from "types/game"
 import { PlayerContainerSmall } from "../PlayerContainers/PlayerContainers"
-import { Arrow, PlayerListWrapper, SidebarContainer, SidebarDrawerStyle } from "./PlayerSidebarStyles"
+import { Arrow, PlayerListWrapper, SidebarContainer, SidebarDrawerStyle, SidebarButton } from "./PlayerSidebarStyles"
 import usePlayerSidebar, { getPlayerColor } from "./playersidebar.controller"
 
 
@@ -26,7 +26,9 @@ export default function PlayerSidebar({ game, players, playerIdx, holding, packS
   return (
     <SidebarDrawerStyle isOpen={isOpen} overlayClick={setOpen && (() => setOpen(false))}
         sidebarContent={
-            <SidebarContainer isOpen={isOpen}>
+            <SidebarContainer isOpen={isOpen} button={
+                <SidebarButton hide={players.length < 4} active={isOpen} onClick={setOpen && (() => setOpen((show) => !show))} />
+            }>
                 <Arrow isDown={passRight} />
 
                 <PlayerListWrapper title="Pick Order">

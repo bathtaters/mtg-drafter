@@ -1,4 +1,4 @@
-import type { MouseEventHandler, ReactNode } from "react"
+import type { ReactNode } from "react"
 import type { GameStatus } from "@prisma/client"
 import Link from "next/link"
 import Header from "components/base/Header"
@@ -6,7 +6,6 @@ import DropdownMenu, { type Props as DropdownProps } from "components/base/commo
 import CopyLink, { Props as CopyProps } from "components/base/common/CopyLink"
 import PackIcon from "components/svgs/PackIcon"
 import LogoIcon from "components/svgs/LogoIcon"
-import UserIcon from "components/svgs/UserIcon"
 
 const statusIcon: { [status in GameStatus]: ReactNode } = {
   'start':  <span     className="text-base sm:text-2xl fill-base-content ms ms-dfc-day"   />,
@@ -60,17 +59,6 @@ export const RoundCounter = ({ label, status }: { label: ReactNode, status?: Gam
     <span className="text-xs sm:text-base text-nowrap whitespace-nowrap">{label}</span>
     {status && statusIcon[status]}
   </div>
-)
-
-export const SidebarButton = ({ hide, active, onClick }: { hide?: boolean, active?: boolean, onClick?: MouseEventHandler<HTMLButtonElement> }) => (
-  // ◀ ▶
-  <button
-    type="button" onClick={onClick}
-    className={`btn btn-secondary btn-outline btn-square btn-sm lg:btn-md swap swap-rotate${active ? ' swap-active' : ''}${hide ? ' lg:hidden inline-grid' : ''}`}
-  >
-    <div className="swap-off"><UserIcon className="w-full p-2 lg:p-3 fill-current" /></div>
-    <div className="swap-on text-4xl">▶</div> 
-  </button>
 )
 
 export const DropdownMenuStyle = (props: DropdownProps) => (
