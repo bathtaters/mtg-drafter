@@ -45,14 +45,14 @@ export default function GameHeader({ game, players, playerIdx, holding, packSize
       {indexes &&
         <LowerContainer>
           <HeaderPlayerContainer idx={indexes.prev} {...playerProps} />
-          {indexes.prev !== undefined && <PlayerSeperator passRight={isRight} />}
+          {indexes.prev != null && <PlayerSeperator passRight={isRight} />}
 
           <PlayerContainerFull
             player={players[playerIdx]}
             holding={holding[playerIdx]}
             packSize={packSize}
             isHost={!!menuProps.openHost}
-            isBye={players.length > 1 && indexes.opp === undefined}
+            isBye={players.length > 1 && indexes.opp == null}
             isConnected={isConnected}
             isEditing={editingName}
             setEditing={setEditingName}
@@ -61,7 +61,7 @@ export default function GameHeader({ game, players, playerIdx, holding, packSize
             className={players.length > 1 ? "sm:flex-grow" : "min-w-96"}
           />
 
-          {indexes.next !== undefined && <PlayerSeperator passRight={isRight} bothWays={!indexes.prev} />}
+          {indexes.next != null && <PlayerSeperator passRight={isRight} bothWays={indexes.prev == null} />}
           <HeaderPlayerContainer idx={indexes.next} {...playerProps} />
 
           {![undefined, indexes.prev, indexes.next].includes(indexes.opp) && <>
@@ -75,7 +75,7 @@ export default function GameHeader({ game, players, playerIdx, holding, packSize
 }
 
 
-const HeaderPlayerContainer = ({ game, players, gameStatus, holding, packSize, playerIdx, opp, idx, isOpp }: PlayerContainerProps) => idx !== undefined && (
+const HeaderPlayerContainer = ({ game, players, gameStatus, holding, packSize, playerIdx, opp, idx, isOpp }: PlayerContainerProps) => idx != null && (
   <PlayerContainerSmall
     player={players[idx]}
     isHost={'hostId' in game ? game.hostId === players[idx].id : false}
