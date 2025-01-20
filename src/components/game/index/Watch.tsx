@@ -39,9 +39,10 @@ export default function Watch(props: ServerProps) {
           />
         </Loader>
       </BodyWrapperStyle>
+      
+      <Footer />
     </PlayerSidebar>
 
-    <Footer />
 
     { !!loadingAll && <Overlay ><Spinner caption={loadingAll ? 'Loading...' : 'Reconnecting...'} /></Overlay> }
   </>)
