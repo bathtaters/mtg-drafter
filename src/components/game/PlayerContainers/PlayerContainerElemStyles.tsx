@@ -60,10 +60,13 @@ export const StatsStyle = ({ type, isMini, count }: { type?: keyof typeof statsI
   const Icon = statsIcon[type]
 
   return isMini ? (<>
-    <span data-tip={camelToTitle(type)} className="w-full h-full tooltip tooltip-left before:text-2xs before:content-[attr(data-tip)]" >
-      <Icon className={`${type === 'pick' ? "h-3 mr-0.5 mt-0.5" : "h-4 mb-0.5"} stroke-current fill-base-100 self-center text-right ml-auto`} />
+    <span data-tip={camelToTitle(type)} className="w-full h-full tooltip tooltip-left" >
+      <Icon className={
+        `${type === 'pick' ? "h-3 mr-0.5 mt-0.5" : "h-4 mb-0.5"
+        } stroke-current fill-base-100 ml-auto opacity-70`
+      } />
     </span>
-    <span className="text-xs min-w-[1.1em] text-left mr-auto">{count ?? '-'}</span>
+    <span className="text-xs min-w-[1.1em] text-left mr-auto opacity-70">{count ?? '-'}</span>
 
   </>) : (<>
     <Icon className={`inline-block ${type === 'pick' ? "h-4 pr-0.5" : "h-5"} stroke-current fill-base-100`} />

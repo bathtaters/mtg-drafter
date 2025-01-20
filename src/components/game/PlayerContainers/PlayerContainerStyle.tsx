@@ -25,7 +25,7 @@ export default function PlayerContainerStyle(
       <div className={`stat ${isMini ? 'p-0 gap-0' : 'rounded-2xl'} ${color ? themes[color][1] : ''}`}>
         
         <div className={`stat-figure ${
-          isMini ? 'grid grid-cols-2 grid-rows-2 gap-x-1 opacity-70' : '-mr-3 md:mr-0'
+          isMini ? 'grid grid-cols-2 grid-rows-2 gap-x-1' : '-mr-3 md:mr-0'
         } ${color ? themes[color][3] : ''}`}>
           {children}
         </div>
