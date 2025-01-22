@@ -3,6 +3,7 @@ import type { Game, BasicLands, Player, BasicPlayer } from 'types/game'
 import prisma from '../../libs/db'
 import retry from '../../libs/retry'
 import { getTimerLength, adaptDbPlayer, hasPack } from 'backend/utils/game/game.utils'
+import { BOT } from 'assets/constants'
 
 const fullPlayer /* Prisma.PlayerInclude */ = {
   cards: { include: { card: { include: { otherFaces: { include: { card: true } } } } } }
@@ -63,3 +64,8 @@ export function swapCard(gameCardId: GameCard['id'], toBoard: Board) {
     select: { id: true, board: true },
   }))
 }
+
+export const getBots = (gameId: Game['id']) => prisma.player.findMany({
+  where: { gameId, sessionId: BOT },
+  include: fullPlayer,
+})
