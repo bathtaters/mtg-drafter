@@ -58,6 +58,7 @@ enum GameStatus {
 enum PlayerStatus {
   join
   leave
+  bot
 }
 
 enum LogAction {
@@ -195,7 +196,6 @@ model Player {
   gameId     String
   logEntries LogEntry[]
 
-  @@unique([gameId, sessionId])
   @@index([gameId])
 }
 

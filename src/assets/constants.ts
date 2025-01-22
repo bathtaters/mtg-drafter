@@ -129,3 +129,7 @@ export const enableDropping = true
 export const logSheetNames = false
 
 export const serverSideImageOptimize = false
+
+// Actual constants (DON'T CHANGE!)
+
+export const BOT = "___BOT___"

@@ -3,6 +3,7 @@ import type { BasicLands } from 'types/game'
 import { getExisitingSessionId } from 'backend/libs/auth'
 import { renamePlayer, setStatus, swapCard, updateLands } from './player.services'
 import validation from 'types/game.validation'
+import { BOT } from 'assets/constants'
 
 
 export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
@@ -31,7 +32,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
         playerId = validation.id.parse(playerId)
         status = validation.status.parse(status)
         
-        const sessionId = status === 'join' && getExisitingSessionId(socket.request)
+        const sessionId = status === 'bot' ? BOT : status === 'join' && getExisitingSessionId(socket.request)
         if (sessionId == null) throw new Error('Missing user identity')
 
         // Update DB
