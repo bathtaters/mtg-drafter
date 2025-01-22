@@ -2,6 +2,7 @@ import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
 import type { BasicLands } from 'types/game'
 import { getExisitingSessionId } from 'backend/libs/auth'
 import { renamePlayer, setStatus, swapCard, updateLands } from './player.services'
+import { handleBotPicks } from './game.sockets'
 import validation from 'types/game.validation'
 import { BOT } from 'assets/constants'
 
@@ -42,6 +43,8 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
         // Update Client(s)
         io.emit('updateSlot', player?.id || playerId, player?.sessionId || null)
         callback(player)
+
+        if (status === 'bot') await handleBotPicks(io, socket, player.gameId)
 
       // Handle Error
       } catch (err: any) {

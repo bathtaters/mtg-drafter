@@ -1,5 +1,7 @@
+import type { Game } from '@prisma/client'
 import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
 import { nextRound, pauseGame, resumeGame, pickCard, renameGame } from './game.services'
+import { getBotPicks } from './bot.services'
 import { setPassword } from './log.services'
 import validation, { logAuth } from 'types/game.validation'
 
@@ -72,6 +74,8 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         io.emit('updatePick', player.id, player.pick, player.passingToId)
         callback(player.pick)
 
+        await handleBotPicks(io, socket, player.gameId)
+
       // Handle Error
       } catch (err: any) {
         socket.emit('error', `Error picking card: ${err.message || 'Unknown'}`)
@@ -97,4 +101,20 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         socket.emit('error', `Error updating watch password: ${err.message || 'Unknown'}`)
       }
     })
+}
+
+
+export async function handleBotPicks(io: GameServer, socket: GameSocket, gameId: Game['id']) {
+  // Check for and execute bot picks
+  try {
+    const picks = await getBotPicks(gameId)
+    for (const pick of picks) {
+      const bot = await pickCard(...pick)
+      if (typeof bot === 'string') throw new Error(bot === 'Player' ? 'Bot not found' : 'Card was already picked or does not exist')
+      
+      io.emit('updatePick', bot.id, bot.pick, bot.passingToId)
+    }
+  } catch (err: any) {
+    socket.emit('error', `Error picking bot cards: ${err.message || 'Unknown'}`)
+  }
 }
