@@ -8,9 +8,9 @@ const basicPlayer /* Prisma.Game$playersArgs */ = { select: { id: true, name: tr
 const basicGame /* Prisma.GameArgs */ = { select: { id: true, round: true, roundCount: true, players: { select: { id: true } } }}
 
 
-export function getGame(url: Game['url'], includePacks = true) {
+export function getGame(url?: Game['url'], includePacks = true, id?: Game['id']) {
   return prisma.game.findUnique({
-    where: { url },
+    where: url == null ? { id } : { url },
     include: {
       players: basicPlayer,
       packs: includePacks && {
