@@ -32,7 +32,7 @@ export const ColorInput = ({ label, value, setValue }: { label: Lowercase<Color>
 
 export const AutoLandsInput = ({ label, ...props }: HTMLProps<HTMLInputElement>) => (
   <>
-    <span className="px-0 mr-2 justify-self-end italic opacity-90">
+    <span className=" text-primary px-0 mr-2 justify-self-end">
       {label}
     </span>
     <NumberInput {...props}
@@ -46,11 +46,12 @@ export const AutoLandsWrapper = ({ button, children }: { button: ReactNode, chil
   <div className="join mr-auto">
     {button}
     <details className="dropdown join-item">
-      <summary className="btn btn-accent rounded-l-none">▸</summary>
+      <summary className="btn btn-primary rounded-l-none text-2xl py-1 px-2">▸</summary>
       <div
-        className="dropdown-content rounded-md bg-base-300 text-base-content
-        w-44 sm:w-52 p-2 sm:px-3 sm:py-4 ml-1 left-full bottom-0
-        grid grid-cols-2 items-center gap-y-2"
+        className="dropdown-content bg-base-300 text-base-content
+        w-44 sm:w-52 p-2 sm:p-3 left-full bottom-0
+        border-2 border-primary/70 rounded-md shadow-md shadow-black
+        grid grid-cols-2 items-center gap-y-2 sm:gap-y-4"
       >
         {children}
       </div>
