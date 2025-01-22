@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { HostMarker, OppMarker, UserMarker } from "./PlayerContainerElemStyles"
+import { BotMarker, HostMarker, OppMarker, UserMarker } from "./PlayerContainerElemStyles"
 
 const themes = {
   self: [
@@ -17,7 +17,7 @@ const themes = {
 }
 
 export default function PlayerContainerStyle(
-  { title, header, subtitle, children, isMini, isHost, disconnected, color, className = "" }:
+  { title, header, subtitle, children, isMini, isHost, disconnected, color, isBot, className = "" }:
   PlayerContainerStyleProps
 ) {
   return (
@@ -37,7 +37,12 @@ export default function PlayerContainerStyle(
         } ${
           disconnected && isMini ? "opacity-60 italic" : ''} ${color ? themes[color][2] : ''
         }`}>
-          {!isMini ? null : color === 'self' ? <UserMarker /> : color === 'opp' ? <OppMarker /> : isHost ? <HostMarker /> : <span className="w-1" />}
+          {!isMini ? null :
+            color === 'self' ? <UserMarker /> :
+            isBot ? <BotMarker /> :
+            color === 'opp' ? <OppMarker /> :
+            isHost ? <HostMarker /> : <span className="w-1" />
+          }
           <span className={isMini ? "text-xs md:text-base ml-1 mr-2 flex-grow truncate" : "text-lg md:text-2xl flex-grow min-w-0 -ml-2 mb-1"}>{title}</span>
         </div>
 
@@ -58,6 +63,7 @@ type PlayerContainerStyleProps = {
   children?: ReactNode,
   isMini?: boolean,
   isHost?: boolean,
+  isBot?: boolean,
   disconnected?: boolean,
   color?: ColorTheme,
   className?: string,

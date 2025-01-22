@@ -4,8 +4,8 @@ import { EmptyPlayerContainer, StatsStyle, PlayerNameEditor, UserHeader, FullSta
 import { setupLimits } from "assets/constants"
 
 
-export const PlayerContainerSmall = ({ player, holding, packSize, color, isHost, hideStats, className }: ContainerSmallProps) => (
-  <PlayerContainerStyle title={player.name} isMini={true} disconnected={!player.sessionId} color={color} isHost={isHost} className={className}>
+export const PlayerContainerSmall = ({ player, holding, packSize, color, isBot, isHost, hideStats, className }: ContainerSmallProps) => (
+  <PlayerContainerStyle title={player.name} isMini={true} disconnected={!player.sessionId} color={color} isBot={isBot} isHost={isHost} className={className}>
     { hideStats ? <StatsStyle /> : <>
       <StatsStyle isMini={true} type="pick"    count={!player.pick || player.pick > packSize ? undefined : player.pick} />
       <StatsStyle isMini={true} type="holding" count={typeof holding === 'number' ? Math.max(holding,0) : holding} />
@@ -56,4 +56,5 @@ interface ContainerFullProps extends ContainerProps {
 }
 interface ContainerSmallProps extends ContainerProps {
   color?: ColorTheme,
+  isBot?: boolean,
 }
