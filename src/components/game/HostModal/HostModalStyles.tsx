@@ -57,7 +57,9 @@ export const NameEditor = (props: TextEditProps) => (
 
 export const DropButton = ({ onClick, label }: { onClick?: MouseEventHandler, label: ReactNode }) => (
   <button type="button" onClick={onClick} disabled={!onClick}
-    className={`btn join-item btn-sm btn-outline ${onClick ? 'btn-error' : 'btn-secondary'} p-2 h-full`}>
+    className={`p-2 h-full btn join-item btn-sm btn-outline ${
+      !onClick ? 'btn-secondary' : label === 'Bot' ? 'btn-success' : 'btn-error'
+    }`}>
       {label}
   </button>
 )
