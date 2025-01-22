@@ -98,8 +98,8 @@ export const getCanAdvance = (game?: Partial<Game>, players: BasicPlayer[] = [],
   game && typeof game.round === 'number' &&
     (game.round < 1 ? players.every(({ sessionId }) => sessionId) : holding.every((h) => !h))
 
-export const getCurrentPack = ({ packs, options, player, players }: ServerProps) => {
-  const pack = packs?.[getPackIdx(options, players, player)]
+export const getCurrentPack = ({ packs, options, player, players }: Pick<ServerProps, 'options'|'packs'|'player'|'players'>) => {
+  const pack = packs?.[getPackIdx(options as Game, players ?? [], player ?? null)]
   return pack &&  ({
     ...pack, cards: pack.cards.filter(({ playerId }) => !playerId)
   })
