@@ -30,6 +30,7 @@ yarn-error.log*
 # local files
 .env*
 .vscode
+/cockroach-data
 
 # package locks
 yarn.lock

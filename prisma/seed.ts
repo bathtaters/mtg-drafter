@@ -61,3 +61,11 @@ main()
 // UPDATE TRACKING W/O CHANGE: npx prisma migrate --applied/rolled-back <migration folder>
 
 // CHECK FOR MISMATCH: npx prisma --version
+
+// |-----------------|
+// | DEV DB commands |
+// |-----------------|
+// - `brew install cockroachdb/tap/cockroach`: Installs CockroachDB
+// - `npm run devdb`: Starts DB process (Runs in foreground)
+// - `npx prisma db push`: Creates DB tables
+// - `npx prisma db seed`: Adds card/booster data
