@@ -12,7 +12,7 @@
     "lint": "next lint",
     "test": "jest",
     "ssl": "npx local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3041 --target 3040",
-    "devdb": "cockroach start-single-node --insecure --store=path=./cockroach-data/dev-store --listen-addr=localhost:26257 --http-addr=localhost:3045"
+    "devdb": "cockroach start-single-node --insecure --store=path=\"$PWD/cockroach-data\" --listen-addr=localhost:26257 --http-addr=localhost:3045"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
