@@ -93,7 +93,7 @@ export const throttle = (delay: number) => {
   };
 }
 
-export function debounce<A extends [] = []>(callback: (...args: A) => void, delay = 500) {
+export function debounce<A extends any[] = []>(callback: (...args: A) => void, delay = 500) {
   let timeout: NodeJS.Timeout
 
   return (...args: A) => {
