@@ -29,6 +29,5 @@ export const gameOptions = z.object({
   name: commonOptions.shape.name.optional(),
   hostId: gameData.id.optional(),
   url:  gameData.url.optional(),
-  roundCount: gameData.round.optional(),
   timerBase: commonOptions.shape.timer.optional(),
 })
