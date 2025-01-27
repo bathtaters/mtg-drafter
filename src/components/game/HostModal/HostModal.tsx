@@ -5,9 +5,12 @@ import PlayerEntry from "./PlayerEntry"
 import CopyLink from "components/base/common/CopyLink"
 import PasswordForm from "components/base/common/FormElements/PasswordForm"
 import { Divider, GameContainer, TitleEditor, PlayersContainer, PauseButton, WatchContainer } from "./HostModalStyles"
+import RangeInput from "components/base/common/FormElements/RangeInput"
+import { TimerLabel } from "components/setup/styles/FormStyles"
+import useHostController from "./host.controller"
 import { setupLimits, shareWatch } from "assets/constants"
+import { timerText } from "assets/strings"
 import { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
-import { gameIsPaused } from "../shared/game.utils"
 
 
 type Props = {
@@ -31,7 +34,7 @@ export default function HostModal({
   players, renamePlayer, setStatus,
   setWatchPw, notify
 }: Props) {
-  const paused = gameIsPaused(game)
+  const { paused, title, setTitle, timer, updateTimer } = useHostController(game, setOptions)
 
   return (
     <ModalWrapper isOpen={isOpen} setOpen={setOpen}
@@ -44,10 +47,14 @@ export default function HostModal({
       <Loader data={game}>
 
         <GameContainer label="Edit Game">
-            <TitleEditor value={game?.name as string} onSubmit={(name) => name && setOptions({ name })} {...setupLimits.name} />
+            <TitleEditor value={title} onSubmit={setTitle} {...setupLimits.name} />
           
             <PauseButton label={paused ? "Resume Game" : "Pause Game"} value={paused} setValue={(val) => pauseGame(val)} />
         </GameContainer>
+
+        {game && 'timerBase' in game &&
+          <RangeInput caption={<TimerLabel />} value={timer} setValue={updateTimer} {...setupLimits.timer} keys={timerText} boxClass="w-16" />
+        }
 
         <Divider />
 
