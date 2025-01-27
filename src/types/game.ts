@@ -18,6 +18,7 @@ export type BasicPlayer = Pick<Player, "id"|"name"|"sessionId"|"pick">
 export interface Game extends Omit<DbGame, 'pause'> { pause: number | null }
 export type PartialGame = Pick<Game,"id"|"name"|"url"|"watchKey">
 export type ListedGame = Pick<Game,"id"|"name"|"url"|"hostId"> & { player?: BasicPlayer }
+export type LiveOptions = Partial<Pick<Game, "name"|"hostId"|"url"|"roundCount"|"timerBase">>
 
 export type CardStrict = Omit<Card,"layout"> & { layout: Layout | null }
 export type CardFull = CardStrict & { otherFaces: Array<{ card: CardStrict, backImg: FaceInCard['backImg'] }> }
@@ -108,7 +109,7 @@ export namespace Local {
 
 export namespace Socket {
   export type RenamePlayer  = (name: Player['name'], playerId?: Player['id'], byHost?: boolean) => void
-  export type SetTitle      = (title: Game['name']) => void
+  export type SetOptions    = (options: LiveOptions) => void
   export type NextRound     = () => void
   export type PauseGame     = (resume?: boolean) => void
   export type PickCard      = (gameCardOrPack: GameCard['id'] | Pack['index']) => void
@@ -120,7 +121,7 @@ export namespace Socket {
 
 // Aliases
 export type RenamePlayer  = Socket.RenamePlayer
-export type SetTitle      = Socket.SetTitle
+export type SetOptions    = Socket.SetOptions
 export type NextRound     = Socket.NextRound
 export type PauseGame     = Socket.PauseGame
 export type PickCard      = Socket.PickCard

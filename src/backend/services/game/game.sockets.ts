@@ -1,27 +1,27 @@
 import type { Game } from '@prisma/client'
 import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
-import { nextRound, pauseGame, resumeGame, pickCard, renameGame } from './game.services'
+import { nextRound, pauseGame, resumeGame, pickCard, updateGame } from './game.services'
 import { getBotPicks } from './bot.services'
 import { setPassword } from './log.services'
-import validation, { logAuth } from 'types/game.validation'
+import validation, { logAuth, gameOptions } from 'types/game.validation'
 
 
 export default function addGameListeners(io: GameServer, socket: GameSocket) {
 
-    socket.on('setTitle', async (gameId, title) => {
+    socket.on('setOptions', async (gameId, options) => {
       try {
         // Validation
         gameId = validation.id.parse(gameId)
-        title = validation.name.parse(title)
-        if (!title) throw new Error('No title provided')
+        options = gameOptions.parse(options)
+        if (!options) throw new Error('No title provided')
         
         // Update DB
-        const newTitle = await renameGame(gameId, title)
-        newTitle != null && io.emit('updateTitle', newTitle)
+        const result = await updateGame(gameId, options)
+        result != null && Object.keys(result).length && io.emit('updateGame', result)
 
       // Handle Error
       } catch (err: any) {
-        socket.emit('error', `Error changing title: ${err.message || 'Unknown'}`)
+        socket.emit('error', `Error updating game: ${err.message || 'Unknown'}`)
       }
     })
 

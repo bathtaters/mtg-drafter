@@ -1,10 +1,10 @@
 import type { Event, Server, Socket } from 'socket.io'
 import type { Socket as Client } from 'socket.io-client'
 import type { GameCard, Pack, PlayerStatus } from '@prisma/client'
-import type { Game, Player, PlayerFull, BasicLands, Board } from 'types/game'
+import type { Game, LiveOptions, Player, PlayerFull, BasicLands, Board } from 'types/game'
 
 export interface GameServerToClient {
-  updateTitle:    (title: Game['name']) => void;
+  updateGame:     (options: LiveOptions) => void;
   updateRound:    (round: Game['round']) => void;
   updateTimer:    (pauseTime?: Game['pause']) => void;
   updatePick:     (playerId: Player['id'], pick: Player['pick'], passingToId?: Player['id']) => void;
@@ -15,7 +15,7 @@ export interface GameServerToClient {
 }
 
 export interface GameClientToServer {
-  setTitle:   (gameId: Game['id'], title: Game['name']) => void;
+  setOptions: (gameId: Game['id'], options: LiveOptions) => void;
   nextRound:  (gameId: Game['id'], round: Game['round']) => void;
   pauseTimer: (gameId: Game['id'], resume: boolean) => void;
   setName:    (playerId: Player['id'], name: Player['name'], byHost: boolean) => void;

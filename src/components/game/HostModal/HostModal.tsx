@@ -1,4 +1,4 @@
-import type { Game, BasicPlayer, Socket } from "types/game"
+import type { Game, BasicPlayer, Socket, PartialGame } from "types/game"
 import ModalWrapper, { ModalButton } from "components/base/common/Modal"
 import Loader from "components/base/Loader"
 import PlayerEntry from "./PlayerEntry"
@@ -7,18 +7,16 @@ import PasswordForm from "components/base/common/FormElements/PasswordForm"
 import { Divider, GameContainer, TitleEditor, PlayersContainer, PauseButton, WatchContainer } from "./HostModalStyles"
 import { setupLimits, shareWatch } from "assets/constants"
 import { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
+import { gameIsPaused } from "../shared/game.utils"
 
 
 type Props = {
   isOpen: boolean,
   setOpen: () => void,
   setLog?: () => void,
-  title?: Game['name'],
-  paused: boolean,
+  game?: Game | PartialGame,
   players: BasicPlayer[],
-  hostId: Game['hostId'],
-  watchUrl?: string | null,
-  setTitle: Socket.SetTitle,
+  setOptions: Socket.SetOptions,
   pauseGame: Socket.PauseGame,
   renamePlayer: Socket.RenamePlayer,
   setStatus: Socket.SetStatus,
@@ -29,12 +27,11 @@ type Props = {
 
 export default function HostModal({
   isOpen, setOpen, setLog,
-  title, setTitle,
-  paused, pauseGame,
-  players, renamePlayer,
-  hostId, setStatus,
-  watchUrl, setWatchPw, notify
+  game, setOptions, pauseGame,
+  players, renamePlayer, setStatus,
+  setWatchPw, notify
 }: Props) {
+  const paused = gameIsPaused(game)
 
   return (
     <ModalWrapper isOpen={isOpen} setOpen={setOpen}
@@ -44,10 +41,10 @@ export default function HostModal({
         <ModalButton onClick={setOpen}>Close</ModalButton>
       </>}
     >
-      <Loader data={title}>
+      <Loader data={game}>
 
         <GameContainer label="Edit Game">
-            <TitleEditor value={title as string} onSubmit={setTitle} {...setupLimits.name} />
+            <TitleEditor value={game?.name as string} onSubmit={(name) => name && setOptions({ name })} {...setupLimits.name} />
           
             <PauseButton label={paused ? "Resume Game" : "Pause Game"} value={paused} setValue={(val) => pauseGame(val)} />
         </GameContainer>
@@ -57,7 +54,7 @@ export default function HostModal({
         <PlayersContainer label="Edit Players">
           {players.map((player) => 
             <PlayerEntry key={player.id}
-              player={player} isHost={player.id === hostId}
+              player={player} isHost={player.id === (game as Game)?.hostId}
               renamePlayer={renamePlayer} setStatus={setStatus}
             />
           )}
@@ -66,8 +63,8 @@ export default function HostModal({
         <Divider />
 
         <WatchContainer>
-          <CopyLink {...shareWatch} url={watchUrl ? shareWatch.url(watchUrl) : undefined} notify={notify} />
-          <PasswordForm label="Live Watch Password" btnLabel="Set" emptyBtn="Clear" placeholder={watchUrl ? "••••••••" : ""} onSubmit={setWatchPw} isCreate={true} />
+          <CopyLink {...shareWatch} url={game?.watchKey ? shareWatch.url(game?.url) : undefined} notify={notify} />
+          <PasswordForm label="Live Watch Password" btnLabel="Set" emptyBtn="Clear" placeholder={game?.watchKey ? "••••••••" : ""} onSubmit={setWatchPw} isCreate={true} />
         </WatchContainer>
       </Loader>
     </ModalWrapper>

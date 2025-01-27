@@ -1,5 +1,5 @@
 import type { GameCard, Board, Pack } from '@prisma/client'
-import type { Game, Player } from 'types/game'
+import type { Game, LiveOptions, Player } from 'types/game'
 import prisma from '../../libs/db'
 import retry from '../../libs/retry'
 import { adaptDbGame, getMaxPackSize, getNextPlayerId } from '../../utils/game/game.utils'
@@ -51,12 +51,17 @@ export function getGameLog(url: Game['url']) {
 }
 
 
-export function renameGame(id: Game['id'], newName: Game['name']) {
+export function updateGame(id: Game['id'], options: LiveOptions) {
+  const select = Object.keys(options).reduce(
+    (opts, key) => ({ ...opts, [key]: true }),
+    {} as Record<keyof LiveOptions, true>,
+  )
+  if (options.timerBase === 0) options.timerBase = null
   return retry(() => prisma.$transaction([
-    prisma.game.update({ where: { id }, data: { name: newName }, select: { name: true } }),
+    prisma.game.update({ where: { id }, data: options, select }),
 
-    prisma.logEntry.create({ data: { gameId: id, byHost: true, action: 'settings', data: JSON.stringify({ name: newName }) } })
-  ])).then(([{ name }]) => name)
+    prisma.logEntry.create({ data: { gameId: id, byHost: true, action: 'settings', data: JSON.stringify(options) } })
+  ])).then(([result]) => result)
 }
 
 

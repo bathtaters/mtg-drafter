@@ -25,9 +25,9 @@ export function getGameListeners(
   return (socket: GameClient) => {
     if (!socket) return;
 
-    socket.on('updateTitle',  (title) => { 
-      debugSockets && console.debug('SOCKET','updateTitle',title)
-      title && updateGame((game) => game && ({ ...game, name: title }))
+    socket.on('updateGame',  (options) => { 
+      debugSockets && console.debug('SOCKET','updateGame',options)
+      options && updateGame((game) => game && ({ ...game, ...options }))
       updateLog && updateLog()
     })
     socket.on('updateName',  (playerId, name) => { 
@@ -79,7 +79,7 @@ export function getGameListeners(
 
       onConnect && socket.off('connect', onConnect)
       clientErrorsInConsole && socket.off('connect', console.error)
-      socket.removeAllListeners('updateTitle')
+      socket.removeAllListeners('updateGame')
       socket.removeAllListeners('updateName')
       socket.removeAllListeners('updatePick')
       socket.removeAllListeners('updateRound')
@@ -101,12 +101,12 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
   }, [emit, local.player?.id, local.renamePlayer, throwError])
 
 
-  const setTitle: Socket.SetTitle = useCallback((title) => {
+  const setOptions: Socket.SetOptions = useCallback((options) => {
     if (!local.game?.id) return throwError(formatError('Error renaming game: Game not loaded'))
 
-    title && local.updateGame((game) => game && ({ ...game, name: title }))
+      options && local.updateGame((game) => game && ({ ...game, ...options }))
 
-    emit('setTitle', local.game.id, title)
+    emit('setOptions', local.game.id, options)
   }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
 
 
@@ -185,7 +185,7 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
   }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
 
 
-  return { renamePlayer, setTitle, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw }
+  return { renamePlayer, setOptions, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw }
 }
 
 
