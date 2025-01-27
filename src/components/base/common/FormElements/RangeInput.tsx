@@ -19,7 +19,7 @@ export default function RangeInput({ caption, value, keys, setValue, min = 0, ma
   const length = useMemo(() => Math.round((+max - +min) / +step + 1), [min, max, step])
   if (isNaN(length)) throw rangeValueError(min, max, step)
 
-  const key = keys && value && +value in keys ? keys[+value] : value as string | number | undefined
+  const key = keys && value != null && +value in keys ? keys[+value] : value as string | number | undefined
 
   return (
     <RangeContainer
