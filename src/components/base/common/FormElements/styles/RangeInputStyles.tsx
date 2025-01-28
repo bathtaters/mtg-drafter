@@ -13,7 +13,7 @@ type ContainerProps = {
 const MARKER_CHAR = '|'
 
 export const RangeContainer = ({ caption, value, tooltip, boxClass, className, children }: ContainerProps) => (
-  <div className={`${className || "px-4 pb-4 w-full"}${tooltip ? ' tooltip tooltip-secondary' : ''}`} data-tip={tooltip}>
+  <div className={`${className ?? "px-4 pb-4 w-full"}${tooltip ? ' tooltip tooltip-secondary' : ''}`} data-tip={tooltip}>
     {caption &&
       <label className="label">
         <span className="label-text text-lg">{caption}</span>
