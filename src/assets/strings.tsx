@@ -101,8 +101,11 @@ export const formatLogAction = (action: LogAction, data: LogData, byHost: boolea
     case 'settings':
       if (!data) return 'settings updated'
 
+
       return ` ${Object.entries(JSON.parse(data)).map(([ key, val ]) => 
-        `${key} changed to "${val}"`
+        key === 'timerBase' ? `timer ${!val ? 'disabled' : `set to "${timerText[+val]?.value || val}"`}` :
+        key === 'hostId' ? 'became host' :
+        /* Default: */ `${key} changed to "${val}"`
       ).join(', ') || 'settings saved (Nothing changed)'} `
     
     case 'round': return data === 'END' ? 'Ended' : `Round ${data || '?'}`

@@ -1,9 +1,11 @@
 import type { BasicPlayer, LogEntryFull } from "types/game"
 import type { Dispatch, SetStateAction } from "react"
 import CookieIcon from "components/svgs/CookieIcon"
+import BotIcon from "components/svgs/BotIcon"
 import { EntryWrapper, EntryItem, EntrySpace, MissingCard } from "./LogStyles"
 import { allActions } from "./log.utils"
 import { formatLogAction, logFullDate, logTimestamp } from "assets/strings"
+import { BOT } from "assets/constants"
 
 type Props = {
   entry: LogEntryFull,
@@ -37,7 +39,11 @@ export default function LogEntry({ entry, players, isFirst, isPrivate = false, s
       {!isPrivate && card && <EntryItem onClick={() => setCardImg(card.card.img)}>{card.card.name}</EntryItem>}
       {action === 'pick' && !card && <EntryItem><MissingCard /></EntryItem>}
 
-      {action === 'join' && data && <EntryItem tip={data || 'N/A'} below={isFirst}><CookieIcon className="w-5 fill-current" /></EntryItem>}
+      {action === 'join' && data && (
+        <EntryItem tip={data === BOT ? 'Bot' : data} below={isFirst}>
+          {data === BOT ? <BotIcon className="w-5" /> : <CookieIcon className="w-5 fill-current" />}
+        </EntryItem>
+      )}
       {action === 'rename' && data && <EntryItem>&quot;{data || ''}&quot;</EntryItem>}
 
       {action === 'pause' && data && <EntryItem><i className="text-sm mr-2">(after {data}s)</i></EntryItem>}

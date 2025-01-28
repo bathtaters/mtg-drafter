@@ -60,7 +60,7 @@ export function updateGame(id: Game['id'], options: LiveOptions) {
   return retry(() => prisma.$transaction([
     prisma.game.update({ where: { id }, data: options, select }),
 
-    prisma.logEntry.create({ data: { gameId: id, byHost: true, action: 'settings', data: JSON.stringify(options) } })
+    prisma.logEntry.create({ data: { gameId: id, byHost: true, action: 'settings', data: JSON.stringify(options), playerId: options.hostId } })
   ])).then(([result]) => result)
 }
 
