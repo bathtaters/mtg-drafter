@@ -9,19 +9,18 @@ import { gameIsEnded } from 'components/game/shared/game.utils'
 export default async function apiHandler(req: NextApiRequest, res: NextApiResponse<LogAuthResponse>) {
     const sessionId = getReqSessionId(req, res)
 
-    const id = logAuth.id.safeParse(req.query.id).data
-    if (!id) return "Game not found"
+    const gameId = logAuth.id.safeParse(req.query.id).data
+    if (!gameId) return "Game not found"
 
     const password = logAuth.password.safeParse(req.body.password).data
     if (!password) return "Missing password"
     
-    const message = await testPassword(id, password)
+    const message = await testPassword(gameId, password)
     if (message) return message
     
-    const game = await userInGame(id, sessionId)
+    const game = await userInGame(gameId, sessionId)
     if (game && !gameIsEnded(game)) return "Active player cannot view log."
 
-    await prisma.game.update({ where: { id }, data: { watchId: sessionId } })
-
+    await prisma.watchId.create({ data: { gameId, sessionId } })
     return undefined
 }

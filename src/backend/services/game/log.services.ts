@@ -23,11 +23,14 @@ export async function testPassword(id: string, password: string) {
 export async function setPassword(id: string, password: string | null) {
     if (password) password = await hash(password, LOG_SALT)
     try {
-        const result = await prisma.game.update({
-            where: { id },
-            data: { watchKey: password, watchId: null },
-        })
-        return Boolean(result.watchKey)
+        const result = await prisma.$transaction([
+            prisma.game.update({
+                where: { id },
+                data: { watchKey: password },
+            }),
+            prisma.watchId.deleteMany({ where: { gameId: id } })
+        ])
+        return Boolean(result[0].watchKey)
 
     } catch (error: any) {
         if (error.code === 'P2025') console.error('Setting password: Game not found', id)

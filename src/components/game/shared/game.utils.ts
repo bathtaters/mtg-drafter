@@ -2,6 +2,9 @@ import type { GameCard, Board, GameStatus } from "@prisma/client"
 import type { Game, BasicPlayer, PackMin, ServerProps } from "types/game"
 import { mod } from "components/base/services/common.services"
 
+export const canWatch = (game?: Partial<Game>, sessionId?: string): boolean =>
+  game?.watchIds && sessionId ? game.watchIds.includes(sessionId) : false
+
 export const gameIsPaused = (game?: Partial<Game>): game is Game & { pause: number } => typeof game?.pause === 'number'
 
 export const gameIsEnded = (game?: Partial<Game>): boolean =>

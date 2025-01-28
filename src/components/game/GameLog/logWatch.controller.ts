@@ -3,6 +3,7 @@ import type { Dispatch, SetStateAction } from "react"
 import type { Props as LogProps } from "./GameLog"
 import { useEffect, useState } from "react"
 import { post } from "components/base/libs/fetch"
+import { canWatch } from "../shared/game.utils"
 
 export type Props = LogProps & {
     game?: Partial<Game>,
@@ -14,15 +15,17 @@ export type Props = LogProps & {
 }
 
 export default function useLogWatch({ log, players, game, sessionId, setLoading, reload, setSidebar }: Props) {
-    const [authed, setAuth] = useState(game?.watchId ? game.watchId === sessionId : false)
+    const [authed, setAuth] = useState(canWatch(game, sessionId))
     const [message, setMessage] = useState("")
 
     // Check for change in auth
+    const watchIdString = (game?.watchIds || []).join(',')
     useEffect(() => {
         if (log.error) { setAuth(false); setMessage(log.error) }
-        else if (!game?.watchId || !game?.watchKey) setAuth(false)
-        else setAuth((a) => a || game.watchId === sessionId)
-    }, [game?.watchId, game?.watchKey, sessionId, log.error])
+        else if (!game?.watchIds || !game?.watchKey) setAuth(false)
+        else setAuth((a) => a || canWatch(game, sessionId))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [watchIdString, game?.watchKey, sessionId, log.error])
 
     // Submit password
     const handleSubmit = async (password: string) => {

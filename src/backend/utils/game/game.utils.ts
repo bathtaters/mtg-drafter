@@ -1,5 +1,5 @@
 import type { Merge } from 'types/global'
-import type { Game as DbGame, Player as DbPlayer } from '@prisma/client'
+import type { Game as DbGame, Player as DbPlayer, WatchId } from '@prisma/client'
 import type { Game, BasicPlayer, Player, PartialGame } from 'types/game'
 import { gameUrlRegEx } from 'assets/urls'
 import { getNeighborIdx } from 'components/game/shared/game.utils'
@@ -20,10 +20,11 @@ export const getMaxPackSize = (packCounts: { packIdx: number, _count: number }[]
 }
 
 export const adaptDbGame = <G extends Partial<DbGame>>(game?: G | null) => (
-  !game || typeof game.pause !== 'bigint' ? game : {
+  !game ? game : {
     ...game,
+    watchIds: 'watchIds' in game ? (game.watchIds as WatchId[]).map(({ sessionId }) => sessionId) : [],
     watchKey: game.watchKey && "Enabled",
-    pause: Number(game.pause)
+    pause: typeof game.pause === 'bigint' ? Number(game.pause) : game.pause
   }
 ) as Merge<G, Game> | null | undefined
 

@@ -15,7 +15,7 @@ export type BasicLands = { [board in Board]: BoardLands } & { pack: never }
 export interface Player extends Omit<DbPlayer, 'timer'> { timer: number | null, basics: BasicLands }
 export type BasicPlayer = Pick<Player, "id"|"name"|"sessionId"|"pick">
 
-export interface Game extends Omit<DbGame, 'pause'> { pause: number | null }
+export interface Game extends Omit<DbGame, 'pause'> { pause: number | null, watchIds: string[] }
 export type PartialGame = Pick<Game,"id"|"name"|"url"|"watchKey">
 export type ListedGame = Pick<Game,"id"|"name"|"url"|"hostId"> & { player?: BasicPlayer }
 export type LiveOptions = Partial<Pick<Game, "name"|"hostId"|"url"|"timerBase">>

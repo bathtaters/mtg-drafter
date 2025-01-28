@@ -13,6 +13,7 @@ export function getGame(url?: Game['url'], includePacks = true, id?: Game['id'])
     where: url == null ? { id } : { url },
     include: {
       players: basicPlayer,
+      watchIds: { select: { sessionId: true } },
       packs: includePacks && {
         orderBy: { index: 'asc' }, include: {
           cards: { 
@@ -42,6 +43,7 @@ export function getGameLog(url: Game['url']) {
     where: { url },
     include: {
       players: basicPlayer,
+      watchIds: { select: { sessionId: true } },
       log: {
         orderBy: { time: 'desc' },
         include: { card: { include: { card: true } } }
