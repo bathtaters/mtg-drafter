@@ -56,22 +56,43 @@ export const PlayerWrapper = ({ children }: { children: ReactNode }) => (
   <div className="join items-center">{children}</div>
 )
 
-export const NameEditor = (props: TextEditProps) => (
-  <div className="flex-grow min-w-0 h-full bg-base-300 rounded-lg text-right">
+export const NameEditor = ({ wrapperClass, ...props }: TextEditProps & { wrapperClass?: string }) => (
+  <div className={`flex-grow min-w-0 h-full bg-base-300 text-right border border-base-content/50 ${wrapperClass}`}>
     <TextEditor {...props} className="input-secondary join-item text-sm sm:text-base text-right" />
   </div>
 )
 
-export const DropButton = ({ onClick, label }: { onClick?: MouseEventHandler, label: ReactNode }) => (
-  <button type="button" onClick={onClick} disabled={!onClick}
-    className={`p-2 h-full btn join-item btn-sm btn-outline ${
-      !onClick ? 'btn-secondary' : label === 'Bot' ? 'btn-success' : 'btn-error'
+export const PlayerButton = ({ onClick, label, tooltip, className }: PlayerButtonProps) => (
+  <button type="button" onClick={onClick || undefined} disabled={!onClick} data-tip={tooltip}
+    className={`h-full btn join-item btn-sm btn-outline disabled:text-opacity-50 ${
+      className ?? 'py-0 px-1 text-xl btn-secondary tooltip-secondary'}${
+      tooltip ? ' tooltip tooltip-top' : ''
     }`}>
       {label}
   </button>
+)
+
+export const DropButton = (props: PlayerButtonProps) => (
+  <PlayerButton
+    {...props}
+    className={`p-2 ${
+      !props.onClick ? 'btn-secondary' :
+      props.label === 'Bot' ? 'btn-success' : 'btn-error'
+    }`}
+  />
 )
 
 
 // Log Watching Settings
 
 export const WatchContainer = ({ children }: { children?: any }) => <div className="flex">{children}</div>
+
+
+// Prop Types
+
+type PlayerButtonProps = {
+  label?: ReactNode,
+  tooltip?: string,
+  className?: string
+  onClick?: MouseEventHandler | false,
+}

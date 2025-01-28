@@ -31,7 +31,7 @@ export default function HostModal({
   players, renamePlayer, setStatus,
   setWatchPw, notify
 }: Props) {
-  const { paused, title, setTitle, timer, updateTimer } = useHostController(game, setOptions)
+  const { paused, title, setTitle, setHost, timer, updateTimer } = useHostController(game, setOptions)
 
   return (
     <ModalWrapper isOpen={isOpen} setOpen={setOpen}
@@ -59,7 +59,7 @@ export default function HostModal({
           {players.map((player) => 
             <PlayerEntry key={player.id}
               player={player} isHost={player.id === (game as Game)?.hostId}
-              renamePlayer={renamePlayer} setStatus={setStatus}
+              renamePlayer={renamePlayer} setStatus={setStatus} setHost={setHost}
             />
           )}
         </PlayersContainer>

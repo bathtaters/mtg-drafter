@@ -24,6 +24,7 @@ export default function useHostController(game: Game | PartialGame | undefined, 
         timer, updateTimer,
         title: game?.name || "",
         setTitle: (name?: string) => name && setOptions({ name }),
+        setHost: (hostId?: string) => hostId && setOptions({ hostId }),
         paused: gameIsPaused(game),
     }
 }
