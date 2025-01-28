@@ -64,7 +64,8 @@ export const NameEditor = ({ wrapperClass, ...props }: TextEditProps & { wrapper
 
 export const PlayerButton = ({ onClick, label, tooltip, className }: PlayerButtonProps) => (
   <button type="button" onClick={onClick || undefined} disabled={!onClick} data-tip={tooltip}
-    className={`h-full btn join-item btn-sm btn-outline disabled:text-opacity-50 ${
+    className={`h-full btn join-item btn-sm btn-outline relative disabled:text-opacity-50 ${
+      // 'relative' class required (for some reason) to keep border when button is disabled.
       className ?? 'py-0 px-1 text-xl btn-secondary tooltip-secondary'}${
       tooltip ? ' tooltip tooltip-top' : ''
     }`}>

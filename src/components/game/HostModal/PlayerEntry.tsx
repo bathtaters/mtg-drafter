@@ -2,6 +2,7 @@ import type { BasicPlayer, Socket } from "types/game"
 import { PlayerWrapper, NameEditor, DropButton, PlayerButton } from "./HostModalStyles"
 import { BOT, setupLimits } from "assets/constants"
 import HostIcon from "components/svgs/HostIcon"
+import BotIcon from "components/svgs/BotIcon"
 
 type Props = {
   player: BasicPlayer,
@@ -16,7 +17,8 @@ export default function PlayerEntry({ player, isHost, renamePlayer, setStatus, s
 
   return (
     <PlayerWrapper>
-      {player.sessionId && player.sessionId !== BOT &&
+      {!player.sessionId ? null : player.sessionId === BOT ?
+        <PlayerButton label={<BotIcon className="h-6" />} /> :
         <PlayerButton label={<HostIcon />} tooltip="Set Host" onClick={!isHost && (() => setHost(player.id))} />
       }
 
@@ -24,7 +26,7 @@ export default function PlayerEntry({ player, isHost, renamePlayer, setStatus, s
         value={player.name || ''}
         onSubmit={(name) => renamePlayer(name, player.id, true)}
         btnLeft={true} {...setupLimits.name}
-        wrapperClass={!player.sessionId || player.sessionId === BOT ? 'rounded-l-lg' : ''}
+        wrapperClass={player.sessionId ? 'border-l-0' : 'rounded-l-lg'}
       />
 
       <DropButton label={label} onClick={action} />
@@ -39,7 +41,7 @@ function getButtonData(id: string, sessionId: string | null, isHost: boolean, se
     action: () => setStatus(id, 'bot', true),
   }
   return {
-    label: sessionId === BOT ? 'Open' : 'Drop',
+    label: sessionId === BOT ? 'Kill' : 'Drop',
     action: () => setStatus(id, 'leave', true),
   }
 }
