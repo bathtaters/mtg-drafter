@@ -1,8 +1,9 @@
 import type { BasicPlayer, Socket } from "types/game"
 import { PlayerWrapper, NameEditor, DropButton, PlayerButton } from "./HostModalStyles"
-import { BOT, setupLimits } from "assets/constants"
+import { getPlayerButtonData } from "./host.controller"
 import HostIcon from "components/svgs/HostIcon"
 import BotIcon from "components/svgs/BotIcon"
+import { BOT, setupLimits } from "assets/constants"
 
 type Props = {
   player: BasicPlayer,
@@ -13,7 +14,7 @@ type Props = {
 }
 
 export default function PlayerEntry({ player, isHost, renamePlayer, setStatus, setHost }: Props) {
-  const { label, action } = getButtonData(player.id, player.sessionId, isHost, setStatus)
+  const { label, action } = getPlayerButtonData(player.id, player.sessionId, isHost, setStatus)
 
   return (
     <PlayerWrapper>
@@ -32,16 +33,4 @@ export default function PlayerEntry({ player, isHost, renamePlayer, setStatus, s
       <DropButton label={label} onClick={action} />
     </PlayerWrapper>
   )
-}
-
-function getButtonData(id: string, sessionId: string | null, isHost: boolean, setStatus: Socket.SetStatus) {
-  if (isHost) return { label: 'Host' }
-  if (!sessionId) return {
-    label: 'Bot',
-    action: () => setStatus(id, 'bot', true),
-  }
-  return {
-    label: sessionId === BOT ? 'Kill' : 'Drop',
-    action: () => setStatus(id, 'leave', true),
-  }
 }

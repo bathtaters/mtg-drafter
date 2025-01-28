@@ -33,6 +33,13 @@ export const hostButtonLabel: { [label in GameStatus]: string } = {
   end:    'End Game',
 }
 
+export const hostPlayerButton: { [label in `is${'Host'|'Empty'|'Player'|'Bot'}`]: string } = {
+    isHost: 'Host',
+    isEmpty: 'Bot',
+    isPlayer: 'Drop',
+    isBot: 'Kill',
+}
+
 export const cardCounter = (count?: number, lands?: BoardLands) => typeof count !== 'number' || (!count && !lands) ? undefined :
   lands ? `${count} | ${getObjectSum(lands) + count}` : `${count}`
 
