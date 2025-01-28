@@ -75,7 +75,7 @@ export const
 
   fileSettings = { id: "cubeFile", type: "text/plain", maxSize: 10 * 1024 * 1024 /* = 10 MB */, },
 
-  urlLength = 9
+  urlLimits = { minLength: 9, maxLength: 9 }
 
 // UI Tweaks
 

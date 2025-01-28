@@ -1,7 +1,7 @@
 import z, { fillAndLowerCaseObject, nanoId } from "backend/libs/validation"
 import { Board, Color, PlayerStatus } from "@prisma/client"
 import { commonOptions } from "./setup.validation"
-import { setupLimits, urlLength } from "assets/constants"
+import { setupLimits, urlLimits } from "assets/constants"
 
 export const boardLands = z.object(fillAndLowerCaseObject(Color, z.number().nonnegative().int()))
 
@@ -12,7 +12,7 @@ export const logAuth = {
 
 const gameData = {
   session: nanoId(),
-  url:     nanoId(urlLength),
+  url:     nanoId(urlLimits.minLength),
   id:      z.string().cuid2(),
   name:    commonOptions.shape.name,
   round:   z.number().int().nonnegative().lte(setupLimits.packs.max + 1),
