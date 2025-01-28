@@ -1,8 +1,13 @@
-import type { MouseEventHandler, ReactNode } from "react"
-import TextEditor, { Props as TextEditProps } from "components/base/common/FormElements/TextEditor"
-import IconToggle, { Props as IconToggleProps } from "components/base/common/FormElements/IconToggle"
-import RangeInput, { Props as RangeInputProps } from "components/base/common/FormElements/RangeInput"
+import type { ReactNode } from "react"
+import type { IconType, PlayerButtonData } from "./host.controller"
+import TextEditor, { type Props as TextEditProps } from "components/base/common/FormElements/TextEditor"
+import IconToggle, { type Props as IconToggleProps } from "components/base/common/FormElements/IconToggle"
+import RangeInput, { type Props as RangeInputProps } from "components/base/common/FormElements/RangeInput"
 import { PauseIcon, PlayIcon } from "components/svgs/PlayPauseIcons"
+import HostIcon from "components/svgs/HostIcon"
+import UserIcon from "components/svgs/UserIcon"
+import BotIcon from "components/svgs/BotIcon"
+import EmptyIcon from "components/svgs/EmptyIcon"
 import { TimerLabel } from "components/setup/styles/FormStyles"
 import { timerText } from "assets/strings"
 
@@ -46,6 +51,13 @@ export const HostTimerInput = (props: Pick<RangeInputProps, "value"|"setValue"|"
 
 // Player Editor
 
+const buttonIcon: { [name in IconType]: ReactNode } = {
+  host:   <HostIcon />,
+  player: <UserIcon className="w-4 m-auto fill-current" />,
+  bot:    <BotIcon className="w-5 m-auto fill-current stroke-current" />,
+  empty:  <EmptyIcon className="w-5 m-auto fill-current" />,
+}
+
 export const PlayersContainer = ({ label, children }: { label: ReactNode, children: ReactNode }) => (
   <FieldWrapper label={label}>
     <div className="grid sm:grid-cols-2 gap-2">{children}</div>
@@ -56,44 +68,24 @@ export const PlayerWrapper = ({ children }: { children: ReactNode }) => (
   <div className="join items-center">{children}</div>
 )
 
-export const NameEditor = ({ wrapperClass, ...props }: TextEditProps & { wrapperClass?: string }) => (
-  <div className={`flex-grow min-w-0 h-full bg-base-300 text-right border border-base-content/50 ${wrapperClass}`}>
-    <TextEditor {...props} className="input-secondary join-item text-sm sm:text-base text-right" />
+export const NameEditor = (props: TextEditProps) => (
+  <div className={`flex-grow min-w-0 h-full bg-base-300 border border-base-content/70 rounded-r-lg`}>
+    <TextEditor {...props} className="input-secondary join-item text-sm sm:text-base" />
   </div>
 )
 
-export const PlayerButton = ({ onClick, label, tooltip, className }: PlayerButtonProps) => (
-  <button type="button" onClick={onClick || undefined} disabled={!onClick} data-tip={tooltip}
-    className={`h-full btn join-item btn-sm btn-outline relative disabled:text-opacity-50 ${
-      // 'relative' class required (for some reason) to keep border when button is disabled.
-      className ?? 'py-0 px-1 text-xl btn-secondary tooltip-secondary'}${
+export const PlayerButton = ({ icon, tooltip, action }: PlayerButtonData) => (
+  <button type="button" onClick={action || undefined} disabled={!action} data-tip={tooltip}
+    className={`btn btn-sm btn-square btn-outline join-item h-full p-0 ${
+      icon === 'empty' ? 'btn-primary tooltip-primary' : 'btn-secondary tooltip-secondary'}${
       tooltip ? ' tooltip tooltip-top' : ''
-    }`}>
-      {label}
+      // 'relative' class required (for some reason) to keep border when button is disabled.
+    } relatie text-xl disabled:text-opacity-70`}>
+      {buttonIcon[icon]}
   </button>
-)
-
-export const DropButton = (props: PlayerButtonProps) => (
-  <PlayerButton
-    {...props}
-    className={`p-2 ${
-      !props.onClick ? 'btn-secondary' :
-      props.label === 'Bot' ? 'btn-success' : 'btn-error'
-    }`}
-  />
 )
 
 
 // Log Watching Settings
 
 export const WatchContainer = ({ children }: { children?: any }) => <div className="flex">{children}</div>
-
-
-// Prop Types
-
-type PlayerButtonProps = {
-  label?: ReactNode,
-  tooltip?: string,
-  className?: string
-  onClick?: MouseEventHandler | false,
-}

@@ -2,7 +2,7 @@ import type { Game, PartialGame, Socket } from "types/game";
 import { gameIsPaused } from "../shared/game.utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { debounce } from "components/base/services/common.services";
-import { hostPlayerButton } from "assets/strings";
+import { hostPlayerTooltips } from "assets/strings";
 import { BOT } from "assets/constants";
 
 export default function useHostController(game: Game | PartialGame | undefined, setOptions: Socket.SetOptions) {
@@ -31,14 +31,23 @@ export default function useHostController(game: Game | PartialGame | undefined, 
 }
 
 
-export function getPlayerButtonData(id: string, sessionId: string | null, isHost: boolean, setStatus: Socket.SetStatus) {
-    if (isHost) return { label: hostPlayerButton.isHost }
-    if (!sessionId) return {
-      label: hostPlayerButton.isEmpty,
-      action: () => setStatus(id, 'bot', true),
-    }
-    return {
-      label: sessionId === BOT ? hostPlayerButton.isBot : hostPlayerButton.isPlayer,
-      action: () => setStatus(id, 'leave', true),
-    }
+export function getPlayerButtonData(id: string, sessionId: string | null, isHost: boolean, setStatus: Socket.SetStatus, setHost: SetHost): PlayerButtonData {
+  if (isHost) return { icon: "host" }
+  if (sessionId === BOT) return { icon: "bot" }
+
+  if (!sessionId) return {
+    icon: "empty",
+    tooltip: hostPlayerTooltips.setBot,
+    action: () => setStatus(id, 'bot', true),
   }
+
+  return {
+    icon: "player",
+    tooltip: hostPlayerTooltips.setHost,
+    action: () => setHost(id),
+  }
+}
+
+export type IconType = "host" | "empty" | "bot" | "player"
+export type SetHost = (hostId: string) => void
+export type PlayerButtonData = { icon: IconType, tooltip?: string, action?: () => void }
