@@ -4,12 +4,9 @@ import Loader from "components/base/Loader"
 import PlayerEntry from "./PlayerEntry"
 import CopyLink from "components/base/common/CopyLink"
 import PasswordForm from "components/base/common/FormElements/PasswordForm"
-import { Divider, GameContainer, TitleEditor, PlayersContainer, PauseButton, WatchContainer } from "./HostModalStyles"
-import RangeInput from "components/base/common/FormElements/RangeInput"
-import { TimerLabel } from "components/setup/styles/FormStyles"
+import { Divider, GameContainer, TitleEditor, PlayersContainer, PauseButton, WatchContainer, HostTimerInput } from "./HostModalStyles"
 import useHostController from "./host.controller"
 import { setupLimits, shareWatch } from "assets/constants"
-import { timerText } from "assets/strings"
 import { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 
 
@@ -53,7 +50,7 @@ export default function HostModal({
         </GameContainer>
 
         {game && 'timerBase' in game &&
-          <RangeInput caption={<TimerLabel />} value={timer} setValue={updateTimer} {...setupLimits.timer} keys={timerText} boxClass="w-16" />
+          <HostTimerInput value={timer} setValue={updateTimer} {...setupLimits.timer} />
         }
 
         <Divider />

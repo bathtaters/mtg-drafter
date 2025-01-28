@@ -1,7 +1,10 @@
 import type { MouseEventHandler, ReactNode } from "react"
 import TextEditor, { Props as TextEditProps } from "components/base/common/FormElements/TextEditor"
 import IconToggle, { Props as IconToggleProps } from "components/base/common/FormElements/IconToggle"
+import RangeInput, { Props as RangeInputProps } from "components/base/common/FormElements/RangeInput"
 import { PauseIcon, PlayIcon } from "components/svgs/PlayPauseIcons"
+import { TimerLabel } from "components/setup/styles/FormStyles"
+import { timerText } from "assets/strings"
 
 // Base
 
@@ -34,6 +37,10 @@ export const PauseButton = (props: Omit<IconToggleProps, "className"|"children">
     <PlayIcon  className="fill-current w-8" />
     <PauseIcon className="fill-current w-8" />
   </IconToggle>
+)
+
+export const HostTimerInput = (props: Pick<RangeInputProps, "value"|"setValue"|"min"|"max">) => (
+  <RangeInput caption={<TimerLabel />} keys={timerText} wrapperClass="w-full" boxClass="w-16" {...props} />
 )
 
 
