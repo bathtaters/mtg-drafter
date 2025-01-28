@@ -3,7 +3,7 @@ import type { LogFull } from 'types/game'
 import { getGameLog } from '../services/game/game.services'
 import { getReqSessionId } from '../libs/auth'
 import validation from 'types/game.validation'
-import { canWatch } from 'components/game/shared/game.utils'
+import { canWatch } from '../utils/game/game.utils'
 
 export default async function apiHandler(req: NextApiRequest, res: NextApiResponse<LogFull>) {
   const url = validation.url.parse(req.query.url), currentSessionId = getReqSessionId(req, res)

@@ -5,6 +5,9 @@ import { gameUrlRegEx } from 'assets/urls'
 import { getNeighborIdx } from 'components/game/shared/game.utils'
 import { defaultTimer, officialRulesIdx, timerOptions } from 'assets/constants'
 
+// Pass through shared utils (Mainly to keep track of which are shared w/ the backend)
+export { gameIsEnded, canWatch, getCurrentPack, getHolding, getPlayerIdx } from 'components/game/shared/game.utils'
+
 export const getMaxPackSize = (packCounts: { packIdx: number, _count: number }[], round: number, roundCount: number, playerCount: number) => {
   if (!round || !roundCount || !playerCount || round > roundCount) return 0
   const rangeEnd = round * playerCount

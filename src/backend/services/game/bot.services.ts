@@ -2,9 +2,8 @@ import type { Game, GameCard, Player } from "@prisma/client"
 import type { PackFull, PlayerFullTimer } from "types/game"
 import { getGame, getRoundPackSize } from "./game.services"
 import { getBots } from "./player.services"
-import { adaptDbPlayer } from "../../utils/game/game.utils"
+import { adaptDbPlayer, getCurrentPack, getHolding, getPlayerIdx } from "../../utils/game/game.utils"
 import getAutopickCard from "components/base/services/autoPick.service"
-import { getCurrentPack, getHolding, getPlayerIdx } from "components/game/shared/game.utils"
 
 export type PickData = [Player['id'], GameCard['id']]
 

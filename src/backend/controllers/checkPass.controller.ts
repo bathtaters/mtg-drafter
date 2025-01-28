@@ -3,8 +3,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import type { LogAuthResponse } from 'types/game'
 import { getReqSessionId } from '../libs/auth'
 import { logAuth } from 'types/game.validation'
-import { testPassword, userInGame } from 'backend/services/game/log.services'
-import { gameIsEnded } from 'components/game/shared/game.utils'
+import { testPassword, userInGame } from '../services/game/log.services'
+import { gameIsEnded } from '../utils/game/game.utils'
 
 export default async function apiHandler(req: NextApiRequest, res: NextApiResponse<LogAuthResponse>) {
     const sessionId = getReqSessionId(req, res)

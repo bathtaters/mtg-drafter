@@ -1,12 +1,11 @@
 import type { ParsedUrlQuery } from 'querystring'
 import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next'
-import type { ServerProps, ServerSuccess, PlayerFullTimer, ServerFail, PackFull } from 'types/game'
+import type { ServerProps, ServerSuccess, PlayerFullTimer, PackFull } from 'types/game'
 import { getGame, getRoundPackSize } from '../services/game/game.services'
 import { getPlayer } from '../services/game/player.services'
 import { getCtxSessionId, getReqSessionId } from '../libs/auth'
 import validation from 'types/game.validation'
-import { unregGameAdapter } from 'backend/utils/game/game.utils'
-import { canWatch } from 'components/game/shared/game.utils'
+import { unregGameAdapter, canWatch } from '../utils/game/game.utils'
 
 const NOTFOUND = 'Unable to find game'
 
