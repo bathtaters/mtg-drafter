@@ -110,7 +110,7 @@ model Game {
   host      Player?  @relation("GameHost", fields: [hostId], references: [id])
   hostId    String?  @unique
   watchKey  String?
-  watchId   String?
+  watchIds  WatchId[]
 
   log LogEntry[]
 }
@@ -199,6 +199,14 @@ model Player {
   @@index([gameId])
 }
 
+model WatchId {
+  gameId    String
+  sessionId String
+  
+  game      Game    @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@id([sessionId, gameId])
+}
+
 model Pack {
   gameId String
   index  Int
@@ -240,6 +248,13 @@ model LogEntry {
   gameId   String
   playerId String?
   cardId   String?
+}
+
+model Ban {
+  sessionId String @default("")
+  gameId    String @default("")
+  note      String?
+  @@id([sessionId, gameId])
 }
 
 model Enums {
