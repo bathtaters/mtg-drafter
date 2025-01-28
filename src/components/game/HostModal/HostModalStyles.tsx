@@ -7,9 +7,9 @@ import { PauseIcon, PlayIcon } from "components/svgs/PlayPauseIcons"
 
 export const Divider = () => <div className="divider" />
 
-export const FieldWrapper = ({ label, children }: { label: ReactNode, children: ReactNode }) => (
+export const FieldWrapper = ({ label, children }: { label?: ReactNode, children?: ReactNode }) => (
   <div className="form-control w-full mb-4">
-    <label className="label label-text pt-0">{label}</label>
+    {label && <label className="label label-text pt-0">{label}</label>}
     {children}
   </div>
 )
@@ -17,7 +17,7 @@ export const FieldWrapper = ({ label, children }: { label: ReactNode, children: 
 
 // Game Editor
 
-export const GameContainer = ({ label, children }: { label: ReactNode, children: ReactNode }) => (
+export const GameContainer = ({ label, children }: { label?: ReactNode, children?: ReactNode }) => (
   <FieldWrapper label={label}>
     <div className="flex flex-row gap-4 items-center">{children}</div>
   </FieldWrapper>
