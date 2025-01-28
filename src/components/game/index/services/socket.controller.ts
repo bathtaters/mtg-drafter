@@ -11,7 +11,7 @@ import { clientErrorsInConsole, debugSockets } from 'assets/constants'
 const formatError = (message: string): ErrorAlert => ({ message: `${message}. Attempting to reconnect.`, title: 'Action Failed', theme: 'warning'  })
 
 export function getGameListeners(
-  { updateLocal, updateGame, renamePlayer, nextRound, pauseGame, pickCard, setStatus, setLoadingAll, setLoadingPack, game }: LocalController,
+  { updateLocal, updateGame, renamePlayer, nextRound, pauseGame, pickCard, setStatus, setLoadingAll, setLoadingPack, game, player }: LocalController,
   throwError: AlertsReturn['newError'],
   onConnect?: () => void,
   refreshLog?: () => void,
@@ -28,7 +28,8 @@ export function getGameListeners(
     socket.on('updateGame',  (options) => { 
       debugSockets && console.debug('SOCKET','updateGame',options)
       options && updateGame((game) => game && ({ ...game, ...options }))
-      updateLog && updateLog()
+      if (!options.hostId || options.hostId === player?.id) updateLog && updateLog()
+      else if (checkHostModal) checkHostModal(false) // Close host modal when losing Host status
     })
     socket.on('updateName',  (playerId, name) => { 
       debugSockets && console.debug('SOCKET','updateName',playerId,name)
