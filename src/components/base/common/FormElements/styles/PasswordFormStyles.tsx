@@ -14,17 +14,17 @@ export const BoxBtnWrapper = ({ full, children }: { full?: boolean, children?: R
     </div>
 )
 
-export const PasswordStyle = (props: HTMLProps<HTMLInputElement>) => (
-    <input type="password" className="join-item grow input input-secondary input-bordered" {...props} />
+export const PasswordStyle = ({ className = "", ...props }: HTMLProps<HTMLInputElement>) => (
+    <input type="password" className={`join-item grow input input-secondary input-bordered ${className}`} {...props} />
 )
 
-export const ButtonStyle = (props: HTMLProps<HTMLButtonElement>) => (
-    <button className="join-item btn btn-secondary" {...props as any} />
+export const ButtonStyle = ({ className = "", ...props }: HTMLProps<HTMLButtonElement>) => (
+    <button className={`join-item btn btn-secondary ${className}`} {...props as any} />
 )
 
 export const MessageStyle = (props: HTMLProps<HTMLDivElement>) => (
     props.children ? <div className="badge badge-error m-1" {...props} /> :
-    <Spacer />
+    <div />
 )
 
 export const Spacer = () => <div className="h-5" />
