@@ -66,7 +66,7 @@ export function getGameListeners(
     })
     socket.on('updateWatchPw', (watchKey) => {
       debugSockets && console.debug('SOCKET','updateWatchPw',watchKey)
-      updateGame((game) => game && ({ ...game, watchKey, watchIds: watchKey ? (game as Game).watchIds : [] }))
+      updateGame((game) => game && ({ ...game, watchKey, watchers: watchKey ? (game as Game).watchers : [] }))
     })
     
     clientErrorsInConsole && socket.on('error', console.error)

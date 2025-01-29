@@ -19,13 +19,13 @@ export default function useLogWatch({ log, players, game, sessionId, setLoading,
     const [message, setMessage] = useState("")
 
     // Check for change in auth
-    const watchIdString = (game?.watchIds || []).join(',')
+    const watchersString = (game?.watchers || []).join(',')
     useEffect(() => {
         if (log.error) { setAuth(false); setMessage(log.error) }
-        else if (!game?.watchIds || !game?.watchKey) setAuth(false)
+        else if (!game?.watchers || !game?.watchKey) setAuth(false)
         else setAuth((a) => a || canWatch(game, sessionId))
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [watchIdString, game?.watchKey, sessionId, log.error])
+    }, [watchersString, game?.watchKey, sessionId, log.error])
 
     // Submit password
     const handleSubmit = async (password: string) => {

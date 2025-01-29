@@ -25,7 +25,7 @@ export const getMaxPackSize = (packCounts: { packIdx: number, _count: number }[]
 export const adaptDbGame = <G extends Partial<DbGame>>(game?: G | null) => (
   !game ? game : {
     ...game,
-    watchIds: 'watchIds' in game ? (game.watchIds as WatchId[]).map(({ sessionId }) => sessionId) : [],
+    watchers: 'watchers' in game ? (game.watchers as WatchId[]).map(({ sessionId }) => sessionId) : [],
     watchKey: game.watchKey && "Enabled",
     pause: typeof game.pause === 'bigint' ? Number(game.pause) : game.pause
   }

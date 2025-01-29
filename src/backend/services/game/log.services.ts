@@ -28,7 +28,7 @@ export async function setPassword(id: string, password: string | null) {
                 where: { id },
                 data: { watchKey: password },
             }),
-            prisma.watchId.deleteMany({ where: { gameId: id } })
+            prisma.watcher.deleteMany({ where: { gameId: id } })
         ])
         return Boolean(result[0].watchKey)
 
