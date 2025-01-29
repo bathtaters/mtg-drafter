@@ -14,6 +14,7 @@ export function getGame(url?: Game['url'], includePacks = true, id?: Game['id'])
     include: {
       players: basicPlayer,
       watchers: { select: { sessionId: true } },
+      banned: true,
       packs: includePacks && {
         orderBy: { index: 'asc' }, include: {
           cards: { 
