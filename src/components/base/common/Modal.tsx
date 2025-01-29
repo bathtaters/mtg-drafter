@@ -10,18 +10,19 @@ type Props = {
   wrapperClass?: string,
   children?: ReactNode,
   buttons?: ReactNode,
+  onClick?: MouseEventHandler<HTMLDivElement>,
 }
 
 export default function ModalWrapper({
   title, buttons, children, 
-  isOpen, setOpen, className,
+  isOpen, setOpen, className, onClick,
   defaultClass = "p-4 md:p-6",
   wrapperClass = "modal-bottom md:modal-middle",
   bodyClass = "m-0 md:m-2 flex-grow"
 }: Props) {
   return (
     <dialog className={`modal${isOpen ? ' modal-open' : ''} ${wrapperClass || ''}`} onClick={setOpen ? () => setOpen((st) => !st) : undefined}>
-      <div className={`modal-box ${defaultClass} ${className || ''}`} onClick={(ev) => ev.stopPropagation()}>
+      <div className={`modal-box ${defaultClass} ${className || ''}`} onClick={(ev) => { ev.stopPropagation(); onClick && onClick(ev) }}>
         {title && <h2 className="font-serif mb-6">{title}</h2>}
         {children && <div className={bodyClass}>{children}</div>}
         {buttons && <div className="modal-action">{buttons}</div>}
