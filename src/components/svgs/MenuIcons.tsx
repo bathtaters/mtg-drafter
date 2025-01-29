@@ -1,21 +1,21 @@
 import GearIcon from "./GearIcon"
 
 /* Copied from SVG Repo -- Public Domain: https://www.svgrepo.com/svg/361778/export */
-export const ExportIcon = ({ className = "" }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={`w-6 h-6 fill-current ${className}`} viewBox="0 0 24 24">
+export const ExportIcon = ({ className = "w-6" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={`fill-current h-auto ${className}`} viewBox="0 0 24 24">
     <path d="M11.293 2.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1-1.414 1.414L13 5.414V16a1 1 0 1 1-2 0
       V5.414L8.707 7.707a1 1 0 0 1-1.414-1.414l4-4zM5 17a1 1 0 0 1 1 1v2h12v-2a1 1 0 1 1 2 0v2a2 2 0 0 1-2 2
       H6a2 2 0 0 1-2-2v-2a1 1 0 0 1 1-1z" />
   </svg>
 )
 
-export const LandIcon = ({ className = "" }: { className?: string }) => (
-  <span className={`text-xl fill-current ms ms-land mx-px ${className}`} />
+export const LandIcon = ({ className = "text-xl mx-px" }: { className?: string }) => (
+  <span className={`fill-current ms ms-land ${className}`} />
 )
 
 /* Remixed from SVG Repo -- Public Domain: https://www.svgrepo.com/svg/358694/edit-rename */
-export const RenameIcon = ({ className = "" }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={`w-6 h-6 fill-current ${className}`} viewBox="0 0 512 488">
+export const RenameIcon = ({ className = "w-6" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={`fill-current h-auto ${className}`} viewBox="0 0 512 488">
     <g>
       <path d="M 0 96 L 0 128 L 0 320 L 0 352 L 320 352 L 320 320 L 32 320 L 32 128 L 320 128 L 320 96 L 32 96 L 0 96 z" />
       <path d="M 416 96 L 416 128 L 480 128 L 480 320 L 416 320 L 416 352 L 512 352 L 512 320 L 512 128 L 512 96 L 480 96 L 416 96 z" />
@@ -29,11 +29,11 @@ export const RenameIcon = ({ className = "" }: { className?: string }) => (
   </svg>
 )
 
-export const ToolsIcon = ({ className = "" }: { className?: string }) => <GearIcon className={`w-6 h-6 fill-current ${className}`} />
+export const ToolsIcon = ({ className = "w-6" }: { className?: string }) => <GearIcon className={`fill-current h-auto ${className}`} />
 
 /* Copied from SVG Repo -- Public Domain: https://www.svgrepo.com/svg/240195/exit */
-export const ExitIcon = ({ className = "" }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={`w-6 h-6 fill-current ${className}`} viewBox="0 0 512 512">
+export const ExitIcon = ({ className = "w-6" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={`fill-current h-auto ${className}`} viewBox="0 0 512 512">
     <path d="M510.371,226.513c-1.088-2.603-2.645-4.971-4.629-6.955l-63.979-63.979c-8.341-8.32-21.824-8.32-30.165,0
       c-8.341,8.341-8.341,21.845,0,30.165l27.584,27.584H320.013c-11.797,0-21.333,9.557-21.333,21.333s9.536,21.333,21.333,21.333
       h119.168l-27.584,27.584c-8.341,8.341-8.341,21.845,0,30.165c4.16,4.181,9.621,6.251,15.083,6.251s10.923-2.069,15.083-6.251
