@@ -1,13 +1,19 @@
 import type { Game, BasicPlayer, Socket, PartialGame } from "types/game"
 import ModalWrapper, { ModalButton } from "components/base/common/Modal"
 import Loader from "components/base/Loader"
+import Moderation from "./HostModeration"
 import PlayerEntry from "./PlayerEntry"
-import CopyLink from "components/base/common/CopyLink"
 import PasswordForm from "components/base/common/FormElements/PasswordForm"
-import { Divider, GameContainer, TitleEditor, PlayersContainer, PauseButton, WatchContainer, HostTimerInput } from "./HostModalStyles"
-import useHostController from "./host.controller"
-import { setupLimits, shareWatch } from "assets/constants"
 import { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
+import {
+  TitlePauseContainer, TitleEditor,
+  PauseButton, HostTimerInput,
+  Collapser, PlayersWrapper, LockButton,
+  linkClass, WatchersContainer,
+} from "./HostModalStyles"
+import useHostController from "./host.controller"
+import { setupLimits } from "assets/constants"
+import CopyLink from "components/base/common/CopyLink"
 
 
 type Props = {
@@ -31,7 +37,12 @@ export default function HostModal({
   players, renamePlayer, setStatus,
   setWatchPw, notify
 }: Props) {
-  const { paused, title, setTitle, setHost, timer, updateTimer } = useHostController(game, setOptions)
+
+  const {
+    expanded, toggleExpand, timer, updateTimer,
+    banned, banPlayer, watchers, kickWatcher, locked, lockGame,
+    title, setTitle, setHost, paused, copyProps
+  } = useHostController(game, setOptions, setStatus)
 
   return (
     <ModalWrapper isOpen={isOpen} setOpen={setOpen}
@@ -43,33 +54,57 @@ export default function HostModal({
     >
       <Loader data={game}>
 
-        <GameContainer label="Edit Game">
+        {/* GAME */}
+        <Collapser label="Game" isOpen={expanded === 1} toggle={toggleExpand(1)}>
+          <TitlePauseContainer>
             <TitleEditor value={title} onSubmit={setTitle} {...setupLimits.name} />
           
             <PauseButton label={paused ? "Resume Game" : "Pause Game"} value={paused} setValue={(val) => pauseGame(val)} />
-        </GameContainer>
+          </TitlePauseContainer>
 
-        {game && 'timerBase' in game &&
-          <HostTimerInput value={timer} setValue={updateTimer} {...setupLimits.timer} />
-        }
+          {game && 'timerBase' in game &&
+            <HostTimerInput value={timer} setValue={updateTimer} {...setupLimits.timer} />
+          }
+        </Collapser>
 
-        <Divider />
 
-        <PlayersContainer label="Edit Players">
-          {players.map((player) => 
-            <PlayerEntry key={player.id}
-              player={player} isHost={player.id === (game as Game)?.hostId}
-              renamePlayer={renamePlayer} setStatus={setStatus} setHost={setHost}
-            />
-          )}
-        </PlayersContainer>
+        {/* PLAYERS */}
+        <Collapser label="Players" isOpen={expanded === 2} toggle={toggleExpand(2)}>
+          <PlayersWrapper>
+            {players.map((player) => 
+              <PlayerEntry key={player.id}
+                player={player} isHost={player.id === (game as Game)?.hostId}
+                renamePlayer={renamePlayer} setStatus={setStatus} setHost={setHost}
+              />
+            )}
+          </PlayersWrapper>
+          
+          <Moderation label="Moderation Controls" players={players} banned={banned} banOne={banPlayer} 
+            kickOne={(playerId) => setStatus(playerId, 'leave', true)}>
+            <LockButton locked={locked} onClick={() => lockGame(locked)} />
+          </Moderation>
+        </Collapser>
 
-        <Divider />
+        
+        {/* WATCHERS */}
+        <Collapser label="Watchers" isOpen={expanded === 3} toggle={toggleExpand(3)}>
 
-        <WatchContainer>
-          <CopyLink {...shareWatch} url={game?.watchKey ? shareWatch.url(game?.url) : undefined} notify={notify} />
-          <PasswordForm label="Live Watch Password" btnLabel="Set" emptyBtn="Clear" placeholder={game?.watchKey ? "••••••••" : ""} onSubmit={setWatchPw} isCreate={true} />
-        </WatchContainer>
+          <PasswordForm
+            label="Watch Password"
+            btnLabel="Set" emptyBtn="Disable"
+            placeholder={game?.watchKey ? "••••••••" : ""}
+            onSubmit={setWatchPw} isCreate={true}
+            heightClass="h-8"
+          />
+            
+          <Moderation label="Active Watchers" players={watchers} kickOne={kickWatcher} banOne={banPlayer} />
+          
+          <WatchersContainer label="More Actions">
+            <CopyLink className={linkClass} {...copyProps} notify={notify} tooltip="">Copy Watch Link</CopyLink>
+            <a className={linkClass} onClick={toggleExpand(2)}>View Ban List</a>
+          </WatchersContainer>
+        </Collapser>
+
       </Loader>
     </ModalWrapper>
   )
