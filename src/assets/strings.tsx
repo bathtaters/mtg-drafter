@@ -34,8 +34,8 @@ export const hostButtonLabel: { [label in GameStatus]: string } = {
 }
 
 export const hostPlayerTooltips: { [label in `set${'Host'|'Bot'}`]: string } = {
-    setHost: 'Set as Host',
-    setBot: 'Set as Bot',
+    setHost: 'Make Host',
+    setBot: 'Add Bot',
 }
 
 export const cardCounter = (count?: number, lands?: BoardLands) => typeof count !== 'number' || (!count && !lands) ? undefined :
