@@ -11,7 +11,7 @@ import { clientErrorsInConsole, debugSockets } from 'assets/constants'
 const formatError = (message: string): ErrorAlert => ({ message: `${message}. Attempting to reconnect.`, title: 'Action Failed', theme: 'warning'  })
 
 export function getGameListeners(
-  { updateLocal, updateGame, renamePlayer, nextRound, pauseGame, pickCard, setStatus, setLoadingAll, setLoadingPack, game, player }: LocalController,
+  { updateLocal, updateGame, renamePlayer, nextRound, pauseGame, pickCard, setStatus, banSession, setLoadingAll, setLoadingPack, game, player }: LocalController,
   throwError: AlertsReturn['newError'],
   onConnect?: () => void,
   refreshLog?: () => void,
@@ -67,6 +67,11 @@ export function getGameListeners(
     socket.on('updateWatchPw', (watchKey) => {
       debugSockets && console.debug('SOCKET','updateWatchPw',watchKey)
       updateGame((game) => game && ({ ...game, watchKey, watchers: watchKey ? (game as Game).watchers : [] }))
+    })
+    socket.on('updateBan', (data) => {
+      debugSockets && console.debug('SOCKET','updateBan',data)
+      banSession(data)
+      updateLog && updateLog()
     })
     
     clientErrorsInConsole && socket.on('error', console.error)
@@ -186,7 +191,14 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
   }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
 
 
-  return { renamePlayer, setOptions, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw }
+  const banSession: Socket.BanSession = useCallback((sessionId, unban = false, playerId) => {
+    if (!local.game?.id) return throwError(formatError('Error Banning session: Game not loaded'))
+    
+    emit('banSession', local.game.id, sessionId, unban, playerId)
+  }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
+
+
+  return { renamePlayer, setOptions, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, banSession }
 }
 
 

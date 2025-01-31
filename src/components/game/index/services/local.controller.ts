@@ -1,3 +1,4 @@
+import type { Ban } from '@prisma/client'
 import type { PackFull, ServerProps, Local, PlayerFull } from 'types/game'
 import { useCallback, useMemo, useState } from 'react'
 import { spliceInPlace, updateArrayIdx } from 'components/base/services/common.services'
@@ -105,7 +106,20 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     updatePlayer((p) => p?.id !== playerId ? p : sessionId ? ({ ...p, sessionId }) : undefined)
     if (!sessionId) setLoadingAll((v) => v && v - 1)
   }, [])
-  
+
+
+  const banSession: Local.BanSession = useCallback(({ unban, ...data }) => {
+    if (!unban && data.playerId && data.sessionId) setStatus(data.playerId, null)
+
+    updateGame((g) => !g ? g : {
+      ...g,
+      banned: !unban ? (g.banned || []).concat(data as Ban) :
+        spliceInPlace(g.banned || [], ({ sessionId }) => sessionId === (data.sessionId || null)),
+      watchers: !('watchers' in g) ? undefined : unban ? g.watchers :
+        spliceInPlace(g.watchers || [], (sessionId) => sessionId === (data.sessionId || null)),
+    })
+  }, [])
+
 
   const reload = useCallback(() => {
     setLoadingAll((v) => v + 1)
