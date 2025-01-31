@@ -26,7 +26,7 @@ export default function Moderation({ label, players, banned, kickOne, banOne, ch
         :
         <ModerationEntry key={player.id} id={player.sessionId} name={player.name}
           kick={() => kickOne(player.id)}
-          ban={() => banOne(player.sessionId)}
+          ban={() => banOne(player.sessionId, false, player.id)}
         />
       )}
     </PlayersWrapper>

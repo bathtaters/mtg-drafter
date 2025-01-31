@@ -5,7 +5,7 @@ import { gameIsPaused } from "../shared/game.utils"
 import { hostPlayerTooltips } from "assets/strings"
 import { BOT, shareWatch } from "assets/constants"
 
-export default function useHostController(game: Game | PartialGame | undefined, setOptions: Socket.SetOptions, setStatus: Socket.SetStatus) {
+export default function useHostController(game: Game | PartialGame | undefined, setOptions: Socket.SetOptions, setStatus: Socket.SetStatus, banSession: Socket.BanSession) {
   // Collapsing sections
   const [ expanded, setExpanded ] = useState(0)
   const toggleExpand = useCallback((index?: number) => index ? () => setExpanded((value) => value === index ? 0 : index) : () => setExpanded(0), [])
@@ -30,14 +30,14 @@ export default function useHostController(game: Game | PartialGame | undefined, 
   const banned = (game as Game)?.banned || []
   const locked = banned.some(({ sessionId }) => !sessionId)
 
-  const lockGame = useCallback((unlock?: boolean, note?: string) => {
-    console.error("NOT IMPLEMENTED:", unlock ? "Unlock" : "Lock", game?.id, note)
+  const lockGame = useCallback((unlock?: boolean) => {
+    banSession(null, unlock)
   }, [])
   const kickWatcher = useCallback((sessionId?: string | null) => {
     sessionId && console.error("NOT IMPLEMENTED:", "Kick", game?.id, sessionId)
   }, [])
-  const banPlayer = useCallback((sessionId?: string | null, unban?: boolean, note?: string) => {
-    sessionId && console.error("NOT IMPLEMENTED:", unban ? "Unban" : "Ban", game?.id, sessionId, note)
+  const banPlayer = useCallback((sessionId?: string | null, unban?: boolean, playerId?: string) => {
+    sessionId && banSession(sessionId, unban, playerId)
   }, [])
 
   return {

@@ -27,6 +27,7 @@ type Props = {
   renamePlayer: Socket.RenamePlayer,
   setStatus: Socket.SetStatus,
   setWatchPw: Socket.SetWatchPw,
+  banSession: Socket.BanSession,
   notify: AlertsReturn['newToast'],
 }
 
@@ -35,14 +36,14 @@ export default function HostModal({
   isOpen, setOpen, setLog,
   game, setOptions, pauseGame,
   players, renamePlayer, setStatus,
-  setWatchPw, notify
+  setWatchPw, banSession, notify
 }: Props) {
 
   const {
     expanded, toggleExpand, timer, updateTimer,
     banned, banPlayer, watchers, kickWatcher, locked, lockGame,
     title, setTitle, setHost, paused, copyProps
-  } = useHostController(game, setOptions, setStatus)
+  } = useHostController(game, setOptions, setStatus, banSession)
 
   return (
     <ModalWrapper isOpen={isOpen} setOpen={setOpen}

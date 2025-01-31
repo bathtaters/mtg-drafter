@@ -81,7 +81,7 @@ export default function Game(props: ServerProps) {
         isOpen={hostModal} setOpen={toggleHostModal}
         game={game} setOptions={setOptions} pauseGame={pauseGame} 
         players={players} renamePlayer={renamePlayer} setStatus={setStatus}
-        setLog={toggleLogModal} setWatchPw={setWatchPw}
+        setLog={toggleLogModal} setWatchPw={setWatchPw} banSession={banSession}
         notify={newToast}
     />}
 
