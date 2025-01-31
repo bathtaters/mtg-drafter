@@ -11,16 +11,17 @@ import Loader from 'components/base/Loader'
 import Footer from 'components/base/Footer'
 import { BodyWrapperStyle, SetPageTitle } from 'components/base/styles/AppStyles'
 import useGameController from 'components/game/index/game.controller'
-import { gameIsEnded, gameIsPaused } from '../shared/game.utils'
+import { gameIsEnded } from '../shared/game.utils'
 import PlayerSidebar from '../PlayerSidebar/PlayerSidebar'
+import { banMsg } from 'assets/strings'
 
 
 export default function Game(props: ServerProps) {
   const {
-    game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize,
+    game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize, isBanned,
     holding, canAdvance, pack, sidebarVisible, landModal, hostModal, logModal, slots, gameLog, timer, 
     saveDeck, setSidebar, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setOptions,
-    nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropPlayer,
+    nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, banSession, dropPlayer,
     reload, startTimer, newError, newToast, ErrorComponent, ToastComponent,
   } = useGameController(props)
 
@@ -37,9 +38,9 @@ export default function Game(props: ServerProps) {
       />
       
       <BodyWrapperStyle>
-        <Loader data={game || 404} message={props.error}>
+        <Loader data={game || 404} message={props.error || (isBanned && banMsg)}>
           { !player ?
-            <PlayerJoin slots={slots} players={players} selectPlayer={setStatus} /> :
+            <PlayerJoin slots={slots} players={players} selectPlayer={setStatus} game={game} /> :
             
             <GameBody
               game={game as Game|PartialGame}
@@ -60,7 +61,7 @@ export default function Game(props: ServerProps) {
       <Footer />
     </PlayerSidebar>
 
-    { (!!loadingAll || !isConnected) && <Overlay ><Spinner caption={!loadingAll ?  'Reconnecting' : 'Loading'} /></Overlay> }
+    { (!!loadingAll || !isConnected) && !isBanned && <Overlay ><Spinner caption={!loadingAll ?  'Reconnecting' : 'Loading'} /></Overlay> }
 
     {!!toggleLogModal &&
       <GameLogModal

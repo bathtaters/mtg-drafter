@@ -26,6 +26,10 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   const holding = getHolding(players, maxPackSize, game)
   const canAdvance = isHost && getCanAdvance(game, players, holding)
   const playerIdx = useMemo(() => getPlayerIdx(players, player), [player, players])
+  const isBanned = useMemo(
+    () => game?.banned && game.banned.some(({ sessionId }) => props.sessionId === sessionId),
+    [game, props.sessionId]
+  )
 
   const updateLocal = useCallback((data: ServerProps) => {
     if ('error' in data) throw new Error(`Cannot update data: ${data.error}`)
@@ -129,9 +133,11 @@ export default function useLocalController(props: ServerProps, throwError: Alert
 
   return {
     loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer, updateGame, updateLocal,
-    game, player, players, playerIdx, maxPackSize, holding, isHost, canAdvance, pack, packs, slots, timer,
+    game, player, players, playerIdx, maxPackSize, holding, pack, packs, slots, timer,
+    isHost, canAdvance, isBanned,
     sessionId: props.sessionId,
-    renamePlayer, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, reload, startTimer, 
+    renamePlayer, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, banSession,
+    startTimer, reload,
   }
 }
 
