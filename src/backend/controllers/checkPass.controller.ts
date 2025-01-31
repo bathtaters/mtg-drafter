@@ -19,7 +19,7 @@ export default async function apiHandler(req: NextApiRequest, res: NextApiRespon
     if (message) return message
     
     const game = await userInGame(gameId, sessionId)
-    if (game && !gameIsEnded(game)) return "Active player cannot view log."
+    if (game && !gameIsEnded(game)) return "Players cannot view log until game has ended."
 
     await prisma.watcher.create({ data: { gameId, sessionId } })
     return undefined

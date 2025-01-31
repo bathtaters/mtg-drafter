@@ -3,10 +3,10 @@ import { validate, hash } from "backend/utils/db/password.utils"
 
 const LOG_SALT = "92c23bc8fd75cb3e2880b983ce84d736"
 
-export const userInGame = (id: string, sessionId: string) => prisma.game.findFirst({
-    where: { id, players: { some: { sessionId } } },
-    select: { round: true, roundCount: true },
-})
+export const userInGame = (gameId: string, sessionId: string) => prisma.logEntry.findFirst({
+    where: { gameId, action: 'join', player: { sessionId } },
+    select: { game: { select: { round: true, roundCount: true } } },
+}).then((res) => res?.game)
 
 export async function testPassword(id: string, password: string) {
     const game = await prisma.game.findFirst({
