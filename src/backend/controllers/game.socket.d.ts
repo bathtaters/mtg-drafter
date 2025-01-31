@@ -1,7 +1,7 @@
 import type { Event, Server, Socket } from 'socket.io'
 import type { Socket as Client } from 'socket.io-client'
-import type { GameCard, Pack, PlayerStatus } from '@prisma/client'
-import type { Game, LiveOptions, Player, PlayerFull, BasicLands, Board } from 'types/game'
+import type { GameCard, LogAction, Pack, PlayerStatus, Ban } from '@prisma/client'
+import type { Game, LiveOptions, Player, PlayerFull, BasicLands, Board, BanResponse } from 'types/game'
 
 export interface GameServerToClient {
   updateGame:     (options: LiveOptions) => void;
@@ -11,6 +11,7 @@ export interface GameServerToClient {
   updateName:     (playerId: Player['id'], name: Player['name']) => void;
   updateSlot:     (playerId: Player['id'], sessionId: Player['sessionId']) => void;
   updateWatchPw:  (watchKey: Game['watchKey']) => void;
+  updateBan:      (banData: BanResponse) => void;
   error:          (message: string) => void;
 }
 
@@ -22,6 +23,7 @@ export interface GameClientToServer {
   pickCard:   (playerId: Player['id'], gameCardOrPack: GameCard['id'] | Pack['index'], callback: (pick?: Player['pick']) => void) => void;
   setStatus:  (playerId: Player['id'], status: PlayerStatus, byHost: boolean, callback: (player?: Player) => void) => void;
   setWatchPw: (gameId: Game['id'], password: string | null) => void
+  banSession: (gameId: Game['id'], sessionId: Player['sessionId'] | null, unban: boolean, playerId?: Player['id'] | null) => void
 
   swapBoards: (gameCardId: GameCard['id'], toBoard: Board, callback: (gameCardId: GameCard['id'] | void, toBoard?: Board | void) => void) => void;
   setLands:   (playerId: Player['id'], lands: BasicLands, callback: (lands: BasicLands | void) => void) => void;

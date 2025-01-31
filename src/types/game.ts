@@ -29,6 +29,7 @@ export type PackFull = Pack & { cards: GameCardFull[] }
 export type PlayerFullTimer = Player & { cards: GameCardFull[], basics: BasicLands }
 export type PlayerFull = Omit<PlayerFullTimer, 'timer'>
 
+export type BanResponse = Partial<Ban> & { playerId: string | null, unban: boolean }
 
 // -- USER OPTIONS -- \\
 
@@ -105,6 +106,7 @@ export namespace Local {
   export type SwapCard     = (gameCardId: GameCard['id'], board: Board) => void
   export type SetLands     = (basics: BasicLands) => void
   export type SetStatus    = (playerId: Player['id'], sessionId: Player['sessionId'], isSelf?: boolean) => void
+  export type BanSession   = (data: BanResponse) => void
 }
 
 export namespace Socket {
@@ -117,6 +119,7 @@ export namespace Socket {
   export type SetLands      = (lands: BasicLands) => void
   export type SetStatus     = (playerId: Player['id'], status?: PlayerStatus, byHost?: boolean) => void
   export type SetWatchPw    = (password: string | null) => void
+  export type BanSession    = (sessionId: Player['sessionId'] | null, unban?: boolean, playerId?: Player['id']) => void
 }
 
 // Aliases
@@ -129,3 +132,4 @@ export type SwapCard      = Socket.SwapCard
 export type SetLands      = Socket.SetLands
 export type SetStatus     = Socket.SetStatus
 export type SetWatchPw    = Socket.SetWatchPw
+export type BanSession    = Socket.BanSession

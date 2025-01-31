@@ -1,7 +1,7 @@
 import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
 import type { BasicLands } from 'types/game'
 import { getExisitingSessionId } from 'backend/libs/auth'
-import { renamePlayer, setStatus, swapCard, updateLands } from './player.services'
+import { banPlayer, renamePlayer, setStatus, swapCard, updateLands } from './player.services'
 import { handleBotPicks } from './game.sockets'
 import validation from 'types/game.validation'
 import { BOT } from 'assets/constants'
@@ -84,6 +84,27 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
       // Handle Error
       } catch (err: any) {
         socket.emit('error', `Error setting basic lands: ${err.message || 'Unknown'}`)
+      }
+    })
+
+
+    socket.on('banSession', async (gameId, sessionId, unban, playerId) => {
+      try {
+        // Validation
+        gameId = validation.id.parse(gameId)
+        sessionId = validation.session.nullable().parse(sessionId)
+        unban = validation.bool.parse(unban)
+        playerId = validation.id.nullable().optional().parse(playerId)
+
+        // Update DB
+        const result = await banPlayer(gameId, sessionId, unban, playerId)
+        if (result.unban !== unban) throw new Error('Update failed')
+
+        // Update Client(s)
+        io.emit('updateBan', result)
+        
+      } catch (err: any) {
+        socket.emit('error', `Error updating ${sessionId ? 'user ban' : 'game lock'} status: ${err.message || 'Unknown'}`)
       }
     })
 }
