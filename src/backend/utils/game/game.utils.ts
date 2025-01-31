@@ -55,7 +55,7 @@ export const hasPack = (game: Pick<Game,"round"|"roundCount">, players: Pick<Bas
   return neighborIdx === -1 || players[playerIdx].pick <= players[neighborIdx].pick
 }
 
-export const unregGameAdapter = ({ id, name, url, watchKey }: PartialGame) => ({ id, name, url, watchKey })
+export const unregGameAdapter = ({ id, name, url, watchKey, banned }: PartialGame) => ({ id, name, url, watchKey, banned })
 
 export function getTimerLength(cardCount: number, timerBase: number) {
   if (timerBase === officialRulesIdx && cardCount === 11) return 25 // Fix for official rules
