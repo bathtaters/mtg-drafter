@@ -211,6 +211,9 @@ export async function gameExists(gameUrl: string | string[] | undefined) {
 }
 
 export const checkBan = (gameId: Game['id'], sessionId: Player['sessionId']) => prisma.ban.count({
-  where: { OR: [{ gameId, sessionId: null }, { sessionId, gameId }] },
-  take: 1,
+  where: { sessionId, gameId }, take: 1,
+}).then(Boolean)
+
+export const checkBanOrLock = (gameId: Game['id'], sessionId: Player['sessionId']) => prisma.ban.count({
+  where: { OR: [{ gameId, sessionId: null }, { gameId, sessionId }] }, take: 1,
 }).then(Boolean)

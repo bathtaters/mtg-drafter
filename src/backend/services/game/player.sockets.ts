@@ -1,10 +1,12 @@
 import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
 import type { BasicLands } from 'types/game'
 import { getExisitingSessionId } from 'backend/libs/auth'
-import { banPlayer, renamePlayer, setStatus, swapCard, updateLands } from './player.services'
+import { banPlayer, getPlayerGame, renamePlayer, setStatus, swapCard, updateLands } from './player.services'
+import { checkBanOrLock } from './game.services'
 import { handleBotPicks } from './game.sockets'
 import validation from 'types/game.validation'
 import { BOT } from 'assets/constants'
+import { banMsg } from 'assets/strings'
 
 
 export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
@@ -32,9 +34,15 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
         // Validation
         playerId = validation.id.parse(playerId)
         status = validation.status.parse(status)
+
+        const gameId = await getPlayerGame(playerId)
+        if (!gameId) throw new Error('Player not found')
         
         const sessionId = status === 'bot' ? BOT : status === 'join' && getExisitingSessionId(socket.request)
         if (sessionId == null) throw new Error('Missing user identity')
+
+        const isBanned = sessionId && await checkBanOrLock(gameId, sessionId)
+        if (isBanned) throw new Error(banMsg)
 
         // Update DB
         const player = await setStatus(playerId, sessionId || null, byHost)

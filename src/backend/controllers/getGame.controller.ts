@@ -19,7 +19,7 @@ async function getGameProps(query: ParsedUrlQuery, sessionId: string, includePac
   if (!game) return { error: NOTFOUND }
 
   const isBanned = await checkBan(game.id, sessionId)
-  if (isBanned) return { error: BANNED }
+  if (isBanned) return { error: BANNED, options: unregGameAdapter(game) }
   
   try { packSize = await getRoundPackSize(game.id, game.round, game.roundCount, game.players.length) }
   catch(e: any) { return { error: `Server Error: ${e.message}`, options: unregGameAdapter(game) } }
