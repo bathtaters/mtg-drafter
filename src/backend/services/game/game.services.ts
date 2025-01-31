@@ -1,4 +1,4 @@
-import type { GameCard, Board, Pack } from '@prisma/client'
+import { GameCard, Board, Pack } from '@prisma/client'
 import type { Game, LiveOptions, Player } from 'types/game'
 import prisma from '../../libs/db'
 import retry from '../../libs/retry'
@@ -209,3 +209,8 @@ export async function gameExists(gameUrl: string | string[] | undefined) {
   if (!gameExists) console.error(`Fetch game: GameURL not found (${gameUrl})`)
   return !!gameExists
 }
+
+export const checkBan = (gameId: Game['id'], sessionId: Player['sessionId']) => prisma.ban.count({
+  where: { OR: [{ gameId, sessionId: null }, { sessionId, gameId }] },
+  take: 1,
+}).then(Boolean)

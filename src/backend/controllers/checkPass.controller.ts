@@ -4,6 +4,7 @@ import type { LogAuthResponse } from 'types/game'
 import { getReqSessionId } from '../libs/auth'
 import { logAuth } from 'types/game.validation'
 import { testPassword, userInGame } from '../services/game/log.services'
+import { checkBan } from 'backend/services/game/game.services'
 import { gameIsEnded } from '../utils/game/game.utils'
 
 export default async function apiHandler(req: NextApiRequest, res: NextApiResponse<LogAuthResponse>) {
@@ -11,6 +12,9 @@ export default async function apiHandler(req: NextApiRequest, res: NextApiRespon
 
     const gameId = logAuth.id.safeParse(req.query.id).data
     if (!gameId) return "Game not found"
+
+    const isBanned = await checkBan(gameId, sessionId)
+    if (isBanned) return "Access restricted"
 
     const password = logAuth.password.safeParse(req.body.password).data
     if (!password) return "Missing password"
