@@ -1,9 +1,10 @@
-import type { GameCard, Board } from '@prisma/client'
+import type { GameCard, Board, Ban } from '@prisma/client'
 import type { Game, BasicLands, Player, BasicPlayer } from 'types/game'
 import prisma from '../../libs/db'
 import retry from '../../libs/retry'
 import { getTimerLength, adaptDbPlayer, hasPack } from 'backend/utils/game/game.utils'
-import { BOT } from 'assets/constants'
+import { getName } from 'backend/utils/game/player.utils'
+import { BOT, LOG_DELIM } from 'assets/constants'
 
 const fullPlayer /* Prisma.PlayerInclude */ = {
   cards: { include: { card: { include: { otherFaces: { include: { card: true } } } } } }
@@ -39,6 +40,40 @@ export async function setStatus(id: Player['id'], sessionId: Player['sessionId']
   } }))
 
   return adaptDbPlayer(player)
+}
+
+
+export async function banPlayer(gameId: Game['id'], sessionId: Player['sessionId'] = null, unban: boolean = false, playerId: Player['id'] | null = null) {
+
+  const name = await getName(sessionId, gameId, playerId)
+
+  if (!unban && sessionId) {
+    // Drop player/watcher
+    await retry(() => prisma.$transaction([
+      prisma.watcher.deleteMany({ where: { gameId, sessionId } }),
+      prisma.player.updateMany({
+        where: { gameId, sessionId },
+        data: { sessionId: null },
+      }),
+    ]))
+  }
+
+  const ban: Partial<Ban & { unban: number }> = await retry(() => !unban ? 
+    prisma.ban.create({ data: { gameId, sessionId, name } }) :
+    prisma.ban.deleteMany({ where: { gameId, sessionId } })
+      .then(({ count }) => ({ unban: count }))
+  )
+
+  await retry(() => prisma.logEntry.create({ data: {
+    gameId,
+    playerId,
+    byHost: true,
+    action: unban ? 'unban' : 'ban',
+    data: sessionId ? `${sessionId}${LOG_DELIM}${name || ''}` : null,
+  } }))
+
+  if (unban && ban.unban !== 1) console.warn(`Unban resulted in unbanning ${ban.unban} rows (Expected: 1).`)
+  return { gameId, playerId, sessionId, name, ...ban, unban: Boolean(ban.unban) }
 }
 
 

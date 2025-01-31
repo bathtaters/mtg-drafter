@@ -133,3 +133,5 @@ export const serverSideImageOptimize = false
 // Actual constants (DON'T CHANGE!)
 
 export const BOT = "___BOT___"
+
+export const LOG_DELIM = ':' // Seperator between SessionID & Name in Ban LogEntries
