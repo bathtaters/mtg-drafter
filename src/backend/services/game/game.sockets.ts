@@ -2,7 +2,7 @@ import type { Game } from '@prisma/client'
 import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
 import { nextRound, pauseGame, resumeGame, pickCard, updateGame } from './game.services'
 import { getBotPicks } from './bot.services'
-import { setPassword } from './log.services'
+import { addRmvWatcher, setPassword } from './log.services'
 import validation, { logAuth, gameOptions } from 'types/game.validation'
 
 
@@ -99,6 +99,25 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
       // Handle Error
       } catch (err: any) {
         socket.emit('error', `Error updating watch password: ${err.message || 'Unknown'}`)
+      }
+    })
+
+
+    socket.on('dropWatcher', async (gameId, sessionId) => {
+      try {
+        // Validation
+        gameId = validation.id.parse(gameId)
+        sessionId = validation.session.parse(sessionId)
+        
+        // Update DB
+        const result = await addRmvWatcher(gameId, sessionId, true)
+        if (sessionId !== result) throw new Error('Failed to drop watcher')
+
+        io.emit('updateWatcher', sessionId, false)
+
+      // Handle Error
+      } catch (err: any) {
+        socket.emit('error', `Error dropping watcher: ${err.message || 'Unknown'}`)
       }
     })
 }

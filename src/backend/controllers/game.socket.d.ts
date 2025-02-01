@@ -11,6 +11,7 @@ export interface GameServerToClient {
   updateName:     (playerId: Player['id'], name: Player['name']) => void;
   updateSlot:     (playerId: Player['id'], sessionId: Player['sessionId']) => void;
   updateWatchPw:  (watchKey: Game['watchKey']) => void;
+  updateWatcher:  (sessionId: NonNullable<Player['sessionId']>, joined: boolean) => void
   updateBan:      (banData: BanResponse) => void;
   error:          (message: string) => void;
 }
@@ -23,6 +24,7 @@ export interface GameClientToServer {
   pickCard:   (playerId: Player['id'], gameCardOrPack: GameCard['id'] | Pack['index'], callback: (pick?: Player['pick']) => void) => void;
   setStatus:  (playerId: Player['id'], status: PlayerStatus, byHost: boolean, callback: (player?: Player) => void) => void;
   setWatchPw: (gameId: Game['id'], password: string | null) => void
+  dropWatcher:(gameId: Game['id'], sessionId: NonNullable<Player['sessionId']>) => void
   banSession: (gameId: Game['id'], sessionId: Player['sessionId'] | null, unban: boolean, playerId?: Player['id'] | null) => void
 
   swapBoards: (gameCardId: GameCard['id'], toBoard: Board, callback: (gameCardId: GameCard['id'] | void, toBoard?: Board | void) => void) => void;
