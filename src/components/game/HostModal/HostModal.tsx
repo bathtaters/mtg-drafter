@@ -43,7 +43,7 @@ export default function HostModal({
     expanded, toggleExpand, timer, updateTimer,
     banned, banPlayer, watchers, kickWatcher, locked, lockGame,
     title, setTitle, setHost, paused, copyProps
-  } = useHostController(game, setOptions, setStatus, banSession)
+  } = useHostController(game, setOptions, banSession)
 
   return (
     <ModalWrapper isOpen={isOpen} setOpen={setOpen}

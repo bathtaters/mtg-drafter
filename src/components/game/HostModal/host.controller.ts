@@ -5,7 +5,7 @@ import { gameIsPaused } from "../shared/game.utils"
 import { hostPlayerTooltips } from "assets/strings"
 import { BOT, shareWatch } from "assets/constants"
 
-export default function useHostController(game: Game | PartialGame | undefined, setOptions: Socket.SetOptions, setStatus: Socket.SetStatus, banSession: Socket.BanSession) {
+export default function useHostController(game: Game | PartialGame | undefined, setOptions: Socket.SetOptions, banSession: Socket.BanSession) {
   // Collapsing sections
   const [ expanded, setExpanded ] = useState(0)
   const toggleExpand = useCallback((index?: number) => index ? () => setExpanded((value) => value === index ? 0 : index) : () => setExpanded(0), [])
