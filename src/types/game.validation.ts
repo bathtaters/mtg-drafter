@@ -5,10 +5,7 @@ import { setupLimits, urlLimits } from "assets/constants"
 
 export const boardLands = z.object(fillAndLowerCaseObject(Color, z.number().nonnegative().int()))
 
-export const logAuth = {
-  id:       z.string().cuid2(),
-  password: z.string().min(1).nullable(),
-}
+export const authPassword = z.string().min(1).nullable()
 
 const gameData = {
   session: nanoId(),

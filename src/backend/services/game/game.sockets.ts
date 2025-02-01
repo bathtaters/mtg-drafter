@@ -1,9 +1,11 @@
 import type { Game } from '@prisma/client'
 import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
-import { nextRound, pauseGame, resumeGame, pickCard, updateGame } from './game.services'
+import { nextRound, pauseGame, resumeGame, pickCard, updateGame, checkBan } from './game.services'
 import { getBotPicks } from './bot.services'
-import { addRmvWatcher, setPassword } from './log.services'
-import validation, { logAuth, gameOptions } from 'types/game.validation'
+import { setWatcher, setPassword, testPassword, userInGame } from './log.services'
+import validation, { authPassword, gameOptions } from 'types/game.validation'
+import { gameIsEnded } from 'components/game/shared/game.utils'
+import { banMsg } from 'assets/strings'
 
 
 export default function addGameListeners(io: GameServer, socket: GameSocket) {
@@ -88,7 +90,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
       try {
         // Validation
         gameId = validation.id.parse(gameId)
-        password = logAuth.password.parse(password) ?? null
+        password = authPassword.parse(password) ?? null
         
         // Update DB
         const exists = await setPassword(gameId, password)
@@ -103,6 +105,36 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
     })
 
 
+    socket.on('watcherLogin', async (gameId, sessionId, password, callback) => {
+      try {
+        // Validation
+        gameId = validation.id.parse(gameId)
+        sessionId = validation.session.parse(sessionId)
+        password = authPassword.parse(password) ?? ""
+        if (!password) throw new Error("Missing password")
+        
+        // Update DB
+        const isBanned = await checkBan(gameId, sessionId)
+        if (isBanned) throw new Error(banMsg)
+    
+        const message = await testPassword(gameId, password)
+        if (message) throw new Error(message)
+        
+        const game = await userInGame(gameId, sessionId)
+        if (game && !gameIsEnded(game)) throw new Error("Players cannot view log until game has ended")
+    
+        const result = await setWatcher(gameId, sessionId, true)
+        if (result !== sessionId) throw new Error("Database error")
+        
+        callback(true, undefined)
+        io.emit('updateWatcher', sessionId, true)
+
+      // Handle Error
+      } catch (err: any) {
+        callback(false, err.message || 'Login failed')
+      }
+    })
+
     socket.on('dropWatcher', async (gameId, sessionId) => {
       try {
         // Validation
@@ -110,7 +142,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         sessionId = validation.session.parse(sessionId)
         
         // Update DB
-        const result = await addRmvWatcher(gameId, sessionId, true)
+        const result = await setWatcher(gameId, sessionId, false)
         if (sessionId !== result) throw new Error('Failed to drop watcher')
 
         io.emit('updateWatcher', sessionId, false)

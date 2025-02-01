@@ -17,15 +17,16 @@ export interface GameServerToClient {
 }
 
 export interface GameClientToServer {
-  setOptions: (gameId: Game['id'], options: LiveOptions) => void;
-  nextRound:  (gameId: Game['id'], round: Game['round']) => void;
-  pauseTimer: (gameId: Game['id'], resume: boolean) => void;
-  setName:    (playerId: Player['id'], name: Player['name'], byHost: boolean) => void;
-  pickCard:   (playerId: Player['id'], gameCardOrPack: GameCard['id'] | Pack['index'], callback: (pick?: Player['pick']) => void) => void;
-  setStatus:  (playerId: Player['id'], status: PlayerStatus, byHost: boolean, callback: (player?: Player) => void) => void;
-  setWatchPw: (gameId: Game['id'], password: string | null) => void
-  dropWatcher:(gameId: Game['id'], sessionId: NonNullable<Player['sessionId']>) => void
-  banSession: (gameId: Game['id'], sessionId: Player['sessionId'] | null, unban: boolean, playerId?: Player['id'] | null) => void
+  setOptions:   (gameId: Game['id'], options: LiveOptions) => void;
+  nextRound:    (gameId: Game['id'], round: Game['round']) => void;
+  pauseTimer:   (gameId: Game['id'], resume: boolean) => void;
+  setName:      (playerId: Player['id'], name: Player['name'], byHost: boolean) => void;
+  pickCard:     (playerId: Player['id'], gameCardOrPack: GameCard['id'] | Pack['index'], callback: (pick?: Player['pick']) => void) => void;
+  setStatus:    (playerId: Player['id'], status: PlayerStatus, byHost: boolean, callback: (player?: Player) => void) => void;
+  setWatchPw:   (gameId: Game['id'], password: string | null) => void
+  watcherLogin: (gameId: Game['id'], sessionId: NonNullable<Player['sessionId']>, password: string, callback: (success: boolean, reason?: string) => void) => void
+  dropWatcher:  (gameId: Game['id'], sessionId: NonNullable<Player['sessionId']>) => void
+  banSession:   (gameId: Game['id'], sessionId: Player['sessionId'] | null, unban: boolean, playerId?: Player['id'] | null) => void
 
   swapBoards: (gameCardId: GameCard['id'], toBoard: Board, callback: (gameCardId: GameCard['id'] | void, toBoard?: Board | void) => void) => void;
   setLands:   (playerId: Player['id'], lands: BasicLands, callback: (lands: BasicLands | void) => void) => void;

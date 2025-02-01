@@ -129,7 +129,8 @@ export default function useLocalController(props: ServerProps, throwError: Alert
       banned: !unban ? (g.banned || []).concat(data as Ban) :
         spliceInPlace(g.banned || [], ({ sessionId }) => sessionId === (data.sessionId || null)),
     })
-  }, [])
+    if (props.sessionId === data.sessionId) reload()
+  }, [props.sessionId])
 
 
   const reload = useCallback(() => {
