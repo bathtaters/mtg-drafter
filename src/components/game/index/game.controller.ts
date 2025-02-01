@@ -20,7 +20,7 @@ export default function useGameController(props: ServerProps) {
   })
   const toggleLogModal = !local.isHost ? undefined : () => setLogModal((o) => !o)
 
-  const { renamePlayer, setOptions, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, banSession } = useGameEmitters(local, local.newError)
+  const { renamePlayer, setOptions, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropWatcher, banSession } = useGameEmitters(local, local.newError)
 
   const saveDeck = !local.player?.cards || !local.game ? undefined : () => { downloadDeck(local as Parameters<typeof downloadDeck>['0']) }
 
@@ -31,7 +31,8 @@ export default function useGameController(props: ServerProps) {
 
   return {
     ...local,
-    renamePlayer, setOptions, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, banSession,
+    renamePlayer, setOptions, nextRound, pauseGame, pickCard, swapCard, setLands,
+    setStatus, setWatchPw, dropWatcher, banSession,
     
     landModal, hostModal, logModal, saveDeck, dropPlayer,
     toggleLandModal, toggleHostModal, toggleLogModal,

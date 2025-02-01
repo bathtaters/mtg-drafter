@@ -27,6 +27,7 @@ type Props = {
   renamePlayer: Socket.RenamePlayer,
   setStatus: Socket.SetStatus,
   setWatchPw: Socket.SetWatchPw,
+  dropWatcher: Socket.DropWatcher,
   banSession: Socket.BanSession,
   notify: AlertsReturn['newToast'],
 }
@@ -36,12 +37,12 @@ export default function HostModal({
   isOpen, setOpen, setLog,
   game, setOptions, pauseGame,
   players, renamePlayer, setStatus,
-  setWatchPw, banSession, notify
+  setWatchPw, dropWatcher, banSession, notify
 }: Props) {
 
   const {
     expanded, toggleExpand, timer, updateTimer,
-    banned, banPlayer, watchers, kickWatcher, locked, lockGame,
+    banned, banPlayer, watchers, locked, lockGame,
     title, setTitle, setHost, paused, copyProps
   } = useHostController(game, setOptions, banSession)
 
@@ -98,7 +99,7 @@ export default function HostModal({
             heightClass="h-8"
           />
             
-          <Moderation label="Active Watchers" players={watchers} kickOne={kickWatcher} banOne={banPlayer} />
+          <Moderation label="Active Watchers" players={watchers} kickOne={dropWatcher} banOne={banPlayer} />
           
           <WatchersContainer label="More Actions">
             <CopyLink className={linkClass} {...copyProps} notify={notify} tooltip="">Copy Watch Link</CopyLink>

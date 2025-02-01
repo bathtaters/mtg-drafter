@@ -119,6 +119,7 @@ export namespace Socket {
   export type SetLands      = (lands: BasicLands) => void
   export type SetStatus     = (playerId: Player['id'], status?: PlayerStatus, byHost?: boolean) => void
   export type SetWatchPw    = (password: string | null) => void
+  export type DropWatcher   = (sessionId: NonNullable<Player['sessionId']>) => void
   export type BanSession    = (sessionId: Player['sessionId'] | null, unban?: boolean, playerId?: Player['id']) => void
 }
 

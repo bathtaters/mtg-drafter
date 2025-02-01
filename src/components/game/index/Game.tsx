@@ -21,7 +21,7 @@ export default function Game(props: ServerProps) {
     game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize, isBanned,
     holding, canAdvance, pack, sidebarVisible, landModal, hostModal, logModal, slots, gameLog, timer, 
     saveDeck, setSidebar, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setOptions,
-    nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, banSession, dropPlayer,
+    nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropWatcher, banSession, dropPlayer,
     reload, startTimer, newError, newToast, ErrorComponent, ToastComponent,
   } = useGameController(props)
 
@@ -81,8 +81,8 @@ export default function Game(props: ServerProps) {
         isOpen={hostModal} setOpen={toggleHostModal}
         game={game} setOptions={setOptions} pauseGame={pauseGame} 
         players={players} renamePlayer={renamePlayer} setStatus={setStatus}
-        setLog={toggleLogModal} setWatchPw={setWatchPw} banSession={banSession}
-        notify={newToast}
+        setWatchPw={setWatchPw} dropWatcher={dropWatcher} banSession={banSession}
+        setLog={toggleLogModal} notify={newToast}
     />}
 
     <ErrorComponent />

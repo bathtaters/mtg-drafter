@@ -68,6 +68,10 @@ export function getGameListeners(
       debugSockets && console.debug('SOCKET','updateWatchPw',watchKey)
       updateGame((game) => game && ({ ...game, watchKey, watchers: watchKey ? (game as Game).watchers : [] }))
     })
+    socket.on('updateWatcher', (sessionId, joined) => {
+      debugSockets && console.debug('SOCKET','updateWatcher',sessionId,joined)
+      setStatus(null, sessionId, joined)
+    })
     socket.on('updateBan', (data) => {
       debugSockets && console.debug('SOCKET','updateBan',data)
       banSession(data)
@@ -191,6 +195,13 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
   }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
 
 
+  const dropWatcher: Socket.DropWatcher = useCallback((sessionId) => {
+    if (!local.game?.id) return throwError(formatError('Error setting Watch password: Game not loaded'))
+    
+    emit('dropWatcher', local.game.id, sessionId)
+  }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
+
+
   const banSession: Socket.BanSession = useCallback((sessionId, unban = false, playerId) => {
     if (!local.game?.id) return throwError(formatError('Error Banning session: Game not loaded'))
     
@@ -198,7 +209,7 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
   }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
 
 
-  return { renamePlayer, setOptions, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, banSession }
+  return { renamePlayer, setOptions, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropWatcher, banSession }
 }
 
 
