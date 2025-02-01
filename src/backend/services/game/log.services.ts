@@ -38,3 +38,7 @@ export async function setPassword(id: string, password: string | null) {
     }
     return null
 }
+
+export const addRmvWatcher = (gameId: string, sessionId: string, remove: boolean = false) => remove ?
+    prisma.watcher.delete({ where: { sessionId_gameId: { gameId, sessionId } } }).then((res) => res.sessionId) :
+    prisma.watcher.create({ data: { gameId, sessionId } }).then((res) => res.sessionId)
