@@ -102,25 +102,32 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   }, [])
 
 
-  const setStatus: Local.SetStatus = useCallback((playerId, sessionId) => {
-    updateSlots((s) => sessionId ? spliceInPlace(s, (pid) => pid === playerId) : s.concat(playerId))
+  const setStatus: Local.SetStatus = useCallback((playerId, sessionId, join) => {
+    if (!playerId) return updateGame(
+      (game) => !game || !('watchers' in game) || !game.watchers || !sessionId ? game : {
+        ...game,
+        watchers: join ? game.watchers.concat(sessionId) :
+          game.watchers.filter((s) => s !== sessionId),
+      }
+    )
+
+    updateSlots((s) => join ? spliceInPlace(s, (pid) => pid === playerId) : s.concat(playerId))
     updatePlayers((list) => list && updateArrayIdx(list,
-      ({ id }) => id === playerId, (p) => ({ ...p, sessionId })
+      ({ id }) => id === playerId,
+      (p) => ({ ...p, sessionId: join ? sessionId : null })
     ))
-    updatePlayer((p) => p?.id !== playerId ? p : sessionId ? ({ ...p, sessionId }) : undefined)
-    if (!sessionId) setLoadingAll((v) => v && v - 1)
+    updatePlayer((p) => p?.id !== playerId ? p : !join || !sessionId ? undefined : ({ ...p, sessionId }))
+    if (!join) setLoadingAll((v) => v && v - 1)
   }, [])
 
 
   const banSession: Local.BanSession = useCallback(({ unban, ...data }) => {
-    if (!unban && data.playerId && data.sessionId) setStatus(data.playerId, null)
-
+    if (!unban && data.sessionId) setStatus(data.playerId, data.sessionId, false)
+    
     updateGame((g) => !g ? g : {
       ...g,
       banned: !unban ? (g.banned || []).concat(data as Ban) :
         spliceInPlace(g.banned || [], ({ sessionId }) => sessionId === (data.sessionId || null)),
-      watchers: !('watchers' in g) ? undefined : unban ? g.watchers :
-        spliceInPlace(g.watchers || [], (sessionId) => sessionId === (data.sessionId || null)),
     })
   }, [])
 

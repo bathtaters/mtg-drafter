@@ -105,7 +105,7 @@ export namespace Local {
   export type PickCard     = (playerId: Player['id'], pick: Player['pick'], passingToId?: Player['id']) => void
   export type SwapCard     = (gameCardId: GameCard['id'], board: Board) => void
   export type SetLands     = (basics: BasicLands) => void
-  export type SetStatus    = (playerId: Player['id'], sessionId: Player['sessionId'], isSelf?: boolean) => void
+  export type SetStatus    = (playerId: Player['id'] | null, sessionId: Player['sessionId'] | null, join: boolean) => void
   export type BanSession   = (data: BanResponse) => void
 }
 

@@ -61,7 +61,7 @@ export function getGameListeners(
     })
     socket.on('updateSlot', (playerId, sessionId) => {
       debugSockets && console.debug('SOCKET','updateSlot',playerId,sessionId)
-      setStatus(playerId, sessionId)
+      setStatus(playerId, sessionId, !!sessionId)
       updateLog && updateLog()
     })
     socket.on('updateWatchPw', (watchKey) => {
@@ -179,7 +179,7 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
 
       if (local.sessionId === player.sessionId)
         local.updatePlayer((p) => ({ ...(p || { cards: [] }), ...player }))
-      local.setStatus(player.id, player.sessionId || null)
+      local.setStatus(player.id, player.sessionId || null, !!player.sessionId)
     })
   }, [emit, local.game?.url, local.sessionId, local.setLoadingAll, local.setStatus, local.updatePlayer, local.updateLocal, throwError])
 
