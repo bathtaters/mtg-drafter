@@ -33,10 +33,6 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   const holding = getHolding(players, maxPackSize, game)
   const canAdvance = isHost && getCanAdvance(game, players, holding)
   const playerIdx = useMemo(() => getPlayerIdx(players, player), [player, players])
-  const isBanned = useMemo(
-    () => game?.banned && game.banned.some(({ sessionId }) => props.sessionId === sessionId),
-    [game, props.sessionId]
-  )
 
   const updateLocal = useCallback((data: ServerProps) => {
     if ('error' in data) throw new Error(`Cannot update data: ${data.error}`)
@@ -131,10 +127,16 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   const banSession: Local.BanSession = useCallback(({ unban, ...data }) => {
     if (!unban && data.sessionId) setStatus(data.playerId, data.sessionId, false)
     
-    updateGame((g) => !g ? g : {
-      ...g,
-      banned: !unban ? (g.banned || []).concat(data as Ban) :
-        spliceInPlace(g.banned || [], ({ sessionId }) => sessionId === (data.sessionId || null)),
+    updateGame((game) => {
+      if (!game) return game
+
+      if ('banned' in game) return {
+        ...game,
+        banned: !unban ?
+          (game.banned || []).concat(data as Ban) :
+          (game.banned || []).filter(({ sessionId }) => sessionId !== (data.sessionId || null))
+      }
+      return { ...game, locked: !unban }
     })
     if (props.sessionId === data.sessionId) reload()
   }, [props.sessionId])
@@ -149,7 +151,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   return {
     loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer, updateGame, updateLocal,
     game, player, players, playerIdx, maxPackSize, holding, pack, packs, slots, timer,
-    isHost, canAdvance, isBanned, isWatchPage,
+    isHost, canAdvance, isWatchPage,
     sessionId: props.sessionId,
     renamePlayer, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, banSession,
     startTimer, reload,

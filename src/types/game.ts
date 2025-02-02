@@ -17,7 +17,7 @@ export type BasicPlayer = Pick<Player, "id"|"name"|"sessionId"|"pick">
 export type BasicWatcher = Pick<Watcher, "sessionId"|"name">
 
 export interface Game extends Omit<DbGame, 'pause'> { pause: number | null, watchers: BasicWatcher[], banned: Ban[] }
-export type PartialGame = Pick<Game,"id"|"name"|"url"|"watchKey"|"banned">
+export type PartialGame = Pick<Game,"id"|"name"|"url"|"watchKey"> & { locked: boolean }
 export type ListedGame = Pick<Game,"id"|"name"|"url"|"hostId"> & { player?: BasicPlayer }
 export type LiveOptions = Partial<Pick<Game, "name"|"hostId"|"url"|"timerBase">>
 

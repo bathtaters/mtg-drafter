@@ -13,12 +13,11 @@ import { BodyWrapperStyle, SetPageTitle } from 'components/base/styles/AppStyles
 import useGameController from 'components/game/index/game.controller'
 import { gameIsEnded } from '../shared/game.utils'
 import PlayerSidebar from '../PlayerSidebar/PlayerSidebar'
-import { banMsg } from 'assets/strings'
 
 
 export default function Game(props: ServerProps) {
   const {
-    game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize, isBanned,
+    game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize,
     holding, canAdvance, pack, sidebarVisible, landModal, hostModal, logModal, slots, gameLog, timer, 
     saveDeck, setSidebar, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setOptions,
     nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropWatcher, banSession, dropPlayer,
@@ -38,7 +37,7 @@ export default function Game(props: ServerProps) {
       />
       
       <BodyWrapperStyle>
-        <Loader data={game || 404} message={props.error || (isBanned && banMsg)}>
+        <Loader data={game || 404} message={props.error}>
           { !player ?
             <PlayerJoin slots={slots} players={players} selectPlayer={setStatus} game={game} /> :
             
@@ -61,7 +60,7 @@ export default function Game(props: ServerProps) {
       <Footer />
     </PlayerSidebar>
 
-    { (!!loadingAll || !isConnected) && !isBanned && <Overlay ><Spinner caption={!loadingAll ?  'Reconnecting' : 'Loading'} /></Overlay> }
+    { (!!loadingAll || !isConnected) && <Overlay ><Spinner caption={!loadingAll ?  'Reconnecting' : 'Loading'} /></Overlay> }
 
     {!!toggleLogModal &&
       <GameLogModal

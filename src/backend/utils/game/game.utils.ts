@@ -2,7 +2,7 @@ import type { Merge } from 'types/global'
 import type { Game as DbGame, Player as DbPlayer, Watcher } from '@prisma/client'
 import type { Game, BasicPlayer, Player, PartialGame } from 'types/game'
 import { gameUrlRegEx } from 'assets/urls'
-import { getNeighborIdx } from 'components/game/shared/game.utils'
+import { gameIsLocked, getNeighborIdx } from 'components/game/shared/game.utils'
 import { defaultTimer, officialRulesIdx, timerOptions } from 'assets/constants'
 
 // Pass through shared utils (Mainly to keep track of which are shared w/ the backend)
@@ -54,7 +54,8 @@ export const hasPack = (game: Pick<Game,"round"|"roundCount">, players: Pick<Bas
   return neighborIdx === -1 || players[playerIdx].pick <= players[neighborIdx].pick
 }
 
-export const unregGameAdapter = ({ id, name, url, watchKey, banned }: PartialGame) => ({ id, name, url, watchKey, banned })
+export const unregGameAdapter = ({ id, name, url, watchKey, banned }: Game) =>
+  ({ id, name, url, watchKey, locked: gameIsLocked(id, banned) }) as PartialGame
 
 export function getTimerLength(cardCount: number, timerBase: number) {
   if (timerBase === officialRulesIdx && cardCount === 11) return 25 // Fix for official rules
