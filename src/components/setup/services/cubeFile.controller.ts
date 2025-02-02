@@ -17,12 +17,12 @@ export default function useCubeFile() {
 
     setLoading(true)
     
-    return upload<UploadType>(cubeListURL, file, fileSettings.id).then((data) => {
+    return upload<UploadType>(cubeListURL, file, fileSettings.id).then((res) => {
       
-      if (typeof data !== 'object') data = { error: `Return Code: ${data}` }
+      if (res.status !== 200 || !res.data) res.data = { error: `Return Code: ${res.status}` }
       
-      if ('error' in data) _setFile({ name: file.name, error: data.error })
-      else _setFile({ name: file.name, data })
+      if ('error' in res.data) _setFile({ name: file.name, error: res.data.error })
+      else _setFile({ name: file.name, data: res.data })
 
       setLoading(false)
     })

@@ -55,8 +55,8 @@ export async function reloadData(
     try {
         if (!url) throw new Error('There is no game at this URL')
         const res = await fetcher<ServerSuccess>(gameAPI(url))
-        if (typeof res === 'number') throw new Error(`Cannot update data: HTTP error ${res}`)
-        updateLocal(res)
+        if (res.status !== 200 || !res.data || res.data?.error) throw new Error(`Cannot update data: HTTP error ${res.status}`)
+        updateLocal(res.data)
         if (reconnect) reconnect()
 
     } catch (err: any) {

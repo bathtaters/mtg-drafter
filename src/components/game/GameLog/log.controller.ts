@@ -21,9 +21,12 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const refresh = useCallback(debounce(() => {
 
-    fetcher<LogFull>(`/api/game/${url}/log`).then((data) => {
-      if (typeof data === 'number') return setError(`Error <${data}> while fetching log.`)
-      setLog(data.map((entry) => ({ ...entry, time: new Date(entry.time) })))
+    fetcher<LogFull>(`/api/game/${url}/log`).then((res) => {
+      if (res.status !== 200 || !res.data || res.error) {
+        console.error(`LOG FETCH <${res.status}> ERROR:`, res.error)
+        return setError(`Error <${res.status}> while fetching log.`)
+      }
+      setLog(res.data.map((entry) => ({ ...entry, time: new Date(entry.time) })))
       setError(undefined)
     })
 
