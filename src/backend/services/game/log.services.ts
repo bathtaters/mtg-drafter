@@ -1,5 +1,7 @@
+import type { Watcher } from "@prisma/client"
 import prisma from "backend/libs/db"
 import { validate, hash } from "backend/utils/db/password.utils"
+import { getName } from "backend/utils/game/player.utils"
 
 const LOG_SALT = "92c23bc8fd75cb3e2880b983ce84d736"
 
@@ -44,12 +46,17 @@ export async function setPassword(id: string, password: string | null) {
     return null
 }
 
-export function setWatcher(gameId: string, sessionId: string, join: boolean): Promise<string>;
-export function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError: true): Promise<number>;
-export function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError: false | undefined): Promise<string>;
-export function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError: boolean): Promise<string | number>;
-export function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError = false) {
-    if (join) return prisma.watcher.create({ data: { gameId, sessionId } }).then((res) => res.sessionId)
-    if (ignoreError) return prisma.watcher.deleteMany({ where: { gameId, sessionId } }).then((res) => res.count)
-    return prisma.watcher.delete({ where: { sessionId_gameId: { gameId, sessionId } } }).then((res) => res.sessionId)
+export async function setWatcher(gameId: string, sessionId: string, join: boolean): Promise<Watcher>;
+export async function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError: true): Promise<number>;
+export async function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError: false | undefined): Promise<Watcher>;
+export async function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError: boolean): Promise<Watcher | number>;
+export async function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError = false) {
+    if (join) {
+        const name = await getName(sessionId, gameId)
+        return prisma.watcher.create({ data: { gameId, sessionId, name } })
+    } if (ignoreError) {
+        return prisma.watcher.deleteMany({ where: { gameId, sessionId } })
+            .then((res) => res.count)
+    }
+    return prisma.watcher.delete({ where: { sessionId_gameId: { gameId, sessionId } } })
 }

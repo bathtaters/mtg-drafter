@@ -129,10 +129,10 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         
         // Update DB
         const result = await setWatcher(gameId, sessionId, true)
-        if (result !== sessionId) throw new Error("Server failure")
+        if (result.sessionId !== sessionId) throw new Error("Server failure")
         
         callback(true, undefined)
-        io.emit('updateWatcher', sessionId, true)
+        io.emit('updateWatcher', sessionId, true, result.name || undefined)
 
       // Handle Error
       } catch (err: any) {
@@ -159,9 +159,9 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         
         // Update DB
         const result = await setWatcher(gameId, sessionId, false)
-        if (sessionId !== result) throw new Error('Failed to drop watcher')
+        if (result.sessionId !== sessionId) throw new Error('Failed to drop watcher')
 
-        io.emit('updateWatcher', sessionId, false)
+        io.emit('updateWatcher', sessionId, false, undefined)
 
       // Handle Error
       } catch (err: any) {

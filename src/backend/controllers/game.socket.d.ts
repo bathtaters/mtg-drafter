@@ -11,7 +11,7 @@ export interface GameServerToClient {
   updateName:     (playerId: Player['id'], name: Player['name']) => void;
   updateSlot:     (playerId: Player['id'], sessionId: Player['sessionId']) => void;
   updateWatchPw:  (watchKey: Game['watchKey']) => void;
-  updateWatcher:  (sessionId: NonNullable<Player['sessionId']>, joined: boolean) => void
+  updateWatcher:  (sessionId: NonNullable<Player['sessionId']>, joined: boolean, name?: string) => void
   updateBan:      (banData: BanResponse) => void;
   error:          (message: string) => void;
 }

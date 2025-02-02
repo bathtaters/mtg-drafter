@@ -13,7 +13,7 @@ export function getGame(url?: Game['url'], includePacks = true, id?: Game['id'])
     where: url == null ? { id } : { url },
     include: {
       players: basicPlayer,
-      watchers: { select: { sessionId: true } },
+      watchers: { select: { sessionId: true, name: true } },
       banned: true,
       packs: includePacks && {
         orderBy: { index: 'asc' }, include: {
