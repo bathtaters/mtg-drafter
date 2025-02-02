@@ -26,14 +26,12 @@ export default function useLogWatch({ log, game, socket, sessionId, setLoading, 
 
     // Trigger actions when user logs in/out
     const setAuth = useCallback((authed: boolean) => {
-        if (authed) {
-            reload?.()
-            log.refresh?.()
-        } else {
-            setSidebar?.(false)
-        }
+        if (authed) reload?.()
+        else setSidebar?.(false)
+
+        log.setEnabled(authed)
         setAuthState(authed)
-    }, [reload, setSidebar, log.refresh])
+    }, [reload, setSidebar, log.setEnabled])
 
     // Check if user is already logged in on first load or if game/session changes
     useEffect(() => {

@@ -1,5 +1,5 @@
 import type { ServerProps, ServerSuccess } from 'types/game'
-import { useState, type Dispatch, type SetStateAction } from 'react'
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react'
 import { fetcher } from 'components/base/libs/fetch'
 import useSocket from 'components/base/libs/sockets'
 import useAlerts, { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
@@ -11,7 +11,7 @@ import { gameAPI, gameURL, socketEndpoint } from 'assets/urls'
 import { refreshOnRefocusDelay } from 'assets/constants'
 
 
-export default function useBasicGameController(props: ServerProps, setHostModal?: Dispatch<SetStateAction<boolean>>) {
+export default function useBasicGameController(props: ServerProps, hostModal: boolean = false, setHostModal?: Dispatch<SetStateAction<boolean>>) {
   const url = props.options?.url ?? '_INVALID'
 
   const [ sidebarVisible, setSidebar ] = useState(false)
@@ -20,6 +20,9 @@ export default function useBasicGameController(props: ServerProps, setHostModal?
 
   const local = useLocalController(props, newError, newToast)
   const gameLog = useGameLog(url, local.players)
+
+  // Load gameLog when Host Modal is opened
+  useEffect(() => { gameLog.setEnabled(hostModal && local.isHost) }, [local.isHost, hostModal, gameLog.setEnabled])
 
   const socket = useSocket(
     gameURL(url),

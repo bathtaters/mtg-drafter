@@ -11,7 +11,7 @@ export default function useGameController(props: ServerProps) {
   const [hostModal, setHostModal] = useState(false)
   const [logModal,  setLogModal ] = useState(false)
 
-  const local = useBasicGameController(props, setHostModal)
+  const local = useBasicGameController(props, hostModal, setHostModal)
   
   const toggleLandModal = !local.player?.basics ? undefined : () => setLandModal((o) => !o)
   const toggleHostModal = !local.isHost ? undefined : () => setHostModal((o) => {
