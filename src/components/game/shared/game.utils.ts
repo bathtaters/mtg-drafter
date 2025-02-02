@@ -99,8 +99,6 @@ export const getHolding = (players: Pick<BasicPlayer,"pick">[], packSize: number
 
 export const getSlots = (players?: BasicPlayer[]) => players ? players.filter(({ sessionId }) => !sessionId).map(({ id }) => id) : []
 
-export const playerIsHost = (player?: Partial<BasicPlayer>, game?: Partial<Game>): game is Game => game?.hostId ? game.hostId === player?.id : false
-
 export const getCanAdvance = (game?: Partial<Game>, players: BasicPlayer[] = [], holding: number[] = []) =>
   game && typeof game.round === 'number' &&
     (game.round < 1 ? players.every(({ sessionId }) => sessionId) : holding.every((h) => !h))

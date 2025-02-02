@@ -1,5 +1,7 @@
-import type { Game, PartialGame } from "types/game"
+import type { Game, PartialGame, BasicPlayer } from "types/game"
 import { LOG_DELIM } from "assets/constants"
+
+export const playerIsHost = (player?: Partial<BasicPlayer>, game?: Partial<Game>): game is Game => game?.hostId ? game.hostId === player?.id : false
 
 export const playerIsBanned = (game?: Partial<Game | PartialGame>, sessionId?: string) => !game ? game : 
     (game as Game).banned && sessionId ? (game as Game).banned.some(({ sessionId: sId, gameId: gId }) => sId === sessionId && (!game.id || gId === game.id)) :
