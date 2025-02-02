@@ -25,23 +25,23 @@ export function getGameListeners(
   return (socket: GameClient) => {
     if (!socket) return;
 
-    socket.on('updateGame',  (options) => { 
+    const updateGameListener: GameServerToClient['updateGame'] = (options) => { 
       debugSockets && console.debug('SOCKET','updateGame',options)
       options && updateGame((game) => game && ({ ...game, ...options }))
       if (!options.hostId || options.hostId === player?.id) updateLog && updateLog()
       else if (checkHostModal) checkHostModal(false) // Close host modal when losing Host status
-    })
-    socket.on('updateName',  (playerId, name) => { 
+    }
+    const updateName: GameServerToClient['updateName'] = (playerId, name) => { 
       debugSockets && console.debug('SOCKET','updateName',playerId,name)
       name && renamePlayer(playerId, name)
       updateLog && updateLog()
-    })
-    socket.on('updatePick',  (playerId, pick, passingToId) => {
+    }
+    const updatePick: GameServerToClient['updatePick'] = (playerId, pick, passingToId) => {
       debugSockets && console.debug('SOCKET','updatePick',playerId,pick,passingToId)
       pickCard(playerId, pick, passingToId)
       updateLog && updateLog()
-    })
-    socket.on('updateRound', (round) => {
+    }
+    const updateRound: GameServerToClient['updateRound'] = (round) => {
       setLoadingAll((v) => v + 1)
       debugSockets && console.debug('SOCKET','updateRound',round)
       nextRound(round)
@@ -49,8 +49,8 @@ export function getGameListeners(
         setLoadingAll((v) => v && v - 1)
         updateLog && updateLog()
       })
-    })
-    socket.on('updateTimer', (pauseTime) => {
+    }
+    const updateTimer: GameServerToClient['updateTimer'] = (pauseTime) => {
       setLoadingAll((v) => v + 1)
       debugSockets && console.debug('SOCKET','updateTimer',pauseTime)
       pauseGame(pauseTime)
@@ -58,25 +58,35 @@ export function getGameListeners(
         setLoadingAll((v) => v && v - 1)
         updateLog && updateLog()
       })
-    })
-    socket.on('updateSlot', (playerId, sessionId) => {
+    }
+    const updateSlot: GameServerToClient['updateSlot'] = (playerId, sessionId) => {
       debugSockets && console.debug('SOCKET','updateSlot',playerId,sessionId)
       setStatus(playerId, sessionId, !!sessionId)
       updateLog && updateLog()
-    })
-    socket.on('updateWatchPw', (watchKey) => {
+    }
+    const updateWatchPw: GameServerToClient['updateWatchPw'] = (watchKey) => {
       debugSockets && console.debug('SOCKET','updateWatchPw',watchKey)
       updateGame((game) => game && ({ ...game, watchKey, watchers: watchKey ? (game as Game).watchers : [] }))
-    })
-    socket.on('updateWatcher', (sessionId, joined) => {
+    }
+    const updateWatcher: GameServerToClient['updateWatcher'] = (sessionId, joined) => {
       debugSockets && console.debug('SOCKET','updateWatcher',sessionId,joined)
       setStatus(null, sessionId, joined)
-    })
-    socket.on('updateBan', (data) => {
+    }
+    const updateBan: GameServerToClient['updateBan'] = (data) => {
       debugSockets && console.debug('SOCKET','updateBan',data)
       banSession(data)
       updateLog && updateLog()
-    })
+    }
+
+    socket.on('updateGame', updateGameListener)
+    socket.on('updateName', updateName)
+    socket.on('updatePick', updatePick)
+    socket.on('updateRound', updateRound)
+    socket.on('updateTimer', updateTimer)
+    socket.on('updateSlot', updateSlot)
+    socket.on('updateWatchPw', updateWatchPw)
+    socket.on('updateWatcher', updateWatcher)
+    socket.on('updateBan', updateBan)
     
     clientErrorsInConsole && socket.on('error', console.error)
 
@@ -88,12 +98,16 @@ export function getGameListeners(
       if (!socket) return;
 
       onConnect && socket.off('connect', onConnect)
-      clientErrorsInConsole && socket.off('connect', console.error)
-      socket.removeAllListeners('updateGame')
-      socket.removeAllListeners('updateName')
-      socket.removeAllListeners('updatePick')
-      socket.removeAllListeners('updateRound')
-      socket.removeAllListeners('updateSlot')
+      clientErrorsInConsole && socket.off('error', console.error)
+      socket.off('updateGame', updateGameListener)
+      socket.off('updateName', updateName)
+      socket.off('updatePick', updatePick)
+      socket.off('updateRound', updateRound)
+      socket.off('updateTimer', updateTimer)
+      socket.off('updateSlot', updateSlot)
+      socket.off('updateWatchPw', updateWatchPw)
+      socket.off('updateWatcher', updateWatcher)
+      socket.off('updateBan', updateBan)
     }
   }
 }
@@ -192,21 +206,21 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
     if (!local.game?.id) return throwError(formatError('Error setting Watch password: Game not loaded'))
 
     emit('setWatchPw', local.game.id, password || null)
-  }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
+  }, [emit, local.game?.id, throwError])
 
 
   const dropWatcher: Socket.DropWatcher = useCallback((sessionId) => {
     if (!local.game?.id) return throwError(formatError('Error setting Watch password: Game not loaded'))
     
     emit('dropWatcher', local.game.id, sessionId)
-  }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
+  }, [emit, local.game?.id, throwError])
 
 
   const banSession: Socket.BanSession = useCallback((sessionId, unban = false, playerId) => {
     if (!local.game?.id) return throwError(formatError('Error Banning session: Game not loaded'))
     
     emit('banSession', local.game.id, sessionId, unban, playerId)
-  }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
+  }, [emit, local.game?.id, throwError])
 
 
   return { renamePlayer, setOptions, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropWatcher, banSession }
