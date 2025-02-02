@@ -1,5 +1,6 @@
 import type { Game } from '@prisma/client'
 import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
+import { isDbErr } from 'backend/libs/db'
 import { nextRound, pauseGame, resumeGame, pickCard, updateGame, checkBan } from './game.services'
 import { getBotPicks } from './bot.services'
 import { setWatcher, setPassword, testPassword, userInGame, userIsWatcher } from './log.services'
@@ -135,7 +136,18 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
 
       // Handle Error
       } catch (err: any) {
-        callback(false, err.message || 'Login failed')
+        if (typeof err.message === "string" && err.message[0] === '[') {
+          // Zod error
+          const errorArray = JSON.parse(err.message)
+          callback(false, (errorArray[0]?.message || "Password input error").replace("String", "Password"))
+        } else if (isDbErr(err)) {
+          // Prisma error
+          console.error('DATABASE ERROR', err)
+          callback(false, "Database error")
+        } else {
+          // Generic error
+          callback(false, err.message || "Login failed")
+        }
       }
     })
 
