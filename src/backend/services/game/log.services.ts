@@ -44,6 +44,12 @@ export async function setPassword(id: string, password: string | null) {
     return null
 }
 
-export const setWatcher = (gameId: string, sessionId: string, join: boolean = false) => join ?
-    prisma.watcher.create({ data: { gameId, sessionId } }).then((res) => res.sessionId) :
-    prisma.watcher.delete({ where: { sessionId_gameId: { gameId, sessionId } } }).then((res) => res.sessionId)
+export function setWatcher(gameId: string, sessionId: string, join: boolean): Promise<string>;
+export function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError: true): Promise<number>;
+export function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError: false | undefined): Promise<string>;
+export function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError: boolean): Promise<string | number>;
+export function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError = false) {
+    if (join) return prisma.watcher.create({ data: { gameId, sessionId } }).then((res) => res.sessionId)
+    if (ignoreError) return prisma.watcher.deleteMany({ where: { gameId, sessionId } }).then((res) => res.count)
+    return prisma.watcher.delete({ where: { sessionId_gameId: { gameId, sessionId } } }).then((res) => res.sessionId)
+}
