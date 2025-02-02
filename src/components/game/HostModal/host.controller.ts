@@ -1,17 +1,17 @@
-import type { Game, PartialGame, Socket } from "types/game"
+import type { Game, Socket } from "types/game"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { debounce } from "components/base/services/common.services"
-import { gameIsPaused } from "../shared/game.utils"
+import { gameIsLocked, gameIsPaused } from "../shared/game.utils"
 import { hostPlayerTooltips } from "assets/strings"
 import { BOT, shareWatch } from "assets/constants"
 
-export default function useHostController(game: Game | PartialGame | undefined, setOptions: Socket.SetOptions, banSession: Socket.BanSession) {
+export default function useHostController(game: Partial<Game> | undefined, setOptions: Socket.SetOptions, banSession: Socket.BanSession) {
   // Collapsing sections
   const [ expanded, setExpanded ] = useState(0)
   const toggleExpand = useCallback((index?: number) => index ? () => setExpanded((value) => value === index ? 0 : index) : () => setExpanded(0), [])
 
   // Change timer
-  const timerBase = (game as  Game)?.timerBase || 0
+  const timerBase = game?.timerBase || 0
   const [ timer, setTimer ] = useState(timerBase)
   useEffect(() => { setTimer(timerBase) }, [timerBase])
 
@@ -27,8 +27,8 @@ export default function useHostController(game: Game | PartialGame | undefined, 
   }, [setOptionsDebounced])
 
   // Banning
-  const banned = (game as Game)?.banned || []
-  const locked = banned.some(({ sessionId }) => !sessionId)
+  const banned = game?.banned || []
+  const locked = gameIsLocked(game?.id, banned)
 
   const lockGame = useCallback((unlock?: boolean) => {
     banSession(null, unlock)
@@ -52,7 +52,7 @@ export default function useHostController(game: Game | PartialGame | undefined, 
     setTitle: (name?: string) => name && setOptions({ name }),
     setHost: (hostId?: string) => hostId && setOptions({ hostId }),
     paused: gameIsPaused(game),
-    copyProps: { ...shareWatch, url: game?.watchKey ? shareWatch.url(game?.url) : undefined },
+    copyProps: { ...shareWatch, url: game?.watchKey && game.url ? shareWatch.url(game.url) : undefined },
   }
 }
 

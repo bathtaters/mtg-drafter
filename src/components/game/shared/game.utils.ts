@@ -11,6 +11,9 @@ export const gameIsPaused = (game?: Partial<Game>): game is Game & { pause: numb
 export const gameIsEnded = (game?: Partial<Game>): boolean =>
   typeof game?.round === 'number' && game.round > (game.roundCount || 0)
 
+export const gameIsLocked = (id?: Game['id'], banned?: Game['banned']) => !id || !banned ? false :
+  banned.some(({ gameId, sessionId }) => !sessionId && gameId === id)
+
 export const getBoard = <C extends GameCard>(playerCards: C[], board: Board) => playerCards.filter(({ board: cardBoard }) => board === cardBoard)
 
 export const getGameStatus = (game?: Partial<Game>): GameStatus | undefined =>
