@@ -112,6 +112,11 @@ export const formatLogAction = (action: LogAction, data: LogData, byHost: boolea
     case 'round': return data === 'END' ? 'Ended' : `Round ${data || '?'}`
 
     case 'pause': return data ? 'Resumed' : 'Paused'
+
+    case 'ban':
+    case 'unban':
+      return `${action}ned`
+    
     default: return `${action}ed`
   }
 }

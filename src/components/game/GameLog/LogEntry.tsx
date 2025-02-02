@@ -4,6 +4,7 @@ import CookieIcon from "components/svgs/CookieIcon"
 import BotIcon from "components/svgs/BotIcon"
 import { EntryWrapper, EntryItem, EntrySpace, MissingCard } from "./LogStyles"
 import { allActions } from "./log.utils"
+import { getBanName, getBanSession } from "../shared/player.utils"
 import { formatLogAction, logFullDate, logTimestamp } from "assets/strings"
 import { BOT } from "assets/constants"
 
@@ -26,9 +27,11 @@ export default function LogEntry({ entry, players, isFirst, isPrivate = false, s
       <EntryItem tip={logFullDate(time)} below={isFirst} right={true}>{logTimestamp(time)}</EntryItem>
       <EntrySpace />
 
-      <EntryItem tip={playerId || gameId} below={isFirst} right={true} color={playerIdx} inv={true}>
-        {playerIdx === -2 ? 'Game' : players[playerIdx]?.name || playerId}
-      </EntryItem>
+      <EntryItem tip={playerId || gameId} below={isFirst} right={true} color={playerIdx} inv={true}>{
+        playerIdx !== -2 ? players[playerIdx]?.name || playerId :
+        action === 'ban' || action === 'unban' ? getBanName(data) || 'Watcher' :
+          'Game'
+      }</EntryItem>
       <EntrySpace />
 
       <EntryItem tip={!isPrivate && card ? `${card.cardId} ${card.id}` : undefined} color={actionIdx} below={isFirst}>
@@ -38,6 +41,13 @@ export default function LogEntry({ entry, players, isFirst, isPrivate = false, s
       
       {!isPrivate && card && <EntryItem onClick={() => setCardImg(card.card.img)}>{card.card.name}</EntryItem>}
       {action === 'pick' && !card && <EntryItem><MissingCard /></EntryItem>}
+
+      {(action === 'ban' || action === 'unban') && data && <>
+        <EntryItem tip={getBanSession(data)} below={isFirst}>
+          <CookieIcon className="w-5 fill-current" />
+        </EntryItem>
+        { byHost && <EntrySpace /> }
+      </>}
 
       {action === 'join' && data && (
         <EntryItem tip={data === BOT ? 'Bot' : data} below={isFirst}>
