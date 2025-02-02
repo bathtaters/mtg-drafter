@@ -3,7 +3,9 @@ import type { BasicLands } from 'types/game'
 import { getExisitingSessionId } from 'backend/libs/auth'
 import { banPlayer, getPlayerGame, renamePlayer, setStatus, swapCard, updateLands } from './player.services'
 import { checkBanOrLock } from './game.services'
+import { setWatcher } from './log.services'
 import { handleBotPicks } from './game.sockets'
+import { gameIsEnded } from 'components/game/shared/game.utils'
 import validation from 'types/game.validation'
 import { BOT } from 'assets/constants'
 import { banMsg } from 'assets/strings'
@@ -35,18 +37,24 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
         playerId = validation.id.parse(playerId)
         status = validation.status.parse(status)
 
-        const gameId = await getPlayerGame(playerId)
-        if (!gameId) throw new Error('Player not found')
+        const game = await getPlayerGame(playerId)
+        if (!game) throw new Error('Player not found')
         
         const sessionId = status === 'bot' ? BOT : status === 'join' && getExisitingSessionId(socket.request)
         if (sessionId == null) throw new Error('Missing user identity')
 
-        const isBanned = sessionId && await checkBanOrLock(gameId, sessionId)
+        const isBanned = sessionId && await checkBanOrLock(game.id, sessionId)
         if (isBanned) throw new Error(banMsg)
 
         // Update DB
         const player = await setStatus(playerId, sessionId || null, byHost)
         if (!player?.id) throw new Error('Player not found')
+
+        // Force logout if Watching game
+        if (sessionId && !gameIsEnded(game)) {
+          const session = await setWatcher(game.id, sessionId, false)
+          if (session) io.emit('updateWatcher', session, false)
+        }
 
         // Update Client(s)
         io.emit('updateSlot', player?.id || playerId, player?.sessionId || null)

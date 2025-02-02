@@ -106,5 +106,6 @@ export const getBots = (gameId: Game['id']) => prisma.player.findMany({
 })
 
 export const getPlayerGame = (playerId: Player['id']) => prisma.player.findFirst({
-  where: { id: playerId }, select: { gameId: true },
-}).then((res) => res?.gameId)
+  where: { id: playerId },
+  select: { game: { select: { id: true, round: true, roundCount: true } } },
+}).then((res) => res?.game)
