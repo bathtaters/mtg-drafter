@@ -136,7 +136,11 @@ export default function useLocalController(props: ServerProps, throwError: Alert
           (game.banned || []).concat(data as Ban) :
           (game.banned || []).filter(({ sessionId }) => sessionId !== (data.sessionId || null))
       }
-      return { ...game, locked: !unban }
+      return {
+        ...game,
+        locked: !unban,
+        isBanned: props.sessionId === data.sessionId ? !unban : game.isBanned
+      }
     })
     if (props.sessionId === data.sessionId) reload()
   }, [props.sessionId])

@@ -19,10 +19,10 @@ async function getGameProps(query: ParsedUrlQuery, sessionId: string, includePac
   if (!game) return { error: NOTFOUND }
 
   const isBanned = await checkBan(game.id, sessionId)
-  if (isBanned) return { error: BANNED, options: unregGameAdapter(game) }
+  if (isBanned) return { error: BANNED, options: unregGameAdapter(game, sessionId), sessionId }
   
   try { packSize = await getRoundPackSize(game.id, game.round, game.roundCount, game.players.length) }
-  catch(e: any) { return { error: `Server Error: ${e.message}`, options: unregGameAdapter(game) } }
+  catch(e: any) { return { error: `Server Error: ${e.message}`, options: unregGameAdapter(game, sessionId), sessionId } }
 
   const { players, packs, ...options } = game
   const now = Date.now()
@@ -30,7 +30,7 @@ async function getGameProps(query: ParsedUrlQuery, sessionId: string, includePac
   
   return player || canWatch(options, sessionId) ?
     { options, players, player, sessionId, now, packSize, packs: packs as PackFull[] || [] } :
-    { options: unregGameAdapter(options), players, sessionId }
+    { options: unregGameAdapter(options, sessionId), players, sessionId }
 }
 
 export async function serverSideHandler(ctx: GetServerSidePropsContext) {
