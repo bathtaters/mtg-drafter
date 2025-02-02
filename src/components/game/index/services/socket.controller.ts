@@ -21,10 +21,6 @@ export function getGameListeners(
   refreshLog?: () => void,
   checkHostModal?: Dispatch<SetStateAction<boolean>>,
 ) {
-  const updateLog = isWatchPage ? refreshLog : refreshLog && checkHostModal ? () => checkHostModal((isOpen) => {
-    if (isOpen) refreshLog()
-    return isOpen
-  }) : undefined
 
   return (socket: GameClient) => {
     if (!socket) return;
@@ -32,18 +28,18 @@ export function getGameListeners(
     const updateGameListener: GameServerToClient['updateGame'] = (options) => { 
       debugSockets && console.debug('SOCKET','updateGame',options)
       options && updateGame((game) => game && ({ ...game, ...options }))
-      if (!options.hostId || options.hostId === player?.id) updateLog && updateLog()
+      if (!options.hostId || options.hostId === player?.id) refreshLog && refreshLog()
       else if (checkHostModal) checkHostModal(false) // Close host modal when losing Host status
     }
     const updateName: GameServerToClient['updateName'] = (playerId, name) => { 
       debugSockets && console.debug('SOCKET','updateName',playerId,name)
       name && renamePlayer(playerId, name)
-      updateLog && updateLog()
+      refreshLog && refreshLog()
     }
     const updatePick: GameServerToClient['updatePick'] = (playerId, pick, passingToId) => {
       debugSockets && console.debug('SOCKET','updatePick',playerId,pick,passingToId)
       pickCard(playerId, pick, passingToId)
-      updateLog && updateLog()
+      refreshLog && refreshLog()
     }
     const updateRound: GameServerToClient['updateRound'] = (round) => {
       setLoadingAll((v) => v + 1)
@@ -51,7 +47,7 @@ export function getGameListeners(
       nextRound(round)
       reloadData(game?.url, updateLocal, throwError).finally(() => {
         setLoadingAll((v) => v && v - 1)
-        updateLog && updateLog()
+        refreshLog && refreshLog()
       })
     }
     const updateTimer: GameServerToClient['updateTimer'] = (pauseTime) => {
@@ -60,13 +56,13 @@ export function getGameListeners(
       pauseGame(pauseTime)
       reloadData(game?.url, updateLocal, throwError).finally(() => {
         setLoadingAll((v) => v && v - 1)
-        updateLog && updateLog()
+        refreshLog && refreshLog()
       })
     }
     const updateSlot: GameServerToClient['updateSlot'] = (playerId, sessionId) => {
       debugSockets && console.debug('SOCKET','updateSlot',playerId,sessionId)
       setStatus(playerId, sessionId, !!sessionId)
-      updateLog && updateLog()
+      refreshLog && refreshLog()
     }
     const updateWatchPw: GameServerToClient['updateWatchPw'] = (watchKey) => {
       debugSockets && console.debug('SOCKET','updateWatchPw',watchKey)
@@ -79,7 +75,7 @@ export function getGameListeners(
     const updateBan: GameServerToClient['updateBan'] = (data) => {
       debugSockets && console.debug('SOCKET','updateBan',data)
       banSession(data)
-      updateLog && updateLog()
+      refreshLog && refreshLog()
     }
 
     socket.on('updateGame', updateGameListener)
