@@ -1,5 +1,6 @@
 import type { Game, Player } from 'types/game'
 import prisma from '../../libs/db'
+import { getBanName } from 'components/game/shared/player.utils'
 import { LOG_DELIM } from 'assets/constants'
 
 /** Lookup a player's name based on a `sessionId`, `gameId` and/or `playerId`.
@@ -61,7 +62,7 @@ export async function getName(sessionId: Player['sessionId'], game: Game['id'] |
     // Use game or latest entry if no game found
     const banLogEntry = (game && banLogs.find(({ gameId }) => gameId === game)) || banLogs[0]
     if (banLogEntry?.data) {
-      const banName = banLogEntry.data.split(LOG_DELIM, 2)[1]
+      const banName = getBanName(banLogEntry.data)
       if (banName) return banName
     }
     
