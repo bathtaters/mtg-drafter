@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import type { GameClient } from 'backend/controllers/game.socket.d'
+import type { GameClient, GameServerToClient } from 'backend/controllers/game.socket.d'
 import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 import type { ErrorAlert } from 'components/base/common/Alerts/alerts.d'
 import type { LocalController } from './local.controller'
@@ -11,13 +11,17 @@ import { clientErrorsInConsole, debugSockets } from 'assets/constants'
 const formatError = (message: string): ErrorAlert => ({ message: `${message}. Attempting to reconnect.`, title: 'Action Failed', theme: 'warning'  })
 
 export function getGameListeners(
-  { updateLocal, updateGame, renamePlayer, nextRound, pauseGame, pickCard, setStatus, banSession, setLoadingAll, setLoadingPack, game, player }: LocalController,
+  {
+    game, player, isWatchPage,
+    updateLocal, updateGame, renamePlayer, nextRound, pauseGame,
+    pickCard, setStatus, banSession, setLoadingAll, setLoadingPack,
+  }: LocalController,
   throwError: AlertsReturn['newError'],
   onConnect?: () => void,
   refreshLog?: () => void,
   checkHostModal?: Dispatch<SetStateAction<boolean>>,
 ) {
-  const updateLog = refreshLog && checkHostModal ? () => checkHostModal((isOpen) => {
+  const updateLog = isWatchPage ? refreshLog : refreshLog && checkHostModal ? () => checkHostModal((isOpen) => {
     if (isOpen) refreshLog()
     return isOpen
   }) : undefined

@@ -1,14 +1,21 @@
 import type { Ban } from '@prisma/client'
 import type { PackFull, ServerProps, Local, PlayerFull } from 'types/game'
 import { useCallback, useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
 import { spliceInPlace, updateArrayIdx } from 'components/base/services/common.services'
 import { gameIsPaused, getCanAdvance, getCurrentPack, getHolding, getPlayerIdx, getSlots, playerIsHost } from '../../shared/game.utils'
 import { reloadData } from '../basic.controller'
 import { useTimerStore } from 'components/base/libs/hooks'
 import { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
+import { shareWatch } from 'assets/constants'
 
+
+const isWatchRegex = RegExp(`^${shareWatch.url('')}[a-zA-Z0-9_-]+$`)
 
 export default function useLocalController(props: ServerProps, throwError: AlertsReturn['newError'], notify: AlertsReturn['newToast']) {
+  const router = useRouter()
+  const isWatchPage = isWatchRegex.test(router.asPath)
+
   const [loadingAll,  setLoadingAll] = useState(1)
   const [loadingPack, setLoadingPack] = useState(1)
 
@@ -142,7 +149,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   return {
     loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer, updateGame, updateLocal,
     game, player, players, playerIdx, maxPackSize, holding, pack, packs, slots, timer,
-    isHost, canAdvance, isBanned,
+    isHost, canAdvance, isBanned, isWatchPage,
     sessionId: props.sessionId,
     renamePlayer, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, banSession,
     startTimer, reload,
