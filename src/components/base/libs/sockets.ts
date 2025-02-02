@@ -93,3 +93,5 @@ export default function useSocket<S extends Socket = Socket>(
 
   return { isConnected, socket: socket.current, emit: emitOrQueue, reconnect: connectToSocket }
 }
+
+export type SocketHook<S extends Socket = Socket> = ReturnType<typeof useSocket<S>>

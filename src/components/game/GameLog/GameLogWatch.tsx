@@ -5,12 +5,12 @@ import useLogWatch, { Props } from "./logWatch.controller"
 
 
 export default function GameLogWatch(props: Props) {
-    const { authed, message, handleSubmit, logout } = useLogWatch(props)
+    const { authed, message, login, logout } = useLogWatch(props)
 
     return (
         <GameLogWatchWrapper title="Live Draft View">{
             !props.game?.watchKey ? <ErrorContainer text="Observing this game has been disabled by the host." /> :
-            !authed ? <PasswordForm label="Enter Password" message={message} onSubmit={handleSubmit} fullPage={true} /> : 
+            !authed ? <PasswordForm label="Enter Password" message={message} onSubmit={login} fullPage={true} /> : 
             <GameLog {...props} logout={logout} />
         }</GameLogWatchWrapper>
     )

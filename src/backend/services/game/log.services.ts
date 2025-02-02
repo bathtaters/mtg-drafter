@@ -8,6 +8,11 @@ export const userInGame = (gameId: string, sessionId: string) => prisma.logEntry
     select: { game: { select: { round: true, roundCount: true } } },
 }).then((res) => res?.game)
 
+export const userIsWatcher = (gameId: string, sessionId: string) => prisma.watcher.findFirst({
+    where: { gameId, sessionId },
+    select: { sessionId: true },
+}).then((res) => res?.sessionId)
+
 export async function testPassword(id: string, password: string) {
     const game = await prisma.game.findFirst({
         where: { id },

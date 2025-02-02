@@ -12,6 +12,7 @@ import UserIcon from "components/svgs/UserIcon"
 export const uploadHelp = "Expects a .txt of card names. \nOne per line with no formatting."
 
 export const banMsg = "Access restricted"
+export const noPwMsg = "Password missing"
 
 export const FullGame = () => <p className="opacity-70 italic">
   Wait here for an opening or <Link href="/" className="link link-primary link-hover">start a new one</Link>.

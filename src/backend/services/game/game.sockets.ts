@@ -2,10 +2,10 @@ import type { Game } from '@prisma/client'
 import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
 import { nextRound, pauseGame, resumeGame, pickCard, updateGame, checkBan } from './game.services'
 import { getBotPicks } from './bot.services'
-import { setWatcher, setPassword, testPassword, userInGame } from './log.services'
+import { setWatcher, setPassword, testPassword, userInGame, userIsWatcher } from './log.services'
 import validation, { authPassword, gameOptions } from 'types/game.validation'
 import { gameIsEnded } from 'components/game/shared/game.utils'
-import { banMsg } from 'assets/strings'
+import { banMsg, noPwMsg } from 'assets/strings'
 
 
 export default function addGameListeners(io: GameServer, socket: GameSocket) {
@@ -110,21 +110,25 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         // Validation
         gameId = validation.id.parse(gameId)
         sessionId = validation.session.parse(sessionId)
-        password = authPassword.parse(password) ?? ""
-        if (!password) throw new Error("Missing password")
+        password = authPassword.parse(password)
         
-        // Update DB
+        // Login checks
         const isBanned = await checkBan(gameId, sessionId)
         if (isBanned) throw new Error(banMsg)
-    
+
+        const isLoggedIn = await userIsWatcher(gameId, sessionId)
+        if (isLoggedIn) return callback(true, undefined) // Already logged in
+        if (!password) throw new Error(noPwMsg)
+
         const message = await testPassword(gameId, password)
         if (message) throw new Error(message)
         
         const game = await userInGame(gameId, sessionId)
         if (game && !gameIsEnded(game)) throw new Error("Players cannot view log until game has ended")
-    
+        
+        // Update DB
         const result = await setWatcher(gameId, sessionId, true)
-        if (result !== sessionId) throw new Error("Database error")
+        if (result !== sessionId) throw new Error("Server failure")
         
         callback(true, undefined)
         io.emit('updateWatcher', sessionId, true)

@@ -1,70 +1,109 @@
-import type { Game, LogAuthResponse } from "types/game"
 import type { Dispatch, SetStateAction } from "react"
+import type { Game } from "types/game"
 import type { Props as LogProps } from "./GameLog"
-import { useEffect, useState } from "react"
-import { post } from "components/base/libs/fetch"
-import { canWatch } from "../shared/game.utils"
+import type { SocketHook } from "components/base/libs/sockets"
+import type { ErrorAlert } from "components/base/common/Alerts/alerts.d"
+import type { GameClient, GameServerToClient } from "backend/controllers/game.socket.d"
+import { useCallback, useEffect, useState } from "react"
+import { gameIsEnded } from "../shared/game.utils"
+import { noPwMsg } from "assets/strings"
 
 export type Props = LogProps & {
     game?: Partial<Game>,
+    socket: SocketHook<GameClient>,
     setLoading?: SetNumber,
     sessionId?: string,
     reload?: () => any,
     sidebarVisible: boolean,
     setSidebar?: Dispatch<SetStateAction<boolean>>,
+    newError: (alert: ErrorAlert) => any,
 }
 
-export default function useLogWatch({ log, players, game, sessionId, setLoading, reload, setSidebar }: Props) {
-    const [authed, setAuth] = useState(canWatch(game, sessionId))
+export default function useLogWatch({ log, game, socket, sessionId, setLoading, reload, setSidebar, newError }: Props) {
+    const [authed, setAuthState] = useState(false)
     const [message, setMessage] = useState("")
+    const gameEnded = gameIsEnded(game)
 
-    // Check for change in auth
-    const watchersString = (game?.watchers || []).join(',')
+    // Trigger actions when user logs in/out
+    const setAuth = useCallback((authed: boolean) => {
+        if (authed) {
+            reload?.()
+            log.refresh?.()
+        } else {
+            setSidebar?.(false)
+        }
+        setAuthState(authed)
+    }, [reload, setSidebar, log.refresh])
+
+    // Check if user is already logged in on first load or if game/session changes
     useEffect(() => {
-        if (log.error) { setAuth(false); setMessage(log.error) }
-        else if (!game?.watchers || !game?.watchKey) setAuth(false)
-        else setAuth((a) => a || canWatch(game, sessionId))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [watchersString, game?.watchKey, sessionId, log.error])
+        if (socket.socket && socket.isConnected && game?.id && sessionId) {
+            socket.socket.emit('watcherLogin', game.id, sessionId, null, (success, reason) => {
+                setAuth(success)
+                if (reason && reason !== noPwMsg) setMessage(reason)
+            })
+        }
+    }, [socket.socket, socket.isConnected, game?.id, sessionId, setAuth])
 
-    // Submit password
-    const handleSubmit = async (password: string) => {
+    // Login/Logout handlers
+
+    const login = (password: string) => {
+        if (!sessionId) return setMessage("User token missing")
         setMessage("")
-        if (!password || !game?.id) return;
+        if (!game?.id || !password) return;
+        if (!socket.isConnected) return setMessage("Unable to reach server")
+
         setLoading && setLoading((v) => v + 1)
 
-        const res = await post<LogAuthResponse>(`/api/game/auth/${game?.id}`, { password })
-
-        if (typeof res === 'number') {
-            setMessage("Unable to reach server")
-        } else if (res.success) {
-            setAuth(true)
+        socket.emit('watcherLogin', game.id, sessionId, password, (success, reason) => {
+            if (!success) setMessage(reason || "Unknown error")
+            setAuth(success)
             log.setError(undefined)
             log.refresh()
-        } else {
-            setMessage(res.message || "Unknown error")
-        }
-    
-        setLoading && setLoading((v) => v && v - 1)
+            setLoading && setLoading((v) => v && v - 1)
+        })
     }
 
-    // Refresh log whenever the players array updates -- Logout if player has joined
-    useEffect(() => {
-        authed && log.refresh?.()
-        if (
-            ((game?.round ?? 0) <= (game?.roundCount ?? 1)) &&
-            players.find((p) => sessionId == p.sessionId)
-        ) setAuth(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- just need log.refresh
-    }, [log.refresh, players, authed, sessionId])
+    const logout = () => {
+        if (!game?.id || !sessionId || !socket.isConnected) return newError({
+            title: 'Logout Failed', theme: "warning",
+            message: !game?.id ? "Game not found" : !sessionId ? "User token missing" : "Unable to reach server",
+        })
+        socket.emit('dropWatcher', game.id, sessionId)
+    }
 
-    // Refresh header/sidebar when authorization updates
+    // Add watcher-specific socket listeners
     useEffect(() => {
-        authed && reload?.()
-        !authed && setSidebar?.(false)
-    }, [reload, setSidebar, authed])
+        if (!socket.socket) return;
 
-    return { authed, message, handleSubmit, logout: () => setAuth(false) }
+        const updateWatcher: GameServerToClient['updateWatcher'] = (session, joined) =>
+            session === sessionId && setAuth(joined)
+        const updateBan: GameServerToClient['updateBan'] = ({ sessionId: session, unban }) =>
+            !unban && session === sessionId && setAuth(false)
+        const updateWatchPw: GameServerToClient['updateWatchPw'] = (watchKey) =>
+            !watchKey && setAuth(false)
+
+        socket.socket.on('updateWatcher', updateWatcher)
+        socket.socket.on('updateWatchPw', updateWatchPw)
+        socket.socket.on('updateBan', updateBan)
+
+        return () => {
+            if (!socket.socket) return;
+            socket.socket.off('updateWatcher', updateWatcher)
+            socket.socket.off('updateWatchPw', updateWatchPw)
+            socket.socket.off('updateBan', updateBan)
+        }
+    }, [socket.socket, game?.id, sessionId, gameEnded, setAuth])
+
+    // Handle log errors
+    useEffect(() => {
+        if (log.error) {
+            setAuth(false)
+            setMessage(log.error)
+        } 
+    }, [setAuth, log.error])
+
+    return { authed, message, login, logout }
 }
 
 type SetNumber = Dispatch<SetStateAction<number>>

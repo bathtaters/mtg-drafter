@@ -12,7 +12,8 @@ import useBasicGameController from './basic.controller'
 
 export default function Watch(props: ServerProps) {
   const {
-    game, players, sessionId, maxPackSize, holding, gameLog, sidebarVisible, setSidebar, loadingAll, setLoadingAll, reload,
+    game, players, socket, sessionId, maxPackSize, holding, gameLog,
+    sidebarVisible, setSidebar, loadingAll, setLoadingAll, newError, reload,
   } = useBasicGameController(props)
 
   return (<>
@@ -29,6 +30,7 @@ export default function Watch(props: ServerProps) {
           <GameLogWatch
             game={game}
             players={players}
+            socket={socket}
             log={gameLog}
             sessionId={sessionId}
             gameEnded={true}
@@ -36,6 +38,7 @@ export default function Watch(props: ServerProps) {
             setLoading={setLoadingAll}
             sidebarVisible={sidebarVisible}
             setSidebar={setSidebar}
+            newError={newError}
           />
         </Loader>
       </BodyWrapperStyle>
