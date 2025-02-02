@@ -8,11 +8,12 @@ import Loader from 'components/base/Loader'
 import Footer from 'components/base/Footer'
 import { BodyWrapperStyle, SetPageTitle } from 'components/base/styles/AppStyles'
 import useBasicGameController from './basic.controller'
+import { banMsg } from 'assets/strings'
 
 
 export default function Watch(props: ServerProps) {
   const {
-    game, players, socket, sessionId, maxPackSize, holding, gameLog,
+    game, players, socket, sessionId, maxPackSize, holding, gameLog, isBanned,
     sidebarVisible, setSidebar, loadingAll, setLoadingAll, newError, reload,
   } = useBasicGameController(props)
 
@@ -26,7 +27,7 @@ export default function Watch(props: ServerProps) {
       <GameLogHeader game={game} />
       
       <BodyWrapperStyle>
-        <Loader data={game || 404} message={props.error}>
+        <Loader data={game || 404} message={props.error || (isBanned && banMsg)}>
           <GameLogWatch
             game={game}
             players={players}

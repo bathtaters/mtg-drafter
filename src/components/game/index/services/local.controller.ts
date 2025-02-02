@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { spliceInPlace, updateArrayIdx } from 'components/base/services/common.services'
 import { gameIsPaused, getCanAdvance, getCurrentPack, getHolding, getPlayerIdx, getSlots, playerIsHost } from '../../shared/game.utils'
+import { playerIsBanned } from 'components/game/shared/player.utils'
 import { reloadData } from '../basic.controller'
 import { useTimerStore } from 'components/base/libs/hooks'
 import { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
@@ -30,12 +31,13 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   const { timer, startTimer, resetTimer, storeTimer } = useTimerStore(props.player?.timer, props.now)
   
   const isHost = playerIsHost(player, game)
+  const isBanned = playerIsBanned(game, props.sessionId)
   const holding = getHolding(players, maxPackSize, game)
   const canAdvance = isHost && getCanAdvance(game, players, holding)
   const playerIdx = useMemo(() => getPlayerIdx(players, player), [player, players])
 
   const updateLocal = useCallback((data: ServerProps) => {
-    if ('error' in data) throw new Error(`Cannot update data: ${data.error}`)
+    if (data.error) throw new Error(`Cannot update data: ${data.error}`)
 
     const newPack = getCurrentPack(data)
     if (newPack && data.player?.pick && data.player.pick <= (data.packSize ?? 0)) storeTimer(data.player?.timer, data.now)
@@ -46,7 +48,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     updateGame(data.options)
     updatePacks(data.packs || [])
     updatePackSize(data.packSize || 0)
-    updatePlayers(data.players)
+    updatePlayers(data.players || [])
     updateSlots(getSlots(data.players))
     updatePack(newPack)
     updatePlayer(data.player || undefined)
@@ -155,7 +157,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   return {
     loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer, updateGame, updateLocal,
     game, player, players, playerIdx, maxPackSize, holding, pack, packs, slots, timer,
-    isHost, canAdvance, isWatchPage,
+    isHost, canAdvance, isBanned, isWatchPage,
     sessionId: props.sessionId,
     renamePlayer, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, banSession,
     startTimer, reload,

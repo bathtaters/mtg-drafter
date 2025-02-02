@@ -55,7 +55,8 @@ export async function reloadData(
     try {
         if (!url) throw new Error('There is no game at this URL')
         const res = await fetcher<ServerSuccess>(gameAPI(url))
-        if (res.status !== 200 || !res.data || res.data?.error) throw new Error(`Cannot update data: HTTP error ${res.status}`)
+        if (res.status === 403 && res.data) true // Don't throw error if user is banned
+        else if (res.status !== 200 || !res.data || res.data?.error) throw new Error(`Cannot update data: HTTP error ${res.status}`)
         updateLocal(res.data)
         if (reconnect) reconnect()
 
