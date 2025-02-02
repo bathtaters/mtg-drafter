@@ -43,7 +43,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
         const sessionId = status === 'bot' ? BOT : status === 'join' && getExisitingSessionId(socket.request)
         if (sessionId == null) throw new Error('Missing user identity')
 
-        const isBanned = sessionId && await checkBanOrLock(game.id, sessionId)
+        const isBanned = sessionId && sessionId !== BOT &&  await checkBanOrLock(game.id, sessionId)
         if (isBanned) throw new Error(banMsg)
 
         // Update DB
@@ -51,7 +51,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
         if (!player?.id) throw new Error('Player not found')
 
         // Force logout if Watching game
-        if (sessionId && !gameIsEnded(game)) {
+        if (sessionId && sessionId !== BOT && !gameIsEnded(game)) {
           const session = await setWatcher(game.id, sessionId, false)
           if (session) io.emit('updateWatcher', session, false)
         }
