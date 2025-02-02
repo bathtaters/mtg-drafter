@@ -1,15 +1,15 @@
 import type { ReactNode } from "react"
-import type { Game, BasicPlayer } from "types/game"
+import type { Game, BasicPlayer, BasicWatcher } from "types/game"
 import { PlayerWrapper, PlayerButton, PlayersWrapper, BanNameWrapper, NoPlayers } from "./HostModalStyles"
 import { BOT } from "assets/constants"
 
 
 export type Props = {
   label?: string,
-  players: BasicPlayer[] | string[],
+  players: BasicPlayer[] | BasicWatcher[],
   banned?: Game['banned'],
   kickOne: (playerId: string) => void,
-  banOne: (sessionId?: string | null, unban?: boolean, note?: string) => void,
+  banOne: (sessionId?: string | null, unban?: boolean, playerId?: string) => void,
   children?: ReactNode,
 }
   
@@ -18,15 +18,19 @@ export default function Moderation({ label, players, banned, kickOne, banOne, ch
 
   return (<>
     <PlayersWrapper label={label}>
-      {players.map((player) => typeof player === 'string' ?
-        <ModerationEntry key={player} id={player}
-          kick={() => kickOne(player)}
-          ban={() => banOne(player)}
-        />
-        :
-        <ModerationEntry key={player.id} id={player.sessionId} name={player.name}
+      {players.map((player) => 'id' in player ?
+        // Game Player
+        <ModerationEntry key={player.id}
+          id={player.sessionId} name={player.name}
           kick={() => kickOne(player.id)}
           ban={() => banOne(player.sessionId, false, player.id)}
+        />
+        :
+        // Game Watcher
+        <ModerationEntry key={player.sessionId}
+          id={player.sessionId} name={player.name}
+          kick={() => kickOne(player.sessionId)}
+          ban={() => banOne(player.sessionId)}
         />
       )}
     </PlayersWrapper>

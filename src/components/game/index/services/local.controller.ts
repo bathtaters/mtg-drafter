@@ -109,12 +109,12 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   }, [])
 
 
-  const setStatus: Local.SetStatus = useCallback((playerId, sessionId, join) => {
+  const setStatus: Local.SetStatus = useCallback((playerId, sessionId, join, name) => {
     if (!playerId) return updateGame(
       (game) => !game || !('watchers' in game) || !game.watchers || !sessionId ? game : {
         ...game,
-        watchers: join ? game.watchers.concat(sessionId) :
-          game.watchers.filter((s) => s !== sessionId),
+        watchers: join ? game.watchers.concat({ sessionId, name: name || null }) :
+          game.watchers.filter(({ sessionId: session }) => session !== sessionId),
       }
     )
 

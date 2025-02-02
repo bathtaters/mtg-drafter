@@ -76,7 +76,7 @@ export default function useLogWatch({ log, game, socket, sessionId, setLoading, 
     useEffect(() => {
         if (!socket.socket) return;
 
-        const updateWatcher: GameServerToClient['updateWatcher'] = (session, joined) =>
+        const updateWatcher: GameServerToClient['updateWatcher'] = (session, joined, _) =>
             session === sessionId && setAuth(joined)
         const updateBan: GameServerToClient['updateBan'] = ({ sessionId: session, unban }) =>
             !unban && session === sessionId && setAuth(false)
