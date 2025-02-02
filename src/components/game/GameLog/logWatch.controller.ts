@@ -56,10 +56,10 @@ export default function useLogWatch({ log, game, socket, sessionId, setLoading, 
         setLoading && setLoading((v) => v + 1)
 
         socket.emit('watcherLogin', game.id, sessionId, password, (success, reason) => {
-            if (!success) setMessage(reason || "Unknown error")
             setAuth(success)
             log.setError(undefined)
-            log.refresh()
+            if (success) log.refresh()
+            else setMessage(reason || "Unknown error")
             setLoading && setLoading((v) => v && v - 1)
         })
     }
@@ -99,7 +99,7 @@ export default function useLogWatch({ log, game, socket, sessionId, setLoading, 
     useEffect(() => {
         if (log.error) {
             setAuth(false)
-            setMessage(log.error)
+            setMessage((msg) => msg || log.error || "")
         } 
     }, [setAuth, log.error])
 
