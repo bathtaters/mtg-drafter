@@ -33,12 +33,8 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
         return setError(`Error <${res.status}> while fetching log.`)
       }
 
-      if (offset !== res.data.offset) {
-        return setError(`Offset mismatch while fetching log (out: ${offset}; in: ${res.data.offset}).`)
-      }
-
       // Update total
-      const newEntries = res.data.log,
+      const newEntries = offset == null ? res.data.log.toReversed() : res.data.log,
         total = res.data.total
       setSize(total)
 

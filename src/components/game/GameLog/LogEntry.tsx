@@ -1,8 +1,10 @@
+import type { Dispatch, SetStateAction } from "react"
 import type { BasicPlayer, LogEntryFull } from "types/game"
 import type { GameLog } from "./log.controller"
 import CookieIcon from "components/svgs/CookieIcon"
 import BotIcon from "components/svgs/BotIcon"
 import { EntryWrapper, EntryItem, EntrySpace, MissingCard, EntryLoading } from "./LogStyles"
+import { IntersectionChildProps } from "components/base/libs/hooks"
 import { allActions } from "./log.utils"
 import { getBanName, getBanSession } from "../shared/player.utils"
 import { formatLogAction, logFullDate, logTimestamp } from "assets/strings"
@@ -59,9 +61,9 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCardImg }
 
 }
 
-const LogEntry = ({ log, index, ...props }: Props) => (
+const LogEntry = ({ log, index, getChildProps, ...props }: Props) => (
   /* Not loaded entry */
-  !log.list[index] ? <EntryLoading index={index} /> :
+  !log.list[index] ? <EntryLoading childProps={getChildProps && getChildProps(index)} /> :
 
   /* Filtered out entry */
   !log.logFilter(log.list[index]) ? null :
@@ -87,6 +89,7 @@ type FullProps = {
 type Props = Pick<FullProps, 'players'|'setCardImg'> & {
   log: GameLog,
   index: number,
+  getChildProps?: (index: number) => IntersectionChildProps
 }
 
 export default LogEntry

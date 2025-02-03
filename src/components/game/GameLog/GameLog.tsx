@@ -1,10 +1,12 @@
-import type { Dispatch, SetStateAction } from "react"
 import type { BasicPlayer } from "types/game"
 import type { GameLog } from "./log.controller"
-import { useState } from "react"
+import { type Dispatch, type SetStateAction, useState } from "react"
 import LogToolbar from "./LogToolbar/LogToolbar"
 import LogEntry from "./LogEntry"
 import { LogContainer, ErrorContainer, CardModal } from "./LogStyles"
+import { useIntersection } from "components/base/libs/hooks"
+import { logPageSize } from "assets/constants"
+
 
 export type Props = {
   players: BasicPlayer[],
@@ -15,12 +17,17 @@ export type Props = {
   setSidebar?: Dispatch<SetStateAction<boolean>>,
 }
 
+
 export default function GameLog({ log, players, gameEnded, logout, sidebarVisible, setSidebar }: Props) {
   const [cardImg, setCardImg] = useState<string|null>(null)
 
+  const { parentRef, childProps } = useIntersection((index) => {
+    if (log.size) log.fetchOffset(index)
+  }, { threshold: 1, rootMargin: '490px' }, [log.size, log.fetchOffset])
+  
   return log.error ? <ErrorContainer text={log.error} /> : 
 
-    <LogContainer toolbar={
+    <LogContainer ref={parentRef} toolbar={
       <LogToolbar
         log={log} players={players} gameEnded={gameEnded} logout={logout}
         sidebarVisible={sidebarVisible} setSidebar={setSidebar}
@@ -33,7 +40,8 @@ export default function GameLog({ log, players, gameEnded, logout, sidebarVisibl
             log={log}
             players={players}
             setCardImg={setCardImg}
-            key={log.list[(log.size as number) - idx - 1]?.id ?? idx}
+            getChildProps={idx % logPageSize ? undefined : childProps}
+            key={(log.size as number) - idx - 1}
           />
         ))
       }
