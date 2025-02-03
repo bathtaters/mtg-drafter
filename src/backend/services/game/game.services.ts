@@ -3,6 +3,7 @@ import type { Game, LiveOptions, Player } from 'types/game'
 import prisma from '../../libs/db'
 import retry from '../../libs/retry'
 import { adaptDbGame, getMaxPackSize, getNextPlayerId } from '../../utils/game/game.utils'
+import { logPageSize } from 'assets/constants'
 
 const basicPlayer /* Prisma.Game$playersArgs */ = { select: { id: true, name: true, sessionId: true, pick: true } }
 const basicGame /* Prisma.GameArgs */ = { select: { id: true, round: true, roundCount: true, players: { select: { id: true } } }}
@@ -39,20 +40,24 @@ export function getRoundPackSize(gameId: Game["id"], round: number, roundCount: 
 }
 
 
-export function getGameLog(url: Game['url']) {
-  return prisma.game.findUnique({
-    where: { url },
-    include: {
-      players: basicPlayer,
-      watchers: { select: { sessionId: true } },
-      log: {
-        orderBy: { time: 'desc' },
-        include: { card: { include: { card: true } } }
-      }
-    }
-  }).then(adaptDbGame)
-}
+export const getGameLog = (url: Game['url'], skip?: number) => prisma.game.findUnique({
+  where: { url },
+  select: {
+    id: true,
+    host: { select: { sessionId: true } },
+    watchers: { select: { sessionId: true } },
+    log: {
+      orderBy: { time: skip == null ? 'desc' : 'asc' },
+      include: { card: { include: { card: true } } },
+      // Allow 'skip' to refer to highest index instead of lowest index
+      skip: skip == null || skip <= logPageSize ? undefined : skip - logPageSize,
+      take: skip == null || skip >= logPageSize ? logPageSize : logPageSize - skip,
+    },
+  },
+})
 
+
+export const getLogSize = (gameId: Game['id']) => prisma.logEntry.count({ where: { gameId } })
 
 export function updateGame(id: Game['id'], options: LiveOptions) {
   const select = Object.keys(options).reduce(

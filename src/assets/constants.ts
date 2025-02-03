@@ -110,6 +110,8 @@ export const skipBoosterTypes: BoosterType[] = []
 
 // Advanced Tweaks + Debug Settings
 
+export const logPageSize = 50
+
 export const CUBE_LIST_END = /^\s*#?\s*(?:side|maybe)\s*board/i // don't look at cards below this line
 
 export const retryDefaults: RetryOptions = { maxRetries: 10, delay: 10, errCodes: ['P2034'], logRetry: console.warn } // delay10/max10 = max delay 5sec

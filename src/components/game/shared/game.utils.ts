@@ -2,7 +2,7 @@ import type { GameCard, Board, GameStatus } from "@prisma/client"
 import type { Game, BasicPlayer, PackMin, ServerProps } from "types/game"
 import { mod } from "components/base/services/common.services"
 
-export const canWatch = (game?: Partial<Game>, session?: string): boolean =>
+export const canWatch = (game?: { watchers?: { sessionId?: string | null }[] }, session?: string): boolean =>
   !game?.watchers || !session ? false :
     game.watchers.some(({ sessionId }) => session === sessionId)
 

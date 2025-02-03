@@ -54,7 +54,8 @@ export interface LogEntryFull extends LogEntry {
   card: (GameCard & { card: Card }) | null,
   data: LogData
 }
-export type LogFull = LogEntryFull[]
+export type LogFull = { log: LogEntryFull[], offset?: number, total: number }
+export type LogList = { [index: number]: LogEntryFull }
 
 
 // -- API TYPES -- \\
