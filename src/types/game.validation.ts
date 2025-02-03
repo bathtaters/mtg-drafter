@@ -18,7 +18,7 @@ const gameData = {
   basics:  z.object(fillAndLowerCaseObject(Board, boardLands)),
   idOrNum: z.union([ z.string().cuid2(), z.number() ]),
   bool:    z.boolean().default(false),
-  offset:  z.number().int().optional()
+  offset:  z.number({ coerce: true }).int().optional()
 }
 
 export default gameData
