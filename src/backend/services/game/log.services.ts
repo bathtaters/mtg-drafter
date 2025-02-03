@@ -3,22 +3,19 @@ import type { Game } from "types/game"
 import prisma from "backend/libs/db"
 import { validate, hash } from "backend/utils/db/password.utils"
 import { getName } from "backend/utils/game/player.utils"
-import { logPageSize } from "assets/constants"
 
 const LOG_SALT = "92c23bc8fd75cb3e2880b983ce84d736"
 
-export const getGameLog = (url: Game['url'], skip?: number) => prisma.game.findUnique({
+export const getGameLog = (url: Game['url'], skip?: number, take?: number, fromStart=false) => prisma.game.findUnique({
     where: { url },
     select: {
         id: true,
         host: { select: { sessionId: true } },
         watchers: { select: { sessionId: true } },
         log: {
-            orderBy: { time: skip == null ? 'desc' : 'asc' },
+            orderBy: { time: fromStart ? 'asc' : 'desc' },
             include: { card: { include: { card: true } } },
-            // Allow 'skip' to refer to highest index instead of lowest index
-            skip: skip == null || skip <= logPageSize ? undefined : skip - logPageSize,
-            take: skip == null || skip >= logPageSize ? logPageSize : logPageSize - skip,
+            skip, take,
         },
     },
 })
