@@ -1,4 +1,5 @@
-import { DependencyList, useCallback, useEffect, useRef, useState, useReducer, useMemo, MouseEventHandler } from 'react'
+import type { DependencyList, MouseEventHandler, Ref } from 'react'
+import { useCallback, useEffect, useRef, useState, useReducer, useMemo } from 'react'
 import useNotification from './notifications'
 import { hoverAfterClickDelay, redTimerSeconds } from "assets/constants"
 import { timerAlertMsg, timerAlertOpts } from 'assets/strings'
@@ -166,6 +167,36 @@ export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependenci
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies)
+}
+
+
+export type IntersectionHandler = (index: number, entry: IntersectionObserverEntry) => void
+export type IntersectionChildProps<E extends HTMLElement = HTMLElement> = { ['data-index']: number, ref: Ref<E> }
+
+export function useIntersection(handleIntersect: IntersectionHandler, options: IntersectionObserverInit = {}, deps: any[] = []) {
+  const parentRef = useRef<HTMLElement>(null)
+  const childrenRef = useRef<HTMLElement[]>([])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting)
+          handleIntersect(parseInt((entry.target as HTMLElement).dataset.index ?? "-1"), entry)
+      }),
+      { root: parentRef.current, ...options }
+    );
+
+    childrenRef.current.forEach((ref) => ref && observer.observe(ref))
+    return () => childrenRef.current.forEach((ref) => ref && observer.unobserve(ref))
+  }, [...deps]);
+
+  return {
+    parentRef,
+    childProps: (index: number): IntersectionChildProps => ({
+      ['data-index']: index,
+      ref: (el: HTMLElement | null) => { if (el) childrenRef.current[index] = el },
+    })
+  }
 }
 
 
