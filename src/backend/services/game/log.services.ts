@@ -1,9 +1,30 @@
 import type { Watcher } from "@prisma/client"
+import type { Game } from "types/game"
 import prisma from "backend/libs/db"
 import { validate, hash } from "backend/utils/db/password.utils"
 import { getName } from "backend/utils/game/player.utils"
+import { logPageSize } from "assets/constants"
 
 const LOG_SALT = "92c23bc8fd75cb3e2880b983ce84d736"
+
+export const getGameLog = (url: Game['url'], skip?: number) => prisma.game.findUnique({
+    where: { url },
+    select: {
+        id: true,
+        host: { select: { sessionId: true } },
+        watchers: { select: { sessionId: true } },
+        log: {
+            orderBy: { time: skip == null ? 'desc' : 'asc' },
+            include: { card: { include: { card: true } } },
+            // Allow 'skip' to refer to highest index instead of lowest index
+            skip: skip == null || skip <= logPageSize ? undefined : skip - logPageSize,
+            take: skip == null || skip >= logPageSize ? logPageSize : logPageSize - skip,
+        },
+    },
+})
+  
+  
+export const getLogSize = (gameId: Game['id']) => prisma.logEntry.count({ where: { gameId } })
 
 export const userInGame = (gameId: string, sessionId: string) => prisma.logEntry.findFirst({
     where: { gameId, action: 'join', player: { sessionId } },

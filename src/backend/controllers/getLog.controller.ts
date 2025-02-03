@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import type { LogFull } from 'types/game'
-import { getGameLog, getLogSize } from '../services/game/game.services'
+import { getGameLog, getLogSize } from '../services/game/log.services'
 import { getReqSessionId } from '../libs/auth'
 import validation from 'types/game.validation'
 import { canWatch } from '../utils/game/game.utils'
