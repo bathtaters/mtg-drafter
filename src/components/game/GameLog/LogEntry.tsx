@@ -1,22 +1,15 @@
 import type { BasicPlayer, LogEntryFull } from "types/game"
-import type { Dispatch, SetStateAction } from "react"
+import type { GameLog } from "./log.controller"
 import CookieIcon from "components/svgs/CookieIcon"
 import BotIcon from "components/svgs/BotIcon"
-import { EntryWrapper, EntryItem, EntrySpace, MissingCard } from "./LogStyles"
+import { EntryWrapper, EntryItem, EntrySpace, MissingCard, EntryLoading } from "./LogStyles"
 import { allActions } from "./log.utils"
 import { getBanName, getBanSession } from "../shared/player.utils"
 import { formatLogAction, logFullDate, logTimestamp } from "assets/strings"
 import { BOT } from "assets/constants"
 
-type Props = {
-  entry: LogEntryFull,
-  players: BasicPlayer[],
-  isFirst?: boolean,
-  isPrivate?: boolean,
-  setCardImg: Dispatch<SetStateAction<string | null>>
-}
 
-export default function LogEntry({ entry, players, isFirst, isPrivate = false, setCardImg }: Props) {
+function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCardImg }: FullProps) {
   const { time, action, data, byHost, playerId, card, gameId } = entry
   
   const playerIdx = playerId ? players.findIndex(({ id }) => id === playerId) : -2
@@ -65,3 +58,35 @@ export default function LogEntry({ entry, players, isFirst, isPrivate = false, s
   )
 
 }
+
+const LogEntry = ({ log, index, ...props }: Props) => (
+  /* Not loaded entry */
+  !log.list[index] ? <EntryLoading index={index} /> :
+
+  /* Filtered out entry */
+  !log.logFilter(log.list[index]) ? null :
+
+  /* Regular entry */
+    <FullLogEntry
+      key={log.list[index].id}
+      entry={log.list[index]}
+      isFirst={!index}
+      isPrivate={log.options.hidePrivate}
+      {...props}
+    />
+)
+
+type FullProps = {
+  entry: LogEntryFull,
+  players: BasicPlayer[],
+  isFirst?: boolean,
+  isPrivate?: boolean,
+  setCardImg: Dispatch<SetStateAction<string | null>>
+}
+
+type Props = Pick<FullProps, 'players'|'setCardImg'> & {
+  log: GameLog,
+  index: number,
+}
+
+export default LogEntry

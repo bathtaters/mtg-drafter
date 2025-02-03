@@ -50,3 +50,13 @@ export const CardModal = ({ src, alt, close }: { src: string | null, alt: string
 export const MissingCard = () => <span className="italic opacity-50">Empty Pack</span>
 
 export const EntrySpace = () => <span className="inline-block w-1"></span>
+
+export const EntryLoading = () => (
+  <div className="w-full py-1 flex flex-row gap-1 items-center">
+    <div className="skeleton bg-base-content/20 h-4 w-14" />
+    <div className="skeleton bg-base-content/20 h-6 w-20" />
+    <div className="skeleton bg-base-content/20 h-6 w-24" />
+    <div className="skeleton bg-base-content/20 h-5 w-5 rounded-full" />
+    <div className="skeleton bg-base-content/20 h-6 w-24" />
+  </div>
+)

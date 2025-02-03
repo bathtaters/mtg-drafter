@@ -26,16 +26,17 @@ export default function GameLog({ log, players, gameEnded, logout, sidebarVisibl
         sidebarVisible={sidebarVisible} setSidebar={setSidebar}
       />
     }>
-      {!log.list ? "Loading..." : log.list.map((entry, idx) =>
-        <LogEntry
-          key={entry.id}
-          entry={entry}
-          players={players}
-          isFirst={!idx}
-          isPrivate={log.options.hidePrivate}
-          setCardImg={setCardImg}
-        />
-      )}
+      {log.size == null ? "Loading..." :
+        Array.from({ length: log.size }).map((_, idx) => (
+          <LogEntry
+            index={(log.size as number) - idx - 1}
+            log={log}
+            players={players}
+            setCardImg={setCardImg}
+            key={log.list[(log.size as number) - idx - 1]?.id ?? idx}
+          />
+        ))
+      }
       <CardModal src={cardImg} alt="Popout Card Image" close={() => setCardImg(null)} />
     </LogContainer>
 }

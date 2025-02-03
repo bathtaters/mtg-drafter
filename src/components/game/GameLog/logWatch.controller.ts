@@ -56,7 +56,7 @@ export default function useLogWatch({ log, game, socket, sessionId, setLoading, 
         socket.emit('watcherLogin', game.id, sessionId, password, (success, reason) => {
             setAuth(success)
             log.setError(undefined)
-            if (success) log.refresh()
+            if (success) log.fetchLatest()
             else setMessage(reason || "Unknown error")
             setLoading && setLoading((v) => v && v - 1)
         })

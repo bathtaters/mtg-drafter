@@ -1,9 +1,11 @@
 import type { LogEntry } from "@prisma/client"
-import type { Player, LogFull, LogOptions } from "types/game"
+import type { Player, LogOptions, LogEntryFull } from "types/game"
 import { LogAction } from "@prisma/client"
 
 type FilterId = Player['id']
 export type FilterList = { id: FilterId, name?: Player['name'] }[]
+
+export const adaptEntry = <L extends Partial<LogEntry>>(entry: L) => ({ ...entry, time: entry.time && new Date(entry.time) })
 
 // Initialize filter lists
 
@@ -19,11 +21,11 @@ export const gameActionList = gameActions.map((id) => ({ id }))
 export const allActions = playerActions.concat(gameActions)
 
 
-export const filterLogs = (logs: LogFull | undefined, players: FilterId[], actions: LogEntry['action'][], options: LogOptions) => 
-  logs && logs.filter(({ playerId, byHost, action }) => 
-    actions.includes(action) &&
+export const filterEntryBuilder = (players: FilterId[], actions: LogEntry['action'][], options: LogOptions) => 
+  (entry: LogEntryFull | undefined) => !entry || (
+    actions.includes(entry.action) &&
     // No player for Ban/Unban = 'other'; No player for other actions = 'game'
-    players.includes(playerId || (action === 'ban' || action === 'unban' ? "other" : "game" )) &&
+    players.includes(entry.playerId || (entry.action === 'ban' || entry.action === 'unban' ? "other" : "game" )) &&
     // Hide playerActions done by host
-    ( !playerId || !byHost || !options?.hideHost )
+    ( !entry.playerId || !entry.byHost || !options?.hideHost )
   )
