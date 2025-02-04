@@ -190,7 +190,7 @@ export function useIntersection(handleIntersect: IntersectionHandler, options: I
 
     childrenRef.current.forEach((ref) => ref && observer.observe(ref))
     return () => childrenRef.current.forEach((ref) => ref && observer.unobserve(ref))
-  }, [...deps]);
+  }, [...deps, options.root, options.rootMargin, options.threshold])
 
   return {
     parentRef,
