@@ -2,14 +2,15 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import type { LogFull } from 'types/game'
 import { getGameLog, getLogSize } from '../services/game/log.services'
 import { getReqSessionId } from '../libs/auth'
-import validation, { logFilter } from 'types/game.validation'
+import validation from 'types/log.validation'
+import gameValidation from 'types/game.validation'
 import { canWatch } from '../utils/game/game.utils'
 
 export default async function apiHandler(req: NextApiRequest, res: NextApiResponse<LogFull | null>) {
-  const url = validation.url.parse(req.query.url),
+  const url = gameValidation.url.parse(req.query.url),
     offset = validation.offset.parse(req.query.offset),
     size = validation.size.parse(req.query.size),
-    filter = logFilter.parse(req.query.filter),
+    filter = validation.filter.parse(req.query.filter),
     currentSessionId = getReqSessionId(req, res)
   
   const game = await getGameLog(url, size, offset, offset != null, filter)
