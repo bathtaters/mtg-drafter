@@ -22,6 +22,17 @@ export const file = ({ count, maxBytes, typeList }: { count?: number, maxBytes?:
   return file
 }
 
+export const parseJson = <ZObj extends z.AnyZodObject, ZStr extends z.ZodString | z.ZodOptional<z.ZodString>>(zodObjectSchema: ZObj, zodString?: ZStr) => {
+  return (zodString ?? z.string()).transform((value, ctx) => {
+    try {
+      if (!value) return undefined
+      return JSON.parse(value)
+    } catch (error) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'invalid json' })
+      return z.never
+    }
+  }).pipe(zodObjectSchema)
+}
 
 export default z
 
