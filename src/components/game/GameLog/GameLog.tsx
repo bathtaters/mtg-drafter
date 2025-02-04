@@ -1,6 +1,6 @@
 import type { BasicPlayer } from "types/game"
 import type { GameLog } from "./log.controller"
-import { type Dispatch, type SetStateAction, useState } from "react"
+import { type Dispatch, type SetStateAction, useMemo, useState } from "react"
 import LogToolbar from "./LogToolbar/LogToolbar"
 import LogEntry from "./LogEntry"
 import { LogContainer, ErrorContainer, CardModal } from "./LogStyles"
@@ -17,6 +17,7 @@ export type Props = {
 
 
 export default function GameLog({ log, players, gameEnded, logout, sidebarVisible, setSidebar }: Props) {
+  const firstIndex = useMemo(() => Math.max(...Object.keys(log.list)), [log.list])
   const [cardImg, setCardImg] = useState<string|null>(null)
 
   const { parentRef, childProps } = useIntersection(
@@ -41,6 +42,7 @@ export default function GameLog({ log, players, gameEnded, logout, sidebarVisibl
             players={players}
             setCardImg={setCardImg}
             getChildProps={childProps}
+            firstIndex={firstIndex}
             key={(log.size as number) - idx - 1}
           />
         ))

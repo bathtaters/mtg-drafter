@@ -61,7 +61,7 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCardImg }
 
 }
 
-const LogEntry = ({ log, index, getChildProps, ...props }: Props) => (
+const LogEntry = ({ log, index, firstIndex, getChildProps, ...props }: Props) => (
   /* Not loaded entry */
   !log.list[index] ? <EntryLoading childProps={getChildProps && getChildProps(index)} /> :
 
@@ -72,7 +72,7 @@ const LogEntry = ({ log, index, getChildProps, ...props }: Props) => (
     <FullLogEntry
       key={log.list[index].id}
       entry={log.list[index]}
-      isFirst={!index}
+      isFirst={firstIndex === index}
       isPrivate={log.options.hidePrivate}
       {...props}
     />
@@ -89,6 +89,7 @@ type FullProps = {
 type Props = Pick<FullProps, 'players'|'setCardImg'> & {
   log: GameLog,
   index: number,
+  firstIndex?: number,
   getChildProps?: (index: number) => IntersectionChildProps
 }
 
