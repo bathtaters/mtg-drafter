@@ -1,8 +1,11 @@
 import type { Ref, MouseEventHandler, ReactNode } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import ModalWrapper from "components/base/common/Modal"
 import { IntersectionChildProps } from "components/base/libs/hooks"
 import getColorClass from "components/base/libs/colors"
+import { GameCardPartial } from "types/game"
+import { scryfallLink } from "assets/urls"
 
 export const GameLogWatchWrapper = ({ title, children }: { title: string, children: ReactNode }) => (
   <div className="relative pt-14 w-full h-full -top-6">
@@ -40,13 +43,21 @@ export const EntryItem = (
   </span>
 )
 
-export const CardModal = ({ src, alt, close }: { src: string | null, alt: string, close: () => void }) => (
+const CardLink = ({ card, alt }: { card?: GameCardPartial['card'], alt?: string }) => !card ? null : card?.scryfallId ? (
+  <Link className="w-full h-full" title={alt} target="_blank" href={card.scryfallId ? scryfallLink(card.scryfallId) : ''} aria-disabled={!card.scryfallId}>
+    {card.img && <Image src={card.img} alt={alt || card.name} className="w-full h-full" fill />}
+  </Link>
+  ) : (
+    <div className="w-full h-full flex justify-center items-center">{card?.name}</div>
+  )
+
+export const CardModal = ({ card, alt, close }: { card: GameCardPartial | null, alt: string, close: () => void }) => (
   <ModalWrapper
-    isOpen={!!src} setOpen={close}
+    isOpen={!!card} setOpen={close}
     defaultClass={`p-0 rounded-card w-card h-card` /* Uses default card sizes from global.css */}
     bodyClass="flex-grow" wrapperClass="modal-middle"
   >
-    {src && <Image src={src} alt={alt} fill />}
+    <CardLink card={card?.card} alt="Open in Scryfall" />
   </ModalWrapper>
 )
 

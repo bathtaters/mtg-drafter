@@ -24,6 +24,7 @@ export type LiveOptions = Partial<Pick<Game, "name"|"hostId"|"url"|"timerBase">>
 export type CardStrict = Omit<Card,"layout"> & { layout: Layout | null }
 export type CardFull = CardStrict & { otherFaces: Array<{ card: CardStrict, backImg: FaceInCard['backImg'] }> }
 export type GameCardFull = GameCard & { card: CardFull }
+export type GameCardPartial = GameCard & { card: Card }
 
 export type PackMin = { cards: Pick<GameCard, "playerId">[] }
 export type PackFull = Pack & { cards: GameCardFull[] }

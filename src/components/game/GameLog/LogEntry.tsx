@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react"
-import type { BasicPlayer, LogEntryFull } from "types/game"
+import type { BasicPlayer, GameCardPartial, LogEntryFull } from "types/game"
 import type { GameLog } from "./log.controller"
 import CookieIcon from "components/svgs/CookieIcon"
 import BotIcon from "components/svgs/BotIcon"
@@ -11,7 +11,7 @@ import { formatLogAction, logFullDate, logTimestamp } from "assets/strings"
 import { BOT } from "assets/constants"
 
 
-function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCardImg, childProps }: FullProps) {
+function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, childProps }: FullProps) {
   const { time, action, data, byHost, playerId, card, gameId } = entry
   
   const playerIdx = playerId ? players.findIndex(({ id }) => id === playerId) : -2
@@ -38,7 +38,7 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCardImg, 
       <EntrySpace />
       
       {/* Card */}
-      {!isPrivate && card && <EntryItem onClick={() => setCardImg(card.card.img)}>{card.card.name}</EntryItem>}
+      {!isPrivate && card && <EntryItem onClick={() => setCard(card)}>{card.card.name}</EntryItem>}
       {action === 'pick' && !card && <EntryItem><MissingCard /></EntryItem>}
 
       {/* Ban Cookie */}
@@ -102,11 +102,11 @@ type FullProps = {
   players: BasicPlayer[],
   isFirst?: boolean,
   isPrivate?: boolean,
-  setCardImg: Dispatch<SetStateAction<string | null>>
+  setCard: Dispatch<SetStateAction<GameCardPartial | null>>
   childProps?: IntersectionChildProps,
 }
 
-type Props = Pick<FullProps, 'players'|'setCardImg'> & {
+type Props = Pick<FullProps, 'players'|'setCard'> & {
   log: GameLog,
   preview?: LogEntryFull,
   index: number,

@@ -1,4 +1,4 @@
-import type { BasicPlayer } from "types/game"
+import type { BasicPlayer, GameCardPartial } from "types/game"
 import type { GameLog } from "./log.controller"
 import { type Dispatch, type SetStateAction, useState } from "react"
 import LogToolbar from "./LogToolbar/LogToolbar"
@@ -18,7 +18,7 @@ export type Props = {
 
 
 export default function GameLog({ log, players, gameEnded, logout, sidebarVisible, setSidebar }: Props) {
-  const [cardImg, setCardImg] = useState<string|null>(null)
+  const [card, setCard] = useState<GameCardPartial|null>(null)
   const total = log.total ?? 0
 
   const { parentRef, childProps } = useIntersection(
@@ -42,12 +42,12 @@ export default function GameLog({ log, players, gameEnded, logout, sidebarVisibl
             log={log}
             players={players}
             preview={log.preview?.[idx - log.loaded.next + log.loaded.count]}
-            setCardImg={setCardImg}
+            setCard={setCard}
             getChildProps={childProps}
             key={total - idx - 1}
           />
         ))
       }
-      <CardModal src={cardImg} alt="Popout Card Image" close={() => setCardImg(null)} />
+      <CardModal card={card} alt="Popout Card Image" close={() => setCard(null)} />
     </LogContainer>
 }
