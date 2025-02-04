@@ -2,24 +2,25 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import type { LogFull } from 'types/game'
 import { getGameLog, getLogSize } from '../services/game/log.services'
 import { getReqSessionId } from '../libs/auth'
-import validation from 'types/game.validation'
+import validation, { logFilter } from 'types/game.validation'
 import { canWatch } from '../utils/game/game.utils'
 
 export default async function apiHandler(req: NextApiRequest, res: NextApiResponse<LogFull | null>) {
   const url = validation.url.parse(req.query.url),
     offset = validation.offset.parse(req.query.offset),
     size = validation.size.parse(req.query.size),
+    filter = logFilter.parse(req.query.filter),
     currentSessionId = getReqSessionId(req, res)
   
-  const game = await getGameLog(url, offset, size, offset != null)
+  const game = await getGameLog(url, size, offset, offset != null, filter)
   if (!game?.id) {
     console.error('Error with game',url,'player',currentSessionId,'Game not found!')
     res.status(404).end()
   } else if (!canWatch(game, currentSessionId) && currentSessionId !== game.host?.sessionId) {
     console.error('Error retrieving game log',url,'player',currentSessionId,'Player is not host or was not found in game!')
     res.status(403).end()
-  } else if (!game.log.length) {
-    console.error('Game log was empty at',url,'offset',offset)
+  } else if (!game.log.length && !filter) {
+    console.error('Game log was empty at',url,'offset',offset,'/ size',size)
     res.status(204).send(null)
   } else {
     const total = await getLogSize(game.id)

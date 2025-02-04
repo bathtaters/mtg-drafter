@@ -3,16 +3,22 @@ import type { Game } from "types/game"
 import prisma from "backend/libs/db"
 import { validate, hash } from "backend/utils/db/password.utils"
 import { getName } from "backend/utils/game/player.utils"
+import { LogFilterParam } from "types/game.validation"
 
 const LOG_SALT = "92c23bc8fd75cb3e2880b983ce84d736"
 
-export const getGameLog = (url: Game['url'], skip?: number, take?: number, fromStart=false) => prisma.game.findUnique({
+export const getGameLog = (url: Game['url'], take?: number, skip?: number, fromStart=false, filter?: LogFilterParam) => prisma.game.findUnique({
     where: { url },
     select: {
         id: true,
         host: { select: { sessionId: true } },
         watchers: { select: { sessionId: true } },
         log: {
+            where: filter && {
+                byHost: !filter.hideHost && undefined,
+                action: filter.actions && { in: filter.actions },
+                playerId: filter.players && { in: filter.players },
+            },
             orderBy: { time: fromStart ? 'asc' : 'desc' },
             include: { card: { include: { card: true } } },
             skip, take,
