@@ -1,7 +1,7 @@
 import z, { fillAndLowerCaseObject, nanoId } from "backend/libs/validation"
 import { Board, Color, PlayerStatus } from "@prisma/client"
 import { commonOptions } from "./setup.validation"
-import { setupLimits, urlLimits } from "assets/constants"
+import { logPageSize, setupLimits, urlLimits } from "assets/constants"
 
 export const boardLands = z.object(fillAndLowerCaseObject(Color, z.number().nonnegative().int()))
 
@@ -18,7 +18,8 @@ const gameData = {
   basics:  z.object(fillAndLowerCaseObject(Board, boardLands)),
   idOrNum: z.union([ z.string().cuid2(), z.number() ]),
   bool:    z.boolean().default(false),
-  offset:  z.number({ coerce: true }).int().optional()
+  offset:  z.number({ coerce: true }).nonnegative().int().optional(),
+  size:    z.number({ coerce: true }).positive().int().max(logPageSize.max).default(logPageSize.default),
 }
 
 export default gameData
