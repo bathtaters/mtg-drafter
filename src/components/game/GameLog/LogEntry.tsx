@@ -63,15 +63,15 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCardImg }
 
 const LogEntry = ({ log, index, firstIndex, getChildProps, ...props }: Props) => (
   /* Not loaded entry */
-  !log.list[index] ? <EntryLoading childProps={getChildProps && getChildProps(index)} /> :
+  !log.entries[index] ? <EntryLoading childProps={getChildProps && getChildProps(index)} /> :
 
   /* Filtered out entry */
-  !log.logFilter(log.list[index]) ? null :
+  !log.logFilter(log.entries[index]) ? null :
 
   /* Regular entry */
     <FullLogEntry
-      key={log.list[index].id}
-      entry={log.list[index]}
+      key={log.entries[index].id}
+      entry={log.entries[index]}
       isFirst={firstIndex === index}
       isPrivate={log.options.hidePrivate}
       {...props}

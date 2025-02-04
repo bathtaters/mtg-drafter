@@ -11,8 +11,8 @@ import { logOptions, logFetchOptions } from "assets/constants"
 export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], combineInterval = logFetchOptions.combineInterval) {
   const allPlayers = useMemo(() => playerData.map(({ id }) => id).concat(otherPlayers), [playerData])
 
-  const [ logs,    setLog     ] = useState<LogList>({})
-  const [ size,    setSize    ] = useState<number>()
+  const [ entries, setEntries ] = useState<LogList>({})
+  const [ total,   setTotal   ] = useState<number>()
   const [ error,   setError   ] = useState<string>()
   const [ players, setPlayers ] = useState(allPlayers)
   const [ options, setOptions ] = useState(logOptions)
@@ -34,11 +34,11 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], 
     // Update total
     const total = res.data.total,
       newEntries = offset == null ? res.data.log.toReversed() : res.data.log
-    setSize(total)
+    setTotal(total)
 
     // Update data
     const resOffset = res.data.offset ?? Math.max(0, total - newEntries.length)
-    setLog((log) => {
+    setEntries((log) => {
       log = { ...log }
       for (let i = 0; i < newEntries.length; i++) {
         log[i + resOffset] = adaptEntry(newEntries[i])
@@ -59,13 +59,13 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], 
   // Handle overall state changes
   useEffect(() => {
     if (enabled && !error) fetchLatest()
-    else if (!enabled) setSize(undefined)
+    else if (!enabled) setTotal(undefined)
   }, [enabled, !error, fetchLatest])
 
-  useEffect(() => { url && setLog({}) }, [url])
+  useEffect(() => { url && setEntries({}) }, [url])
   
   return {
-    list: logs, size, logFilter,
+    entries, total, logFilter,
     fetchOffset, fetchLatest,
     allActions, allPlayers,
     error, setError,
