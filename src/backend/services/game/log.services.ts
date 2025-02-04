@@ -1,9 +1,10 @@
 import type { Watcher } from "@prisma/client"
 import type { Game } from "types/game"
+import type { LogFilterParam } from "types/log.validation"
 import prisma from "backend/libs/db"
 import { validate, hash } from "backend/utils/db/password.utils"
 import { getName } from "backend/utils/game/player.utils"
-import { LogFilterParam } from "types/game.validation"
+import { otherPlayers } from "components/game/GameLog/log.utils"
 
 const LOG_SALT = "92c23bc8fd75cb3e2880b983ce84d736"
 
@@ -14,11 +15,13 @@ export const getGameLog = (url: Game['url'], take?: number, skip?: number, fromS
         host: { select: { sessionId: true } },
         watchers: { select: { sessionId: true } },
         log: {
-            where: filter && {
-                byHost: !filter.hideHost && undefined,
-                action: filter.actions && { in: filter.actions },
-                playerId: filter.players && { in: filter.players },
-            },
+            where: filter && { AND: [
+                filter.actions  ? { action: { in: filter.actions } } : {},
+                filter.hideHost ? { OR: [ { playerId: null }, { byHost: false }, { action: 'ban' }] } : {},
+                !filter.players ? {} : otherPlayers.some((player) => filter.players?.includes(player)) ? 
+                    { OR: [ { playerId: { in: filter.players } }, { playerId: null /* otherPlayers = NULL */ }] } :
+                    { playerId: { in: filter.players } },
+            ] },
             orderBy: { time: fromStart ? 'asc' : 'desc' },
             include: { card: { include: { card: true } } },
             skip, take,
