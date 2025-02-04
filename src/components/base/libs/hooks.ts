@@ -180,8 +180,10 @@ export function useIntersection(handleIntersect: IntersectionHandler, options: I
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((entry) => {
-        if (entry.isIntersecting)
-          handleIntersect(parseInt((entry.target as HTMLElement).dataset.index ?? "-1"), entry)
+        if (entry.isIntersecting) {
+          const index = (entry.target as HTMLElement).dataset.index
+          index && handleIntersect(parseInt(index), entry)
+        }
       }),
       { root: parentRef.current, ...options }
     );
