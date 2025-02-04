@@ -1,5 +1,6 @@
 import type { LogAction } from "@prisma/client"
-import type { Game, BasicPlayer, LogFull, LogList } from "types/game"
+import type { Game, BasicPlayer, LogFull, LogList, LogOptions, LogEntryFull } from "types/game"
+import type { LogParams } from "types/log.validation"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { fetcher } from "components/base/libs/fetch"
@@ -12,18 +13,28 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], 
   const allPlayers = useMemo(() => playerData.map(({ id }) => id).concat(otherPlayers), [playerData])
 
   const [ entries, setEntries ] = useState<LogList>({})
+  const [ preview, setPreview ] = useState<LogEntryFull[]>()
   const [ total,   setTotal   ] = useState<number>()
   const [ error,   setError   ] = useState<string>()
   const [ players, setPlayers ] = useState(allPlayers)
   const [ options, setOptions ] = useState(logOptions)
   const [ actions, setActions ] = useLocalStorage<LogAction[]>('logActions')
   const [ enabled, setEnabled ] = useState(false)
+  const [ data,    setData    ] = useState({ first: 0, next: 0 })
 
   const logFilter = useCallback(filterEntryBuilder(players, actions, options), [players, actions, options])
 
-  const fetchLogs = useCallback(async (offset?: number, size = logFetchOptions.defaultSize) => {
-    const query = offset == null ? "" : new URLSearchParams({ offset: offset.toString(), size: size.toString() }).toString()
+  const fetchLogs = useCallback(async ({ offset, size = logFetchOptions.defaultSize, isPreview, options, players, actions }: FetchParams = {}) => {
 
+    // Build query
+    let params: Partial<Record<keyof LogParams, string>> = { size: size.toString() }
+    if (offset != null) params.offset = offset.toString()
+    if (players || actions || options) {
+      params.filter = JSON.stringify({ ...(options || {}), players, actions })
+    }
+    const query = new URLSearchParams(params).toString()
+
+    // Fetch data & error check
     const res = await fetcher<LogFull>(`/api/game/${url}/log?${query}`)
     if (res.status === 204) return; // End of log
     if (res.status !== 200 || res.error || res.data?.total == null) {
@@ -33,11 +44,14 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], 
 
     // Update total
     const total = res.data.total,
-      newEntries = offset == null ? res.data.log.toReversed() : res.data.log
+      newEntries = offset == null && !isPreview ? res.data.log.toReversed() : res.data.log
     setTotal(total)
 
-    // Update data
+    // Update entries
+    if (isPreview) return setPreview(newEntries.map(adaptEntry))
+
     const resOffset = res.data.offset ?? Math.max(0, total - newEntries.length)
+
     setEntries((log) => {
       log = { ...log }
       for (let i = 0; i < newEntries.length; i++) {
@@ -45,6 +59,11 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], 
       }
       return log
     })
+
+    setData(({ first, next }) => ({
+      first: Math.max(resOffset + newEntries.length - 1, first),
+      next: Math.max(total - resOffset, next),
+    }))
   }, [url])
 
   const fetchLatest = useCallback(
@@ -52,21 +71,39 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], 
     [enabled, !error, fetchLogs, combineInterval]
   )
   const fetchOffset = useCallback(
-    debounceGroup<number>((offsets) => enabled && !error && fetchLogs(...toLogParams(offsets)), combineInterval),
+    debounceGroup<number>((offsets) => enabled && !error && fetchLogs(toLogParams(offsets)), combineInterval),
     [enabled, !error, fetchLogs, combineInterval]
   )
   
-  // Handle overall state changes
+  // Handle minor changes -- Reset cache on URL change, reload preview on filter change
+  useEffect(() => { setEntries({}) }, [url])
   useEffect(() => {
-    if (enabled && !error) fetchLatest()
-    else if (!enabled) setTotal(undefined)
-  }, [enabled, !error, fetchLatest])
+    if (preview) {
+      setPreview(undefined)
+      fetchLogs({ options, players, actions, isPreview: true })
+    }
+  }, [logFilter])
 
-  useEffect(() => { url && setEntries({}) }, [url])
+  // Handle full reset
+  useEffect(() => {
+    setTotal(undefined)
+    setPreview(undefined)
+    setError(undefined)
+    setData({ first: 0, next: 0 })
+    if (url && enabled) fetchLogs({ options, players, actions, isPreview: true })
+  }, [url, enabled, fetchLogs])
+  
+  // Get count of loaded + unfiltered
+  const loaded = useMemo(() => {
+    const count = Object.keys(entries).reduce((count, idx) => +logFilter(entries[idx]) + count, 0)
+
+    if (count > (preview?.length ?? 0)) setPreview(undefined)
+    return { ...data, count }
+  }, [entries, logFilter, data, preview?.length])
   
   return {
-    entries, total, logFilter,
-    fetchOffset, fetchLatest,
+    entries, total, preview, loaded,
+    logFilter, fetchOffset, fetchLatest,
     allActions, allPlayers,
     error, setError,
     players, setPlayers,
@@ -77,3 +114,8 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], 
 }
 
 export type GameLog = ReturnType<typeof useGameLog>
+
+export type FetchParams = {
+  offset?: number, size?: number, isPreview?: boolean,
+  options?: Partial<LogOptions>, players?: string[], actions?: LogAction[],
+}

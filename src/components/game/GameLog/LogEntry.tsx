@@ -11,14 +11,14 @@ import { formatLogAction, logFullDate, logTimestamp } from "assets/strings"
 import { BOT } from "assets/constants"
 
 
-function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCardImg }: FullProps) {
+function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCardImg, childProps }: FullProps) {
   const { time, action, data, byHost, playerId, card, gameId } = entry
   
   const playerIdx = playerId ? players.findIndex(({ id }) => id === playerId) : -2
   const actionIdx = allActions.indexOf(action)
 
   return(
-    <EntryWrapper>
+    <EntryWrapper childProps={childProps}>
       <EntryItem tip={logFullDate(time)} below={isFirst} right={true}>{logTimestamp(time)}</EntryItem>
       <EntrySpace />
 
@@ -61,18 +61,28 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCardImg }
 
 }
 
-const LogEntry = ({ log, index, firstIndex, getChildProps, ...props }: Props) => (
+const LogEntry = ({ log, index, getChildProps, preview, ...props }: Props) => (
   /* Not loaded entry */
-  !log.entries[index] ? <EntryLoading childProps={getChildProps && getChildProps(index)} /> :
+  !log.entries[index] ? (!preview  ?
+    <EntryLoading childProps={getChildProps?.(index)} /> :
+
+  /* Preview entry */
+    <FullLogEntry
+      entry={preview}
+      isFirst={log.loaded.first === index}
+      isPrivate={log.options.hidePrivate}
+      childProps={getChildProps?.(index)}
+      {...props}
+    />
+  ) :
 
   /* Filtered out entry */
   !log.logFilter(log.entries[index]) ? null :
 
   /* Regular entry */
     <FullLogEntry
-      key={log.entries[index].id}
       entry={log.entries[index]}
-      isFirst={firstIndex === index}
+      isFirst={log.loaded.first === index}
       isPrivate={log.options.hidePrivate}
       {...props}
     />
@@ -84,12 +94,13 @@ type FullProps = {
   isFirst?: boolean,
   isPrivate?: boolean,
   setCardImg: Dispatch<SetStateAction<string | null>>
+  childProps?: IntersectionChildProps,
 }
 
 type Props = Pick<FullProps, 'players'|'setCardImg'> & {
   log: GameLog,
+  preview?: LogEntryFull,
   index: number,
-  firstIndex?: number,
   getChildProps?: (index: number) => IntersectionChildProps
 }
 

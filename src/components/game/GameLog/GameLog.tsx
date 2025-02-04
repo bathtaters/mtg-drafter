@@ -17,13 +17,13 @@ export type Props = {
 
 
 export default function GameLog({ log, players, gameEnded, logout, sidebarVisible, setSidebar }: Props) {
-  const firstIndex = useMemo(() => Math.max(...Object.keys(log.entries)), [log.entries])
   const [cardImg, setCardImg] = useState<string|null>(null)
+  const total = log.total ?? 0
 
   const { parentRef, childProps } = useIntersection(
     (index) => log.fetchOffset(index),
     { threshold: 1, rootMargin: '490px 0px 490px 0px' },
-    [log.total, log.fetchOffset],
+    [log.total, log.loaded, log.fetchOffset],
   )
   
   return log.error ? <ErrorContainer text={log.error} /> : 
@@ -35,15 +35,15 @@ export default function GameLog({ log, players, gameEnded, logout, sidebarVisibl
       />
     }>
       {log.total == null ? "Loading..." :
-        Array.from({ length: log.total }).map((_, idx) => (
+        Array.from({ length: total }).map((_, idx) => (
           <LogEntry
-            index={(log.total as number) - idx - 1}
+            index={total - idx - 1}
             log={log}
             players={players}
+            preview={log.preview?.[idx - log.loaded.next + log.loaded.count]}
             setCardImg={setCardImg}
             getChildProps={childProps}
-            firstIndex={firstIndex}
-            key={(log.total as number) - idx - 1}
+            key={total - idx - 1}
           />
         ))
       }

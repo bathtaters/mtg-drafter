@@ -1,5 +1,6 @@
 import type { LogEntry } from "@prisma/client"
 import type { Player, LogOptions, LogEntryFull } from "types/game"
+import type { FetchParams } from "./log.controller"
 import { LogAction } from "@prisma/client"
 import { logFetchOptions } from "assets/constants"
 
@@ -8,24 +9,24 @@ export type FilterList = { id: FilterId, name?: Player['name'] }[]
 
 export const adaptEntry = <L extends Partial<LogEntry>>(entry: L) => ({ ...entry, time: entry.time && new Date(entry.time) })
 
-export const toLogParams = (nums: number[]): [number,number] => {
-  if (!nums.length) return [0,0]
+export const toLogParams = (nums: number[]): Pick<FetchParams, 'offset'|'size'> => {
+  if (!nums.length) return { offset: 0, size: 0 }
 
-  let start = nums[0], end = nums[0]
+  let offset = nums[0], end = nums[0]
   for (const num of nums) {
     // Find min/max, stopping early if max size is reached
-    if (num < start) {
-      start = num
-      if (end - start > logFetchOptions.maxSize)
-        return [start, logFetchOptions.maxSize]
+    if (num < offset) {
+      offset = num
+      if (end - offset > logFetchOptions.maxSize)
+        return { offset, size: logFetchOptions.maxSize }
       
     } else if (num > end) {
       end = num
-      if (end - start > logFetchOptions.maxSize)
-        return [end - logFetchOptions.maxSize, logFetchOptions.maxSize]
+      if (end - offset > logFetchOptions.maxSize)
+        return { offset: end - logFetchOptions.maxSize, size: logFetchOptions.maxSize }
     }
   }
-  return [start, Math.max(end - start + 1, logFetchOptions.defaultSize)]
+  return { offset, size: Math.max(end - offset + 1, logFetchOptions.defaultSize) }
 }
 
 // Initialize filter lists
