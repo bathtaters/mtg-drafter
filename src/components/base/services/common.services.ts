@@ -94,12 +94,26 @@ export const throttle = (delay: number) => {
 }
 
 export function debounce<A extends any[] = []>(callback: (...args: A) => void, delay = 500) {
+  let timeout: NodeJS.Timeout | null = null
+
+  // First call is immediate
+  return (...args: A) => {
+    if (timeout) clearTimeout(timeout)
+    timeout = setTimeout(() => { callback(...args) }, timeout === null ? 0 : delay)
+  }
+}
+
+export function debounceGroup<A extends any>(callback: (argsGroup: A[]) => void, delay = 500) {
+  let queue: A[] = []
   let timeout: NodeJS.Timeout
 
-  return (...args: A) => {
+  return (arg: A) => {
     clearTimeout(timeout)
+    queue.push(arg)
     timeout = setTimeout(() => {
-      callback(...args)
+      const argsGroup = queue.toReversed()
+      queue = []
+      callback(argsGroup)
     }, delay)
   }
 }
