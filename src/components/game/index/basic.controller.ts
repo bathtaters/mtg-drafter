@@ -20,9 +20,10 @@ export default function useBasicGameController(props: ServerProps, hostModal: bo
 
   const local = useLocalController(props, newError, newToast)
   const gameLog = useGameLog(url, local.players)
-
+  
   // Load gameLog when Host Modal is opened
-  useEffect(() => { gameLog.setEnabled(hostModal && local.isHost) }, [local.isHost, hostModal, gameLog.setEnabled])
+  const setLogEnabled = gameLog.setEnabled
+  useEffect(() => { setLogEnabled(hostModal && local.isHost) }, [local.isHost, hostModal, setLogEnabled])
 
   const socket = useSocket(
     gameURL(url),

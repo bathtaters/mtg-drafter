@@ -4,7 +4,7 @@ import type { LogParams } from "types/log.validation"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { fetcher } from "components/base/libs/fetch"
-import { allActions, otherPlayers, filterEntryBuilder, adaptEntry, toLogParams } from "./log.utils"
+import { allActions, otherPlayers, filterEntry, adaptEntry, toLogParams } from "./log.utils"
 import { debounce, debounceGroup } from "components/base/services/common.services"
 import { logOptions, logFetchOptions } from "assets/constants"
 
@@ -22,7 +22,7 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], 
   const [ enabled, setEnabled ] = useState(false)
   const [ data,    setData    ] = useState({ first: 0, next: 0 })
 
-  const logFilter = useCallback(filterEntryBuilder(players, actions, options), [players, actions, options])
+  const logFilter = useCallback((entry?: LogEntryFull) => filterEntry(entry, players, actions, options), [players, actions, options])
 
   const fetchLogs = useCallback(async ({ offset, size = logFetchOptions.defaultSize, isPreview, options, players, actions }: FetchParams = {}) => {
 
@@ -66,10 +66,12 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], 
     }))
   }, [url])
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Debounce function
   const fetchLatest = useCallback(
     debounce(() => enabled && !error && fetchLogs(), combineInterval),
     [enabled, !error, fetchLogs, combineInterval]
   )
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Debounce function
   const fetchOffset = useCallback(
     debounceGroup<number>((offsets) => enabled && !error && fetchLogs(toLogParams(offsets)), combineInterval),
     [enabled, !error, fetchLogs, combineInterval]
@@ -78,11 +80,11 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], 
   // Handle minor changes -- Reset cache on URL change, reload preview on filter change
   useEffect(() => { setEntries({}) }, [url])
   useEffect(() => {
-    if (preview) {
-      setPreview(undefined)
-      fetchLogs({ options, players, actions, isPreview: true })
-    }
-  }, [logFilter])
+    setPreview((preview) => {
+      if (preview) fetchLogs({ options, players, actions, isPreview: true })
+      return undefined
+    })
+  }, [logFilter, options, players, actions, fetchLogs])
 
   // Handle full reset
   useEffect(() => {
@@ -91,6 +93,7 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], 
     setError(undefined)
     setData({ first: 0, next: 0 })
     if (url && enabled) fetchLogs({ options, players, actions, isPreview: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only reset when one of these changes
   }, [url, enabled, fetchLogs])
   
   // Get count of loaded + unfiltered

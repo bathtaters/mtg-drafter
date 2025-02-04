@@ -43,8 +43,8 @@ export const gameActionList = gameActions.map((id) => ({ id }))
 export const allActions = playerActions.concat(gameActions)
 
 
-export const filterEntryBuilder = (players: FilterId[], actions: LogEntry['action'][], options: LogOptions) => 
-  (entry: LogEntryFull | undefined) => !entry || (
+export const filterEntry = (entry: LogEntryFull | undefined, players: FilterId[], actions: LogEntry['action'][], options: LogOptions) => 
+  !entry || (
     actions.includes(entry.action) &&
     // No player for Ban/Unban = 'other'; No player for other actions = 'game'
     players.includes(entry.playerId || (entry.action === 'ban' || entry.action === 'unban' ? "other" : "game" )) &&

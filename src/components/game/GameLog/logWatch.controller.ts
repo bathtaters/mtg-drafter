@@ -19,7 +19,10 @@ export type Props = LogProps & {
     newError: (alert: ErrorAlert) => any,
 }
 
-export default function useLogWatch({ log, game, socket, sessionId, setLoading, reload, setSidebar, newError }: Props) {
+export default function useLogWatch({
+    log: { setEnabled, setError, fetchLatest, error },
+    game, socket, sessionId, setLoading, reload, setSidebar, newError
+}: Props) {
     const [authed, setAuthState] = useState(false)
     const [message, setMessage] = useState("")
     const gameEnded = gameIsEnded(game)
@@ -29,9 +32,9 @@ export default function useLogWatch({ log, game, socket, sessionId, setLoading, 
         if (authed) reload?.()
         else setSidebar?.(false)
 
-        log.setEnabled(authed)
+        setEnabled(authed)
         setAuthState(authed)
-    }, [reload, setSidebar, log.setEnabled])
+    }, [reload, setSidebar, setEnabled])
 
     // Check if user is already logged in on first load or if game/session changes
     useEffect(() => {
@@ -55,8 +58,8 @@ export default function useLogWatch({ log, game, socket, sessionId, setLoading, 
 
         socket.emit('watcherLogin', game.id, sessionId, password, (success, reason) => {
             setAuth(success)
-            log.setError(undefined)
-            if (success) log.fetchLatest()
+            setError(undefined)
+            if (success) fetchLatest()
             else setMessage(reason || "Unknown error")
             setLoading && setLoading((v) => v && v - 1)
         })
@@ -95,11 +98,11 @@ export default function useLogWatch({ log, game, socket, sessionId, setLoading, 
 
     // Handle log errors
     useEffect(() => {
-        if (log.error) {
+        if (error) {
             setAuth(false)
-            setMessage((msg) => msg || log.error || "")
+            setMessage((msg) => msg || error || "")
         } 
-    }, [setAuth, log.error])
+    }, [setAuth, error])
 
     return { authed, message, login, logout }
 }

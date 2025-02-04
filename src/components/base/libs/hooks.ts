@@ -184,12 +184,17 @@ export function useIntersection(handleIntersect: IntersectionHandler, options: I
           const index = (entry.target as HTMLElement).dataset.index
           index && handleIntersect(parseInt(index), entry)
         }
-      }),
-      { root: parentRef.current, ...options }
+      }),{
+        root: 'root' in options ? options.root : parentRef.current,
+        rootMargin: options.rootMargin,
+        threshold: options.threshold,
+      }
     );
 
-    childrenRef.current.forEach((ref) => ref && observer.observe(ref))
-    return () => childrenRef.current.forEach((ref) => ref && observer.unobserve(ref))
+    const children = [...childrenRef.current]
+    children.forEach((ref) => ref && observer.observe(ref))
+    return () => children.forEach((ref) => ref && observer.unobserve(ref))
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deps should cover handleIntersect
   }, [...deps, options.root, options.rootMargin, options.threshold])
 
   return {

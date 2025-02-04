@@ -54,6 +54,12 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     updatePlayer(data.player || undefined)
   }, [storeTimer, resetTimer])
 
+  
+  const reload = useCallback(() => {
+    setLoadingAll((v) => v + 1)
+    reloadData(game?.url, updateLocal, throwError).finally(() => setLoadingAll((v) => v && v - 1))
+  }, [game?.url, updateLocal, throwError])
+
 
   const nextRound: Local.NextRound = useCallback((round) => {
     updateGame((g) => g && ({ ...g, round }))
@@ -145,13 +151,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
       }
     })
     if (props.sessionId === data.sessionId) reload()
-  }, [props.sessionId])
-
-
-  const reload = useCallback(() => {
-    setLoadingAll((v) => v + 1)
-    reloadData(game?.url, updateLocal, throwError).finally(() => setLoadingAll((v) => v && v - 1))
-  }, [game?.url, updateLocal, throwError])
+  }, [props.sessionId, reload, setStatus])
 
 
   return {

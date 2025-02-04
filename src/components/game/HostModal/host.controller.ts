@@ -30,21 +30,15 @@ export default function useHostController(game: Partial<Game> | undefined, setOp
   const banned = game?.banned || []
   const locked = gameIsLocked(game?.id, banned)
 
-  const lockGame = useCallback((unlock?: boolean) => {
-    banSession(null, unlock)
-  }, [])
-  const kickWatcher = useCallback((sessionId?: string | null) => {
-    sessionId && console.error("NOT IMPLEMENTED:", "Kick", game?.id, sessionId)
-  }, [])
+  const lockGame = useCallback((unlock?: boolean) => banSession(null, unlock), [banSession])
   const banPlayer = useCallback((sessionId?: string | null, unban?: boolean, playerId?: string) => {
     sessionId && banSession(sessionId, unban, playerId)
-  }, [])
+  }, [banSession])
 
   return {
     expanded, toggleExpand,
     timer, updateTimer,
     watchers: (game as Game)?.watchers,
-    kickWatcher, 
     banned: banned.length > +locked ? banned : undefined,
     banPlayer, 
     locked, lockGame,
