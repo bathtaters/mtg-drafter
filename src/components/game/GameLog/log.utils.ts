@@ -48,5 +48,5 @@ export const filterEntryBuilder = (players: FilterId[], actions: LogEntry['actio
     // No player for Ban/Unban = 'other'; No player for other actions = 'game'
     players.includes(entry.playerId || (entry.action === 'ban' || entry.action === 'unban' ? "other" : "game" )) &&
     // Hide playerActions done by host
-    ( !entry.playerId || !entry.byHost || !options?.hideHost )
+    ( !entry.playerId || !entry.byHost || !options?.hideHost || entry.action === 'ban' )
   )
