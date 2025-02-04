@@ -57,9 +57,13 @@ export const EntrySpace = () => <span className="inline-block w-1"></span>
 export const EntryLoading = ({ childProps }: { childProps?: IntersectionChildProps }) => (
   <EntryWrapper childProps={childProps}>
     <div className="skeleton bg-base-content/20 h-4 w-14" />
+    <EntrySpace />
     <div className="skeleton bg-base-content/20 h-6 w-20" />
+    <EntrySpace />
     <div className="skeleton bg-base-content/20 h-6 w-24" />
+    <EntrySpace />
     <div className="skeleton bg-base-content/20 h-5 w-5 rounded-full" />
+    <EntrySpace />
     <div className="skeleton bg-base-content/20 h-6 w-24" />
   </EntryWrapper>
 )
