@@ -3,13 +3,12 @@ import type { Game, BasicPlayer, LogFull, LogList } from "types/game"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { fetcher } from "components/base/libs/fetch"
-import { allActions, otherPlayers, filterEntryBuilder, adaptEntry } from "./log.utils"
-import { debounce } from "components/base/services/common.services"
-import { logOptions } from "assets/constants"
+import { allActions, otherPlayers, filterEntryBuilder, adaptEntry, toLogParams } from "./log.utils"
+import { debounce, debounceGroup } from "components/base/services/common.services"
+import { logOptions, logFetchOptions } from "assets/constants"
 
-const DEBOUNCE_DELAY = 500
-
-export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) {
+/** NOTE: This will handle combining queries but not caching. */
+export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], combineInterval = logFetchOptions.combineInterval) {
   const allPlayers = useMemo(() => playerData.map(({ id }) => id).concat(otherPlayers), [playerData])
 
   const [ logs,    setLog     ] = useState<LogList>({})
@@ -22,41 +21,39 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
 
   const logFilter = useCallback(filterEntryBuilder(players, actions, options), [players, actions, options])
 
-  const fetchLogs = useCallback((offset?: number) => {
-    const query = offset == null ? "" : `?${new URLSearchParams({ offset: offset.toString() }).toString()}`
+  const fetchLogs = useCallback(async (offset?: number, size = logFetchOptions.defaultSize) => {
+    const query = offset == null ? "" : new URLSearchParams({ offset: offset.toString(), size: size.toString() }).toString()
 
-    return fetcher<LogFull>(`/api/game/${url}/log${query}`).then((res) => {
-      if (res.status === 204) return;
+    const res = await fetcher<LogFull>(`/api/game/${url}/log?${query}`)
+    if (res.status === 204) return; // End of log
+    if (res.status !== 200 || res.error || res.data?.total == null) {
+      console.error(`LOG FETCH <${res.status}> ERROR:`, res.error)
+      return setError(`Error <${res.status}> while fetching log.`)
+    }
 
-      if (res.status !== 200 || res.error || res.data?.total == null) {
-        console.error(`LOG FETCH <${res.status}> ERROR:`, res.error)
-        return setError(`Error <${res.status}> while fetching log.`)
+    // Update total
+    const total = res.data.total,
+      newEntries = offset == null ? res.data.log.toReversed() : res.data.log
+    setSize(total)
+
+    // Update data
+    const resOffset = res.data.offset ?? Math.max(0, total - newEntries.length)
+    setLog((log) => {
+      log = { ...log }
+      for (let i = 0; i < newEntries.length; i++) {
+        log[i + resOffset] = adaptEntry(newEntries[i])
       }
-
-      // Update total
-      const newEntries = offset == null ? res.data.log.toReversed() : res.data.log,
-        total = res.data.total
-      setSize(total)
-
-      // Update data
-      const resOffset = res.data.offset ?? Math.max(0, total - newEntries.length)
-      setLog((log) => {
-        log = { ...log }
-        for (let i = 0; i < newEntries.length; i++) {
-          log[i + resOffset] = adaptEntry(newEntries[i])
-        }
-        return log
-      })
+      return log
     })
   }, [url])
 
   const fetchLatest = useCallback(
-    debounce(() => enabled && !error && fetchLogs(), DEBOUNCE_DELAY),
-    [enabled, !error, fetchLogs]
+    debounce(() => enabled && !error && fetchLogs(), combineInterval),
+    [enabled, !error, fetchLogs, combineInterval]
   )
   const fetchOffset = useCallback(
-    debounce<[number]>((offset: number) => enabled && !error && fetchLogs(offset), DEBOUNCE_DELAY),
-    [enabled, !error, fetchLogs]
+    debounceGroup<number>((offsets) => enabled && !error && fetchLogs(...toLogParams(offsets)), combineInterval),
+    [enabled, !error, fetchLogs, combineInterval]
   )
   
   // Handle overall state changes

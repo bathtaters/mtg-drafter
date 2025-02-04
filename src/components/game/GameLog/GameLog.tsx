@@ -5,8 +5,6 @@ import LogToolbar from "./LogToolbar/LogToolbar"
 import LogEntry from "./LogEntry"
 import { LogContainer, ErrorContainer, CardModal } from "./LogStyles"
 import { useIntersection } from "components/base/libs/hooks"
-import { logPageSize } from "assets/constants"
-
 
 export type Props = {
   players: BasicPlayer[],
@@ -21,9 +19,11 @@ export type Props = {
 export default function GameLog({ log, players, gameEnded, logout, sidebarVisible, setSidebar }: Props) {
   const [cardImg, setCardImg] = useState<string|null>(null)
 
-  const { parentRef, childProps } = useIntersection((index) => {
-    if (log.size) log.fetchOffset(index)
-  }, { threshold: 1, rootMargin: '490px' }, [log.size, log.fetchOffset])
+  const { parentRef, childProps } = useIntersection(
+    (index) => log.fetchOffset(index),
+    { threshold: 1, rootMargin: '490px 0px 490px 0px' },
+    [log.size, log.fetchOffset],
+  )
   
   return log.error ? <ErrorContainer text={log.error} /> : 
 
@@ -40,7 +40,7 @@ export default function GameLog({ log, players, gameEnded, logout, sidebarVisibl
             log={log}
             players={players}
             setCardImg={setCardImg}
-            getChildProps={idx % logPageSize ? undefined : childProps}
+            getChildProps={childProps}
             key={(log.size as number) - idx - 1}
           />
         ))

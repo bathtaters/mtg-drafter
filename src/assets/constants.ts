@@ -110,7 +110,7 @@ export const skipBoosterTypes: BoosterType[] = []
 
 // Advanced Tweaks + Debug Settings
 
-export const logPageSize = 50
+export const logFetchOptions = { defaultSize: 100, maxSize: 500, combineInterval: 350 }
 
 export const CUBE_LIST_END = /^\s*#?\s*(?:side|maybe)\s*board/i // don't look at cards below this line
 
