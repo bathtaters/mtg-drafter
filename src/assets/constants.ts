@@ -120,6 +120,8 @@ export const refreshOnRefocusDelay = 3 * 60 * 1000
 
 export const hoverAfterClickDelay = 4 * 1000 // How long to wait after clicking before allowing hovering on/off
 
+export const loadLogOutPxls = 450 // Number of pixels off-screen before log entries are loaded
+
 export const MAX_GAME_CONN = 20
 
 export const debugSockets = false

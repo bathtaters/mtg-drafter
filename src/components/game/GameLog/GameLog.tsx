@@ -1,10 +1,11 @@
 import type { BasicPlayer } from "types/game"
 import type { GameLog } from "./log.controller"
-import { type Dispatch, type SetStateAction, useMemo, useState } from "react"
+import { type Dispatch, type SetStateAction, useState } from "react"
 import LogToolbar from "./LogToolbar/LogToolbar"
 import LogEntry from "./LogEntry"
 import { LogContainer, ErrorContainer, CardModal } from "./LogStyles"
 import { useIntersection } from "components/base/libs/hooks"
+import { loadLogOutPxls } from "assets/constants"
 
 export type Props = {
   players: BasicPlayer[],
@@ -22,7 +23,7 @@ export default function GameLog({ log, players, gameEnded, logout, sidebarVisibl
 
   const { parentRef, childProps } = useIntersection(
     (index) => log.fetchOffset(index),
-    { threshold: 1, rootMargin: '490px 0px 490px 0px' },
+    { threshold: 1, rootMargin: `${loadLogOutPxls}px 0px ${loadLogOutPxls}px 0px` },
     [log.total, log.loaded, log.fetchOffset],
   )
   
