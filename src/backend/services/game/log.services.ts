@@ -4,7 +4,7 @@ import type { LogFilterParam } from "types/log.validation"
 import prisma from "backend/libs/db"
 import { validate, hash } from "backend/utils/db/password.utils"
 import { getName } from "backend/utils/game/player.utils"
-import { otherPlayers } from "components/game/GameLog/log.utils"
+import { otherPlayers } from "types/logs"
 
 const LOG_SALT = "92c23bc8fd75cb3e2880b983ce84d736"
 

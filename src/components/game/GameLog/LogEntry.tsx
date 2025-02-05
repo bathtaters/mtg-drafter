@@ -5,10 +5,10 @@ import CookieIcon from "components/svgs/CookieIcon"
 import BotIcon from "components/svgs/BotIcon"
 import { EntryWrapper, EntryItem, EntrySpace, MissingCard, EntryLoading } from "./LogStyles"
 import { IntersectionChildProps } from "components/base/libs/hooks"
-import { allActions } from "./log.utils"
 import { getBanName, getBanSession } from "../shared/player.utils"
 import { formatLogAction, logFullDate, logTimestamp } from "assets/strings"
 import { BOT } from "assets/constants"
+import { allActions } from "types/logs"
 
 
 function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, childProps }: FullProps) {

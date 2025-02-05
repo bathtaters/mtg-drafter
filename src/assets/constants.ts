@@ -3,8 +3,8 @@ import type { RetryOptions } from 'backend/libs/retry'
 import type { BoosterType, Layout } from 'types/scryfall'
 import type { LogOptions, TimerOptions, CardFull } from 'types/game'
 import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
-import { allActions } from 'components/game/GameLog/log.utils'
 import { Direction } from 'types/game'
+import { allActions } from 'types/logs'
 
 //  Settings
 

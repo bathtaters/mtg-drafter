@@ -4,9 +4,10 @@ import type { LogParams } from "types/log.validation"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { fetcher } from "components/base/libs/fetch"
-import { allActions, otherPlayers, filterEntry, adaptEntry, toLogParams } from "./log.utils"
+import { filterEntry, adaptEntry, toLogParams } from "./log.utils"
 import { debounce, debounceGroup } from "components/base/services/common.services"
 import { logOptions, logFetchOptions } from "assets/constants"
+import { allActions, otherPlayers } from "types/logs"
 
 /** NOTE: This will handle combining queries but not caching. */
 export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], combineInterval = logFetchOptions.combineInterval) {

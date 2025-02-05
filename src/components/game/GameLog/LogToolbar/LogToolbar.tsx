@@ -3,8 +3,8 @@ import type { BasicPlayer } from "types/game"
 import type { GameLog } from "../log.controller"
 import LogFilter from "./LogFilter"
 import { ToolbarWrapper, FilterDropdown, SettingsDropdown, SettingToggle, SettingAction, LogoutLabel } from "./LogToolbarStyles"
-import { gameActionList, otherList, playerActionList } from "../log.utils"
 import { logOptionLabels } from "assets/strings"
+import { gameActionList, otherList, playerActionList } from "types/logs"
 
 type Props = {
   log: GameLog,
