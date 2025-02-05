@@ -1,6 +1,5 @@
 import type { Dispatch, SetStateAction } from "react"
 import type { BasicPlayer, GameCardPartial, LogEntryFull } from "types/game"
-import type { GameLog } from "./log.controller"
 import CookieIcon from "components/svgs/CookieIcon"
 import BotIcon from "components/svgs/BotIcon"
 import { EntryWrapper, EntryItem, EntrySpace, MissingCard, EntryLoading } from "./LogStyles"
@@ -67,35 +66,25 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, chi
       {byHost && <EntryItem color={-1} inv={true}>by host</EntryItem>}
     </EntryWrapper>
   )
-
 }
 
-const LogEntry = ({ log, index, getChildProps, preview, ...props }: Props) => (
+
+const LogEntry = ({ index, isLoading, ...props }: Props) => (
   /* Not loaded entry */
-  !log.entries[index] ? (!preview  ?
-    <EntryLoading childProps={getChildProps?.(index)} /> :
+  !props.entry ?
+    <EntryLoading childProps={props.childProps} /> :
 
   /* Preview entry */
-    <FullLogEntry
-      entry={preview}
-      isFirst={log.loaded.first === index}
-      isPrivate={log.options.hidePrivate}
-      childProps={getChildProps?.(index)}
-      {...props}
-    />
-  ) :
-
-  /* Filtered out entry */
-  !log.logFilter(log.entries[index]) ? null :
+  isLoading ?
+    <FullLogEntry {...props as FullProps} /> :
 
   /* Regular entry */
-    <FullLogEntry
-      entry={log.entries[index]}
-      isFirst={log.loaded.first === index}
-      isPrivate={log.options.hidePrivate}
-      {...props}
-    />
+  <FullLogEntry {...props as FullProps} />  
 )
+
+
+export default LogEntry
+
 
 type FullProps = {
   entry: LogEntryFull,
@@ -106,11 +95,8 @@ type FullProps = {
   childProps?: IntersectionChildProps,
 }
 
-type Props = Pick<FullProps, 'players'|'setCard'> & {
-  log: GameLog,
-  preview?: LogEntryFull,
+type Props = Omit<FullProps, 'entry'> & {
   index: number,
-  getChildProps?: (index: number) => IntersectionChildProps
+  isLoading: boolean,
+  entry?: FullProps['entry'],
 }
-
-export default LogEntry

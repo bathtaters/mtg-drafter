@@ -20,7 +20,7 @@ export type Props = LogProps & {
 }
 
 export default function useLogWatch({
-    log: { setEnabled, setError, fetchLatest, error },
+    log: { setEnabled, setError, fetch, error },
     game, socket, sessionId, setLoading, reload, setSidebar, newError
 }: Props) {
     const [authed, setAuthState] = useState(false)
@@ -59,7 +59,7 @@ export default function useLogWatch({
         socket.emit('watcherLogin', game.id, sessionId, password, (success, reason) => {
             setAuth(success)
             setError(undefined)
-            if (success) fetchLatest()
+            if (success) fetch()
             else setMessage(reason || "Unknown error")
             setLoading && setLoading((v) => v && v - 1)
         })

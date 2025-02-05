@@ -11,7 +11,7 @@ const logOptionsSchema = Object.keys(logOptions).reduce(
 const logParams = {
     offset:  z.number({ coerce: true }).nonnegative().int().optional(),
     size:    z.number({ coerce: true }).positive().int()
-        .max(logFetchOptions.maxSize).default(logFetchOptions.defaultSize),
+        .max(logFetchOptions.maxSize).default(logFetchOptions.minSize),
     filter: parseJson(
         z.object({
           ...logOptionsSchema,

@@ -110,7 +110,9 @@ export const skipBoosterTypes: BoosterType[] = []
 
 // Advanced Tweaks + Debug Settings
 
-export const logFetchOptions = { defaultSize: 100, maxSize: 500, combineInterval: 350 }
+export const logFetchOptions = { minSize: 100, maxSize: 500, debounceMs: 350 }
+
+export const dynamicScrollParams = { scrollThreshold: 1, scrollMarginPxls: 450 } // See Intersection API
 
 export const CUBE_LIST_END = /^\s*#?\s*(?:side|maybe)\s*board/i // don't look at cards below this line
 
@@ -119,8 +121,6 @@ export const retryDefaults: RetryOptions = { maxRetries: 10, delay: 10, errCodes
 export const refreshOnRefocusDelay = 3 * 60 * 1000
 
 export const hoverAfterClickDelay = 4 * 1000 // How long to wait after clicking before allowing hovering on/off
-
-export const loadLogOutPxls = 450 // Number of pixels off-screen before log entries are loaded
 
 export const MAX_GAME_CONN = 20
 
