@@ -6,7 +6,8 @@ import { logFetchOptions } from "assets/constants"
 
 export const adaptEntry = <L extends Partial<LogEntry>>(entry: L) => ({ ...entry, time: entry.time && new Date(entry.time) })
 
-export const toLogParams = (nums: number[]): Pick<FetchParams, 'offset'|'size'> => {
+const { defaultSize, maxSize } = logFetchOptions
+export const toLogParams = (nums: number[], total?: number): Pick<FetchParams, 'offset'|'size'> => {
   if (!nums.length) return { offset: 0, size: 0 }
 
   let offset = nums[0], end = nums[0]
@@ -14,18 +15,30 @@ export const toLogParams = (nums: number[]): Pick<FetchParams, 'offset'|'size'> 
     // Find min/max, stopping early if max size is reached
     if (num < offset) {
       offset = num
-      if (end - offset > logFetchOptions.maxSize)
-        return { offset, size: logFetchOptions.maxSize }
+      if (end - offset > maxSize)
+        return { offset, size: maxSize }
       
     } else if (num > end) {
       end = num
-      if (end - offset > logFetchOptions.maxSize)
-        return { offset: end - logFetchOptions.maxSize, size: logFetchOptions.maxSize }
+      if (end - offset > maxSize)
+        return { offset: end - maxSize, size: maxSize }
     }
   }
-  return { offset, size: Math.max(end - offset + 1, logFetchOptions.defaultSize) }
-}
+  
+  let size = end - offset + 1
+  // Resize range based on screen location & scroll direction
+  if (size < defaultSize) {
+    if (end - defaultSize <= 0) offset = 0
+    else if (total == null) offset = Math.max(end - defaultSize + 1, 0)
+    else if (offset + defaultSize > total) offset = total - defaultSize
+    else if (nums[0] >= nums[nums.length - 1]) // AKA Moving downa
+      offset = Math.max(end - defaultSize + 1, 0)
+    // If Moving up, keep offset
+    size = defaultSize
+  }
 
+  return { offset, size }
+}
 
 
 export const filterEntry = (entry: LogEntryFull | undefined, players: FilterId[], actions: LogEntry['action'][], options: LogOptions) => 

@@ -74,8 +74,8 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[], 
   )
   // eslint-disable-next-line react-hooks/exhaustive-deps -- Debounce function
   const fetchOffset = useCallback(
-    debounceGroup<number>((offsets) => enabled && !error && fetchLogs(toLogParams(offsets)), combineInterval),
-    [enabled, !error, fetchLogs, combineInterval]
+    debounceGroup<number>((offsets) => enabled && !error && fetchLogs(toLogParams(offsets, total)), combineInterval),
+    [total, enabled, !error, fetchLogs, combineInterval]
   )
   
   // Handle minor changes -- Reset cache on URL change, reload preview on filter change
