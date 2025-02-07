@@ -173,7 +173,10 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
 
 const arrayToObject = <T>(arr: T[]) => Object.fromEntries(arr.map((v,i) => [i,v]))
 
-const anyToString = (value: any): string | null => value == null ? null : typeof value?.toString === 'function' ? value.toString() : JSON.stringify(value)
+const anyToString = (value: any): string | null => value == null ? null :
+  typeof value?.toJSON === 'function' ? value.toJSON() :
+  (typeof value !== 'object' || value instanceof RegExp) &&
+    typeof value?.toString === 'function' ? value.toString() : JSON.stringify(value)
 
 /** Logic for which objects to load */
 const listToParams = (indexList: number[], total: number | undefined, minSize: number, maxSize: number): Pick<FetchParams, 'offset'|'size'> => {
