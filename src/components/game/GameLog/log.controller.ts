@@ -1,5 +1,6 @@
 import type { LogAction } from "@prisma/client"
-import type { Game, BasicPlayer, LogFull, LogOptions, LogEntryFull } from "types/game"
+import type { Game, BasicPlayer, LogFull, LogEntryFull } from "types/game"
+import type { LogFilterParam } from "types/log.validation"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { fetcher } from "components/base/libs/fetch"
@@ -36,7 +37,7 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
   // Handle minor changes -- Reset cache on URL change, reload preview on filter change
   useEffect(() => { reset(true) }, [url, reset])
   useEffect(() => { reset(false) }, [enabled, reset])
-  useEffect(() => { fetch({ options, players, actions, isPreview: true }) }, [options, players, actions, fetch])
+  useEffect(() => { fetch({ filter: { ...options, players, actions }, isPreview: true }) }, [options, players, actions, fetch])
   
   return {
     entries, fetch, reset,
@@ -52,7 +53,4 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
 
 export type GameLog = ReturnType<typeof useGameLog>
 
-export type LogParams = {
-  offset?: number, size?: number, isPreview?: boolean,
-  options?: Partial<LogOptions>, players?: string[], actions?: LogAction[],
-}
+export type LogParams = { offset?: number, size?: number, isPreview?: boolean, filter?: LogFilterParam }
