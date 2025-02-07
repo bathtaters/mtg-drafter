@@ -2,7 +2,99 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { type IntersectionChildProps, useIntersection } from "./hooks"
 import { debounce, debounceGroup } from "components/base/services/common.services"
 
-
+/**
+ * React Hook to dynamically fetch paginated data from an API.
+ * 
+ * This requires you to write a function to do the fetching.
+ * (NOTE That handleFetch should be wrapped in useCallback if created inside a React component)
+ * 
+ * @param handleFetch - Function that accepts page and other parameters, fetchs and returns data from API.
+ * ```ts
+ * async (query: string, params: { offset: number, size: number, isPreview: boolean }) => {
+ *  data?: Entry[],
+ *  total: number,
+ *  offset?: number,
+ *  error?: string,
+ * }
+ * ```
+ *  - `query` - Pre-formatted query string
+ *  - `params` - Data from query string (Plus `isPreview`)
+ *    - `offset` - Start index in Database
+ *    - `size` - Number of entries/rows to return
+ *    - `isPreview` - True if data will only be temporaryily displayed while full queries are loaded.
+ *  - `result` - Info to pass back to Hook
+ *    - `data` - Data to append to cache
+ *    - `total` - Total number of entries in database
+ *    - `offset` - Index of first entry in data
+ *    - `error` - Description of error, if there was one
+ * 
+ * @param options - Base options to allow Dynamic fetching options
+ * ```ts
+ * {
+ *  filter?: (entry: Entry) => boolean,
+ *  initalEnabled?: boolean,
+ *  initialData?: Entry[] | Record<number, Entry>,
+ *  initialPreview?: Entry[] | undefined,
+ *  initialTotal?: number,
+ *  minSize?: number,
+ *  maxSize?: number,
+ *  debounceMs?: number,
+ *  scrollMarginPxls?: number,
+ * }
+ * ```
+ * - `filter` - Function to determine if a row should be visible (true)
+ * - `initalEnabled/Data/Preview/Total` - Initial value of the respective iteams
+ *    - `Enabled` - True = hook is active, False = no actual fetched are performed
+ *    - `Data` - Cache of all combined `data` responses (Ass an object with numeric keys)
+ *    - `Preview` - Cache of preview data (`undefined` = no preview)
+ *    - `Total` - Total number of entries in database
+ * - `minSize/maxSize` - Minimum/Maximum number of entries to ask for in a single request
+ * - `debounceMs` - Number of milliseonds worth of requests to bundle into a single request.
+ * - `scrollMarginPxls` - Number of pixels an Element should be above/below the root to trigger a preload.
+ * 
+ * @returns All values/functions returned to User
+ * ```ts
+ * {
+ *   entries: ({
+ *     key: number,
+ *     index: number,
+ *     entry?: Entry,
+ *     childProps?: IntersectionChildProps<HTMLElement>,
+ *     isFirst: boolean,
+ *     isLoading: boolean
+ *   } | null)[] | null,
+ *   total: number,
+ *   reset: boolean, 
+ *   fetch: (params?: Params) => void,
+ *   forceFetch: (options: { offset: number, size: number, isPreview: boolean } & Record<string,any>) => Params,
+ *   enabled: boolean,
+ *   setEnabled: (enable: boolean) => void,
+ *   error: string,
+ *   setError: (msg: string) => void,
+ *   scrollParentRef: Ref,
+ *   scrollItemProps: (index: number) => Ref,
+ * }
+ * ```
+ *  - `entries` - List with data used to build components
+ *     - `key` - Generic key for usign .map (= index)
+ *     - `index` - Index value from database
+ *     - `entry` - User `Entry` data
+ *     - `childProps` - Spread this within a child component to force loading that specific offset
+ *        whe it becomes visible (Will change to `undefined` once the entry has been cached)
+ *     - `isFirst` - True if entry is the top-most entry
+ *     - `isLoading` - True if entry is still loading (If `entry` is provided & this is True, `entry` is a Preview)
+ *   -  `total` - Total count of entries (Used to generate placeholders)
+ *   -  `reset` - Function to clear cache and begin reload process
+ *   -  `fetch` - Trigger a manual fetch with specific params (Calls to this will be automatically debounced)
+ *   -  `forceFetch` - Same as above, excpet this is NOT debounced
+ *   -  `enabled` - True/False if fetching new data is enabled/disabled
+ *   -  `setEnabled` - Sets value of `enabled`
+ *   -  `error` - Error message, if there is currently an error
+ *   -  `setError` - Sets value of `error` (Set to `undefined` to clear error)
+ *   -  `scrollParentRef` - React 'ref' that should be passed to immediate parent of item list (Must be IMMEDIATE parent!)
+ *   -  `scrollItemProps` - Function to generate a React 'ref' based off the index value
+ *        (Should be called using 'index' from every immediate child of `scrollParentRef`representing an entry)
+ */
 export function useDynamicScrollFetcher<Entry, Params extends FetchParams = FetchParams>(
   handleFetch: FetchHandler<Entry, Params>,
   {
@@ -231,3 +323,24 @@ export type FetchParams = Record<string, any> & { offset?: number, size?: number
 export type FetchResponse<Data> = { data?: Data[], total: number, offset?: number, error?: string } | { error: string }
 export type EntryData<Entry> = { key: number, index: number, entry?: Entry, childProps?: IntersectionChildProps<HTMLElement>, isFirst: boolean, isLoading: boolean }
 export type FetchHandler<Entry, Params extends FetchParams> = (queryString: string, params: Params) => Promise<FetchResponse<Entry> | undefined>
+
+type HookReturn<Entry, Params> = {
+  entries: ({
+    key: number,
+    index: number,
+    entry?: Entry,
+    childProps?: IntersectionChildProps<HTMLElement>,
+    isFirst: boolean,
+    isLoading: boolean
+  } | null)[] | null,
+  total: number,
+  reset: boolean, 
+  fetch: (params?: Params) => void,
+  forceFetch: (options: { offset: number, size: number, isPreview: boolean } & Record<string,any>) => Params,
+  enabled: boolean,
+  setEnabled: (enable: boolean) => void,
+  error: string,
+  setError: (msg: string) => void,
+  scrollParentRef: any,
+  scrollItemProps: any[],
+}
