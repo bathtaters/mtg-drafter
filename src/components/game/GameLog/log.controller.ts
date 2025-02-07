@@ -6,7 +6,7 @@ import { useLocalStorage } from "components/base/libs/storage"
 import { fetcher } from "components/base/libs/fetch"
 import { type FetchHandler, useDynamicScrollFetcher } from "components/base/libs/scrollFetch"
 import { adaptEntry, filterEntry } from "./log.utils"
-import { logOptions, logFetchOptions, dynamicScrollParams } from "assets/constants"
+import { logOptions, logFetchOptions, dynamicScrollPreloadDistancePx } from "assets/constants"
 import { allActions, otherPlayers } from "types/logs"
 
 
@@ -32,7 +32,7 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
     enabled, setEnabled,
     error, setError,
     scrollParentRef, scrollItemProps, 
-  } = useDynamicScrollFetcher(fetchLogs, { filter, initalEnabled: false, ...dynamicScrollParams, ...logFetchOptions })
+  } = useDynamicScrollFetcher(fetchLogs, { filter, initalEnabled: false, scrollMarginPxls: dynamicScrollPreloadDistancePx, ...logFetchOptions })
   
   // Handle minor changes -- Reset cache on URL change, reload preview on filter change
   useEffect(() => { reset(true) }, [url, reset])

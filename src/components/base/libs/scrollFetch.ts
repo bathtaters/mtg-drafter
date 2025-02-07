@@ -9,7 +9,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
     filter,
     initalEnabled = true, initialData = {}, initialPreview = [], initialTotal,
     minSize = 0, maxSize = 1000, debounceMs = 500, 
-    scrollThreshold = 1, scrollMarginPxls = 200,
+    scrollMarginPxls = 200,
   }: DynamicFetcherOptions<Entry> = {},
 ) {
   const [ entries, setEntries ] = useState(Array.isArray(initialData) ? arrayToObject(initialData) : initialData)
@@ -105,7 +105,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
   // Dynamic loading controller
   const { parentRef, childProps } = useIntersection(
     (index) => groupFetch(index),
-    { threshold: scrollThreshold, rootMargin: `${scrollMarginPxls ?? 0}px 0px ${scrollMarginPxls ?? 0}px 0px` },
+    { threshold: 1, rootMargin: `${scrollMarginPxls ?? 0}px 0px ${scrollMarginPxls ?? 0}px 0px` },
     [groupFetch, total, entries, filter, cursor, preview],
   )
 
@@ -224,7 +224,6 @@ export type DynamicFetcherOptions<Entry> = {
   minSize?: number,
   maxSize?: number,
   debounceMs?: number,
-  scrollThreshold?: number,
   scrollMarginPxls?: number,
 }
 
