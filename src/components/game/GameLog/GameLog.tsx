@@ -28,7 +28,7 @@ export default function GameLog({ log, players, gameEnded, logout, sidebarVisibl
     }>
       {log.entries == null ? "Loading..." :
         log.entries.map((entry) => entry && (
-          <LogEntry {...entry} isPrivate={log.options.hidePrivate} players={players} setCard={setCard} />
+          <LogEntry key={entry.index} {...entry} isPrivate={log.options.hidePrivate} players={players} setCard={setCard} />
         ))
       }
       <CardModal card={card} alt="Popout Card Image" close={() => setCard(null)} />

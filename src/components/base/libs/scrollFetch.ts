@@ -56,8 +56,7 @@ import { debounce, debounceGroup } from "components/base/services/common.service
  * ```ts
  * {
  *   entries: ({
- *     key: number,
- *     index: number,
+ *     index: number, (Should be used as `key` attribute if required)
  *     entry?: Entry,
  *     childProps?: IntersectionChildProps<HTMLElement>,
  *     isFirst: boolean,
@@ -231,7 +230,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
         
         /* Not loaded... */
         if (!previewEntry) return {
-          index, key: index,
+          index,
           childProps: childProps(index),
           isFirst: cursor.first === index,
           isLoading: true,
@@ -239,7 +238,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
         
         /* Preview... */
         return {
-          index, key: index,
+          index,
           entry: previewEntry,
           childProps: childProps(index),
           isFirst: cursor.first === index,
@@ -252,7 +251,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
 
       /* Regular entry */
       return {
-        index, key: index,
+        index,
         entry: entries[index],
         isFirst: cursor.first === index,
         isLoading: false,
@@ -334,7 +333,7 @@ export type DynamicFetcherOptions<Entry> = {
 
 export type FetchParams = Record<string, any> & { offset?: number, size?: number, isPreview?: boolean }
 export type FetchResponse<Data> = { data?: Data[], total: number, offset?: number, error?: string } | { error: string }
-export type EntryData<Entry> = { key: number, index: number, entry?: Entry, childProps?: IntersectionChildProps<HTMLElement>, isFirst: boolean, isLoading: boolean }
+export type EntryData<Entry> = { index: number, entry?: Entry, childProps?: IntersectionChildProps<HTMLElement>, isFirst: boolean, isLoading: boolean }
 export type FetchHandler<Entry, Params extends FetchParams> = (queryString: string, params: Params) => Promise<FetchResponse<Entry> | undefined>
 
 type HookReturn<Entry, Params> = {
