@@ -69,7 +69,7 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, chi
 }
 
 
-const LogEntry = ({ index, isLoading, ...props }: Props) => (
+const LogEntry = ({ isLoading, ...props }: Props) => (
   /* Not loaded entry */
   !props.entry ?
     <EntryLoading childProps={props.childProps} /> :
@@ -87,6 +87,7 @@ export default LogEntry
 
 
 type FullProps = {
+  index: number,
   entry: LogEntryFull,
   players: BasicPlayer[],
   isFirst?: boolean,
