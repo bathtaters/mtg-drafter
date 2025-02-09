@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { type IntersectionChildProps, useIntersection } from "./hooks"
 import { debounce, debounceGroup } from "components/base/services/common.services"
 
@@ -104,6 +104,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
     scrollMarginPxls = 200,
   }: DynamicFetcherOptions<Entry> = {},
 ) {
+  const isFirstLoad = useRef(true)
   const [ entries, setEntries ] = useState(Array.isArray(initialData) ? arrayToObject(initialData) : initialData)
   const [ preview, setPreview ] = useState<Entry[] | undefined>(initialPreview)
   const [ total,   setTotal   ] = useState(initialTotal)
@@ -162,7 +163,9 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- Debounce function
   const groupFetch = useCallback(
-    debounceGroup<number>((offsets) => enabled && !error && forceFetch(listToParams(offsets, total, minSize, maxSize) as Params), debounceMs),
+    debounceGroup<number>((offsets) => enabled && !error &&
+      forceFetch(listToParams(offsets, total, minSize, maxSize, isFirstLoad.current) as Params)
+    , debounceMs),
     [total, enabled, !error, forceFetch, debounceMs]
   )
 
@@ -186,6 +189,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
 
 
   const reset = useCallback((resetCache = false) => {
+    isFirstLoad.current = true
     setTotal(initialTotal)
     setPreview(initialPreview)
     setError(undefined)
@@ -204,9 +208,18 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
 
   // Get count of loaded + unfiltered
   const displayCount = useMemo(() => Object.keys(entries).reduce((count, idx) => +(!filter || filter(entries[idx])) + count, 0), [entries, filter])
-
+  
   // Clear preview data if it is unused
-  useEffect(() => { if (preview && displayCount > preview.length) setPreview(undefined) }, [preview, displayCount])
+  const previewCount = preview?.length
+  useEffect(() => {
+    if (previewCount && displayCount && previewCount <= displayCount) {
+      isFirstLoad.current = false
+      setPreview(undefined)
+    }
+  }, [previewCount, displayCount])
+
+  // Reset 'firstLoad' state whenever the filter changes
+  useEffect(() => { isFirstLoad.current = true }, [filter])
   
   // Main array of loaded/filtered data
   const entryData = useMemo((): (EntryData<Entry> | null)[] | null =>
@@ -270,8 +283,8 @@ const anyToString = (value: any): string | null => value == null ? null :
   (typeof value !== 'object' || value instanceof RegExp) &&
     typeof value?.toString === 'function' ? value.toString() : JSON.stringify(value)
 
-/** Logic for which objects to load */
-const listToParams = (indexList: number[], total: number | undefined, minSize: number, maxSize: number): Pick<FetchParams, 'offset'|'size'> => {
+/** Logic for which objects to load -- NOTE: indexList starts with most recently 'seen' index */
+const listToParams = (indexList: number[], total: number | undefined, minSize: number, maxSize: number, isReverseOrder?: boolean): Pick<FetchParams, 'offset'|'size'> => {
   if (!indexList.length) return { offset: 0, size: 0 }
 
   let offset = indexList[0], end = indexList[0]
@@ -295,7 +308,7 @@ const listToParams = (indexList: number[], total: number | undefined, minSize: n
     if (end - minSize <= 0) offset = 0
     else if (total == null) offset = Math.max(end - minSize + 1, 0)
     else if (offset + minSize > total) offset = total - minSize
-    else if (indexList[0] >= indexList[indexList.length - 1]) // AKA Moving downa
+    else if (indexList[0] < indexList[indexList.length - 1] || isReverseOrder) // AKA Moving down
       offset = Math.max(end - minSize + 1, 0)
     // If Moving up, keep offset
     size = minSize
