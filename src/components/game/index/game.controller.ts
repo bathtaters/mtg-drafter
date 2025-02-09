@@ -15,7 +15,7 @@ export default function useGameController(props: ServerProps) {
   
   const toggleLandModal = !local.player?.basics ? undefined : () => setLandModal((o) => !o)
   const toggleHostModal = !local.isHost ? undefined : () => setHostModal((o) => {
-    if (!o) local.gameLog.fetchLatest()
+    if (!o) local.gameLog.fetch()
     return !o
   })
   const toggleLogModal = !local.isHost ? undefined : () => setLogModal((o) => !o)
