@@ -12,7 +12,7 @@ export const getGameLog = (url: Game['url'], take?: number, skip?: number, fromS
     where: { url },
     select: {
         id: true,
-        host: { select: { sessionId: true } },
+        hostId: true,
         watchers: { select: { sessionId: true } },
         log: {
             where: filter && { AND: [

@@ -109,8 +109,7 @@ model Game {
   timerBase  Int?
 
   players   Player[] @relation("GamePlayers")
-  host      Player?  @relation("GameHost", fields: [hostId], references: [id])
-  hostId    String?  @unique
+  hostId    String?
   watchKey  String?
   watchers  Watcher[]
   banned    Ban[]
@@ -195,7 +194,6 @@ model Player {
   basics    Json       @default("{\"main\":{\"w\":0,\"u\":0,\"b\":0,\"r\":0,\"g\":0},\"side\":{\"w\":0,\"u\":0,\"b\":0,\"r\":0,\"g\":0}}")
 
   game       Game       @relation("GamePlayers", fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  hostOf     Game?      @relation("GameHost")
   gameId     String
   logEntries LogEntry[]
 

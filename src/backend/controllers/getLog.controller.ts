@@ -17,7 +17,7 @@ export default async function apiHandler(req: NextApiRequest, res: NextApiRespon
   if (!game?.id) {
     console.error('Error with game',url,'player',currentSessionId,'Game not found!')
     res.status(404).end()
-  } else if (!canWatch(game, currentSessionId) && currentSessionId !== game.host?.sessionId) {
+  } else if (!canWatch(game, currentSessionId) && currentSessionId !== game.hostId) {
     console.error('Error retrieving game log',url,'player',currentSessionId,'Player is not host or was not found in game!')
     res.status(403).end()
   } else if (!game.log.length && !filter) {

@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { spliceInPlace, updateArrayIdx } from 'components/base/services/common.services'
 import { gameIsPaused, getCanAdvance, getCurrentPack, getHolding, getPlayerIdx, getSlots } from '../../shared/game.utils'
-import { playerIsBanned, playerIsHost } from 'components/game/shared/player.utils'
+import { playerIsBanned, sessionIsHost } from 'components/game/shared/player.utils'
 import { reloadData } from '../basic.controller'
 import { useTimerStore } from 'components/base/libs/hooks'
 import { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
@@ -30,7 +30,7 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   
   const { timer, startTimer, resetTimer, storeTimer } = useTimerStore(props.player?.timer, props.now)
   
-  const isHost = playerIsHost(player, game)
+  const isHost = sessionIsHost(game, props.sessionId)
   const isBanned = playerIsBanned(game, props.sessionId)
   const holding = getHolding(players, maxPackSize, game)
   const canAdvance = isHost && getCanAdvance(game, players, holding)

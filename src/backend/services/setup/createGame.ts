@@ -18,40 +18,20 @@ export async function newBoosterGame({ packList, basics, ...options }: BoosterOp
 
 async function newGame(options: GenericOptions, sessionId?: string) {
 
-  const { id, url } = await retry(() => prisma.game.create({ data: {
-    name: options.name,
-    url: randomUrl(),
-    roundCount: options.roundCount,
-    players: { create: createPlayers(options.playerCount) },
-    timerBase: options.timer || null,
-    packs: { create: options.packs.map((pack,index) => ({
-      index,
-      cards: { create: pack }
-    })) },
-  }}))
-  
-  if (!sessionId) return url
-  const host = await prisma.player.findFirst({ where: { gameId: id }, select: { id: true }})
-  if (!host) return url
-  
-  // Add host
-  await retry(() => prisma.$transaction([
-    prisma.player.update({
-      where: { id: host.id },
-      data: { sessionId }
-    }),
-    prisma.game.update({
-      where: { id },
-      data: {
-        hostId: host.id,
-        log: { create: {
-          action: 'join',
-          data: sessionId,
-          player: { connect: { id: host.id } },
-          byHost: true,
-        }},
-      }
-    })
-  ]))
+  const { url } = await retry(() => prisma.game.create({
+    select: { url: true },
+    data: {
+      name: options.name,
+      url: randomUrl(),
+      roundCount: options.roundCount,
+      hostId: sessionId,
+      players: { create: createPlayers(options.playerCount) },
+      timerBase: options.timer || null,
+      packs: { create: options.packs.map((pack,index) => ({
+        index,
+        cards: { create: pack }
+      })) },
+    },
+  }))
   return url
 }

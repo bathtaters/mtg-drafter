@@ -1,8 +1,9 @@
 import type { ParsedUrlQuery } from 'querystring'
 import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next'
-import type { ServerProps, ServerSuccess, PlayerFullTimer, PackFull } from 'types/game'
+import type { ServerProps, PlayerFullTimer, PackFull } from 'types/game'
 import { checkBan, getGame, getRoundPackSize } from '../services/game/game.services'
 import { getPlayer } from '../services/game/player.services'
+import { sessionIsHost } from 'components/game/shared/player.utils'
 import { getCtxSessionId, getReqSessionId } from '../libs/auth'
 import validation from 'types/game.validation'
 import { unregGameAdapter, canWatch } from '../utils/game/game.utils'
@@ -27,7 +28,7 @@ async function getGameProps(query: ParsedUrlQuery, sessionId: string, includePac
   const now = Date.now()
   const player = await getPlayer(sessionId, players, game, packSize, now) as PlayerFullTimer | null // Convert type JSON value -> BasicLands
   
-  return player || canWatch(options, sessionId) ?
+  return player || sessionIsHost(options, sessionId) || canWatch(options, sessionId) ?
     { options, players, player, sessionId, now, packSize, packs: packs as PackFull[] || [] } :
     { options: unregGameAdapter(options, sessionId), players, sessionId }
 }
