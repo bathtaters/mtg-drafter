@@ -40,7 +40,7 @@ export function getRoundPackSize(gameId: Game["id"], round: number, roundCount: 
 }
 
 
-export function updateGame(id: Game['id'], options: LiveOptions) {
+export function updateGame(id: Game['id'], options: LiveOptions, newHost?: Player['id']) {
   const select = Object.keys(options).reduce(
     (opts, key) => ({ ...opts, [key]: true }),
     {} as Record<keyof LiveOptions, true>,
@@ -49,7 +49,7 @@ export function updateGame(id: Game['id'], options: LiveOptions) {
   return retry(() => prisma.$transaction([
     prisma.game.update({ where: { id }, data: options, select }),
 
-    prisma.logEntry.create({ data: { gameId: id, byHost: true, action: 'settings', data: JSON.stringify(options), playerId: options.hostId } })
+    prisma.logEntry.create({ data: { gameId: id, byHost: true, action: 'settings', data: JSON.stringify(options), playerId: newHost } })
   ])).then(([result]) => result)
 }
 

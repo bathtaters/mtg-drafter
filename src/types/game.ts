@@ -114,7 +114,7 @@ export namespace Local {
 
 export namespace Socket {
   export type RenamePlayer  = (name: Player['name'], playerId?: Player['id'], byHost?: boolean) => void
-  export type SetOptions    = (options: LiveOptions) => void
+  export type SetOptions    = (options: LiveOptions, newHost?: Player['id']) => void
   export type NextRound     = () => void
   export type PauseGame     = (resume?: boolean) => void
   export type PickCard      = (gameCardOrPack: GameCard['id'] | Pack['index']) => void

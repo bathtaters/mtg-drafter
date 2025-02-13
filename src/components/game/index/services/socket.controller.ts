@@ -12,7 +12,7 @@ const formatError = (message: string): ErrorAlert => ({ message: `${message}. At
 
 export function getGameListeners(
   {
-    game, player, isWatchPage, isHost,
+    game, isWatchPage, isHost, sessionId,
     updateLocal, updateGame, renamePlayer, nextRound, pauseGame,
     pickCard, setStatus, banSession, setLoadingAll, setLoadingPack,
   }: LocalController,
@@ -28,7 +28,7 @@ export function getGameListeners(
     const updateGameListener: GameServerToClient['updateGame'] = (options) => { 
       debugSockets && console.debug('SOCKET','updateGame',options)
       options && updateGame((game) => game && ({ ...game, ...options }))
-      if (!options.hostId || options.hostId === player?.id) refreshLog && refreshLog()
+      if (!options.hostId || options.hostId === sessionId) refreshLog && refreshLog()
       else if (checkHostModal) checkHostModal(false) // Close host modal when losing Host status
     }
     const updateName: GameServerToClient['updateName'] = (playerId, name) => { 
@@ -119,20 +119,21 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
   const { emit, reconnect } = local.socket
   
   const renamePlayer: Socket.RenamePlayer = useCallback((name, playerId, byHost = false) => {
-    if (!local.player?.id) return throwError(formatError('Error renaming player: Player not loaded'))
+    if (!playerId) playerId = local.player?.id
+    if (!playerId) return throwError(formatError('Error renaming player: Player not loaded'))
 
-    name && local.renamePlayer(playerId || local.player.id, name)
+    name && local.renamePlayer(playerId, name)
     
-    emit('setName', playerId || local.player.id, name, byHost)
+    emit('setName', playerId, name, byHost)
   }, [emit, local.player?.id, local.renamePlayer, throwError])
 
 
-  const setOptions: Socket.SetOptions = useCallback((options) => {
+  const setOptions: Socket.SetOptions = useCallback((options, newHost) => {
     if (!local.game?.id) return throwError(formatError('Error renaming game: Game not loaded'))
 
       options && local.updateGame((game) => game && ({ ...game, ...options }))
 
-    emit('setOptions', local.game.id, options)
+    emit('setOptions', local.game.id, options, newHost)
   }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
 
 

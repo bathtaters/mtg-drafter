@@ -18,7 +18,7 @@ import { banMsg } from 'assets/strings'
 
 export default function Game(props: ServerProps) {
   const {
-    game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize, isBanned,
+    game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize, isBanned, isHost,
     holding, canAdvance, pack, sidebarVisible, landModal, hostModal, logModal, slots, gameLog, timer, 
     saveDeck, setSidebar, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setOptions,
     nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropWatcher, banSession, dropPlayer,
@@ -29,23 +29,24 @@ export default function Game(props: ServerProps) {
     <SetPageTitle title={game?.name || ""} />
 
     <PlayerSidebar
-      game={game} players={players} playerIdx={playerIdx} holding={holding} packSize={maxPackSize}
+      game={game} players={players} playerIdx={playerIdx} isHost={isHost} holding={holding} packSize={maxPackSize}
       isOpen={sidebarVisible} setOpen={setSidebar}
     >
       <GameHeader
-        game={game} players={players} playerIdx={playerIdx} holding={holding} packSize={maxPackSize} isConnected={isConnected} saveDeck={saveDeck}
-        openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer} dropPlayer={dropPlayer} notify={newToast}
+        game={game} players={players} playerIdx={playerIdx} isHost={isHost} holding={holding} packSize={maxPackSize} isConnected={isConnected}
+        openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer} dropPlayer={dropPlayer}
+        saveDeck={saveDeck} notify={newToast}
       />
       
       <BodyWrapperStyle>
         <Loader data={game || 404} message={props.error || (isBanned && banMsg)}>
-          { !player ?
-            <PlayerJoin slots={slots} players={players} selectPlayer={setStatus} game={game} /> :
+          { !player && !isHost ?
+            <PlayerJoin title="Pick a Seat:" slots={slots} players={players} selectPlayer={setStatus} game={game} /> :
             
             <GameBody
               game={game as Game|PartialGame}
-              player={player} playerTimer={timer}
-              roundOver={player.pick > maxPackSize}
+              player={player} isHost={isHost} playerTimer={timer}
+              roundOver={player?.pick != null && player.pick > maxPackSize}
               pack={pack} pickCard={pickCard} swapCard={swapCard}
               clickRoundBtn={canAdvance ? () => nextRound() : undefined}
               onLandClick={toggleLandModal}
@@ -54,6 +55,9 @@ export default function Game(props: ServerProps) {
               loadingPack={!!loadingPack}
               notify={newToast}
             />
+          }
+          {isHost && !player && !!slots.length &&
+            <PlayerJoin title="Join Game As:" slots={slots} players={players} selectPlayer={setStatus} game={game} />
           }
         </Loader>
       </BodyWrapperStyle>

@@ -3,9 +3,9 @@ import { PlayerJoinContainer, PlayersWrapper, PlayerWrapper, PlayerButton } from
 import { gameIsLocked } from "../shared/game.utils"
 import { FullGame } from "assets/strings"
 
-type Props = { slots: BasicPlayer['id'][], players: BasicPlayer[], selectPlayer?: (id: BasicPlayer['id']) => void, game?: Partial<Game & { locked: boolean }> }
+type Props = { title: string, slots: BasicPlayer['id'][], players: BasicPlayer[], selectPlayer?: (id: BasicPlayer['id']) => void, game?: Partial<Game & { locked: boolean }> }
 
-export default function PlayerJoin({ slots, players, selectPlayer, game }: Props) {
+export default function PlayerJoin({ title, slots, players, selectPlayer, game }: Props) {
 
   const isLocked = game?.locked != null ? game.locked : gameIsLocked(game?.id, game?.banned)
   if (isLocked) return <PlayerJoinContainer title="This Game has been locked by the host"><FullGame /></PlayerJoinContainer>
@@ -15,7 +15,7 @@ export default function PlayerJoin({ slots, players, selectPlayer, game }: Props
   const playerSlots = players.filter(({ id }) => slots.includes(id))
 
   return (
-    <PlayerJoinContainer title="Pick a Seat:">
+    <PlayerJoinContainer title={title}>
       <PlayersWrapper>
         { playerSlots.map(({ id, name }) => 
           <PlayerWrapper key={id}>

@@ -7,17 +7,18 @@ export const useSimpleHeader = (game?: GameProps['options']) => ({
   gameStatus: getGameStatus(game),
 })
 
-export default function useGameHeader(game: GameProps['options'] | undefined, players: GameProps['players'], playerIdx: number) {
+export default function useGameHeader(game: GameProps['options'] | undefined, players: GameProps['players'], playerIdx: number, isHost: boolean) {
   const [ showMenu, setShowMenu ] = useState<boolean>()
   const [ editingName, setEditingName ] = useState(false)
+  const showDetail = Boolean(players[playerIdx] || isHost)
   
-  const enableEdit = editingName ? undefined : () => {
+  const enableEdit = isHost && !players[playerIdx] ? undefined : editingName ? false as const : () => {
     setEditingName(true)
     setShowMenu(false)
     setTimeout(() => setShowMenu(undefined), 250)
   }
-
-  const gameStatus = players[playerIdx] ? getGameStatus(game) : undefined
+  
+  const gameStatus = showDetail ? getGameStatus(game) : undefined
 
   const indexes = useMemo(() =>
     gameStatus ? getAllIndexes(playerIdx, players.length) : undefined,
@@ -25,10 +26,10 @@ export default function useGameHeader(game: GameProps['options'] | undefined, pl
   )
 
   return {
-    gameStatus, indexes,
+    gameStatus, indexes, showDetail,
     showMenu, editingName, setEditingName, enableEdit,
     hideStats: gameStatus === undefined || gameStatus === 'end' || gameStatus === 'start',
-    isRight: game && players[playerIdx] && passingRight(game),
+    isRight: game && showDetail && passingRight(game),
     copyProps: {
       title: shareGame.title,
       message: shareGame.message,

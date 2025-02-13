@@ -11,9 +11,10 @@ import { getBoard, getGameStatus } from '../shared/game.utils'
 
 type Props = {
   game: Game | PartialGame,
-  player: PlayerFull,
+  player?: PlayerFull,
   pack?: GameProps['packs'][number],
   playerTimer?: number,
+  isHost?: boolean,
   roundOver?: boolean,
   pickCard: PickCard,
   swapCard: SwapCard,
@@ -25,17 +26,17 @@ type Props = {
   notify: AlertsReturn['newToast'],
 }
 
-export default function GameBody({ game, player, pack, playerTimer, roundOver, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, onPackLoad, loadingPack, notify }: Props) {
+export default function GameBody({ game, player, pack, playerTimer, isHost, roundOver, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, onPackLoad, loadingPack, notify }: Props) {
 
   const {
     autopickCard, selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
     cardOptions, setCardOptions, selectedTab, selectTab, hidePack, timer, packLoading, handleCardLoad
   } = usePickController(pickCard, swapCard, notify, pack, game, player, playerTimer, onPackLoad)
-  
+
   if (!('round' in game) || game.round < 1 || !player) return (
     <GameBodyWrapper>
       { clickRoundBtn && <RoundButton onClick={clickRoundBtn} label="start" /> }
-      <EmptyStyle>{'round' in game ? "Waiting for draft to start." : "Loading game..."}</EmptyStyle>
+      <EmptyStyle>{!('round' in game) ? "Loading game..." : isHost ? "Host-Only Mode" : "Waiting for draft to start."}</EmptyStyle>
     </GameBodyWrapper>
   )
 

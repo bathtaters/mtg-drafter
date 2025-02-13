@@ -17,7 +17,7 @@ export interface GameServerToClient {
 }
 
 export interface GameClientToServer {
-  setOptions:   (gameId: Game['id'], options: LiveOptions) => void;
+  setOptions:   (gameId: Game['id'], options: LiveOptions, newHost?: Player['id']) => void;
   nextRound:    (gameId: Game['id'], round: Game['round']) => void;
   pauseTimer:   (gameId: Game['id'], resume: boolean) => void;
   setName:      (playerId: Player['id'], name: Player['name'], byHost: boolean) => void;

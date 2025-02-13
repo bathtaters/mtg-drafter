@@ -75,7 +75,7 @@ export default function HostModal({
           <PlayersWrapper>
             {players.map((player) => 
               <PlayerEntry key={player.id}
-                player={player} isHost={player.id === (game as Game)?.hostId}
+                player={player} isHost={player.sessionId === (game as Game)?.hostId}
                 renamePlayer={renamePlayer} setStatus={setStatus} setHost={setHost}
               />
             )}
