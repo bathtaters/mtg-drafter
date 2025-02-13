@@ -18,8 +18,11 @@ export async function newBoosterGame({ packList, basics, ...options }: BoosterOp
 
 async function newGame(options: GenericOptions, sessionId?: string) {
 
-  const { url } = await retry(() => prisma.game.create({
-    select: { url: true },
+  const game = await retry(() => prisma.game.create({
+    select: {
+      id: true, name: true, url: true,
+      roundCount: true, timerBase: true, hostId: true,
+    },
     data: {
       name: options.name,
       url: randomUrl(),
@@ -33,5 +36,9 @@ async function newGame(options: GenericOptions, sessionId?: string) {
       })) },
     },
   }))
-  return url
+
+  await retry(() => prisma.logEntry.create({
+    data: { gameId: game.id, byHost: true, action: 'settings', data: JSON.stringify(game) }
+  }))
+  return game.url
 }

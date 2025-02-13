@@ -84,7 +84,7 @@ export const logFullDate = (dt: Date) => dt.toLocaleString(undefined, { timeStyl
 
 export const logTimestamp = (dt: Date) => dt.toLocaleTimeString(undefined, { timeStyle: 'short' }).replace(' ','').padStart(7, '0').slice(0,6).toLowerCase()
 
-export const formatLogAction = (action: LogAction, data: LogData, byHost: boolean) => {
+export const formatLogAction = (action: LogAction, data: LogData, byHost: boolean, gameData?: Partial<Game>) => {
   // Log output: Player|Game <formatLogAction()> <data|card|none> <byHost>
 
   switch(action) {
@@ -100,10 +100,10 @@ export const formatLogAction = (action: LogAction, data: LogData, byHost: boolea
     case 'rename': return byHost ? 'renamed' : 'renamed'
 
     case 'settings':
-      if (!data) return 'settings updated'
+      if (!gameData) return 'settings updated'
 
-
-      return ` ${Object.entries(JSON.parse(data)).map(([ key, val ]) => 
+      if (gameData.id) return 'created'
+      return ` ${Object.entries(gameData).map(([ key, val ]) => 
         key === 'timerBase' ? `timer ${!val ? 'disabled' : `set to "${timerText[+val]?.value || val}"`}` :
         key === 'hostId' ? 'became host' :
         /* Default: */ `${key} changed to "${val}"`

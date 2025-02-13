@@ -1,7 +1,8 @@
 import type { Dispatch, SetStateAction } from "react"
-import type { BasicPlayer, GameCardPartial, LogEntryFull } from "types/game"
+import type { BasicPlayer, Game, GameCardPartial, LogEntryFull } from "types/game"
 import CookieIcon from "components/svgs/CookieIcon"
 import BotIcon from "components/svgs/BotIcon"
+import GearIcon from "components/svgs/GearIcon"
 import { EntryWrapper, EntryItem, EntrySpace, MissingCard, EntryLoading } from "./LogStyles"
 import { IntersectionChildProps } from "components/base/libs/hooks"
 import { getBanName, getBanSession } from "../shared/player.utils"
@@ -15,6 +16,8 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, chi
   
   const playerIdx = playerId ? players.findIndex(({ id }) => id === playerId) : -2
   const actionIdx = allActions.indexOf(action)
+
+  const gameData: Partial<Game> | undefined = action === 'settings' ? data && JSON.parse(data) : undefined
 
   return(
     <EntryWrapper childProps={childProps}>
@@ -32,7 +35,7 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, chi
 
       {/* Main Action */}
       <EntryItem tip={!isPrivate && card ? `${card.cardId} ${card.id}` : undefined} color={actionIdx} below={isFirst}>
-        {formatLogAction(action, data, byHost)}
+        {formatLogAction(action, data, byHost, gameData)}
       </EntryItem>
       <EntrySpace />
       
@@ -64,6 +67,11 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, chi
 
       {/* By Host tag */}
       {byHost && <EntryItem color={-1} inv={true}>by host</EntryItem>}
+
+      {/* Create game data */}
+      {action === 'settings' && gameData?.id && (
+        <EntryItem gameData={gameData} below={isFirst}><GearIcon className="w-5 fill-current ml-2" /></EntryItem>
+      )}
     </EntryWrapper>
   )
 }

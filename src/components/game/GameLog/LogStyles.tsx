@@ -1,10 +1,11 @@
 import type { Ref, MouseEventHandler, ReactNode } from "react"
+import type { GameCardPartial } from "types/game"
 import Image from "next/image"
 import Link from "next/link"
 import ModalWrapper from "components/base/common/Modal"
 import { IntersectionChildProps } from "components/base/libs/hooks"
 import getColorClass from "components/base/libs/colors"
-import { GameCardPartial } from "types/game"
+import { objToString } from "./log.utils"
 import { scryfallLink } from "assets/urls"
 
 export const GameLogWatchWrapper = ({ title, children }: { title: string, children: ReactNode }) => (
@@ -30,11 +31,11 @@ export const EntryWrapper = ({ children, childProps }: { children: ReactNode, ch
 )
 
 export const EntryItem = (
-  { tip, below, right, color, inv, children, onClick }:
-  { tip?: string, below?: boolean, right?: boolean, color?: number, inv?: boolean, children: ReactNode, onClick?: MouseEventHandler }
+  { tip, gameData, below, right, color, inv, children, onClick }:
+  { tip?: string, gameData?: Record<string,any>, below?: boolean, right?: boolean, color?: number, inv?: boolean, children: ReactNode, onClick?: MouseEventHandler }
 ) => (
-  <span data-tip={tip} onClick={onClick}
-    className={`text-left ${tip ? `tooltip tooltip-primary ${below ? 'tooltip-bottom' : 'tooltip-top'
+  <span data-tip={tip || objToString(gameData)} onClick={onClick}
+    className={`text-left ${tip || gameData ? `tooltip tooltip-primary ${below ? 'tooltip-bottom' : 'tooltip-top'
       }${right ?' before:content-[attr(data-tip)] before:translate-x-0 before:left-0' : ''} ` : ''}${
       typeof color === 'number' ? `badge badge-lg truncate ${getColorClass(color, 'all', { inverse: inv })}` : ''
       }${onClick ? ' cursor-pointer badge badge-lg hover:badge-primary' : ''}`

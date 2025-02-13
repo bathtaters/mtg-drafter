@@ -1,6 +1,7 @@
 import type { LogEntry } from "@prisma/client"
 import type { LogOptions, LogEntryFull } from "types/game"
 import type { FilterId } from "types/logs"
+import { timerText } from "assets/strings"
 
 
 export const adaptEntry = <L extends Partial<LogEntry>>(entry: L) => ({ ...entry, time: entry.time && new Date(entry.time) })
@@ -14,3 +15,8 @@ export const filterEntry = (entry: LogEntryFull | undefined, players: FilterId[]
     // Hide playerActions done by host
     ( !entry.playerId || !entry.byHost || !options?.hideHost || entry.action === 'ban' )
   )
+
+
+const endsInId = /id$/i
+export const objToString = (obj?: Record<string,any>) => !obj ? "" : Object.entries(obj).filter(([key]) => !endsInId.test(key))
+  .map(([key, val]) => `${key}: ${key === 'timerBase' ? timerText[val ?? 0]?.value || val : val}`).join(", ")
