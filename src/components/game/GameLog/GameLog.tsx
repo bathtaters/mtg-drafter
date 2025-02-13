@@ -27,6 +27,7 @@ export default function GameLog({ log, players, gameEnded, logout, sidebarVisibl
       />
     }>
       {log.entries == null ? "Loading..." :
+        !log.entries.length ? "No entries yet" :
         log.entries.map((entry) => entry && (
           <LogEntry key={entry.index} {...entry} isPrivate={log.options.hidePrivate} players={players} setCard={setCard} />
         ))

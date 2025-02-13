@@ -133,12 +133,12 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
     }
 
     // Update state, handle missing properties
-    if (!res) return;
+    if (!res) return setTotal((total) => total ?? 0)
     if (res.error) setError(error)
     if (!('total' in res)) return;
     
     const total = res.total
-    if (total) setTotal(total)
+    if (total != null) setTotal(total)
     if (!res.data) return;
 
     // Add data to cache
@@ -257,7 +257,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
         isLoading: false,
       }
     }),
-    [total, entries, preview, cursor, filter, childProps]
+    [total, entries, preview, cursor, filter, childProps],
   )
 
   return {
