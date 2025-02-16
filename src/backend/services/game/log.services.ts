@@ -92,10 +92,9 @@ export async function setWatcher(gameId: string, sessionId: string, join: boolea
     
     const data = await getLastJoinSession(sessionId, gameId).then((data) => data || `${sessionId}${LOG_DELIM}`)
     if (ignoreError) {
-        return prisma.$transaction([
-            prisma.watcher.deleteMany({ where: { gameId, sessionId } }),
-            prisma.logEntry.create({ data: { gameId, action: 'leave', data, byHost } }),
-        ]).then((res) => res[0]?.count ?? 0)
+        const { count } = await prisma.watcher.deleteMany({ where: { gameId, sessionId } })
+        if (count) await prisma.logEntry.create({ data: { gameId, action: 'leave', data, byHost } })
+        return count
     }
     return prisma.$transaction([
         prisma.watcher.delete({ where: { sessionId_gameId: { gameId, sessionId } } }),
