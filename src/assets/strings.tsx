@@ -8,6 +8,7 @@ import { ReactNode } from "react"
 import CardIcon from "components/svgs/CardIcon"
 import HostIcon from "components/svgs/HostIcon"
 import UserIcon from "components/svgs/UserIcon"
+import { ALL_WATCHERS } from "./constants"
 
 export const uploadHelp = "Expects a .txt of card names. \nOne per line with no formatting."
 
@@ -95,7 +96,8 @@ export const formatLogAction = (action: LogAction, data: LogData, byHost: boolea
       return ` pack-${pack.padStart(2,'0')} pick-${pick.padStart(2,'0')}`
 
     case 'join': return byHost ? 'added' : 'joined'
-    case 'leave': return byHost ? 'removed' : 'left'
+    case 'leave': return !byHost ? 'left' :
+      data === ALL_WATCHERS ? 'cleared' : 'removed' 
 
     case 'rename': return byHost ? 'renamed' : 'renamed'
 
