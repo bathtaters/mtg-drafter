@@ -52,7 +52,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
 
         // Force logout if Watching game
         if (sessionId && sessionId !== BOT && !gameIsEnded(game)) {
-          const count = await setWatcher(game.id, sessionId, false, true)
+          const count = await setWatcher(game.id, sessionId, false, true, true)
           if (count) {
             io.emit('updateWatcher', sessionId, false, undefined)
             callback(undefined)
