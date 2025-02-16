@@ -92,8 +92,8 @@ export default function HostModal({
         <Collapser label="Watchers" isOpen={expanded === 3} toggle={toggleExpand(3)}>
 
           <PasswordForm
-            label="Watch Password"
-            btnLabel="Set" emptyBtn="Disable"
+            label="Watch Password" disabled={!game?.watchKey}
+            btnLabel="Set" emptyBtn={game?.watchKey ? "Disable" : "Disabled"}
             placeholder={game?.watchKey ? "••••••••" : ""}
             onSubmit={setWatchPw} isCreate={true}
             heightClass="h-8"
