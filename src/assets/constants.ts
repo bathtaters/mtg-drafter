@@ -15,6 +15,7 @@ export const storageDefaults = Object.freeze({
     showArt: true,
     sortBy: 0,
     logActions: allActions,
+    hostModalSection: 1,
   }),
 
   shareGame = {

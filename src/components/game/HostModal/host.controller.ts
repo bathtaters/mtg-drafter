@@ -1,5 +1,6 @@
 import type { Game, Socket } from "types/game"
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { useLocalStorage } from "components/base/libs/storage"
 import { debounce } from "components/base/services/common.services"
 import { gameIsLocked, gameIsPaused } from "../shared/game.utils"
 import { hostPlayerTooltips } from "assets/strings"
@@ -7,7 +8,7 @@ import { BOT, shareWatch } from "assets/constants"
 
 export default function useHostController(game: Partial<Game> | undefined, setOptions: Socket.SetOptions, banSession: Socket.BanSession) {
   // Collapsing sections
-  const [ expanded, setExpanded ] = useState(0)
+  const [ expanded, setExpanded ] = useLocalStorage<number>('hostModalSection')
   const toggleExpand = useCallback((index?: number) => index ? () => setExpanded((value) => value === index ? 0 : index) : () => setExpanded(0), [])
 
   // Change timer
