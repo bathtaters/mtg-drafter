@@ -3,7 +3,7 @@ import type { Game, BasicLands, Player, BasicPlayer } from 'types/game'
 import prisma from '../../libs/db'
 import retry from '../../libs/retry'
 import { getTimerLength, adaptDbPlayer, hasPack } from 'backend/utils/game/game.utils'
-import { getName } from 'backend/utils/game/player.utils'
+import { getName, getLastBan, getSessionData } from 'backend/utils/game/player.utils'
 import { BOT, LOG_DELIM } from 'assets/constants'
 
 const fullPlayer /* Prisma.PlayerInclude */ = {
@@ -45,8 +45,6 @@ export async function setStatus(id: Player['id'], sessionId: Player['sessionId']
 
 export async function banPlayer(gameId: Game['id'], sessionId: Player['sessionId'] = null, unban: boolean = false, playerId: Player['id'] | null = null) {
 
-  const name = await getName(sessionId, gameId, playerId)
-
   if (!unban && sessionId) {
     // Drop player/watcher
     await retry(() => prisma.$transaction([
@@ -56,6 +54,17 @@ export async function banPlayer(gameId: Game['id'], sessionId: Player['sessionId
         data: { sessionId: null },
       }),
     ]))
+  }
+
+  // Get Name/PlayerID
+  let name: string | null = null
+  if (!unban || !sessionId) {
+    name = await getName(sessionId, gameId, playerId)
+
+  } else {
+    const lastBan = await getLastBan(sessionId, gameId)
+    if (lastBan?.data) name = getSessionData(lastBan.data)[1] || null
+    if (!playerId && lastBan?.playerId) playerId = lastBan?.playerId
   }
 
   const ban: Partial<Ban & { unban: number }> = await retry(() => !unban ? 

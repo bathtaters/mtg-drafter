@@ -3,6 +3,8 @@ import prisma from '../../libs/db'
 import { getSessionData } from 'components/game/shared/player.utils'
 import { LOG_DELIM } from 'assets/constants'
 
+export { getSessionData }
+
 /** Lookup a player's name based on a `sessionId`, `gameId` and/or `playerId`.
  *  In order of priority...
  *  1. Player.name via `playerId` *(Skips if no `playerId`, assumes current player name)*
@@ -101,3 +103,10 @@ export const getLastJoinSession = (sessionId: Player['sessionId'], gameId: Game[
   orderBy: { time: 'desc' },
   take: 1,
 }).then((entries) => entries?.[0]?.data || null)
+
+export const getLastBan = (sessionId: Player['sessionId'], gameId: Game['id']) => prisma.logEntry.findMany({
+  where: { gameId, action: 'ban', data: { startsWith: `${sessionId}${LOG_DELIM}` } },
+  select: { gameId: true, playerId: true, data: true },
+  orderBy: { time: 'desc' },
+  take: 1,
+}).then((entries) => entries?.[0] || null) as Promise<{ data: string | null, gameId: string, playerId: string | null } | null>
