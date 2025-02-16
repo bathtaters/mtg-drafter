@@ -37,7 +37,7 @@ export type BanResponse = Partial<Ban> & { playerId: string | null, unban: boole
 
 export enum Direction { N = 'N', E = 'E', S = 'S', W = 'W' }
 export type CardOptions = { width: string, showArt: boolean, sort?: SortKey }
-export type LogOptions = { hideHost: boolean, hidePrivate: boolean }
+export type LogOptions = { hideHost: boolean, hidePrivate: boolean, hideWatchers: boolean }
 export type TimerOptions = { secPerCard: number, secOffset?: number, roundTo?: number, minSec?: number, maxSec?: number }
 
 // -- LOG TYPES -- \\

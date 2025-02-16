@@ -29,7 +29,7 @@ export const storageDefaults = Object.freeze({
     url: (gameUrl: string) => `/game/watch/${gameUrl}`,
   },
 
-  logOptions: LogOptions = { hideHost: false, hidePrivate: true },
+  logOptions: LogOptions = { hideHost: false, hidePrivate: true, hideWatchers: true },
 
   // See strings: timerLabels for labels
   defaultTimer: TimerOptions = { secPerCard: 3.3, secOffset: -8, roundTo: 5, minSec: 5 },

@@ -1,9 +1,10 @@
-import type { LogEntry } from "@prisma/client"
+import type { LogAction, LogEntry } from "@prisma/client"
 import type { LogOptions, LogEntryFull } from "types/game"
 import type { FilterId } from "types/logs"
 import { getSessionData } from "../shared/player.utils"
 import { timerText } from "assets/strings"
 
+const watcherActions: LogAction[] = ['join', 'leave', 'ban', 'unban']
 
 export const adaptEntry = <L extends Partial<LogEntry>>(entry: L) => ({ ...entry, time: entry.time && new Date(entry.time) })
 
@@ -14,7 +15,8 @@ export const filterEntry = (entry: LogEntryFull | undefined, players: FilterId[]
     // No player for Ban/Unban = 'other'; No player for other actions = 'game'
     players.includes(entry.playerId || (entry.action === 'ban' || entry.action === 'unban' ? "other" : "game" )) &&
     // Hide playerActions done by host
-    ( !entry.playerId || !entry.byHost || !options?.hideHost || entry.action === 'ban' )
+    ( !entry.playerId || !entry.byHost || !options?.hideHost || entry.action === 'ban' ) &&
+    ( !options.hideWatchers || !!entry.playerId || !watcherActions.includes(entry.action) )
   )
 
 
@@ -24,7 +26,7 @@ export const objToString = (obj?: Record<string,any>) => !obj ? "" : Object.entr
 
 
 export function getSession(entry: LogEntryFull) {
-  if (!entry.data || !['ban', 'unban', 'join', 'leave'].includes(entry.action)) return null
+  if (!entry.data || !watcherActions.includes(entry.action)) return null
   
   const [ id, name ] = getSessionData(entry.data)
   if (!id) return null
