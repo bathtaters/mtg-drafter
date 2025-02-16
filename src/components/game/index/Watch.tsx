@@ -21,7 +21,7 @@ export default function Watch(props: ServerProps) {
     <SetPageTitle title={game?.name || ""} />
 
     <PlayerSidebar
-      game={game} players={players} holding={holding} packSize={maxPackSize} playerIdx={-1}
+      game={game} players={players} isHost={false} holding={holding} packSize={maxPackSize} playerIdx={-1}
       isOpen={sidebarVisible} setOpen={setSidebar || true}
     >
       <GameLogHeader game={game} />
