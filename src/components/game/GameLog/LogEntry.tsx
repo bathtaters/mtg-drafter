@@ -3,11 +3,12 @@ import type { BasicPlayer, Game, GameCardPartial, LogEntryFull } from "types/gam
 import CookieIcon from "components/svgs/CookieIcon"
 import BotIcon from "components/svgs/BotIcon"
 import GearIcon from "components/svgs/GearIcon"
+import WatcherIcon from "components/svgs/WatcherIcon"
 import { EntryWrapper, EntryItem, EntrySpace, MissingCard, EntryLoading } from "./LogStyles"
 import { IntersectionChildProps } from "components/base/libs/hooks"
-import { getBanName, getBanSession } from "../shared/player.utils"
+import { getSession } from "./log.utils"
 import { formatLogAction, logFullDate, logTimestamp } from "assets/strings"
-import { BOT } from "assets/constants"
+import { ALL_WATCHERS, BOT } from "assets/constants"
 import { allActions } from "types/logs"
 
 
@@ -16,6 +17,9 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, chi
   
   const playerIdx = playerId ? players.findIndex(({ id }) => id === playerId) : -2
   const actionIdx = allActions.indexOf(action)
+  
+  const session = getSession(entry)
+  const isWatcher = !!session?.id && playerIdx === -2
 
   const gameData: Partial<Game> | undefined = action === 'settings' ? data && JSON.parse(data) : undefined
 
@@ -25,13 +29,22 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, chi
       <EntryItem tip={logFullDate(time)} below={isFirst} right={true}>{logTimestamp(time)}</EntryItem>
       <EntrySpace />
 
+      {/* Watcher */}
+      {isWatcher && <>
+        <EntryItem tip={session.id === ALL_WATCHERS ? "All watchers" : "Watcher"} below={isFirst}>
+          <WatcherIcon className="w-5 fill-current" />
+        </EntryItem>
+        <EntrySpace />
+      </>}
+
       {/* Player or Game */}
-      <EntryItem tip={playerId || gameId} below={isFirst} right={true} color={playerIdx} inv={true}>{
-        playerIdx !== -2 ? players[playerIdx]?.name || playerId :
-        action === 'ban' || action === 'unban' ? getBanName(data) || 'Watcher' :
-          'Game'
-      }</EntryItem>
-      <EntrySpace />
+      {session?.id !== ALL_WATCHERS && <>
+        <EntryItem tip={playerId || gameId} below={isFirst} right={true} color={playerIdx} inv={true}>{
+          playerIdx !== -2 ? players[playerIdx]?.name || playerId :
+            session?.id ? session.name || 'Watcher' : 'Game'
+        }</EntryItem>
+        <EntrySpace />
+      </>}
 
       {/* Main Action */}
       <EntryItem tip={!isPrivate && card ? `${card.cardId} ${card.id}` : undefined} color={actionIdx} below={isFirst}>
@@ -44,17 +57,17 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, chi
       {action === 'pick' && !card && <EntryItem><MissingCard /></EntryItem>}
 
       {/* Ban Cookie */}
-      {(action === 'ban' || action === 'unban') && data && <>
-        <EntryItem tip={getBanSession(data)} below={isFirst}>
+      {session?.id && session.id !== ALL_WATCHERS && <>
+        <EntryItem tip={session.id} below={isFirst}>
           <CookieIcon className="w-5 fill-current" />
         </EntryItem>
         { byHost && <EntrySpace /> }
       </>}
       
-      {/* Join Cookie or Bot */}
-      {action === 'join' && data && (
-        <EntryItem tip={data === BOT ? 'Bot' : data} below={isFirst}>
-          {data === BOT ? <BotIcon className="w-5" /> : <CookieIcon className="w-5 fill-current" />}
+      {/* Bot */}
+      {action === 'join' && data === BOT && (
+        <EntryItem tip="Bot" below={isFirst}>
+          <BotIcon className="w-5" />
         </EntryItem>
       )}
 
