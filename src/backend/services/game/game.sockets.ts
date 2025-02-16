@@ -128,7 +128,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         if (game && !gameIsEnded(game)) throw new Error("Players cannot view log until game has ended")
         
         // Update DB
-        const result = await setWatcher(gameId, sessionId, true)
+        const result = await setWatcher(gameId, sessionId, true, false)
         if (result.sessionId !== sessionId) throw new Error("Server failure")
         
         callback(true, undefined)
@@ -151,14 +151,14 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
       }
     })
 
-    socket.on('dropWatcher', async (gameId, sessionId) => {
+    socket.on('dropWatcher', async (gameId, sessionId, byHost) => {
       try {
         // Validation
         gameId = validation.id.parse(gameId)
         sessionId = validation.session.parse(sessionId)
         
         // Update DB
-        const result = await setWatcher(gameId, sessionId, false)
+        const result = await setWatcher(gameId, sessionId, false, byHost ?? false)
         if (result.sessionId !== sessionId) throw new Error('Failed to drop watcher')
 
         io.emit('updateWatcher', sessionId, false, undefined)

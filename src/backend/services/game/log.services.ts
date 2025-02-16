@@ -3,8 +3,9 @@ import type { Game } from "types/game"
 import type { LogFilterParam } from "types/log.validation"
 import prisma from "backend/libs/db"
 import { validate, hash } from "backend/utils/db/password.utils"
-import { getName } from "backend/utils/game/player.utils"
+import { getLastJoinSession, getName } from "backend/utils/game/player.utils"
 import { otherPlayers } from "types/logs"
+import { ALL_WATCHERS, LOG_DELIM } from "assets/constants"
 
 const LOG_SALT = "92c23bc8fd75cb3e2880b983ce84d736"
 
@@ -62,7 +63,8 @@ export async function setPassword(id: string, password: string | null) {
                 where: { id },
                 data: { watchKey: password },
             }),
-            prisma.watcher.deleteMany({ where: { gameId: id } })
+            prisma.watcher.deleteMany({ where: { gameId: id } }),
+            prisma.logEntry.create({ data: { gameId: id, action: 'leave', data: ALL_WATCHERS, byHost: true } }),
         ])
         return Boolean(result[0].watchKey)
 
@@ -73,17 +75,30 @@ export async function setPassword(id: string, password: string | null) {
     return null
 }
 
-export async function setWatcher(gameId: string, sessionId: string, join: boolean): Promise<Watcher>;
-export async function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError: true): Promise<number>;
-export async function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError: false | undefined): Promise<Watcher>;
-export async function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError: boolean): Promise<Watcher | number>;
-export async function setWatcher(gameId: string, sessionId: string, join: boolean, ignoreError = false) {
+export async function setWatcher(gameId: string, sessionId: string, join: boolean, byHost: boolean): Promise<Watcher>;
+export async function setWatcher(gameId: string, sessionId: string, join: boolean, byHost: boolean, ignoreError: true): Promise<number>;
+export async function setWatcher(gameId: string, sessionId: string, join: boolean, byHost: boolean, ignoreError: false | undefined): Promise<Watcher>;
+export async function setWatcher(gameId: string, sessionId: string, join: boolean, byHost: boolean, ignoreError: boolean): Promise<Watcher | number>;
+export async function setWatcher(gameId: string, sessionId: string, join: boolean, byHost = false, ignoreError = false) {
     if (join) {
         const name = await getName(sessionId, gameId)
-        return prisma.watcher.create({ data: { gameId, sessionId, name } })
-    } if (ignoreError) {
-        return prisma.watcher.deleteMany({ where: { gameId, sessionId } })
-            .then((res) => res.count)
+        const data = name ? `${sessionId}${LOG_DELIM}${name || ''}` : sessionId
+        return prisma.$transaction([
+            prisma.watcher.create({ data: { gameId, sessionId, name } }),
+            prisma.logEntry.create({ data: { gameId, action: 'join', data, byHost } }),
+        ]).then((res) => res[0])
+
     }
-    return prisma.watcher.delete({ where: { sessionId_gameId: { gameId, sessionId } } })
+    
+    const data = await getLastJoinSession(sessionId, gameId).then((data) => data || `${sessionId}${LOG_DELIM}`)
+    if (ignoreError) {
+        return prisma.$transaction([
+            prisma.watcher.deleteMany({ where: { gameId, sessionId } }),
+            prisma.logEntry.create({ data: { gameId, action: 'leave', data, byHost } }),
+        ]).then((res) => res[0]?.count ?? 0)
+    }
+    return prisma.$transaction([
+        prisma.watcher.delete({ where: { sessionId_gameId: { gameId, sessionId } } }),
+        prisma.logEntry.create({ data: { gameId, action: 'leave', data, byHost } }),
+    ]).then((res) => res[0])
 }

@@ -215,7 +215,7 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
   const dropWatcher: Socket.DropWatcher = useCallback((sessionId) => {
     if (!local.game?.id) return throwError(formatError('Error setting Watch password: Game not loaded'))
     
-    emit('dropWatcher', local.game.id, sessionId)
+    emit('dropWatcher', local.game.id, sessionId, true)
   }, [emit, local.game?.id, throwError])
 
 

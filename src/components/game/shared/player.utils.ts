@@ -10,3 +10,5 @@ export const playerIsBanned = (game?: Partial<Game | PartialGame>, sessionId?: s
 export const getBanName = (logData: string | null) => logData && logData.split(LOG_DELIM, 2)[1] || null
 
 export const getBanSession = (logData: string | null) => (logData && logData.split(LOG_DELIM, 2)[0]) || undefined
+
+export const getSessionData = (logData: string | null): (string | undefined)[] => !logData ? [] : logData.split(LOG_DELIM, 2)

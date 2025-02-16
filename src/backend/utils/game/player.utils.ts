@@ -1,6 +1,6 @@
 import type { Game, Player } from 'types/game'
 import prisma from '../../libs/db'
-import { getBanName } from 'components/game/shared/player.utils'
+import { getSessionData } from 'components/game/shared/player.utils'
 import { LOG_DELIM } from 'assets/constants'
 
 /** Lookup a player's name based on a `sessionId`, `gameId` and/or `playerId`.
@@ -54,7 +54,7 @@ export async function getName(sessionId: Player['sessionId'], game: Game['id'] |
     
     // Priorities 6 & 7
     const banLogs = await prisma.logEntry.findMany({
-      where: { action: { in: ['ban', 'unban'] }, data: { startsWith: `${sessionId}${LOG_DELIM}` } },
+      where: { action: { in: ['ban', 'unban', 'join', 'leave'] }, data: { startsWith: `${sessionId}${LOG_DELIM}` } },
       select: { gameId: true, data: true },
       orderBy: { time: 'desc' },
     })
@@ -62,7 +62,7 @@ export async function getName(sessionId: Player['sessionId'], game: Game['id'] |
     // Use game or latest entry if no game found
     const banLogEntry = (game && banLogs.find(({ gameId }) => gameId === game)) || banLogs[0]
     if (banLogEntry?.data) {
-      const banName = getBanName(banLogEntry.data)
+      const banName = getSessionData(banLogEntry.data)[0]
       if (banName) return banName
     }
     
@@ -94,3 +94,10 @@ export async function getName(sessionId: Player['sessionId'], game: Game['id'] |
   
     return null
   }
+
+export const getLastJoinSession = (sessionId: Player['sessionId'], gameId: Game['id']) => prisma.logEntry.findMany({
+  where: { gameId, action: 'join', data: { startsWith: `${sessionId}${LOG_DELIM}` } },
+  select: { gameId: true, data: true },
+  orderBy: { time: 'desc' },
+  take: 1,
+}).then((entries) => entries?.[0]?.data || null)

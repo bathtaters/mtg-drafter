@@ -25,7 +25,7 @@ export interface GameClientToServer {
   setStatus:    (playerId: Player['id'], status: PlayerStatus, byHost: boolean, callback: (player?: Player) => void) => void;
   setWatchPw:   (gameId: Game['id'], password: string | null) => void
   watcherLogin: (gameId: Game['id'], sessionId: NonNullable<Player['sessionId']>, password: string | null, callback: (success: boolean, reason?: string) => void) => void
-  dropWatcher:  (gameId: Game['id'], sessionId: NonNullable<Player['sessionId']>) => void
+  dropWatcher:  (gameId: Game['id'], sessionId: NonNullable<Player['sessionId']>, byHost?: boolean) => void
   banSession:   (gameId: Game['id'], sessionId: Player['sessionId'] | null, unban: boolean, playerId?: Player['id'] | null) => void
 
   swapBoards: (gameCardId: GameCard['id'], toBoard: Board, callback: (gameCardId: GameCard['id'] | void, toBoard?: Board | void) => void) => void;

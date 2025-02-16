@@ -70,7 +70,7 @@ export default function useLogWatch({
             title: 'Logout Failed', theme: "warning",
             message: !game?.id ? "Game not found" : !sessionId ? "User token missing" : "Unable to reach server",
         })
-        socket.emit('dropWatcher', game.id, sessionId)
+        socket.emit('dropWatcher', game.id, sessionId, false)
     }
 
     // Add watcher-specific socket listeners
