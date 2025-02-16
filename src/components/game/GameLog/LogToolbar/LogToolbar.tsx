@@ -19,7 +19,7 @@ export default function LogToolbar({ log, players, gameEnded, logout, sidebarVis
   return (
     <ToolbarWrapper>
       <SettingsDropdown>
-        {Object.keys(log.options).map((key) => (key !== 'hidePrivate' || gameEnded) &&
+        {Object.keys(log.options).map((key) => (key !== 'hidePrivate' || gameEnded) && (!logout || key !== 'hideWatchers') &&
           <SettingToggle key={key} label={logOptionLabels[key]} value={!log.options[key]} setValue={(val) => log.setOptions((opt) => ({ ...opt, [key]: !val }))} />
         )}
         { setSidebar && <SettingToggle label={logOptionLabels.showSidebar} value={sidebarVisible ?? false} setValue={setSidebar} /> }
