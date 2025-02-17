@@ -56,7 +56,7 @@ export default function useLogWatch({
 
         setLoading && setLoading((v) => v + 1)
 
-        socket.emit('watcherLogin', game.id, sessionId, password, (success, reason) => {
+        socket.emit('watcherLogin', game.id, sessionId, password, (success: boolean, reason?: string) => {
             setAuth(success)
             setError(undefined)
             if (success) fetch()
