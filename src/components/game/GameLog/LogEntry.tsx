@@ -40,8 +40,9 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, chi
       {/* Player or Game */}
       {session?.id !== ALL_WATCHERS && <>
         <EntryItem tip={playerId || gameId} below={isFirst} right={true} color={playerIdx} inv={true}>{
-          playerIdx !== -2 ? players[playerIdx]?.name || playerId :
-            session?.id ? session.name || 'Watcher' : 'Game'
+          session?.name ? session.name : // Session name
+          playerIdx !== -2 ? players[playerIdx]?.name || playerId : // Player name
+          session?.id ? 'Watcher' : 'Game' // Generic entry
         }</EntryItem>
         <EntrySpace />
       </>}
