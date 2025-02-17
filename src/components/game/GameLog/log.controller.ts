@@ -1,13 +1,25 @@
 import type { LogAction } from "@prisma/client"
-import type { Game, BasicPlayer, LogFull, LogEntryFull } from "types/game"
+import type { Game, BasicPlayer, LogFull, LogEntryFull, GameCardFull, GameCardPartial, PackFull, CardOptions } from "types/game"
 import type { LogFilterParam } from "types/log.validation"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { fetcher } from "components/base/libs/fetch"
 import { type FetchHandler, useDynamicScrollFetcher } from "components/base/libs/scrollFetch"
+import useToolbar from "../CardToolbar/toolbar.controller"
 import { adaptEntry, filterEntry } from "./log.utils"
 import { logOptions, logFetchOptions, dynamicScrollPreloadDistancePx } from "assets/constants"
 import { allActions, otherPlayers } from "types/logs"
+
+
+export function useCardPopout(packs?: PackFull[]) {
+  const [card, showCard] = useState<GameCardFull | GameCardPartial>()
+  const setCard = (card?: GameCardPartial) => showCard(card ? packs?.[card.packIdx].cards.find(({ id }) => id === card.id) ?? card : card)
+
+  const [{ width }, setCardOptions] = useState<CardOptions>({ width: '', showArt: true })
+  const { zoom, setZoom } = useToolbar({ setCardOptions, notify: ({ message }) => console.error(message) })
+
+  return { card, setCard, width, zoom, setZoom }
+}
 
 
 export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) {

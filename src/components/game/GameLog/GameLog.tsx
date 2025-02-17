@@ -1,9 +1,11 @@
-import type { BasicPlayer, GameCardFull, GameCardPartial, PackFull } from "types/game"
-import type { GameLog } from "./log.controller"
-import { type Dispatch, type SetStateAction, useState } from "react"
+import type { BasicPlayer, PackFull } from "types/game"
+import { useCardPopout, type GameLog } from "./log.controller"
+import { type Dispatch, type SetStateAction } from "react"
 import LogToolbar from "./LogToolbar/LogToolbar"
 import LogEntry from "./LogEntry"
 import { LogContainer, ErrorContainer, CardModal } from "./LogStyles"
+import { ArtSize } from "../CardToolbar/CardToolbarStyles"
+import cardZoomLevels from "../CardToolbar/cardZoomLevels"
 
 export type Props = {
   log: GameLog,
@@ -17,8 +19,7 @@ export type Props = {
 
 
 export default function GameLog({ log, players, packs, gameEnded, logout, sidebarVisible, setSidebar }: Props) {
-  const [card, showCard] = useState<GameCardFull | GameCardPartial>()
-  const setCard = (card?: GameCardPartial) => showCard(card ? packs?.[card.packIdx].cards.find(({ id }) => id === card.id) ?? card : card)
+  const { card, setCard, zoom, setZoom, width } = useCardPopout(packs)
   
   return log.error ? <ErrorContainer text={log.error} /> : 
 
@@ -34,6 +35,9 @@ export default function GameLog({ log, players, packs, gameEnded, logout, sideba
           <LogEntry key={entry.index} {...entry}  isPrivate={log.options.hidePrivate} players={players} setCard={setCard} />
         ))
       }
-      <CardModal card={card} close={() => showCard(undefined)} />
+
+      <CardModal card={card} close={() => setCard(undefined)} className={width}>
+        <ArtSize aria-label="Card zoom" value={zoom} setValue={setZoom} min={0} max={cardZoomLevels.length - 1} />
+      </CardModal>
     </LogContainer>
 }

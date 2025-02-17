@@ -50,7 +50,7 @@ const NoCard = ({ name, isLink }: { name?: string, isLink?: boolean }) => (<>
   {isLink && <div className="text-sm italic link link-hover link-primary">Click to open in Scryfall.</div>}
 </>)
 
-const CardLink = ({ card, alt }: { card: GameCardFull | GameCardPartial, className?: string, alt?: string }) => !card ? null : (
+const CardLink = ({ card, alt }: { card: GameCardFull | GameCardPartial, alt?: string }) => !card ? null : (
   <Link
     title={alt} target="_blank" aria-disabled={!card.card.scryfallId}
     href={card.card.scryfallId ? scryfallLink(card.card.scryfallId) : ''}
@@ -76,10 +76,13 @@ const CardLink = ({ card, alt }: { card: GameCardFull | GameCardPartial, classNa
   </Link>
 )
 
-export const CardModal = ({ card, close }: { card?: GameCardFull | GameCardPartial, close: () => void }) => (
-  <dialog className={`modal modal-middle ${card ? 'modal-open' : ''}`} onClick={close}>
+export const CardModal = ({ card, close, className, children }: { card?: GameCardFull | GameCardPartial, close: () => void, className?: string, children?: ReactNode }) => (
+  <dialog className={`modal modal-middle${card ? ' modal-open' : ''} ${className ?? ''}`} onClick={close}>
     {card && <>
       <CardLink card={card} alt="Open in Scryfall" />
+      <div className="absolute bottom-2 z-10 w-1/2" onClick={(ev) => ev.stopPropagation()}>
+        {children}
+      </div>
       <style jsx global>{"html,body,#__next { overflow-y: hidden; }"}</style>
     </>}
   </dialog>
