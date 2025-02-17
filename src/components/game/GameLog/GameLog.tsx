@@ -34,6 +34,6 @@ export default function GameLog({ log, players, packs, gameEnded, logout, sideba
           <LogEntry key={entry.index} {...entry}  isPrivate={log.options.hidePrivate} players={players} setCard={setCard} />
         ))
       }
-      <CardModal card={card} alt="Popout Card Image" close={() => showCard(undefined)} />
+      <CardModal card={card} close={() => showCard(undefined)} />
     </LogContainer>
 }
