@@ -1,10 +1,14 @@
-import type { MouseEventHandler, ReactNode } from "react"
+import type { EventHandler, MouseEventHandler, ReactNode, SyntheticEvent } from "react"
 import type { Board } from "@prisma/client"
 import { Direction } from "types/game"
 import DeckIcon from "components/svgs/DeckIcon"
 import ReloadIcon from "components/svgs/ReloadIcon"
 
 const dirClass: { [dir in Direction]: string } = { N: '', E: 'rotate-90', S: 'rotate-180', W: '-rotate-90' }
+
+const stopProp = <E extends SyntheticEvent>(handler?: EventHandler<E>) => handler && ((ev: E) => {
+  ev.preventDefault(); ev.stopPropagation(); handler(ev)
+})
 
 export const CardWrapper = ({
   isSelected, isHighlighted, isFoil, direction = Direction.N, reversed,
@@ -61,7 +65,7 @@ export const SwapButton = ({ board, low, onClick }: { board: Board, low?: boolea
 
 
 export const FlipButton = ({ isBack, low, onClick }: { isBack?: boolean, low?: boolean, onClick?: MouseEventHandler }) =>
-  <button type="button" onClick={onClick} onMouseEnter={onClick} onMouseLeave={onClick} className={
+  <button type="button" onClick={stopProp(onClick)} onMouseEnter={stopProp(onClick)} onMouseLeave={stopProp(onClick)} className={
       `hidden group-hover:flex absolute ${low ? 'top-[8em]' : 'top-[3.5em]'} right-[0.75em] z-30
       btn btn-circle w-[2em] h-[2em] text-[1.5em] p-0 m-0 min-h-0 ${
         isBack ? 'bg-base-content text-base-100 hover:bg-base-content' : ''
@@ -71,7 +75,7 @@ export const FlipButton = ({ isBack, low, onClick }: { isBack?: boolean, low?: b
   </button>
 
 export const RotateButton = ({ isRotater, onClick }: { isRotater?: boolean, onClick?: MouseEventHandler }) =>
-  <button type="button" onClick={onClick} onMouseEnter={onClick} onMouseLeave={onClick} className={
+  <button type="button" onClick={stopProp(onClick)} onMouseEnter={stopProp(onClick)} onMouseLeave={stopProp(onClick)} className={
       `hidden group-hover:flex absolute top-[3.5em] left-[5em] z-30
       btn btn-circle w-[2em] h-[2em] text-[1.5em] p-0 m-0 min-h-0 ${
         isRotater ? 'bg-base-content text-base-100 hover:bg-base-content' : ''
