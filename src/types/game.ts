@@ -1,12 +1,19 @@
-import type { Card, Game as DbGame, Pack, GameCard, Player as DbPlayer, Board, PlayerStatus, LogEntry, LogAction, FaceInCard, Ban, Watcher } from "@prisma/client"
+import type { Card, Game as DbGame, Pack, GameCard, Player as DbPlayer, Board, Color, LogEntry, LogAction, FaceInCard, Ban, Watcher } from "@prisma/client"
 import type { SortKey } from "components/base/services/cardSort.services"
 import type { Layout } from "./scryfall"
-import z from "backend/libs/validation"
-import { boardLands } from "./game.validation"
+
+// -- ENUMs -- \\
+
+export { Color, Rarity, Side, Board, LogAction } from '@prisma/client'
+
+export enum TabLabels { pack = 'pack', main = 'main', side = 'side' }
+export enum GameStatus { start = 'start', active = 'active', last = 'last', end = 'end' }
+export enum PlayerStatus { join = 'join', leave = 'leave', bot = 'bot' }
+export enum Direction { N = 'N', E = 'E', S = 'S', W = 'W' }
 
 // -- DATABASE JSONs -- \\
 
-export type BoardLands = z.infer<typeof boardLands>
+export type BoardLands = Record<Lowercase<Color>, number>
 export type BasicLands = { [board in Board]: BoardLands } & { pack: never }
 
 
@@ -35,7 +42,6 @@ export type BanResponse = Partial<Ban> & { playerId: string | null, unban: boole
 
 // -- USER OPTIONS -- \\
 
-export enum Direction { N = 'N', E = 'E', S = 'S', W = 'W' }
 export type CardOptions = { width: string, showArt: boolean, sort?: SortKey }
 export type LogOptions = { hideHost: boolean, hidePrivate: boolean, hideWatchers: boolean }
 export type TimerOptions = { secPerCard: number, secOffset?: number, roundTo?: number, minSec?: number, maxSec?: number }

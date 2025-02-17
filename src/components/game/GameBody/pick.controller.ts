@@ -1,7 +1,8 @@
 import type { MouseEvent } from "react"
-import type { GameCard, Board, TabLabels } from "@prisma/client"
-import type { Game, CardOptions, PackFull, PartialGame, PickCard, PlayerFull, SwapCard } from "types/game"
+import type { GameCard } from "@prisma/client"
 import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
+import type { Game, CardOptions, PackFull, PartialGame, PickCard, PlayerFull, SwapCard, Board } from "types/game"
+import { TabLabels } from "types/game"
 import { useCallback, useRef, useState, useEffect } from "react"
 import { useTimer, useLoadElements } from "components/base/libs/hooks"
 import getAutopickCard from "components/base/services/autoPick.service"
@@ -18,7 +19,7 @@ export default function usePickController(
 
   const lastClick = useRef(-1)
   const nextPickAllowed = useRef(0)
-  const [ selectedTab,  selectTab       ] = useState<TabLabels>(hidePack ? 'main' : 'pack')
+  const [ selectedTab,  selectTab       ] = useState<TabLabels>(hidePack ? TabLabels.main : TabLabels.pack)
   const [ selectedCard, setSelectedCard ] = useState<GameCard['id']>()
   const [ autopickCard, setAutopickCard ] = useState<string | number>()
   const [ cardOptions,  setCardOptions  ] = useState<CardOptions>({ width: '', showArt: true, sort: undefined })
@@ -66,11 +67,11 @@ export default function usePickController(
 
   const [ packLoading, handleCardLoad ] = useLoadElements(onPackLoad, pack?.cards.length, !cardOptions.showArt, [pack?.index])
 
-  useEffect(() => { if (hidePack && selectedTab === 'pack') selectTab('main') }, [hidePack, selectedTab])
+  useEffect(() => { if (hidePack && selectedTab === 'pack') selectTab(TabLabels.main) }, [hidePack, selectedTab])
   
   useEffect(() => {
     if (typeof pack?.index === 'number') {
-      if (pack.cards.find(({ playerId }) => !playerId)) selectTab('pack')
+      if (pack.cards.find(({ playerId }) => !playerId)) selectTab(TabLabels.pack)
       setAutopickCard(getAutopickCard(pack, player?.cards)?.id || pack.index)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

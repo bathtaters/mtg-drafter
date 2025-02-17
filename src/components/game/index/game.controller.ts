@@ -1,4 +1,4 @@
-import type { PlayerFull, ServerProps } from 'types/game'
+import { type PlayerFull, type ServerProps, PlayerStatus } from 'types/game'
 import { useState } from 'react'
 import { useGameEmitters } from './services/socket.controller'
 import downloadDeck from './services/downloadDeck.controller'
@@ -26,7 +26,7 @@ export default function useGameController(props: ServerProps) {
 
   const dropPlayer = !enableDropping || !local.player ? undefined : () => {
     local.setSidebar(false)
-    setStatus((local.player as PlayerFull).id, 'leave')
+    setStatus((local.player as PlayerFull).id, PlayerStatus.leave)
   }
 
   return {

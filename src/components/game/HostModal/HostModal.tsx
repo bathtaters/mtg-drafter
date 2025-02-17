@@ -1,4 +1,5 @@
 import type { Game, BasicPlayer, Socket, PartialGame } from "types/game"
+import { PlayerStatus } from "types/game"
 import ModalWrapper, { ModalButton } from "components/base/common/Modal"
 import Loader from "components/base/Loader"
 import Moderation from "./HostModeration"
@@ -82,7 +83,7 @@ export default function HostModal({
           </PlayersWrapper>
           
           <Moderation label="Moderation Controls" players={players} banned={banned} banOne={banPlayer} 
-            kickOne={(playerId) => setStatus(playerId, 'leave', true)}>
+            kickOne={(playerId) => setStatus(playerId, PlayerStatus.leave, true)}>
             <LockButton locked={locked} onClick={() => lockGame(locked)} />
           </Moderation>
         </Collapser>

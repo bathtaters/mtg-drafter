@@ -1,5 +1,5 @@
-import type { PlayerFull } from 'types/game'
-import { GameCard, TabLabels } from '@prisma/client'
+import { type PlayerFull, TabLabels } from 'types/game'
+import { GameCard } from '@prisma/client'
 import { TabsWrapper, TabStyle } from './GameBodyStyles'
 import { getBoard } from '../shared/game.utils'
 import { cardCounter } from 'assets/strings'

@@ -1,6 +1,7 @@
 import type { MouseEventHandler } from 'react'
 import type { Game, GameProps, PartialGame, PickCard, PlayerFull, SwapCard } from 'types/game'
 import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
+import { GameStatus, TabLabels } from 'types/game'
 import CardContainer from "../CardContainer/CardContainer"
 import CardToolbar from '../CardToolbar/CardToolbar'
 import { PickCardButton, RoundButton, GameBodyWrapper, GameBodyHeader, TimerStyle } from './GameBodyStyles'
@@ -35,7 +36,7 @@ export default function GameBody({ game, player, pack, playerTimer, isHost, roun
 
   if (!('round' in game) || game.round < 1 || !player) return (
     <GameBodyWrapper>
-      { clickRoundBtn && <RoundButton onClick={clickRoundBtn} label="start" /> }
+      { clickRoundBtn && <RoundButton onClick={clickRoundBtn} label={GameStatus.start} /> }
       <EmptyStyle>{!('round' in game) ? "Loading game..." : isHost ? "Host-Only Mode" : "Waiting for draft to start."}</EmptyStyle>
     </GameBodyWrapper>
   )
@@ -51,7 +52,7 @@ export default function GameBody({ game, player, pack, playerTimer, isHost, roun
       {selectedTab === 'pack' ?
         <CardContainer
           loading={loadingPack ? -1 : packLoading || undefined}
-          label="pack"
+          label={TabLabels.pack}
           cards={roundOver ? 'roundEnd' : pack?.cards}
           cardOptions={cardOptions}
           paused={!!game.pause}

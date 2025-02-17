@@ -1,5 +1,4 @@
-import type { GameStatus } from "@prisma/client"
-import type { GameProps } from "types/game"
+import type { GameProps, GameStatus } from "types/game"
 import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
 import GameHeaderBase from "./GameHeaderBase"
 import GameMenu from "./GameMenu"

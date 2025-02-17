@@ -1,6 +1,5 @@
 import type { MouseEventHandler, ReactNode } from "react"
-import type { Color, TabLabels } from "@prisma/client"
-import type { BoardLands } from "types/game"
+import type { Color, BoardLands, TabLabels } from "types/game"
 import { CardCounter, ContainerHeaderStyle, ContainerLabelStyle, LandButton, LandContainerStyle, LandCounterStyle } from "./CardContainerStyles"
 import { colorClass, colorPip, hoverClass } from "components/base/styles/manaIcons"
 import { colorOrder } from "assets/sort.constants"

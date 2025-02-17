@@ -1,4 +1,4 @@
-import type { Game, Socket } from "types/game"
+import { type Game, type Socket, PlayerStatus } from "types/game"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { debounce } from "components/base/services/common.services"
@@ -59,7 +59,7 @@ export function getPlayerButtonData(id: string, sessionId: string | null, isHost
   if (!sessionId) return {
     icon: "empty",
     tooltip: hostPlayerTooltips.setBot,
-    action: setStatus ? () => setStatus(id, 'bot', true) : undefined,
+    action: setStatus ? () => setStatus(id, PlayerStatus.bot, true) : undefined,
   }
 
   return {

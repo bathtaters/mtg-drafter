@@ -1,5 +1,5 @@
-import type { GameCard, Board, GameStatus } from "@prisma/client"
-import type { Game, BasicPlayer, PackMin, ServerProps } from "types/game"
+import type { GameCard } from "@prisma/client"
+import { Game, BasicPlayer, PackMin, Board, GameStatus, ServerProps } from "types/game"
 import { mod } from "components/base/services/common.services"
 
 export const canWatch = (game?: { watchers?: { sessionId?: string | null }[] }, session?: string): boolean =>
@@ -18,8 +18,8 @@ export const getBoard = <C extends GameCard>(playerCards: C[], board: Board) => 
 
 export const getGameStatus = (game?: Partial<Game>): GameStatus | undefined =>
   typeof game?.round !== 'number' ? undefined :
-    game.round < 1 ? 'start' : gameIsEnded(game) ? 'end' :
-    game.round === game.roundCount ? 'last' : 'active'
+    game.round < 1 ? GameStatus.start : gameIsEnded(game) ? GameStatus.end :
+    game.round === game.roundCount ? GameStatus.last : GameStatus.active
 
 export const getOppIdx = (playerIdx: number, playerCount: number) => {
   if (playerIdx < 0) return;

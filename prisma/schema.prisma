@@ -42,25 +42,6 @@ enum Board {
   side
 }
 
-enum TabLabels {
-  pack
-  main
-  side
-}
-
-enum GameStatus {
-  start
-  active
-  last
-  end
-}
-
-enum PlayerStatus {
-  join
-  leave
-  bot
-}
-
 enum LogAction {
   pick
   join
@@ -261,12 +242,4 @@ model Ban {
 
   game      Game? @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   @@unique([sessionId, gameId])
-}
-
-model Enums {
-  id           String       @id
-  TabLabels    TabLabels
-  GameStatus   GameStatus
-  PlayerStatus PlayerStatus
-  LogAction    LogAction
 }

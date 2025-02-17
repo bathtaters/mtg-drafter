@@ -5,6 +5,7 @@ import type { ErrorAlert } from 'components/base/common/Alerts/alerts.d'
 import type { LocalController } from './local.controller'
 import type { Game, BasicLands, Player, Socket } from 'types/game'
 import { Dispatch, SetStateAction, useCallback } from 'react'
+import { PlayerStatus } from 'types/game'
 import { reloadData, BasicController } from '../basic.controller'
 import { clientErrorsInConsole, debugSockets } from 'assets/constants'
 
@@ -174,7 +175,7 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
     local.swapCard(cardId, board)
 
     emit('swapBoards', cardId, board, (cardId, board) => {
-      if (!cardId) return reloadData(local.game?.url, local.updateLocal, throwError, reconnect)
+      if (!cardId || !board) return reloadData(local.game?.url, local.updateLocal, throwError, reconnect)
       local.swapCard(cardId, board)
     })
   }, [emit, local.game?.url, local.swapCard, local.updateLocal, throwError, reconnect])
@@ -191,7 +192,7 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
   }, [emit, local.player?.id, local.game?.url, local.setLands, local.updateLocal, throwError, reconnect])
 
 
-  const setStatus: Socket.SetStatus = useCallback((playerId, status = 'join', byHost = false) => {
+  const setStatus: Socket.SetStatus = useCallback((playerId, status = PlayerStatus.join, byHost = false) => {
     local.setLoadingAll((v) => v + 1)
 
     emit('setStatus', playerId, status, byHost, (player?: Player) => {

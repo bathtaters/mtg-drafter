@@ -1,6 +1,5 @@
-import type { GameStatus, LogAction } from "@prisma/client"
 import type { Layout } from "types/scryfall"
-import type { Game, BoardLands, LogData, LogOptions, PartialGame } from "types/game"
+import type { Game, PartialGame, BoardLands, GameStatus, LogAction, LogData, LogOptions } from "types/game"
 import type { ToastAlert } from "components/base/common/Alerts/alerts.d"
 import Link from "next/link"
 import { formatBytes, getObjectSum } from "components/base/services/common.services"

@@ -1,5 +1,5 @@
 import type { Ref, MouseEventHandler, ReactNode } from "react"
-import type { GameCardFull, GameCardPartial } from "types/game"
+import { TabLabels, type GameCardFull, type GameCardPartial } from "types/game"
 import Image from "next/image"
 import Link from "next/link"
 import Card from "../Card/Card"
@@ -63,7 +63,7 @@ const CardLink = ({ card, alt }: { card: GameCardFull | GameCardPartial, alt?: s
         className="w-card h-card text-card"
         isSelected={false}
         isHighlighted={false}
-        container="pack"
+        container={TabLabels.pack}
       />
       :
       <div className="modal-box w-card h-card rounded-card bg-base-300 flex flex-col justify-center items-center text-center gap-4">{

@@ -1,7 +1,7 @@
 import type { Event, Server, Socket } from 'socket.io'
 import type { Socket as Client } from 'socket.io-client'
-import type { GameCard, LogAction, Pack, PlayerStatus, Ban } from '@prisma/client'
-import type { Game, LiveOptions, Player, PlayerFull, BasicLands, Board, BanResponse } from 'types/game'
+import type { GameCard, Pack, Ban } from '@prisma/client'
+import type { Game, LiveOptions, Player, PlayerFull, PlayerStatus, LogAction, BasicLands, Board, BanResponse } from 'types/game'
 
 export interface GameServerToClient {
   updateGame:     (options: LiveOptions) => void;

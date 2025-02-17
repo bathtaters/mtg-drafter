@@ -1,5 +1,5 @@
 import z, { fillAndLowerCaseObject, nanoId } from "backend/libs/validation"
-import { Board, Color, PlayerStatus } from "@prisma/client"
+import { Board, Color, PlayerStatus } from "types/game"
 import { commonOptions } from "./setup.validation"
 import { setupLimits, urlLimits } from "assets/constants"
 

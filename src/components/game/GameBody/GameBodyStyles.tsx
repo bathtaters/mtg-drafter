@@ -1,4 +1,4 @@
-import type { GameStatus, TabLabels } from "@prisma/client"
+import type { GameStatus, TabLabels } from "types/game"
 import { ReactNode, MouseEventHandler, CSSProperties, Fragment } from "react"
 import PackIcon from "components/svgs/PackIcon"
 import DeckIcon from "components/svgs/DeckIcon"
