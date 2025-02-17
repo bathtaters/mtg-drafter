@@ -24,7 +24,7 @@ export type LiveOptions = Partial<Pick<Game, "name"|"hostId"|"url"|"timerBase">>
 export type CardStrict = Omit<Card,"layout"> & { layout: Layout | null }
 export type CardFull = CardStrict & { otherFaces: Array<{ card: CardStrict, backImg: FaceInCard['backImg'] }> }
 export type GameCardFull = GameCard & { card: CardFull }
-export type GameCardPartial = GameCard & { card: Card }
+export type GameCardPartial = GameCard & { card: Pick<Card,'name'|'scryfallId'|'img'> }
 
 export type PackMin = { cards: Pick<GameCard, "playerId">[] }
 export type PackFull = Pack & { cards: GameCardFull[] }
@@ -52,7 +52,7 @@ export type LogData<Action extends LogAction = LogAction> =
    null
 
 export interface LogEntryFull extends LogEntry {
-  card: (GameCard & { card: Card }) | null,
+  card: GameCardPartial | null,
   data: LogData
 }
 export type LogFull = { log: LogEntryFull[], offset?: number, total: number }

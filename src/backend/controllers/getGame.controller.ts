@@ -28,7 +28,13 @@ async function getGameProps(query: ParsedUrlQuery, sessionId: string, includePac
   const now = Date.now()
   const player = await getPlayer(sessionId, players, game, packSize, now) as PlayerFullTimer | null // Convert type JSON value -> BasicLands
   
-  return player || sessionIsHost(options, sessionId) || canWatch(options, sessionId) ?
+  const isHostOrWatcher = sessionIsHost(options, sessionId) || canWatch(options, sessionId)
+  if (includePacks && !isHostOrWatcher) (packs as PackFull[]).forEach((pack) => {
+    pack.cards = pack.cards.filter(({ playerId }) => !playerId)
+    // Only allow players to see unpicked cards
+  })
+
+  return player || isHostOrWatcher ?
     { options, players, player, sessionId, now, packSize, packs: packs as PackFull[] || [] } :
     { options: unregGameAdapter(options, sessionId), players, sessionId }
 }

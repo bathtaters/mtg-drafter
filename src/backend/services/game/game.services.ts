@@ -18,8 +18,7 @@ export function getGame(url?: Game['url'], includePacks = true, id?: Game['id'])
       banned: true,
       packs: includePacks && {
         orderBy: { index: 'asc' }, include: {
-          cards: { 
-            where: { playerId: null },
+          cards: {
             include: {
               card: { include: { otherFaces: { include: { card: true } } } }
             }

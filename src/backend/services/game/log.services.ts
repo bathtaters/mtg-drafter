@@ -24,7 +24,7 @@ export const getGameLog = (url: Game['url'], take?: number, skip?: number, fromS
                     { playerId: { in: filter.players } },
             ] },
             orderBy: { time: fromStart ? 'asc' : 'desc' },
-            include: { card: { include: { card: true } } },
+            include: { card: { include: { card: { select: { scryfallId: true, name: true, img: true } } } } },
             skip, take,
         },
     },
