@@ -114,7 +114,7 @@ type FullProps = {
   players: BasicPlayer[],
   isFirst?: boolean,
   isPrivate?: boolean,
-  setCard: Dispatch<SetStateAction<GameCardPartial | null>>
+  setCard: (card?: GameCardPartial) => void,
   childProps?: IntersectionChildProps,
 }
 

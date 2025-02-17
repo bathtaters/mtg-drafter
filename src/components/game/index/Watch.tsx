@@ -13,7 +13,7 @@ import { banMsg } from 'assets/strings'
 
 export default function Watch(props: ServerProps) {
   const {
-    game, players, socket, sessionId, maxPackSize, holding, gameLog, isBanned,
+    game, players, packs, socket, sessionId, maxPackSize, holding, gameLog, isBanned,
     sidebarVisible, setSidebar, loadingAll, setLoadingAll, newError, reload,
   } = useBasicGameController(props)
 
@@ -31,6 +31,7 @@ export default function Watch(props: ServerProps) {
           <GameLogWatch
             game={game}
             players={players}
+            packs={packs}
             socket={socket}
             log={gameLog}
             sessionId={sessionId}

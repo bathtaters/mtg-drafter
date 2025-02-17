@@ -19,7 +19,7 @@ import { banMsg } from 'assets/strings'
 export default function Game(props: ServerProps) {
   const {
     game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize, isBanned, isHost,
-    holding, canAdvance, pack, sidebarVisible, landModal, hostModal, logModal, slots, gameLog, timer, 
+    holding, canAdvance, pack, packs, sidebarVisible, landModal, hostModal, logModal, slots, gameLog, timer, 
     saveDeck, setSidebar, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setOptions,
     nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropWatcher, banSession, dropPlayer,
     reload, startTimer, newError, newToast, ErrorComponent, ToastComponent,
@@ -70,7 +70,7 @@ export default function Game(props: ServerProps) {
     {!!toggleLogModal &&
       <GameLogModal
         isOpen={logModal} setOpen={toggleLogModal}
-        log={gameLog} players={players} gameEnded={gameIsEnded(game)}
+        log={gameLog} players={players} packs={packs} gameEnded={gameIsEnded(game)}
       /> }
 
     {!!toggleLandModal &&
