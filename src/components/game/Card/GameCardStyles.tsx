@@ -94,6 +94,12 @@ export const MeldBadge = ({ image }: { image?: boolean }) => (
   </div>
 )
 
+export const PickBadge = ({ children }: { children?: ReactNode }) => (
+  <div className="absolute bottom-0 left-0 z-30 flex justify-center items-center py-0 px-4 m-0 
+    font-serif w-auto h-[2em] text-[1.1em] bg-base-300/70 text-base-content rounded-lg">
+    {children}
+  </div>
+)
 
 type WrapperProps = {
   isSelected?: boolean, isHighlighted?: boolean, isFoil?: boolean,
