@@ -85,7 +85,7 @@ export default function GameBody({ game, player, players, pack, packs, playerTim
           }
         </CardContainer>
         :
-        null /* Add Viewer Here */
+        <PackViewer packs={packs} cardOptions={cardOptions} players={players} game={game} />
       }
 
       { typeof timer === 'number' &&  <TimerStyle seconds={timer} paused={!!game.pause} /> }
