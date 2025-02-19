@@ -44,7 +44,7 @@ export default function GameBody({ game, player, pack, playerTimer, isHost, roun
   return (
     <GameBodyWrapper className={cardOptions.width}>
       <GameBodyHeader>
-        <ContainerTabs pack={pack?.cards} player={player} selectedTab={selectedTab} selectTab={selectTab} hidePack={hidePack} />
+        <ContainerTabs packCount={pack?.cards?.length} player={player} selectedTab={selectedTab} selectTab={selectTab} hidePack={hidePack} />
 
         <CardToolbar setCardOptions={setCardOptions} clickReload={clickReload} notify={notify} />
       </GameBodyHeader>

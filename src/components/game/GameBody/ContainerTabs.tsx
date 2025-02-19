@@ -1,21 +1,21 @@
-import { type PlayerFull, TabLabels } from 'types/game'
+import { Game, PackFull, type PlayerFull, TabLabels } from 'types/game'
 import { GameCard } from '@prisma/client'
 import { TabsWrapper, TabStyle } from './GameBodyStyles'
 import { getBoard } from '../shared/game.utils'
 import { cardCounter } from 'assets/strings'
 
 type Props = {
-  pack?: GameCard[],
+  packCount?: number,
   player: PlayerFull,
   selectedTab: TabLabels,
   selectTab: (tab: TabLabels) => void,
   hidePack?: boolean,
 }
 
-const allLabels = Object.values(TabLabels)
-const labelsMinusPack = allLabels.slice(1)
+export const allLabels = Object.values(TabLabels)
+export const labelsMinusPack = allLabels.slice(1)
 
-export default function ContainerTabs({ pack, player, selectedTab, selectTab, hidePack }: Props) {
+export default function ContainerTabs({ packCount, player, selectedTab, selectTab, hidePack }: Props) {
   const tabs = hidePack ? labelsMinusPack : allLabels
   
   return (
@@ -25,7 +25,7 @@ export default function ContainerTabs({ pack, player, selectedTab, selectTab, hi
           key={label} label={label}
           isSelected={selectedTab === label}
           onClick={() => selectTab(label)}
-          count={cardCounter(label === 'pack' ? pack?.length : getBoard(player.cards, label).length, player.basics[label])}
+          count={cardCounter(label === 'pack' ? packCount : getBoard(player.cards, label).length, player.basics[label])}
         />
       )}
     </TabsWrapper>
