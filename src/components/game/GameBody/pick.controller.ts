@@ -13,9 +13,10 @@ const DBL_CLICK_DELAY = 500,
 
 export default function usePickController(
   pickCard: PickCard, swapCard: SwapCard, notify: AlertsReturn['newToast'],
-  pack?: PackFull, game?: Game|PartialGame, player?: PlayerFull, playerTimer?: number, onPackLoad?: () => void
+  pack?: PackFull, game?: Game|PartialGame, player?: PlayerFull, isHost?: boolean, playerTimer?: number, onPackLoad?: () => void
 ) {
   const hidePack = !game || !('round' in game) || game.round > game.roundCount || game.round < 1
+  const packViewer = isHost && game && 'round' in game && (!player || game.round > game.roundCount)
 
   const lastClick = useRef(-1)
   const nextPickAllowed = useRef(0)
@@ -67,7 +68,7 @@ export default function usePickController(
 
   const [ packLoading, handleCardLoad ] = useLoadElements(onPackLoad, pack?.cards.length, !cardOptions.showArt, [pack?.index])
 
-  useEffect(() => { if (hidePack && selectedTab === 'pack') selectTab(TabLabels.main) }, [hidePack, selectedTab])
+  useEffect(() => { if (hidePack && !packViewer && selectedTab === 'pack') selectTab(TabLabels.main) }, [hidePack, packViewer, selectedTab])
   
   useEffect(() => {
     if (typeof pack?.index === 'number') {
@@ -82,7 +83,7 @@ export default function usePickController(
     selectedCard, deselectCard,
     clickPickButton, clickPackCard, clickBoardCard,
     cardOptions, setCardOptions,
-    selectedTab, selectTab, hidePack, timer,
+    selectedTab, selectTab, hidePack, packViewer, timer,
     packLoading, handleCardLoad,
   }
 }

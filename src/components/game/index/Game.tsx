@@ -45,9 +45,9 @@ export default function Game(props: ServerProps) {
             
             <GameBody
               game={game as Game|PartialGame}
-              player={player} isHost={isHost} playerTimer={timer}
+              player={player} players={players} isHost={isHost} playerTimer={timer}
               roundOver={player?.pick != null && player.pick > maxPackSize}
-              pack={pack} pickCard={pickCard} swapCard={swapCard}
+              pack={pack} packs={packs} pickCard={pickCard} swapCard={swapCard}
               clickRoundBtn={canAdvance ? () => nextRound() : undefined}
               onLandClick={toggleLandModal}
               clickReload={reload}

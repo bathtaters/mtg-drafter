@@ -1,9 +1,10 @@
 import type { MouseEventHandler } from 'react'
-import type { Game, GameProps, PartialGame, PickCard, PlayerFull, SwapCard } from 'types/game'
+import type { BasicPlayer, Game, GameProps, PartialGame, PickCard, PlayerFull, SwapCard } from 'types/game'
 import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
 import { GameStatus, TabLabels } from 'types/game'
 import CardContainer from "../CardContainer/CardContainer"
 import CardToolbar from '../CardToolbar/CardToolbar'
+import PackViewer from '../PackViewer/PackViewer'
 import { PickCardButton, RoundButton, GameBodyWrapper, GameBodyHeader, TimerStyle } from './GameBodyStyles'
 import { EmptyStyle } from 'components/base/styles/AppStyles'
 import usePickController from "./pick.controller"
@@ -13,7 +14,9 @@ import { getBoard, getGameStatus } from '../shared/game.utils'
 type Props = {
   game: Game | PartialGame,
   player?: PlayerFull,
+  players?: BasicPlayer[],
   pack?: GameProps['packs'][number],
+  packs?: GameProps['packs'],
   playerTimer?: number,
   isHost?: boolean,
   roundOver?: boolean,
@@ -27,12 +30,12 @@ type Props = {
   notify: AlertsReturn['newToast'],
 }
 
-export default function GameBody({ game, player, pack, playerTimer, isHost, roundOver, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, onPackLoad, loadingPack, notify }: Props) {
+export default function GameBody({ game, player, players, pack, packs, playerTimer, isHost, roundOver, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, onPackLoad, loadingPack, notify }: Props) {
 
   const {
     autopickCard, selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
-    cardOptions, setCardOptions, selectedTab, selectTab, hidePack, timer, packLoading, handleCardLoad
-  } = usePickController(pickCard, swapCard, notify, pack, game, player, playerTimer, onPackLoad)
+    cardOptions, setCardOptions, selectedTab, selectTab, hidePack, packViewer, timer, packLoading, handleCardLoad
+  } = usePickController(pickCard, swapCard, notify, pack, game, player, isHost, playerTimer, onPackLoad)
 
   if (!('round' in game) || game.round < 1 || !player) return (
     <GameBodyWrapper>
@@ -44,12 +47,22 @@ export default function GameBody({ game, player, pack, playerTimer, isHost, roun
   return (
     <GameBodyWrapper className={cardOptions.width}>
       <GameBodyHeader>
-        <ContainerTabs packCount={pack?.cards?.length} player={player} selectedTab={selectedTab} selectTab={selectTab} hidePack={hidePack} />
+        <ContainerTabs packCount={pack?.cards?.length} player={player} selectedTab={selectedTab} selectTab={selectTab} hidePack={hidePack && !packViewer} />
 
         <CardToolbar setCardOptions={setCardOptions} clickReload={clickReload} notify={notify} />
       </GameBodyHeader>
 
-      {selectedTab === 'pack' ?
+      {selectedTab !== 'pack' ?
+        <CardContainer
+          label={selectedTab}
+          cards={getBoard(player.cards, selectedTab)}
+          lands={player.basics[selectedTab]}
+          cardOptions={cardOptions}
+          onClick={clickBoardCard(selectedTab)}
+          onLandClick={onLandClick}
+        />
+        :
+      !packViewer ?
         <CardContainer
           loading={loadingPack ? -1 : packLoading || undefined}
           label={TabLabels.pack}
@@ -72,14 +85,7 @@ export default function GameBody({ game, player, pack, playerTimer, isHost, roun
           }
         </CardContainer>
         :
-        <CardContainer
-          label={selectedTab}
-          cards={getBoard(player.cards, selectedTab)}
-          lands={player.basics[selectedTab]}
-          cardOptions={cardOptions}
-          onClick={clickBoardCard(selectedTab)}
-          onLandClick={onLandClick}
-        />
+        null /* Add Viewer Here */
       }
 
       { typeof timer === 'number' &&  <TimerStyle seconds={timer} paused={!!game.pause} /> }
