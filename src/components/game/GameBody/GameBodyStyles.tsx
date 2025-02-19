@@ -2,15 +2,17 @@ import type { GameStatus, TabLabels } from "types/game"
 import { ReactNode, MouseEventHandler, CSSProperties, Fragment } from "react"
 import PackIcon from "components/svgs/PackIcon"
 import DeckIcon from "components/svgs/DeckIcon"
+import GearIcon from "components/svgs/GearIcon"
 import { formatTime, camelToTitle } from "components/base/services/common.services"
 import { hostButtonLabel } from "assets/strings"
 import { redTimerSeconds } from "assets/constants"
 import TimerIcon from "components/svgs/TimerIcon"
 
-export const containerIcon: Record<TabLabels, ReactNode> = {
+export const containerIcon: Record<TabLabels | "select", ReactNode> = {
   pack: <PackIcon className="h-5 md:h-7 fill-secondary-content stroke-secondary mr-1 md:mr-2 hidden sm:block" />,
   main: <DeckIcon className="h-5 md:h-7 fill-primary-content stroke-primary mr-1 md:mr-2 hidden sm:block" />,
   side: <DeckIcon className="h-5 md:h-7 fill-primary stroke-primary-content opacity-70 mr-1 md:mr-2 hidden sm:block" />,
+  select: <GearIcon className="h-5 md:h-7 fill-secondary mr-1 md:mr-2 hidden sm:block" />,
 }
 
 

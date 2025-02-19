@@ -8,7 +8,7 @@ export const RoundOver = () => <EmptyStyle>Awaiting next round.</EmptyStyle>
 export const PausedGame = () => <EmptyStyle>The game is paused.</EmptyStyle>
 
 // loading -1 = loading pack; loading > 0 = loading images
-export const LoadingPack = ({ loading, count = 0 }: { loading: number, count?: number  }) => (
+export const LoadingPack = ({ loading, count = 0 }: { loading: number, count?: number  }) => loading == null ? loading : (
   <EmptyStyle>
     <RadialProgress value={count - loading} maxValue={count} />
     <div className="mt-8">{loading < 1 ? 'Looking for pack' : 'Loading cards'}.</div>

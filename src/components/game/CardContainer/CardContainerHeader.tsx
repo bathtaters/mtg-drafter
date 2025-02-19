@@ -14,10 +14,10 @@ const LandCounter = ({ color, count }: { color: Lowercase<Color>, count: number 
   </LandCounterStyle>
 )
 
-export default function ContainerHeader({ label, count, children, lands, onLandClick }: { label: TabLabels, count?: number, children?: ReactNode, lands?: BoardLands, onLandClick?: MouseEventHandler }) {
+export default function ContainerHeader({ label, subtitle, count, children, lands, onLandClick }: { label: TabLabels | "select", subtitle?: ReactNode, count?: number, children?: ReactNode, lands?: BoardLands, onLandClick?: MouseEventHandler }) {
   return (
     <ContainerHeaderStyle>
-      <ContainerLabelStyle>{containerIcon[label]}{camelToTitle(label)}{<CardCounter text={cardCounter(count, lands)} />}</ContainerLabelStyle>
+      <ContainerLabelStyle>{containerIcon[label]}{subtitle}{camelToTitle(label)}{label !== 'select' && <CardCounter text={cardCounter(count, lands)} />}</ContainerLabelStyle>
       {children}
       <LandContainerStyle onClick={onLandClick}>
         { !lands ? "" : !getObjectSum(lands) ? <LandButton /> :
