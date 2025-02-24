@@ -115,13 +115,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
   const forceFetch = useCallback(async ({ offset, size, isPreview, ...params }: Params = {} as Params) => {
 
     // Build query
-    let query: Record<string, string> = { size: (size ?? minSize).toString() }
-    if (offset != null) query.offset = offset.toString()
-    for (const key in params) {
-      const val = anyToString((params as any)[key])
-      if (val != null) query[key] = val
-    }
-    const queryString = new URLSearchParams(query).toString()
+    const queryString = objToQuery({ offset, size: size ?? minSize, ...params })
 
     // Fetch data & error check
     let res: FetchResponse<Entry> | undefined = undefined
@@ -281,6 +275,15 @@ const anyToString = (value: any): string | null => value == null ? null :
   typeof value?.toJSON === 'function' ? value.toJSON() :
   (typeof value !== 'object' || value instanceof RegExp) &&
     typeof value?.toString === 'function' ? value.toString() : JSON.stringify(value)
+
+export const objToQuery = (params: any) => {
+  let query: Record<string, string> = {}
+  for (const key in params) {
+      const val = anyToString(params[key])
+      if (val != null) query[key] = val
+  }
+  return new URLSearchParams(query).toString()
+}
 
 /** Logic for which objects to load -- NOTE: indexList starts with most recently 'seen' index */
 const listToParams = (indexList: number[], total: number | undefined, minSize: number, maxSize: number, isReverseOrder?: boolean): Pick<FetchParams, 'offset'|'size'> => {
