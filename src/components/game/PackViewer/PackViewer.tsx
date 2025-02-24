@@ -13,7 +13,7 @@ type Props = {
 
 export default function PackViewer({ packs, cardOptions, players, game }: Props) {
     const data = usePackViewer(packs, players, game)
-    const { pack, packVisible, viewPack,  selectedPlayer, viewType } = data
+    const { pack, packVisible, viewPack, selectedPlayer, viewType, pickInfo, error, isLoading } = data
 
     return (
         <CardContainer
@@ -23,10 +23,10 @@ export default function PackViewer({ packs, cardOptions, players, game }: Props)
             // loading={!packs || !players ? -1 : packLoading || undefined}}
             // onCardLoad={handleCardLoad}
             overrideBody={!packVisible && players && packs && <PackViewerForm players={players} game={game} {...data} />}
-            players={players}
+            pickInfo={pickInfo}
         >
             {packVisible ? <ViewPackButton label="packHide" onClick={() => viewPack((v) => !v)} />
-            : <ViewPackButton label="packShow" disabled={!selectedPlayer || !viewType} onClick={() => viewPack((v) => !v)} />}
+            : <ViewPackButton label="packShow" disabled={isLoading || !selectedPlayer || !viewType} onClick={() => viewPack((v) => !v)} />}
         </CardContainer>
     )
 }

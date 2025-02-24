@@ -63,7 +63,7 @@ export interface LogEntryFull extends LogEntry {
 }
 export type LogFull = { log: LogEntryFull[], offset?: number, total: number }
 export type LogList = { [index: number]: LogEntryFull }
-
+export type PickInfo = { [cardId: string]: { name?: string | null, pack?: number, pick?: number } }
 
 // -- API TYPES -- \\
 

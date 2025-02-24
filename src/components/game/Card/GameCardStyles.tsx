@@ -94,10 +94,10 @@ export const MeldBadge = ({ image }: { image?: boolean }) => (
   </div>
 )
 
-export const PickBadge = ({ children }: { children?: ReactNode }) => (
+export const PickBadge = ({ text }: { text?: ReactNode }) => text && (
   <div className="absolute bottom-0 left-0 z-30 flex justify-center items-center py-0 px-4 m-0 
     font-serif w-auto h-[2em] text-[1.1em] bg-base-300/70 text-base-content rounded-lg">
-    {children}
+    {text}
   </div>
 )
 

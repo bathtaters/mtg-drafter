@@ -1,5 +1,5 @@
 import type { Layout } from "types/scryfall"
-import type { Game, PartialGame, BoardLands, GameStatus, LogAction, LogData, LogOptions } from "types/game"
+import type { Game, PartialGame, BoardLands, GameStatus, LogAction, LogData, LogOptions, PickInfo } from "types/game"
 import type { ToastAlert } from "components/base/common/Alerts/alerts.d"
 import Link from "next/link"
 import { formatBytes, getObjectSum } from "components/base/services/common.services"
@@ -45,6 +45,15 @@ export const hostPlayerTooltips: { [label in `set${'Host'|'Bot'}`]: string } = {
 
 export const cardCounter = (count?: number, lands?: BoardLands) => typeof count !== 'number' || (!count && !lands) ? undefined :
   lands ? `${count} | ${getObjectSum(lands) + count}` : `${count}`
+
+export const pickInfoText = ({ name, pick, pack }: PickInfo[string], isDeck: boolean) => {
+  const packPick = !isDeck ?
+    (pick ? `P${pick}` : undefined) :
+    pick || pack ? `P${pack || '?'}/P${pick || '?'}` : undefined
+  return isDeck ? packPick :
+    name && packPick ? <><span>{name}</span><i className="ml-1">{` [${packPick}]`}</i></> :
+    name ? name : packPick
+}
 
 export const sharingMessage: Record<string,ToastAlert> = {
   copy: { message: 'Link copied to clipboard', theme: 'info' },

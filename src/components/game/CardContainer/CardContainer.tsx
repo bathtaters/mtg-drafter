@@ -1,5 +1,5 @@
 import type { ReactNode, MouseEvent, MouseEventHandler } from "react"
-import { CardFull, CardOptions, BoardLands, TabLabels, BasicPlayer, GameCardFull } from "types/game"
+import { CardFull, CardOptions, BoardLands, TabLabels, BasicPlayer, GameCardFull, PickInfo } from "types/game"
 import Card from "../Card/Card"
 import ContainerHeader from "./CardContainerHeader"
 import { CardContainerWrapper, CardsWrapper, NoPack, NoCards, RoundOver, LoadingPack, PausedGame } from "./CardContainerStyles"
@@ -20,17 +20,27 @@ type Props = {
   highlightId?: string,
   cardOptions: CardOptions,
   overrideBody?: ReactNode,
-  players?: BasicPlayer[],
+  pickInfo?: PickInfo,
 }
 
-export default function CardContainer({ label, cards, lands, loading = 0, paused, children, onClick, onCardLoad, onBgdClick, onLandClick, selectedId, highlightId, cardOptions, overrideBody, players }: Props) {
+
+export default function CardContainer({ label, cards, lands, loading = 0, paused, children, onClick, onCardLoad, onBgdClick, onLandClick, selectedId, highlightId, cardOptions, overrideBody, pickInfo }: Props) {
   const count = typeof cards === 'string' ? undefined : cards?.length
-  const player = players && count && (label === TabLabels.main || label === TabLabels.side) ? players?.find(({ id }) => id === (cards as GameCardFull[])[0].playerId) : undefined
+
+  const packNum = label === TabLabels.pack && pickInfo && Object.values(pickInfo)[0].pack
+  const playerName = pickInfo && (
+    label === TabLabels.pack ? Object.values(pickInfo).find(({ pick }) => pick === 1)?.name :
+    label !== 'select' ? Object.values(pickInfo)[0]?.name : undefined
+  )
   
   return (
     <CardContainerWrapper 
       title={
-        <ContainerHeader label={label} subtitle={player && `${player.name} – `} count={count} lands={lands} onLandClick={onLandClick}>
+        <ContainerHeader
+          label={label} count={count} lands={lands} onLandClick={onLandClick}
+          prefix={playerName && `${playerName} – `}
+          suffix={packNum && ` ${packNum}`}
+        >
           {children}
         </ContainerHeader>
       }
@@ -49,7 +59,7 @@ export default function CardContainer({ label, cards, lands, loading = 0, paused
               isSelected={selectedId === id}
               isHighlighted={!selectedId && highlightId === id}
               container={label === 'select' ? TabLabels.pack : label}
-              player={player || players?.find(({ id }) => id === playerId)}
+              pickInfo={pickInfo ? pickInfo[id] ?? {} : undefined}
             />
           )
         }

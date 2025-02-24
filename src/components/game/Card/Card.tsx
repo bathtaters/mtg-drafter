@@ -1,8 +1,9 @@
 import { Fragment, MouseEventHandler } from "react"
-import { type CardFull, type BasicPlayer, Direction, TabLabels, Board } from "types/game"
+import { type CardFull, Direction, TabLabels, Board, PickInfo } from "types/game"
 import RenderedCard from "./RenderedCard/RenderedCard"
 import { CardWrapper, FlipButton, ImgWrapper, MeldBadge, PickBadge, RotateButton, SwapButton } from "./GameCardStyles"
 import useCardImage from "./image.controller"
+import { pickInfoText } from "assets/strings"
 
 type Props = {
   card: CardFull,
@@ -14,10 +15,10 @@ type Props = {
   onClick?: MouseEventHandler,
   onLoad?: () => Promise<void> | void,
   className?: string,
-  player?: BasicPlayer,
+  pickInfo?: PickInfo[string],
 }
 
-export default function Card({ card, isFoil, isSelected, isHighlighted, container, showImage, onClick, onLoad, className = '', player }: Props) {
+export default function Card({ card, isFoil, isSelected, isHighlighted, container, showImage, onClick, onLoad, className = '', pickInfo }: Props) {
   const { images, cardFaces, sideIdx, sideCount, direction, reversed, showBadge, showFlip, handleFlip, isRotater, handleRotate } = useCardImage(card, className, showImage, onLoad)
   const isBoard = container in Board
 
@@ -46,8 +47,8 @@ export default function Card({ card, isFoil, isSelected, isHighlighted, containe
     >
       {showFlip && <FlipButton onClick={handleFlip} isBack={sideIdx > 0} low={card.layout === 'flip'} />}
       {isRotater && sideIdx < 1 && <RotateButton onClick={handleRotate} isRotater={!!direction || direction === Direction.N} />}
-      {isBoard && !player && <SwapButton board={container as Board} onClick={onClick} low={card.layout === 'flip'} />}
-      {!isBoard && player && <PickBadge>{player.name}</PickBadge>}
+      {isBoard && !pickInfo && <SwapButton board={container as Board} onClick={onClick} low={card.layout === 'flip'} />}
+      {pickInfo && <PickBadge text={pickInfoText(pickInfo, isBoard)} />}
     </CardWrapper>
   )
 }
