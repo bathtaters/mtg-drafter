@@ -2,11 +2,11 @@ import { type BasicPlayer, type Game, TabLabels } from "types/game"
 import type { ReturnProps } from "./packViewer.controller"
 import { Fragment } from "react"
 import { FormContainer, RangeStyle, SelectorContainer, SelectorStyle } from "./PackViewerStyles"
-import { allLabels } from "../GameBody/ContainerTabs"
 import { camelToTitle } from "components/base/services/common.services"
 
 type Props = ReturnProps & { players: BasicPlayer[], game?: Partial<Game> }
 
+const allLabels = Object.values(TabLabels)
 const upperLabels = allLabels.map((view) => camelToTitle(view.valueOf()))
 
 export default function PackViewerForm({ players, game, selectedPlayer, selectPlayer, viewType, setViewType, round, setRound }: Props) {

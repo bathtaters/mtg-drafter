@@ -22,18 +22,18 @@ export const TabsWrapper = ({ children }: { children: ReactNode }) => <div class
 
 
 export const TabStyle = (
-  { label, count, isSelected, onClick }: 
-  { label: TabLabels, count?: string, isSelected?: boolean, onClick?: MouseEventHandler }
+  { label, badge, isSelected, onClick }: 
+  { label: string, badge?: string, isSelected?: boolean, onClick?: MouseEventHandler }
 ) => (
   <div
     className={`indicator flex-nowrap tab ${label === "pack" ? " tab-secondary" : " tab-primary"}${isSelected ? " tab-active" : ""}`}
     onClick={onClick}
   >
-    {containerIcon[label]}
+    {containerIcon[label as keyof typeof containerIcon]}
     <span className="text-xl md:text-2xl font-medium">{camelToTitle(label)}</span>
-    {count && 
+    {badge && 
       <span className="indicator-item indicator-center indicator-bottom -bottom-1 whitespace-nowrap badge badge-neutral badge-sm sm:badge-md shadow shadow-black">
-        {count}
+        {badge}
       </span>
     }
   </div>

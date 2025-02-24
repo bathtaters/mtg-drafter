@@ -8,7 +8,7 @@ import PackViewer from '../PackViewer/PackViewer'
 import { PickCardButton, RoundButton, GameBodyWrapper, GameBodyHeader, TimerStyle } from './GameBodyStyles'
 import { EmptyStyle } from 'components/base/styles/AppStyles'
 import usePickController from "./pick.controller"
-import ContainerTabs from './ContainerTabs'
+import ContainerTabs, { getTabBadges } from './ContainerTabs'
 import { getBoard, getGameStatus } from '../shared/game.utils'
 import { usePickInfo } from '../PackViewer/packViewer.controller'
 
@@ -50,7 +50,11 @@ export default function GameBody({ game, player, players, pack, packs, playerTim
   return (
     <GameBodyWrapper className={cardOptions.width}>
       <GameBodyHeader>
-        <ContainerTabs packCount={pack?.cards?.length} player={player} selectedTab={selectedTab} selectTab={selectTab} hidePack={hidePack && !packViewer} />
+        <ContainerTabs tabs={TabLabels}
+          selectedTab={selectedTab} selectTab={selectTab}
+          badges={getTabBadges(player, pack?.cards?.length)}
+          hideTabs={hidePack && !packViewer ? [TabLabels.pack] : undefined}
+        />
 
         <CardToolbar setCardOptions={setCardOptions} clickReload={clickReload} notify={notify} />
       </GameBodyHeader>
