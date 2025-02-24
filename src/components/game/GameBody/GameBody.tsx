@@ -39,7 +39,7 @@ export default function GameBody({ game, player, players, pack, packs, playerTim
 
   if (!('round' in game) || game.round < 1 || !player) return (
     <GameBodyWrapper>
-      { clickRoundBtn && <RoundButton onClick={clickRoundBtn} label={GameStatus.start} /> }
+      { clickRoundBtn && <RoundButton onClick={clickRoundBtn} label={getGameStatus(game)} /> }
       <EmptyStyle>{!('round' in game) ? "Loading game..." : isHost ? "Host-Only Mode" : "Waiting for draft to start."}</EmptyStyle>
     </GameBodyWrapper>
   )

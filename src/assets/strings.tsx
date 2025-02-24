@@ -30,11 +30,12 @@ export const roundCounter = (status?: GameStatus, game?: Game|PartialGame, isNot
   status === 'end' ? 'Finished' :
     `Pack ${game?.round ?? '–'} of ${game?.roundCount ?? '–'}`
 
-export const hostButtonLabel: { [label in GameStatus]: string } = {
+export const hostButtonLabel: { [label in GameStatus]?: string } & { packShow?: string, packHide?: string } = {
   start:  'Start Game',
   active: 'Next Round',
   last:   'End Game',
-  end:    'End Game',
+  packShow: "View Cards >",
+  packHide: "< Back",
 }
 
 export const hostPlayerTooltips: { [label in `set${'Host'|'Bot'}`]: string } = {
