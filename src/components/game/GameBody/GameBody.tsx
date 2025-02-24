@@ -1,7 +1,7 @@
 import type { MouseEventHandler } from 'react'
 import type { BasicPlayer, Game, GameProps, PartialGame, PickCard, PlayerFull, SwapCard } from 'types/game'
 import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
-import { GameStatus, TabLabels } from 'types/game'
+import { TabLabels } from 'types/game'
 import CardContainer from "../CardContainer/CardContainer"
 import CardToolbar from '../CardToolbar/CardToolbar'
 import PackViewer from '../PackViewer/PackViewer'
@@ -10,6 +10,7 @@ import { EmptyStyle } from 'components/base/styles/AppStyles'
 import usePickController from "./pick.controller"
 import ContainerTabs from './ContainerTabs'
 import { getBoard, getGameStatus } from '../shared/game.utils'
+import { usePickInfo } from '../PackViewer/packViewer.controller'
 
 type Props = {
   game: Game | PartialGame,
@@ -36,6 +37,8 @@ export default function GameBody({ game, player, players, pack, packs, playerTim
     autopickCard, selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
     cardOptions, setCardOptions, selectedTab, selectTab, hidePack, packViewer, timer, packLoading, handleCardLoad
   } = usePickController(pickCard, swapCard, notify, pack, game, player, isHost, playerTimer, onPackLoad)
+
+  const pickInfo = usePickInfo(game, players, !packViewer)
 
   if (!('round' in game) || game.round < 1 || !player) return (
     <GameBodyWrapper>
@@ -85,7 +88,7 @@ export default function GameBody({ game, player, players, pack, packs, playerTim
           }
         </CardContainer>
         :
-        <PackViewer packs={packs} cardOptions={cardOptions} players={players} game={game} />
+        <PackViewer packs={packs} cardOptions={cardOptions} players={players} game={game} pickInfo={pickInfo} />
       }
 
       { typeof timer === 'number' &&  <TimerStyle seconds={timer} paused={!!game.pause} /> }
