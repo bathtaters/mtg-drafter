@@ -25,8 +25,8 @@ export default function PackViewer({ packs, cardOptions, players, game }: Props)
             overrideBody={!packVisible && players && packs && <PackViewerForm players={players} game={game} {...data} />}
             pickInfo={pickInfo}
         >
-            {packVisible ? <ViewPackButton label="packHide" onClick={() => viewPack((v) => !v)} />
-            : <ViewPackButton label="packShow" disabled={isLoading || !selectedPlayer || !viewType} onClick={() => viewPack((v) => !v)} />}
+            {packVisible ? <ViewPackButton label="packHide" error={error} isLoading={isLoading} onClick={() => viewPack((v) => !v)} />
+            : <ViewPackButton label="packShow" error={error} isLoading={isLoading} disabled={isLoading || !selectedPlayer || !viewType} onClick={() => viewPack((v) => !v)} />}
         </CardContainer>
     )
 }
