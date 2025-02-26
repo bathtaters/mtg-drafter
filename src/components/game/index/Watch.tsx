@@ -49,7 +49,7 @@ export default function Watch(props: ServerProps) {
               <GameBodyHeader>
                 <ContainerTabs tabs={WatcherTabs} selectedTab={selectedTab} selectTab={selectTab} hideTabs={[WatcherTabs.join]} />
 
-                { selectedTab === WatcherTabs.pack ?
+                { selectedTab === WatcherTabs.cards ?
                   <CardToolbar setCardOptions={setCardOptions} clickReload={basicProps.reload} notify={newToast} />
                   :
                   <TabToolbarWrapper clickReload={basicProps.reload}>
@@ -58,7 +58,7 @@ export default function Watch(props: ServerProps) {
                 }
               </GameBodyHeader>
             
-              { selectedTab === WatcherTabs.pack ?
+              { selectedTab === WatcherTabs.cards ?
                 <PackViewer data={packViewData} packs={packs} cardOptions={cardOptions} players={players} game={game} pickInfo={pickInfo}  />
                 :
                 <GameLogWatch players={players} packs={packs} log={gameLog} disabled={!game?.watchKey} {...watchProps} />

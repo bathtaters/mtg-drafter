@@ -16,10 +16,11 @@ export const containerIcon: Record<TabLabels | WatcherTabs | "select", ReactNode
   side: <DeckIcon className="h-5 md:h-7 fill-primary stroke-primary-content opacity-70 mr-1 md:mr-2 hidden sm:block" />,
   select: <GearIcon className="h-5 md:h-7 fill-secondary mr-1 md:mr-2 hidden sm:block" />,
   log: <LogIcon className="h-5 md:h-7 fill-primary mr-1 md:mr-2 hidden sm:block" bgdClass="fill-primary-content" />,
+  cards: <PackIcon className="h-5 md:h-7 fill-secondary-content stroke-secondary mr-1 md:mr-2 hidden sm:block" />,
   join: <UserIcon className="h-5 md:h-7 fill-secondary-content stroke-secondary mr-1 md:mr-2 hidden sm:block" />,
 }
 
-const primaryTabs = [TabLabels.pack, WatcherTabs.pack, WatcherTabs.join, "select"]
+const primaryTabs = [TabLabels.pack, WatcherTabs.cards, WatcherTabs.join, "select"]
 
 
 export const GameBodyHeader = ({ children }: { children?: ReactNode }) => <div className="relative w-full max-w-6xl m-auto">{children}</div>

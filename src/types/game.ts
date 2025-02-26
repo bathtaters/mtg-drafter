@@ -7,7 +7,7 @@ import type { Layout } from "./scryfall"
 export { Color, Rarity, Side, Board, LogAction } from '@prisma/client'
 
 export enum TabLabels { pack = 'pack', main = 'main', side = 'side' }
-export enum WatcherTabs { log = 'log', pack = 'pack', join = 'join' }
+export enum WatcherTabs { log = 'log', cards = 'cards', join = 'join' }
 export enum GameStatus { start = 'start', active = 'active', last = 'last', end = 'end' }
 export enum PlayerStatus { join = 'join', leave = 'leave', bot = 'bot' }
 export enum Direction { N = 'N', E = 'E', S = 'S', W = 'W' }
