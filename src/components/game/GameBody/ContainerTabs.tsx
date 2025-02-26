@@ -18,7 +18,7 @@ export const getTabBadges = (player?: PlayerFull, packCount?: number) => player 
 })
 
 export default function ContainerTabs<Tabs extends string>({ tabs, selectedTab, selectTab, hideTabs, badges }: Props<Tabs>) {
-  const visibleTabs = !hideTabs ? Object.values(tabs) : Object.values(tabs).filter((tab) => hideTabs.includes(tab))
+  const visibleTabs = !hideTabs ? Object.values(tabs) : Object.values(tabs).filter((tab) => !hideTabs.includes(tab))
   
   return (
     <TabsWrapper>
