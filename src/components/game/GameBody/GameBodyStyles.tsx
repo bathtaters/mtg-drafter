@@ -23,7 +23,8 @@ export const containerIcon: Record<TabLabels | WatcherTabs | "select", ReactNode
 const primaryTabs = [TabLabels.pack, WatcherTabs.cards, WatcherTabs.join, "select"]
 
 
-export const GameBodyHeader = ({ children }: { children?: ReactNode }) => <div className="relative w-full max-w-6xl m-auto">{children}</div>
+export const GameBodyHeader = ({ hide, children }: { hide?: boolean, children?: ReactNode }) => hide ?
+  <div className="w-full h-20" /> : <div className="relative w-full max-w-6xl m-auto">{children}</div>
 
 export const TabsWrapper = ({ children }: { children: ReactNode }) => (
   <div className="tabs tabs-lg tabs-boxed justify-center gap-2 mb-6 bg-transparent">{children}</div>

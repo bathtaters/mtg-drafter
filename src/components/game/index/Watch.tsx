@@ -46,7 +46,7 @@ export default function Watch(props: ServerProps) {
       <BodyWrapperStyle>
         <Loader data={game || 404} message={props.error || (isBanned && banMsg)}>
           <GameBodyWrapper className={cardOptions.width}>
-              <GameBodyHeader>
+              <GameBodyHeader hide={!watchProps.authed}>
                 <ContainerTabs tabs={WatcherTabs} selectedTab={selectedTab} selectTab={selectTab} hideTabs={[WatcherTabs.join]} />
 
                 { selectedTab === WatcherTabs.cards ?
@@ -58,7 +58,7 @@ export default function Watch(props: ServerProps) {
                 }
               </GameBodyHeader>
             
-              { selectedTab === WatcherTabs.cards ?
+              { watchProps.authed && selectedTab === WatcherTabs.cards ?
                 <PackViewer data={packViewData} packs={packs} cardOptions={cardOptions} players={players} game={game} pickInfo={pickInfo}  />
                 :
                 <GameLogWatch players={players} packs={packs} log={gameLog} disabled={!game?.watchKey} {...watchProps} />
