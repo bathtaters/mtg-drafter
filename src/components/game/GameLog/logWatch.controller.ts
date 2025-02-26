@@ -8,10 +8,11 @@ import { useCallback, useEffect, useState } from "react"
 import { gameIsEnded } from "../shared/game.utils"
 import { noPwMsg } from "assets/strings"
 
-export type Props = LogProps & {
+export type Props = {
+    gameLog: LogProps['log'],
     game?: Partial<Game>,
     socket: SocketHook<GameClient>,
-    setLoading?: SetNumber,
+    setLoadingAll?: SetNumber,
     sessionId?: string,
     reload?: () => any,
     sidebarVisible: boolean,
@@ -20,8 +21,8 @@ export type Props = LogProps & {
 }
 
 export default function useLogWatch({
-    log: { setEnabled, setError, fetch, error },
-    game, socket, sessionId, setLoading, reload, setSidebar, newError
+    gameLog: { setEnabled, setError, fetch, error },
+    game, socket, sessionId, setLoadingAll, reload, setSidebar, newError
 }: Props) {
     const [authed, setAuthState] = useState(false)
     const [message, setMessage] = useState("")
@@ -54,14 +55,14 @@ export default function useLogWatch({
         if (!game?.id || !password) return;
         if (!socket.isConnected) return setMessage("Unable to reach server")
 
-        setLoading && setLoading((v) => v + 1)
+        setLoadingAll && setLoadingAll((v) => v + 1)
 
         socket.emit('watcherLogin', game.id, sessionId, password, (success: boolean, reason?: string) => {
             setAuth(success)
             setError(undefined)
             if (success) fetch()
             else setMessage(reason || "Unknown error")
-            setLoading && setLoading((v) => v && v - 1)
+            setLoadingAll && setLoadingAll((v) => v && v - 1)
         })
     }
 
@@ -108,3 +109,4 @@ export default function useLogWatch({
 }
 
 type SetNumber = Dispatch<SetStateAction<number>>
+export type LogWatchHook = ReturnType<typeof useLogWatch>

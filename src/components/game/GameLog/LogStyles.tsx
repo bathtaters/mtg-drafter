@@ -8,21 +8,21 @@ import getColorClass from "components/base/libs/colors"
 import { objToString } from "./log.utils"
 import { scryfallLink } from "assets/urls"
 
-export const GameLogWatchWrapper = ({ title, children }: { title: string, children: ReactNode }) => (
-  <div className="relative pt-14 w-full h-full -top-6">
-    <h2 className="absolute top-2 left-2 font-serif mb-6">{title}</h2>
+export const GameLogWatchWrapper = ({ children }: { children: ReactNode }) => (
+  <div className="flex-grow">
     {children}
   </div>
 )
 
-export const LogContainer = ({ children, toolbar, ref }: { children: ReactNode, toolbar: ReactNode, ref?: Ref<HTMLElement> }) => (<>
-  <div className="absolute top-4 right-4">{toolbar}</div>
-  <div className="card w-full h-full bg-base-300 border border-base-content">
+export const ModalToolbarWrapper = ({ children }: { children: ReactNode }) => <div className="absolute top-4 right-4">{children}</div>
+
+export const LogContainer = ({ children, ref }: { children: ReactNode, ref?: Ref<HTMLElement> }) => (
+  <div className="card w-full h-full bg-base-300 border border-primary">
     <ul className="card-body overflow-y-auto py-4 px-6 min-h-full max-h-80" ref={ref as Ref<HTMLUListElement>}>
       {children}
     </ul>
   </div>
-</>)
+)
 
 export const ErrorContainer = ({ text }: { text: string }) => <p className="opacity-80 italic">{text}</p>
 

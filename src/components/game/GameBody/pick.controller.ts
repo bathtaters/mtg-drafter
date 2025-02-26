@@ -1,15 +1,26 @@
 import type { MouseEvent } from "react"
 import type { GameCard } from "@prisma/client"
 import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
-import type { Game, CardOptions, PackFull, PartialGame, PickCard, PlayerFull, SwapCard, Board } from "types/game"
+import type { Game, CardOptions, PackFull, PartialGame, PickCard, PlayerFull, SwapCard, Board, BasicPlayer } from "types/game"
 import { TabLabels } from "types/game"
 import { useCallback, useRef, useState, useEffect } from "react"
 import { useTimer, useLoadElements } from "components/base/libs/hooks"
 import getAutopickCard from "components/base/services/autoPick.service"
+import { usePickInfo } from "../PackViewer/packViewer.controller"
 import { redTimerSeconds } from "assets/constants"
 
 const DBL_CLICK_DELAY = 500,
   NEXT_PICK_DELAY = 100
+  
+    
+export function useTabController<Tabs extends string>(initialTab: Tabs, game?: Partial<Game>, players?: BasicPlayer[], skipPickInfo = true) {
+  const pickInfo = usePickInfo(game, players, skipPickInfo)
+  const [ selectedTab,  selectTab       ] = useState<Tabs>(initialTab)
+  const [ cardOptions,  setCardOptions  ] = useState<CardOptions>({ width: '', showArt: true, sort: undefined })
+
+  return { pickInfo, selectedTab, selectTab, cardOptions, setCardOptions }
+}
+
 
 export default function usePickController(
   pickCard: PickCard, swapCard: SwapCard, notify: AlertsReturn['newToast'],
@@ -20,10 +31,9 @@ export default function usePickController(
 
   const lastClick = useRef(-1)
   const nextPickAllowed = useRef(0)
-  const [ selectedTab,  selectTab       ] = useState<TabLabels>(hidePack ? TabLabels.main : TabLabels.pack)
+  const { selectedTab, selectTab, cardOptions, setCardOptions } = useTabController<TabLabels>(hidePack ? TabLabels.main : TabLabels.pack)
   const [ selectedCard, setSelectedCard ] = useState<GameCard['id']>()
   const [ autopickCard, setAutopickCard ] = useState<string | number>()
-  const [ cardOptions,  setCardOptions  ] = useState<CardOptions>({ width: '', showArt: true, sort: undefined })
   
   const autoPick = useCallback(() => {
     if (typeof autopickCard === 'undefined' || nextPickAllowed.current > Date.now()) return;

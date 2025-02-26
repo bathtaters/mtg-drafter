@@ -1,10 +1,11 @@
-import type { ReactNode } from "react"
+import type { MouseEventHandler, ReactNode } from "react"
 import DropdownMenu from "components/base/common/DropdownMenu"
 import FilterIcon from "components/svgs/FilterIcon"
 import GearIcon from "components/svgs/GearIcon"
 import { ExitIcon } from "components/svgs/MenuIcons"
 import getColorClass from "components/base/libs/colors"
 import { clampText } from "components/base/services/common.services"
+import { ReloadButton } from "components/game/CardToolbar/CardToolbarStyles"
 
 export const LogoutLabel = () => (
   <div className="flex justify-between">
@@ -14,8 +15,13 @@ export const LogoutLabel = () => (
 )
 
 export const ToolbarWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="flex">{children}</div>
+  <div className="flex text-secondary">{children}</div>
 )
+
+export const TabToolbarWrapper = ({ clickReload, children }: { clickReload?: MouseEventHandler<HTMLButtonElement>, children: ReactNode }) => (<>
+  {clickReload && <ReloadButton onClick={clickReload} />}
+  <div className="absolute right-0 top-4 p-2">{children}</div>
+</>)
 
 export const SettingsDropdown = ({ children }: { children: ReactNode }) => (
   <DropdownMenu labelClass="btn-sm btn-circle btn-ghost" forceOpen="click"
