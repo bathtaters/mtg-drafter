@@ -16,6 +16,7 @@ import { TabToolbarWrapper } from '../GameLog/LogToolbar/LogToolbarStyles'
 import useBasicGameController from './basic.controller'
 import useLogWatch from '../GameLog/logWatch.controller'
 import { useTabController } from '../GameBody/pick.controller'
+import usePackViewer from '../PackViewer/packViewer.controller'
 import { banMsg } from 'assets/strings'
 
 
@@ -30,6 +31,8 @@ export default function Watch(props: ServerProps) {
   } = useTabController<WatcherTabs>(WatcherTabs.log, game, players, false)
 
   const watchProps = useLogWatch({ gameLog, game, sidebarVisible, setSidebar, ...basicProps })
+
+  const packViewData = usePackViewer(packs, pickInfo?.data, players, game)
 
   return (<>
     <SetPageTitle title={game?.name || ""} />
@@ -56,7 +59,7 @@ export default function Watch(props: ServerProps) {
               </GameBodyHeader>
             
               { selectedTab === WatcherTabs.pack ?
-                <PackViewer packs={packs} cardOptions={cardOptions} players={players} game={game} pickInfo={pickInfo} />
+                <PackViewer data={packViewData} packs={packs} cardOptions={cardOptions} players={players} game={game} pickInfo={pickInfo}  />
                 :
                 <GameLogWatch players={players} packs={packs} log={gameLog} disabled={!game?.watchKey} {...watchProps} />
               }

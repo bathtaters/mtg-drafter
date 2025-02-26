@@ -1,10 +1,12 @@
-import { BasicPlayer, CardOptions, Game, PackFull, TabLabels } from "types/game"
+import type { PickInfoHook, PackViewerHook } from "./packViewer.controller"
+import type { BasicPlayer, CardOptions, Game, PackFull } from "types/game"
+import { TabLabels } from "types/game"
 import CardContainer from "../CardContainer/CardContainer"
 import PackViewerForm from "./PackViewerForm"
 import { ViewPackButton } from "./PackViewerStyles"
-import usePackViewer, { type PickInfoHook } from "./packViewer.controller"
 
 type Props = {
+    data: PackViewerHook,
     packs?: PackFull[],
     cardOptions: CardOptions,
     players?: BasicPlayer[],
@@ -12,8 +14,7 @@ type Props = {
     pickInfo?: PickInfoHook,
 }
 
-export default function PackViewer({ packs, cardOptions, players, game, pickInfo }: Props) {
-    const data = usePackViewer(packs, pickInfo?.data, players, game)
+export default function PackViewer({ packs, cardOptions, players, game, pickInfo, data }: Props) {
     const { pack, packVisible, viewPack, selectedPlayer, viewType } = data
 
     return (

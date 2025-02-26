@@ -8,9 +8,9 @@ import PackViewer from '../PackViewer/PackViewer'
 import { PickCardButton, RoundButton, GameBodyWrapper, GameBodyHeader, TimerStyle } from './GameBodyStyles'
 import { EmptyStyle } from 'components/base/styles/AppStyles'
 import usePickController from "./pick.controller"
+import usePackViewer, { usePickInfo } from '../PackViewer/packViewer.controller'
 import ContainerTabs, { getTabBadges } from './ContainerTabs'
 import { getBoard, getGameStatus } from '../shared/game.utils'
-import { usePickInfo } from '../PackViewer/packViewer.controller'
 
 type Props = {
   game: Game | PartialGame,
@@ -39,6 +39,8 @@ export default function GameBody({ game, player, players, pack, packs, playerTim
   } = usePickController(pickCard, swapCard, notify, pack, game, player, isHost, playerTimer, onPackLoad)
 
   const pickInfo = usePickInfo(game, players, !packViewer)
+
+  const packViewData = usePackViewer(packs, pickInfo?.data, players, game)
 
   if (!('round' in game) || game.round < 1 || !player) return (
     <GameBodyWrapper>
@@ -92,7 +94,7 @@ export default function GameBody({ game, player, players, pack, packs, playerTim
           }
         </CardContainer>
         :
-        <PackViewer packs={packs} cardOptions={cardOptions} players={players} game={game} pickInfo={pickInfo} />
+        <PackViewer data={packViewData} packs={packs} cardOptions={cardOptions} players={players} game={game} pickInfo={pickInfo} />
       }
 
       { typeof timer === 'number' &&  <TimerStyle seconds={timer} paused={!!game.pause} /> }
