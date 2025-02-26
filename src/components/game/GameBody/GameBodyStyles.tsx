@@ -89,5 +89,5 @@ export const RoundButton = ({ disabled, label, onClick }: { disabled?: boolean, 
 
 
 export const GameBodyWrapper = ({ className = '', children }: { className?: string, children?: ReactNode }) => (
-  <div className={`flex flex-col text-center relative ${className}`}>{children}</div>
+  <div className={`flex flex-col text-center h-full relative ${className}`}>{children}</div>
 )

@@ -19,7 +19,7 @@ export const CardContainerWrapper = ({ title, isPrimary, children, onClick }: {
    title: ReactNode, isPrimary: boolean, children: ReactNode, onClick?: MouseEventHandler
 }) => (
   <div onClick={onClick} className={
-    `relative rounded-lg shadow-md shadow-black mb-8 ${
+    `relative rounded-lg shadow-md shadow-black mb-8 flex-grow ${
       isPrimary ? 'text-primary bg-primary-content/40' : 'text-secondary bg-secondary-content/40'
     }`
   }>
