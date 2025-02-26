@@ -15,7 +15,7 @@ export default function CardToolbar(props: ToolbarProps) {
     <ToolbarCollapse button={ToolbarButton} defaultOpen={false}>
       <ToolbarContainer>
 
-        <CardSort label="Sort cards" selected={sort} setSelected={(idx) => setSort(+idx)}>
+        <CardSort label="Sort cards" selected={sort} setSelected={(idx) => setSort(+(idx ?? 0))}>
           {sortList.map((sortType, idx) => <Fragment key={idx}>{sortType}</Fragment>)}
         </CardSort>
 
