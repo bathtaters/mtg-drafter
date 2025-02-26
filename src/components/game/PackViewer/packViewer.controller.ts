@@ -58,5 +58,5 @@ export default function usePackViewer(packs?: PackFull[], pickInfo?: PickInfo, p
     }
 }
 
-export type ReturnProps = ReturnType<typeof usePackViewer>
+export type PackViewerHook = ReturnType<typeof usePackViewer>
 export type PickInfoHook = ReturnType<typeof usePickInfo>

@@ -1,10 +1,10 @@
 import { type BasicPlayer, type Game, TabLabels } from "types/game"
-import type { ReturnProps } from "./packViewer.controller"
+import type { PackViewerHook } from "./packViewer.controller"
 import { Fragment } from "react"
 import { FormContainer, RangeStyle, SelectorContainer, SelectorStyle } from "./PackViewerStyles"
 import { camelToTitle } from "components/base/services/common.services"
 
-type Props = ReturnProps & { players: BasicPlayer[], game?: Partial<Game> }
+type Props = PackViewerHook & { players: BasicPlayer[], game?: Partial<Game> }
 
 const allLabels = Object.values(TabLabels)
 const upperLabels = allLabels.map((view) => camelToTitle(view.valueOf()))
