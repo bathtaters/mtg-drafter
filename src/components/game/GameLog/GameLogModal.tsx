@@ -14,7 +14,7 @@ export default function GameLogModal({ isOpen, setOpen, gameEnded, ...props }: P
   return (
     <LargeModal isOpen={isOpen} setOpen={setOpen} title="Game Log">
       <ModalToolbarWrapper>
-        <LogToolbar log={props.log} players={props.players} gameEnded={gameEnded} />
+        <LogToolbar gameLog={props.gameLog} players={props.players} gameEnded={gameEnded} />
       </ModalToolbarWrapper>
       <GameLog {...props} />
     </LargeModal>

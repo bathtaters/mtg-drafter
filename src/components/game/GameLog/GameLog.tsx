@@ -6,22 +6,22 @@ import { ArtSize } from "../CardToolbar/CardToolbarStyles"
 import cardZoomLevels from "../CardToolbar/cardZoomLevels"
 
 export type Props = {
-  log: GameLog,
+  gameLog: GameLog,
   players: BasicPlayer[],
   packs?: PackFull[],
 }
 
 
-export default function GameLog({ log, players, packs }: Props) {
+export default function GameLog({ gameLog, players, packs }: Props) {
   const { card, setCard, zoom, setZoom, width } = useCardPopout(packs)
   
-  return log.error ? <ErrorContainer text={log.error} /> : 
+  return gameLog.error ? <ErrorContainer text={gameLog.error} /> : 
 
-    <LogContainer ref={log.scrollParentRef}>
-      {log.entries == null ? "Loading..." :
-        !log.entries.length ? "No entries yet" :
-        log.entries.map((entry) => entry && (
-          <LogEntry key={entry.index} {...entry}  isPrivate={log.options.hidePrivate} players={players} setCard={setCard} />
+    <LogContainer ref={gameLog.scrollParentRef}>
+      {gameLog.entries == null ? "Loading..." :
+        !gameLog.entries.length ? "No entries yet" :
+        gameLog.entries.map((entry) => entry && (
+          <LogEntry key={entry.index} {...entry}  isPrivate={gameLog.options.hidePrivate} players={players} setCard={setCard} />
         ))
       }
 
