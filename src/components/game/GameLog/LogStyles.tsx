@@ -8,12 +8,6 @@ import getColorClass from "components/base/libs/colors"
 import { objToString } from "./log.utils"
 import { scryfallLink } from "assets/urls"
 
-export const GameLogWatchWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="flex-grow">
-    {children}
-  </div>
-)
-
 export const ModalToolbarWrapper = ({ children }: { children: ReactNode }) => <div className="absolute top-4 right-4">{children}</div>
 
 export const LogContainer = ({ children, ref }: { children: ReactNode, ref?: Ref<HTMLElement> }) => (
