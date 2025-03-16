@@ -37,11 +37,19 @@ export const getDeck = (packs: PackFull[], selectedPlayer: BasicPlayer['id'], se
 
 export const sortByPickOrder = (pack?: GameCardFull[], picks?: PickInfo) => !pack || !picks ? pack :
     pack.toSorted((cardL, cardR) => {
-        const packL = picks[cardL.id]?.pack ?? 0
-        const packR = picks[cardR.id]?.pack ?? 0
-        if (packL !== packR) return packL - packR
+        const packL = picks[cardL.id]?.pack
+        const packR = picks[cardR.id]?.pack
+        
+        if (packL === packR) {
+            const pickL = picks[cardL.id]?.pick
+            const pickR = picks[cardR.id]?.pick
 
-        const pickL = picks[cardL.id]?.pick ?? 0
-        const pickR = picks[cardR.id]?.pick ?? 0
-        return pickL - pickR
+            if (pickL === pickR) return 0
+            if (pickL === undefined) return 1
+            if (pickR === undefined) return -1
+            return pickL - pickR
+        }
+        if (packL === undefined) return 1
+        if (packR === undefined) return -1
+        return packL - packR
     })
