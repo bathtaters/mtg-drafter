@@ -2,6 +2,7 @@ import type { Game, ServerProps, BasicLands, PartialGame } from 'types/game'
 import GameHeader from 'components/game/GameHeader/GameHeader'
 import PlayerJoin from 'components/game/PlayerJoin/PlayerJoin'
 import GameBody from 'components/game/GameBody/GameBody'
+import WatchBody from '../WatchBody/WatchBody'
 import PlayerSidebar from '../PlayerSidebar/PlayerSidebar'
 import LandsModal from 'components/game/LandsModal/LandsModal'
 import HostModal from 'components/game/HostModal/HostModal'
@@ -18,9 +19,9 @@ import { banMsg } from 'assets/strings'
 
 export default function Game(props: ServerProps) {
   const {
-    game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize, isBanned, isHost,
-    holding, canAdvance, pack, packs, sidebarVisible, landModal, hostModal, logModal, slots, gameLog, timer, 
-    saveDeck, setSidebar, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setOptions,
+    game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize, isBanned, isHost, sessionId,
+    holding, canAdvance, pack, packs, sidebarVisible, landModal, hostModal, logModal, slots, gameLog, timer, socket,
+    saveDeck, setSidebar, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setOptions, setLoadingAll,
     nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropWatcher, banSession, dropPlayer,
     reload, startTimer, newError, newToast, ErrorComponent, ToastComponent,
   } = useGameController(props)
@@ -40,24 +41,33 @@ export default function Game(props: ServerProps) {
       
       <BodyWrapperStyle>
         <Loader data={game || 404} message={props.error || (isBanned && banMsg)}>
-          { !player && !isHost ?
-            <PlayerJoin title="Pick a Seat:" slots={slots} players={players} selectPlayer={setStatus} game={game} /> :
-            
-            <GameBody
-              game={game as Game|PartialGame}
-              player={player} players={players} isHost={isHost} playerTimer={timer}
-              roundOver={player?.pick != null && player.pick > maxPackSize}
-              pack={pack} packs={packs} pickCard={pickCard} swapCard={swapCard}
-              clickRoundBtn={canAdvance ? () => nextRound() : undefined}
-              onLandClick={toggleLandModal}
-              clickReload={reload}
-              onPackLoad={startTimer}
-              loadingPack={!!loadingPack}
-              notify={newToast}
-            />
-          }
-          {isHost && !player && !!slots.length &&
-            <PlayerJoin title="Join Game As:" slots={slots} players={players} selectPlayer={setStatus} game={game} />
+          { player ?
+              <GameBody
+                game={game as Game|PartialGame}
+                player={player} players={players} isHost={isHost} playerTimer={timer}
+                roundOver={player?.pick != null && player.pick > maxPackSize}
+                pack={pack} packs={packs} pickCard={pickCard} swapCard={swapCard}
+                clickRoundBtn={canAdvance ? () => nextRound() : undefined}
+                onLandClick={toggleLandModal}
+                clickReload={reload}
+                onPackLoad={startTimer}
+                loadingPack={!!loadingPack}
+                notify={newToast}
+              />
+            : isHost ?
+              <WatchBody 
+                game={game} packs={packs} gameLog={gameLog} socket={socket}
+                players={players} sessionId={sessionId} isHost={isHost}
+                sidebarVisible={sidebarVisible} setSidebar={setSidebar}
+                reload={reload} setLoadingAll={setLoadingAll}
+                newToast={newToast} newError={newError}
+              >
+                {isHost && !player &&
+                  <PlayerJoin title="Join Game As:" slots={slots} players={players} selectPlayer={setStatus} game={game} />
+                }
+              </WatchBody>
+            :
+              <PlayerJoin title="Pick a Seat:" slots={slots} players={players} selectPlayer={setStatus} game={game} />
           }
         </Loader>
       </BodyWrapperStyle>

@@ -20,6 +20,7 @@ export type Props = {
     socket: SocketHook<GameClient>,
     setLoadingAll?: Set<number>,
     sessionId?: string,
+    isHost?: boolean,
     reload?: () => any,
     sidebarVisible: boolean,
     setSidebar?: Set<boolean>,
@@ -29,7 +30,7 @@ export type Props = {
 
 export default function useWatchController({
     gameLog: { setEnabled, setError, fetch, error },
-    game, players, packs, socket, sessionId,
+    game, players, packs, socket, sessionId, isHost,
     setSidebar, reload, setLoadingAll, newError,
 }: Props) {
     const [authed, setAuthState] = useState(false)
@@ -51,17 +52,21 @@ export default function useWatchController({
 
     // Check if user is already logged in on first load or if game/session changes
     useEffect(() => {
-        if (socket.socket && socket.isConnected && game?.id && sessionId) {
+        if (isHost) {
+            fetch()
+            return setAuth(true)
+        } else if (socket.socket && socket.isConnected && game?.id && sessionId) {
             socket.socket.emit('watcherLogin', game.id, sessionId, null, (success, reason) => {
                 setAuth(success)
                 if (reason && reason !== noPwMsg) setMessage(reason)
             })
         }
-    }, [socket.socket, socket.isConnected, game?.id, sessionId, setAuth])
+    }, [isHost, socket.socket, socket.isConnected, game?.id, sessionId, setAuth])
 
     // Login/Logout handlers
 
     const login = (password: string) => {
+        if (isHost) return setAuth(true)
         if (!sessionId) return setMessage("User token missing")
         setMessage("")
         if (!game?.id || !password) return;
@@ -78,7 +83,7 @@ export default function useWatchController({
         })
     }
 
-    const logout = () => {
+    const logout = isHost ? undefined : () => {
         if (!game?.id || !sessionId || !socket.isConnected) return newError({
             title: 'Logout Failed', theme: "warning",
             message: !game?.id ? "Game not found" : !sessionId ? "User token missing" : "Unable to reach server",
@@ -117,7 +122,11 @@ export default function useWatchController({
         } 
     }, [setAuth, error])
 
-    return { watchDisabled, authed, message, login, logout, packViewData, ...tabProps }
+    return {
+        watchDisabled, authed, message, login, logout, packViewData,
+        gameEnded: isHost ? gameEnded : true,
+        ...tabProps
+    }
 }
 
 
