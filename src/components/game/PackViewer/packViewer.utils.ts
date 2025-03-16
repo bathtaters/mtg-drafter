@@ -23,7 +23,8 @@ export const getPack = (packs: PackFull[], selectedPlayer: BasicPlayer['id'], ro
     getPackIdx(
         { round, roundCount: roundCount ?? round },
         players ?? [],
-        players?.find(({ id }) => id === selectedPlayer) ?? null
+        players?.find(({ id }) => id === selectedPlayer) ?? null,
+        0 /* Pick 1 */
     )
 ]?.cards
 

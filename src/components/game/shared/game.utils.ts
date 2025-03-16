@@ -60,19 +60,21 @@ export const getNeighborIdx = (game: Partial<Game> | undefined, playerCount: num
     (playerIdx + 1) % playerCount
 }
 
-export const getPackIdx = (game: Pick<Game,"round"|"roundCount"> | undefined, players: Pick<BasicPlayer,"id"|"pick">[], player: Pick<BasicPlayer,"id"> | null) => {
+export const getPackIdx = (game: Pick<Game,"round"|"roundCount"> | undefined, players: Pick<BasicPlayer,"id"|"pick">[], player: Pick<BasicPlayer,"id"> | null, forcePick?: number) => {
   if (!game || game.round < 1 || game.round > game.roundCount) return -1
   
   const playerIdx = getPlayerIdx(players, player)
   if (playerIdx === -1) return -1
 
-  const neighborIdx = getNeighborIdx(game, players.length, playerIdx)
-  if (neighborIdx !== -1 && players[playerIdx].pick > players[neighborIdx].pick) return -1
+  if (forcePick == null) {
+    // Check if pack was passed
+    const neighborIdx = getNeighborIdx(game, players.length, playerIdx)
+    if (neighborIdx !== -1 && players[playerIdx].pick > players[neighborIdx].pick) return -1
+    // Set pick to current pack
+    forcePick = players[playerIdx].pick - 1
+  }
 
-  return (game.round - 1) * players.length + mod(
-    (playerIdx + (players[playerIdx].pick - 1) * (passingRight(game) ? -1 : 1)),
-    players.length
-  )
+  return (game.round - 1) * players.length + mod((playerIdx + forcePick * (passingRight(game) ? -1 : 1)), players.length)
 }
 
 export const getRoundPackSize = (packs: PackMin[], playerCount: number, game?: Partial<Game>) => {
