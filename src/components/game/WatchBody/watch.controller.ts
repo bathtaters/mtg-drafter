@@ -124,7 +124,6 @@ export default function useWatchController({
 
     return {
         watchDisabled, authed, message, login, logout, packViewData,
-        gameEnded: isHost ? gameEnded : true,
         ...tabProps
     }
 }

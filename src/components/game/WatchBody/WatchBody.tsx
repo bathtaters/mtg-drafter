@@ -15,7 +15,7 @@ export type Props = Pick<BasicController, "players"|"packs"|"newToast"> & LogWat
 export default function WatchBody({ children, ...props }: Props) {
   
   const {
-    pickInfo, packViewData, gameEnded,
+    pickInfo, packViewData,
     watchDisabled, authed, message, login, logout,
     selectedTab, selectTab, cardOptions, setCardOptions,
   } = useWatchController(props)
@@ -29,7 +29,7 @@ export default function WatchBody({ children, ...props }: Props) {
           <CardToolbar setCardOptions={setCardOptions} clickReload={props.reload} notify={props.newToast} />
           :
           <TabToolbarWrapper clickReload={props.reload}>
-            <LogToolbar {...props} gameEnded={gameEnded} logout={logout} />
+            <LogToolbar {...props} gameEnded={true} logout={logout} />
           </TabToolbarWrapper>
         }
       </WatchBodyHeader>
