@@ -30,7 +30,7 @@ export default function Game(props: ServerProps) {
     <SetPageTitle title={game?.name || ""} />
 
     <PlayerSidebar
-      game={game} players={players} playerIdx={playerIdx} isHost={isHost} holding={holding} packSize={maxPackSize}
+      game={game} players={players} playerIdx={playerIdx} forceShow={isHost} holding={holding} packSize={maxPackSize}
       isOpen={sidebarVisible} setOpen={setSidebar}
     >
       <GameHeader
@@ -58,9 +58,8 @@ export default function Game(props: ServerProps) {
               <WatchBody 
                 game={game} packs={packs} gameLog={gameLog} socket={socket}
                 players={players} sessionId={sessionId} isHost={isHost}
-                sidebarVisible={sidebarVisible} setSidebar={setSidebar}
-                reload={reload} setLoadingAll={setLoadingAll}
-                newToast={newToast} newError={newError}
+                setSidebar={setSidebar} setLoadingAll={setLoadingAll}
+                reload={reload} newToast={newToast} newError={newError}
               >
                 {isHost && !player &&
                   <PlayerJoin title="Join Game As:" slots={slots} players={players} selectPlayer={setStatus} game={game} />

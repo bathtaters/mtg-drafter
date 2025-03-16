@@ -22,7 +22,6 @@ export type Props = {
     sessionId?: string,
     isHost?: boolean,
     reload?: () => any,
-    sidebarVisible: boolean,
     setSidebar?: Set<boolean>,
     newError: (alert: ErrorAlert) => any,
 }

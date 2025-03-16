@@ -10,7 +10,7 @@ type Props = {
   game?: GameProps['options'],
   players: GameProps['players'],
   playerIdx: number,
-  isHost: boolean,
+  forceShow?: boolean,
   holding: number[],
   packSize: number,
   isOpen: boolean,
@@ -19,7 +19,7 @@ type Props = {
 }
 
 
-export default function PlayerSidebar({ game, players, playerIdx, isHost, holding, packSize, isOpen, setOpen, children }: Props) {
+export default function PlayerSidebar({ game, players, playerIdx, forceShow, holding, packSize, isOpen, setOpen, children }: Props) {
 
   const { oppIdx, hideStats, passRight } = usePlayerSidebar(game, players, playerIdx)
 
@@ -28,8 +28,8 @@ export default function PlayerSidebar({ game, players, playerIdx, isHost, holdin
   return (
     <SidebarDrawerStyle isOpen={isOpen} overlayClick={setOpen && (() => setOpen(false))}
         sidebarContent={
-            <SidebarContainer isOpen={isOpen} button={playerIdx < 0 && !isHost ? undefined :
-                <SidebarButton hide={!isHost && players.length < 4} active={isOpen} onClick={setOpen && (() => setOpen((show) => !show))} />
+            <SidebarContainer isOpen={isOpen} button={playerIdx < 0 && !forceShow ? undefined :
+                <SidebarButton hide={!forceShow && players.length < 4} active={isOpen} onClick={setOpen && (() => setOpen((show) => !show))} />
             }>
                 <Arrow isDown={passRight} />
 

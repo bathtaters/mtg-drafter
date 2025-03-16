@@ -1,4 +1,3 @@
-import type { Dispatch, SetStateAction } from "react"
 import type { BasicPlayer } from "types/game"
 import type { GameLog } from "../log.controller"
 import LogFilter from "./LogFilter"
@@ -11,18 +10,15 @@ type Props = {
   players: BasicPlayer[],
   gameEnded: boolean,
   logout?: () => void,
-  sidebarVisible?: boolean,
-  setSidebar?: Dispatch<SetStateAction<boolean>>,
 }
 
-export default function LogToolbar({ gameLog, players, gameEnded, logout, sidebarVisible, setSidebar }: Props) {
+export default function LogToolbar({ gameLog, players, gameEnded, logout }: Props) {
   return (
     <ToolbarWrapper>
       <SettingsDropdown>
         {Object.keys(gameLog.options).map((key) => (key !== 'hidePrivate' || gameEnded) && (!logout || key !== 'hideWatchers') &&
           <SettingToggle key={key} label={logOptionLabels[key]} value={!gameLog.options[key]} setValue={(val) => gameLog.setOptions((opt) => ({ ...opt, [key]: !val }))} />
         )}
-        { setSidebar && <SettingToggle label={logOptionLabels.showSidebar} value={sidebarVisible ?? false} setValue={setSidebar} /> }
         { logout && <SettingAction label={<LogoutLabel />} onClick={logout} /> }
       </SettingsDropdown>
 

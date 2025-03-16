@@ -21,14 +21,14 @@ export default function Watch(props: ServerProps) {
     <SetPageTitle title={game?.name || ""} />
 
     <PlayerSidebar
-      game={game} players={players} isHost={false} holding={holding} packSize={maxPackSize} playerIdx={-1}
+      game={game} players={players} forceShow={true} holding={holding} packSize={maxPackSize} playerIdx={-1}
       isOpen={sidebarVisible} setOpen={setSidebar || true}
     >
       <WatchHeader game={game} />
       
       <BodyWrapperStyle>
         <Loader data={game || 404} message={props.error || (isBanned && banMsg)}>
-          <WatchBody game={game} players={players} sidebarVisible={sidebarVisible} setSidebar={setSidebar} {...basicProps} />
+          <WatchBody game={game} players={players} setSidebar={setSidebar} {...basicProps} />
         </Loader>
       </BodyWrapperStyle>
       
