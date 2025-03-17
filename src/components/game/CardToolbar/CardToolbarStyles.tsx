@@ -14,12 +14,16 @@ export const ToolbarContainer = ({ children }: { children: ReactNode }) => (
 )
 
 export const ToolbarCollapse = (props: CollapseProps) => (
-  <CollapseContainer className="-mt-7 pt-7" buttonClass="absolute right-0 top-4 p-2 btn-ghost swap-rotate" {...props} />
+  <CollapseContainer title="View Options" className="-mt-7 pt-7" buttonClass="absolute right-0 top-4 p-2 btn-ghost swap-rotate" {...props} />
 )
 
 export const ReloadButton = (props: ButtonHTMLAttributes<HTMLButtonElement>) => (
-  <button {...props} type="button" className="absolute left-0 top-4 btn btn-circle btn-sm border-secondary hover:border-secondary text-secondary bg-secondary-content">
-    <ReloadIcon className="w-5 fill-current" />
+  <button {...props}
+    data-tip="Reload" type="button"
+    className="absolute left-0 top-4 btn btn-circle btn-sm tooltip tooltip-secondary
+    border-secondary hover:border-secondary text-secondary bg-secondary-content"
+  >
+    <ReloadIcon className="w-5 fill-current m-auto" />
   </button>
 )
 

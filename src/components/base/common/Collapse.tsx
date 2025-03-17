@@ -7,16 +7,17 @@ export type Props = {
   children: ReactNode,
   className?: string,
   buttonClass?: string,
+  title?: string,
 }
 
-export default function CollapseContainer({ button, defaultOpen, children, className = '', buttonClass = 'text-xl font-medium'  }: Props) {
+export default function CollapseContainer({ button, defaultOpen, children, className = '', buttonClass = 'text-xl font-medium', title }: Props) {
   const [ open, setOpen ] = useState(defaultOpen)
 
   return (<>
     { Array.isArray(button) && button.length === 2 ?
-      <IconToggle value={open} setValue={setOpen} className={`btn z-10 ${buttonClass}`}>{button}</IconToggle>
+      <IconToggle value={open} setValue={setOpen} label={title} className={`btn z-10 ${buttonClass}`}>{button}</IconToggle>
       :
-      <button type="button" className={`btn z-10 ${buttonClass}`} onClick={() => setOpen((o) => !o)}>{button}</button>
+      <button type="button" title={title} className={`btn z-10 ${buttonClass}`} onClick={() => setOpen((o) => !o)}>{button}</button>
     }
     <div className={`collapse ${className} ${open ? 'collapse-open' : 'collapse-close'} z-0`}>
       <div className="collapse-content relative overflow-visible">{children}</div>
