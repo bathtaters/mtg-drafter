@@ -42,31 +42,33 @@ export default function Game(props: ServerProps) {
       <BodyWrapperStyle>
         <Loader data={game || 404} message={props.error || (isBanned && banMsg)}>
           { player ?
-              <GameBody
-                game={game as Game|PartialGame}
-                player={player} players={players} isHost={isHost} playerTimer={timer}
-                roundOver={player?.pick != null && player.pick > maxPackSize}
-                pack={pack} packs={packs} pickCard={pickCard} swapCard={swapCard}
-                clickRoundBtn={canAdvance ? () => nextRound() : undefined}
-                onLandClick={toggleLandModal}
-                clickReload={reload}
-                onPackLoad={startTimer}
-                loadingPack={!!loadingPack}
-                notify={newToast}
-              />
-            : isHost ?
-              <WatchBody 
-                game={game} packs={packs} gameLog={gameLog} socket={socket}
-                players={players} sessionId={sessionId} isHost={isHost}
-                setSidebar={setSidebar} setLoadingAll={setLoadingAll}
-                reload={reload} newToast={newToast} newError={newError}
-              >
-                {isHost && !player &&
-                  <PlayerJoin title="Join Game As:" slots={slots} players={players} selectPlayer={setStatus} game={game} />
-                }
-              </WatchBody>
-            :
-              <PlayerJoin title="Pick a Seat:" slots={slots} players={players} selectPlayer={setStatus} game={game} />
+            <GameBody
+              game={game as Game|PartialGame}
+              player={player} players={players} isHost={isHost} playerTimer={timer}
+              roundOver={player?.pick != null && player.pick > maxPackSize}
+              pack={pack} packs={packs} pickCard={pickCard} swapCard={swapCard}
+              clickRoundBtn={canAdvance ? () => nextRound() : undefined}
+              onLandClick={toggleLandModal}
+              clickReload={reload}
+              onPackLoad={startTimer}
+              loadingPack={!!loadingPack}
+              notify={newToast}
+            />
+
+          : isHost ?
+            <WatchBody 
+              game={game} packs={packs} gameLog={gameLog} socket={socket}
+              players={players} sessionId={sessionId} isHost={isHost}
+              setSidebar={setSidebar} setLoadingAll={setLoadingAll}
+              reload={reload} newToast={newToast} newError={newError}
+            >
+              {isHost && !player &&
+                <PlayerJoin title="Join Game As:" slots={slots} players={players} selectPlayer={setStatus} game={game} />
+              }
+            </WatchBody>
+
+          : /* Non-player / Non-host */
+            <PlayerJoin title="Pick a Seat:" slots={slots} players={players} selectPlayer={setStatus} game={game} />
           }
         </Loader>
       </BodyWrapperStyle>
