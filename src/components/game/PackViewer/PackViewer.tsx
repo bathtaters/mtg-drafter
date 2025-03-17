@@ -15,15 +15,15 @@ type Props = {
 }
 
 export default function PackViewer({ packs, cardOptions, players, game, pickInfo, data }: Props) {
-    const { pack, packVisible, viewPack, selectedPlayer, viewType } = data
+    const { pack, round, packVisible, viewPack, selectedPlayer, viewType } = data
 
     return (
         <CardContainer
-            label={!packVisible ? 'select' : viewType ?? TabLabels.pack}
+            type={!packVisible ? 'select' : viewType ?? TabLabels.pack}
+            name={packVisible ? players?.find(({ id }) => id === selectedPlayer)?.name : null}
+            round={round}
             cards={packVisible ? pack || [] : undefined}
             cardOptions={cardOptions}
-            // loading={!packs || !players ? -1 : packLoading || undefined}}
-            // onCardLoad={handleCardLoad}
             overrideBody={!packVisible && players && packs && <PackViewerForm players={players} game={game} {...data} />}
             pickInfo={pickInfo?.data}
         >

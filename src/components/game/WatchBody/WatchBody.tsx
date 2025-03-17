@@ -36,15 +36,18 @@ export default function WatchBody({ children, ...props }: Props) {
       
       {/* Body */}
       { !authed ?
-          <WatchGameLogWrapper>{
-            watchDisabled ?
-              <ErrorContainer text="Observing this game has been disabled by the host." /> :
-              <PasswordForm label="Enter Password" message={message} onSubmit={login} fullPage={true} />
-          }</WatchGameLogWrapper>
+        <WatchGameLogWrapper>{
+          watchDisabled ?
+            <ErrorContainer text="Observing this game has been disabled by the host." /> :
+            <PasswordForm label="Enter Password" message={message} onSubmit={login} fullPage={true} />
+        }</WatchGameLogWrapper>
+
         : selectedTab === WatcherTabs.log ?
         <WatchGameLogWrapper><GameLog {...props} /></WatchGameLogWrapper>
+
         : selectedTab === WatcherTabs.cards ?
-          <PackViewer data={packViewData} cardOptions={cardOptions} pickInfo={pickInfo} {...props}  />
+        <PackViewer data={packViewData} cardOptions={cardOptions} pickInfo={pickInfo} {...props}  />
+
         : /* selectedTab === join */
         <WatchGameLogWrapper>{children}</WatchGameLogWrapper>
       }

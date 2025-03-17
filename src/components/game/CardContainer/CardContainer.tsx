@@ -1,12 +1,14 @@
 import type { ReactNode, MouseEvent, MouseEventHandler } from "react"
-import { CardFull, CardOptions, BoardLands, TabLabels, BasicPlayer, GameCardFull, PickInfo } from "types/game"
+import { CardOptions, BoardLands, TabLabels, GameCardFull, PickInfo } from "types/game"
 import Card from "../Card/Card"
 import ContainerHeader from "./CardContainerHeader"
 import { CardContainerWrapper, CardsWrapper, NoPack, NoCards, RoundOver, LoadingPack, PausedGame } from "./CardContainerStyles"
 import { packSort, sortKeys } from "components/base/services/cardSort.services"
 
 type Props = {
-  label: TabLabels | "select",
+  type: TabLabels | "select",
+  round?: number,
+  name?: string | null,
   cards?: Pick<GameCardFull, "id"|"foil"|"card"|"playerId">[] | "roundEnd",
   lands?: BoardLands,
   loading?: number,
@@ -24,27 +26,21 @@ type Props = {
 }
 
 
-export default function CardContainer({ label, cards, lands, loading = 0, paused, children, onClick, onCardLoad, onBgdClick, onLandClick, selectedId, highlightId, cardOptions, overrideBody, pickInfo }: Props) {
+export default function CardContainer({ type, round, name, cards, lands, loading = 0, paused, children, onClick, onCardLoad, onBgdClick, onLandClick, selectedId, highlightId, cardOptions, overrideBody, pickInfo }: Props) {
   const count = typeof cards === 'string' ? undefined : cards?.length
-
-  const packNum = label === TabLabels.pack && pickInfo && Object.values(pickInfo)[0].pack
-  const playerName = pickInfo && (
-    label === TabLabels.pack ? Object.values(pickInfo).find(({ pick }) => pick === 1)?.name :
-    label !== 'select' ? Object.values(pickInfo)[0]?.name : undefined
-  )
   
   return (
     <CardContainerWrapper 
       title={
         <ContainerHeader
-          label={label} count={count} lands={lands} onLandClick={onLandClick}
-          prefix={playerName && `${playerName} – `}
-          suffix={packNum && ` ${packNum}`}
+          label={type} count={count} lands={lands} onLandClick={onLandClick}
+          prefix={name && `${name} – `}
+          suffix={type === TabLabels.pack && round && ` ${round}`}
         >
           {children}
         </ContainerHeader>
       }
-      isPrimary={label !== TabLabels.pack && label !== 'select'} onClick={onBgdClick}
+      isPrimary={type !== TabLabels.pack && type !== 'select'} onClick={onBgdClick}
     >
       { paused && <PausedGame /> }
       <CardsWrapper hideCards={loading > 0}>
@@ -58,7 +54,7 @@ export default function CardContainer({ label, cards, lands, loading = 0, paused
               onLoad={onCardLoad}
               isSelected={selectedId === id}
               isHighlighted={!selectedId && highlightId === id}
-              container={label === 'select' ? TabLabels.pack : label}
+              container={type === 'select' ? TabLabels.pack : type}
               pickInfo={pickInfo ? pickInfo[id] ?? {} : undefined}
             />
           )

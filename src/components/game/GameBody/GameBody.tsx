@@ -63,7 +63,7 @@ export default function GameBody({ game, player, players, pack, packs, playerTim
 
       {selectedTab !== 'pack' ?
         <CardContainer
-          label={selectedTab}
+          type={selectedTab}
           cards={getBoard(player.cards, selectedTab)}
           lands={player.basics[selectedTab]}
           cardOptions={cardOptions}
@@ -74,7 +74,7 @@ export default function GameBody({ game, player, players, pack, packs, playerTim
       !packViewer ?
         <CardContainer
           loading={loadingPack ? -1 : packLoading || undefined}
-          label={TabLabels.pack}
+          type={TabLabels.pack}
           cards={roundOver ? 'roundEnd' : pack?.cards}
           cardOptions={cardOptions}
           paused={!!game.pause}
