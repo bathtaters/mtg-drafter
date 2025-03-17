@@ -2,7 +2,7 @@ import type { ReactNode, MouseEvent, MouseEventHandler } from "react"
 import { CardOptions, BoardLands, TabLabels, GameCardFull, PickInfo } from "types/game"
 import Card from "../Card/Card"
 import ContainerHeader from "./CardContainerHeader"
-import { CardContainerWrapper, CardsWrapper, NoPack, NoCards, RoundOver, LoadingPack, PausedGame } from "./CardContainerStyles"
+import { CardContainerWrapper, CardsWrapper, NoPack, NoCards, RoundOver, LoadingPack, PausedGame, NotLive } from "./CardContainerStyles"
 import { packSort, sortKeys } from "components/base/services/cardSort.services"
 
 type Props = {
@@ -60,6 +60,7 @@ export default function CardContainer({ type, round, name, cards, lands, loading
           )
         }
       </CardsWrapper>
+      { name && (type === TabLabels.main || type === TabLabels.side) && <NotLive /> }
 
       { !!loading && <LoadingPack loading={loading} count={cards?.length} /> }
     </CardContainerWrapper>
