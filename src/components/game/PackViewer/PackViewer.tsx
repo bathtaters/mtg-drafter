@@ -30,13 +30,13 @@ export default function PackViewer({ packs, cardOptions, players, game, pickInfo
             {packVisible ?
                 <ViewPackButton label="packHide"
                     error={pickInfo?.error} isLoading={pickInfo?.isLoading}
-                    onClick={() => viewPack((v) => !v)}
+                    onClick={() => viewPack(false)}
                 />
                 :
                 <ViewPackButton label="packShow"
                     error={pickInfo?.error} isLoading={pickInfo?.isLoading}
                     disabled={pickInfo?.isLoading || !selectedPlayer || !viewType}
-                    onClick={() => viewPack((v) => !v)}
+                    onClick={() => viewPack(true)}
                 />}
         </CardContainer>
     )
