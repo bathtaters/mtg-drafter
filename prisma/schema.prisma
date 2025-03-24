@@ -54,6 +54,7 @@ enum LogAction {
 
   round
   settings
+  view
 }
 
 enum DataType {
@@ -218,19 +219,20 @@ model GameCard {
 }
 
 model LogEntry {
-  id     String    @id @default(cuid(2))
-  time   DateTime  @default(now())
-  action LogAction
-  data   String?
-  byHost Boolean   @default(false)
+  id        String    @id @default(cuid(2))
+  time      DateTime  @default(now())
+  action    LogAction
+  data      String?
+  sessionId String?
+  byHost    Boolean   @default(false)
 
-  game   Game      @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  player Player?   @relation(fields: [playerId], references: [id])
-  card   GameCard? @relation(fields: [cardId], references: [id])
+  game      Game      @relation(fields: [gameId],   references: [id], onDelete: Cascade, onUpdate: Cascade)
+  player    Player?   @relation(fields: [playerId], references: [id])
+  card      GameCard? @relation(fields: [cardId],   references: [id])
 
-  gameId   String
-  playerId String?
-  cardId   String?
+  gameId    String
+  playerId  String?
+  cardId    String?
 }
 
 model Ban {
