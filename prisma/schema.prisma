@@ -224,7 +224,7 @@ model LogEntry {
   action    LogAction
   data      String?
   sessionId String?
-  byHost    Boolean   @default(false)
+  hostId    String?
 
   game      Game      @relation(fields: [gameId],   references: [id], onDelete: Cascade, onUpdate: Cascade)
   player    Player?   @relation(fields: [playerId], references: [id])
