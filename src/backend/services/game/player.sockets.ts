@@ -1,5 +1,5 @@
 import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
-import type { BasicLands } from 'types/game'
+import type { BasicLands, Player } from 'types/game'
 import { getExisitingSessionId } from 'backend/libs/auth'
 import { banPlayer, getPlayerGame, renamePlayer, setStatus, swapCard, updateLands } from './player.services'
 import { checkBanOrLock } from './game.services'
@@ -7,11 +7,11 @@ import { setWatcher } from './log.services'
 import { handleBotPicks } from './game.sockets'
 import { gameIsEnded } from 'components/game/shared/game.utils'
 import validation from 'types/game.validation'
-import { BOT } from 'assets/constants'
+import { BOT, AUTOMATED } from 'assets/constants'
 import { banMsg } from 'assets/strings'
 
 
-export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
+export default function addPlayerListeners(io: GameServer, socket: GameSocket, currentSessionId: Player['sessionId']) {
     
     socket.on('setName', async (playerId, name, byHost) => {
       try {
@@ -21,7 +21,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
         if (!name) throw new Error('No name provided')
         
         // Update DB
-        const player = await renamePlayer(playerId, name, byHost)
+        const player = await renamePlayer(playerId, name, currentSessionId, byHost ? currentSessionId : null)
         player != null && io.emit('updateName', player.id, player.name)
 
       // Handle Error
@@ -48,12 +48,12 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
 
         // Update DB
         const leave = status === 'leave'
-        const player = await setStatus(playerId, sessionId, leave, byHost)
+        const player = await setStatus(playerId, sessionId, leave, byHost ? currentSessionId : null)
         if (!player?.id) throw new Error('Player not found')
 
         // Force logout if Watching game
         if (!leave && sessionId !== BOT && !gameIsEnded(game)) {
-          const count = await setWatcher(game.id, sessionId, false, true, true)
+          const count = await setWatcher(game.id, sessionId, false, AUTOMATED, true)
           if (count) {
             io.emit('updateWatcher', sessionId, false, undefined)
             callback(undefined)
@@ -117,7 +117,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket) {
         playerId = validation.id.nullable().optional().parse(playerId)
 
         // Update DB
-        const result = await banPlayer(gameId, sessionId, unban, playerId)
+        const result = await banPlayer(gameId, currentSessionId, sessionId, unban, playerId)
         if (result.unban !== unban) throw new Error('Update failed')
 
         // Update Client(s)

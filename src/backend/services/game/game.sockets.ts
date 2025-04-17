@@ -1,4 +1,4 @@
-import type { Game } from '@prisma/client'
+import type { Game, Player } from '@prisma/client'
 import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
 import { isDbErr } from 'backend/libs/db'
 import { nextRound, pauseGame, resumeGame, pickCard, updateGame, checkBan } from './game.services'
@@ -9,7 +9,7 @@ import { gameIsEnded } from 'components/game/shared/game.utils'
 import { banMsg, noPwMsg } from 'assets/strings'
 
 
-export default function addGameListeners(io: GameServer, socket: GameSocket) {
+export default function addGameListeners(io: GameServer, socket: GameSocket, currentSessionId: Player['sessionId']) {
 
     socket.on('setOptions', async (gameId, options) => {
       try {
@@ -19,7 +19,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         if (!options) throw new Error('No title provided')
         
         // Update DB
-        const result = await updateGame(gameId, options)
+        const result = await updateGame(gameId, options, currentSessionId)
         result != null && Object.keys(result).length && io.emit('updateGame', result)
 
       // Handle Error
@@ -36,7 +36,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         round = validation.round.parse(round)
 
         // Update DB
-        const newRound = await nextRound(gameId, round)
+        const newRound = await nextRound(gameId, round, currentSessionId)
         newRound != null && io.emit('updateRound', newRound)
 
       // Handle Error
@@ -53,7 +53,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         pause = validation.bool.parse(pause)
 
         // Update DB
-        const pauseTimer = await (pause ? pauseGame(gameId) : resumeGame(gameId))
+        const pauseTimer = await (pause ? pauseGame(gameId, currentSessionId) : resumeGame(gameId, currentSessionId))
         io.emit('updateTimer', pauseTimer)
 
       // Handle Error
@@ -70,7 +70,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         gameCardOrPack = validation.idOrNum.parse(gameCardOrPack)
 
         // Update DB
-        const player = await pickCard(playerId, gameCardOrPack)
+        const player = await pickCard(playerId, gameCardOrPack, currentSessionId)
         if (typeof player === 'string') throw new Error(player === 'Player' ? 'Player not found' : 'Card was already picked or does not exist')
 
         // Update Client(s)
@@ -94,7 +94,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         password = authPassword.parse(password) ?? null
         
         // Update DB
-        const exists = await setPassword(gameId, password)
+        const exists = await setPassword(gameId, password, currentSessionId)
         if (exists === null) throw new Error('Failed to save password')
 
         io.emit('updateWatchPw', exists ? 'Enabled' : null)
@@ -128,7 +128,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         if (game && !gameIsEnded(game)) throw new Error("Players cannot view log until game has ended")
         
         // Update DB
-        const result = await setWatcher(gameId, sessionId, true, false)
+        const result = await setWatcher(gameId, sessionId, true)
         if (result.sessionId !== sessionId) throw new Error("Server failure")
         
         callback(true, undefined)
@@ -158,7 +158,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket) {
         sessionId = validation.session.parse(sessionId)
         
         // Update DB
-        const result = await setWatcher(gameId, sessionId, false, byHost ?? false)
+        const result = await setWatcher(gameId, sessionId, false, byHost ? currentSessionId : null)
         if (result.sessionId !== sessionId) throw new Error('Failed to drop watcher')
 
         io.emit('updateWatcher', sessionId, false, undefined)

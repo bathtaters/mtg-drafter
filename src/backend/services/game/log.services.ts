@@ -1,11 +1,11 @@
 import type { Watcher } from "@prisma/client"
-import type { Game } from "types/game"
+import type { Game, Player } from "types/game"
 import type { LogFilterParam } from "types/log.validation"
 import prisma from "backend/libs/db"
 import { validate, hash } from "backend/utils/db/password.utils"
 import { getLastJoinSession, getName } from "backend/utils/game/player.utils"
 import { otherPlayers } from "types/logs"
-import { ALL_WATCHERS, LOG_DELIM } from "assets/constants"
+import { ALL_WATCHERS } from "assets/constants"
 
 const LOG_SALT = "92c23bc8fd75cb3e2880b983ce84d736"
 
@@ -18,7 +18,7 @@ export const getGameLog = (url: Game['url'], take?: number, skip?: number, fromS
         log: {
             where: filter && { AND: [
                 filter.actions  ? { action: { in: filter.actions } } : {},
-                filter.hideHost ? { OR: [ { playerId: null }, { byHost: false }, { action: 'ban' }] } : {},
+                filter.hideHost ? { OR: [ { playerId: null }, { hostId: null }, { action: 'ban' }] } : {},
                 !filter.players ? {} : otherPlayers.some((player) => filter.players?.includes(player)) ? 
                     { OR: [ { playerId: { in: filter.players } }, { playerId: null /* otherPlayers = NULL */ }] } :
                     { playerId: { in: filter.players } },
@@ -55,7 +55,7 @@ export async function testPassword(id: string, password: string) {
     return result ? undefined : "Incorrect password"
 }
 
-export async function setPassword(id: string, password: string | null) {
+export async function setPassword(id: string, password: string | null, hostId: Player['sessionId']) {
     if (password) password = await hash(password, LOG_SALT)
     try {
         const result = await prisma.$transaction([
@@ -64,7 +64,7 @@ export async function setPassword(id: string, password: string | null) {
                 data: { watchKey: password },
             }),
             prisma.watcher.deleteMany({ where: { gameId: id } }),
-            prisma.logEntry.create({ data: { gameId: id, action: 'leave', data: ALL_WATCHERS, byHost: true } }),
+            prisma.logEntry.create({ data: { gameId: id, hostId, action: 'leave', data: ALL_WATCHERS } }),
         ])
         return Boolean(result[0].watchKey)
 
@@ -75,29 +75,27 @@ export async function setPassword(id: string, password: string | null) {
     return null
 }
 
-export async function setWatcher(gameId: string, sessionId: string, join: boolean, byHost: boolean): Promise<Watcher>;
-export async function setWatcher(gameId: string, sessionId: string, join: boolean, byHost: boolean, ignoreError: true): Promise<number>;
-export async function setWatcher(gameId: string, sessionId: string, join: boolean, byHost: boolean, ignoreError: false | undefined): Promise<Watcher>;
-export async function setWatcher(gameId: string, sessionId: string, join: boolean, byHost: boolean, ignoreError: boolean): Promise<Watcher | number>;
-export async function setWatcher(gameId: string, sessionId: string, join: boolean, byHost = false, ignoreError = false) {
+export async function setWatcher(gameId: Game['id'], sessionId: string, join: boolean, hostId?: Player['sessionId']): Promise<Watcher>;
+export async function setWatcher(gameId: Game['id'], sessionId: string, join: boolean, hostId: Player['sessionId'], ignoreError: true): Promise<number>;
+export async function setWatcher(gameId: Game['id'], sessionId: string, join: boolean, hostId: Player['sessionId'], ignoreError: false | undefined): Promise<Watcher>;
+export async function setWatcher(gameId: Game['id'], sessionId: string, join: boolean, hostId: Player['sessionId'], ignoreError: boolean): Promise<Watcher | number>;
+export async function setWatcher(gameId: Game['id'], sessionId: string, join: boolean, hostId: Player['sessionId'] = null, ignoreError = false) {
     if (join) {
         const name = await getName(sessionId, gameId)
-        const data = name ? `${sessionId}${LOG_DELIM}${name || ''}` : sessionId
         return prisma.$transaction([
             prisma.watcher.create({ data: { gameId, sessionId, name } }),
-            prisma.logEntry.create({ data: { gameId, action: 'join', data, byHost } }),
+            prisma.logEntry.create({ data: { gameId, sessionId, action: 'join', data: name, hostId } }),
         ]).then((res) => res[0])
-
     }
     
-    const data = await getLastJoinSession(sessionId, gameId).then((data) => data || `${sessionId}${LOG_DELIM}`)
+    const data = await getLastJoinSession(sessionId, gameId)
     if (ignoreError) {
         const { count } = await prisma.watcher.deleteMany({ where: { gameId, sessionId } })
-        if (count) await prisma.logEntry.create({ data: { gameId, action: 'leave', data, byHost } })
+        if (count) await prisma.logEntry.create({ data: { gameId, sessionId, action: 'leave', data, hostId } })
         return count
     }
     return prisma.$transaction([
         prisma.watcher.delete({ where: { sessionId_gameId: { gameId, sessionId } } }),
-        prisma.logEntry.create({ data: { gameId, action: 'leave', data, byHost } }),
+        prisma.logEntry.create({ data: { gameId, sessionId, action: 'leave', data, hostId } }),
     ]).then((res) => res[0])
 }

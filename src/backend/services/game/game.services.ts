@@ -39,7 +39,7 @@ export function getRoundPackSize(gameId: Game["id"], round: number, roundCount: 
 }
 
 
-export function updateGame(id: Game['id'], options: LiveOptions, newHost?: Player['id']) {
+export function updateGame(id: Game['id'], options: LiveOptions, hostId: Player['sessionId'], newHost?: Player['id']) {
   const select = Object.keys(options).reduce(
     (opts, key) => ({ ...opts, [key]: true }),
     {} as Record<keyof LiveOptions, true>,
@@ -48,12 +48,12 @@ export function updateGame(id: Game['id'], options: LiveOptions, newHost?: Playe
   return retry(() => prisma.$transaction([
     prisma.game.update({ where: { id }, data: options, select }),
 
-    prisma.logEntry.create({ data: { gameId: id, byHost: true, action: 'settings', data: JSON.stringify(options), playerId: newHost } })
+    prisma.logEntry.create({ data: { gameId: id, hostId, action: 'settings', data: JSON.stringify(options), playerId: newHost } })
   ])).then(([result]) => result)
 }
 
 
-export async function nextRound(id: Game['id'], round: Game['round']) {
+export async function nextRound(id: Game['id'], round: Game['round'], hostId: Player['sessionId']) {
   const game = await retry(() => prisma.game.update({
     where: { id },
     data: {
@@ -67,7 +67,7 @@ export async function nextRound(id: Game['id'], round: Game['round']) {
   if (!game) throw new Error('Game not found')
 
   await retry(() => prisma.logEntry.create({ data: {
-    gameId: id, byHost: true, action: 'round',
+    gameId: id, hostId, action: 'round',
     data: `${game.round > game.roundCount ? 'END' : game.round}`
   } }))
 
@@ -75,24 +75,20 @@ export async function nextRound(id: Game['id'], round: Game['round']) {
 }
 
 
-export async function pauseGame(id: Game['id']) {
+export async function pauseGame(id: Game['id'], hostId: Player['sessionId']) {
   const game = await retry(() => prisma.$transaction([
     prisma.game.update({
       where: { id },
       data: { pause: Date.now() },
       select: { pause: true },
     }),
-    prisma.logEntry.create({ data: {
-      gameId: id,
-      byHost: true,
-      action: 'pause',
-    } }),
+    prisma.logEntry.create({ data: { gameId: id, hostId, action: 'pause' } }),
   ]))
 
   return Number(game[0].pause ?? 0)
 }
 
-export async function resumeGame(id: Game['id']) {
+export async function resumeGame(id: Game['id'], hostId: Player['sessionId']) {
   const game = await prisma.game.findFirstOrThrow({
     where: { id },
     select: { id: true, pause: true },
@@ -111,7 +107,7 @@ export async function resumeGame(id: Game['id']) {
     }),
     prisma.logEntry.create({ data: {
       gameId: game.id,
-      byHost: true,
+      hostId,
       action: 'pause',
       data: `${(increment / 1000).toFixed(1)}`
     } })
@@ -120,7 +116,7 @@ export async function resumeGame(id: Game['id']) {
 }
 
 
-export async function pickCard(playerId: Player['id'], gameCardOrPack: GameCard['id'] | Pack['index'], board: Board = "main") {
+export async function pickCard(playerId: Player['id'], gameCardOrPack: GameCard['id'] | Pack['index'], sessionId: Player['sessionId'] = null, board: Board = "main") {
   if (!(await prisma.player.count({ where: { id: playerId }}))) return 'Player'
 
   let game: Pick<Game,"id"|"round"|"roundCount"> & { players: { id: Player['id'] }[] },
@@ -175,6 +171,7 @@ export async function pickCard(playerId: Player['id'], gameCardOrPack: GameCard[
   
   await retry(() => prisma.logEntry.create({ data: {
     gameId: game.id,
+    sessionId,
     playerId,
     cardId: typeof gameCardOrPack === 'string' ? gameCardOrPack : undefined,
     action: 'pick',

@@ -1,3 +1,4 @@
+import type { Player } from '@prisma/client'
 import type { BoosterOptions, CubeOptions, GenericOptions } from 'types/setup'
 import prisma from '../../libs/db'
 import retry from '../../libs/retry'
@@ -16,7 +17,7 @@ export async function newBoosterGame({ packList, basics, ...options }: BoosterOp
 
 // Generic Creator
 
-async function newGame(options: GenericOptions, sessionId?: string) {
+async function newGame(options: GenericOptions, hostId: Player['sessionId'] = null) {
 
   const game = await retry(() => prisma.game.create({
     select: {
@@ -27,7 +28,7 @@ async function newGame(options: GenericOptions, sessionId?: string) {
       name: options.name,
       url: randomUrl(),
       roundCount: options.roundCount,
-      hostId: sessionId,
+      hostId,
       players: { create: createPlayers(options.playerCount) },
       timerBase: options.timer || null,
       packs: { create: options.packs.map((pack,index) => ({
@@ -38,7 +39,7 @@ async function newGame(options: GenericOptions, sessionId?: string) {
   }))
 
   await retry(() => prisma.logEntry.create({
-    data: { gameId: game.id, byHost: true, action: 'settings', data: JSON.stringify(game) }
+    data: { gameId: game.id, hostId, action: 'settings', data: JSON.stringify(game) }
   }))
   return game.url
 }

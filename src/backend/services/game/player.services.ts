@@ -4,7 +4,7 @@ import prisma from '../../libs/db'
 import retry from '../../libs/retry'
 import { getTimerLength, adaptDbPlayer, hasPack } from 'backend/utils/game/game.utils'
 import { getName, getLastBan, getSessionData } from 'backend/utils/game/player.utils'
-import { BOT, LOG_DELIM } from 'assets/constants'
+import { BOT } from 'assets/constants'
 
 const fullPlayer /* Prisma.PlayerInclude */ = {
   cards: { include: { card: { include: { otherFaces: { include: { card: true } } } } } }
@@ -28,22 +28,22 @@ export async function getPlayer(sessionId: Player['sessionId'], playerList: Basi
 }
 
 
-export async function setStatus(id: Player['id'], sessionId: Player['sessionId'], leave: boolean, byHost: boolean = false) {
+export async function setStatus(id: Player['id'], sessionId: Player['sessionId'], leave: boolean, hostId: Player['sessionId'] = null) {
   const player = await retry(() => prisma.player.update({ where: { id }, data: { sessionId: leave ? null : sessionId } }))
 
   await retry(() => prisma.logEntry.create({ data: {
     gameId: player.gameId,
     playerId: id,
-    byHost,
+    sessionId,
+    hostId,
     action: leave ? 'leave' : 'join',
-    data: sessionId,
   } }))
 
   return adaptDbPlayer(player)
 }
 
 
-export async function banPlayer(gameId: Game['id'], sessionId: Player['sessionId'] = null, unban: boolean = false, playerId: Player['id'] | null = null) {
+export async function banPlayer(gameId: Game['id'], hostId: Player['sessionId'], sessionId: Player['sessionId'] = null, unban: boolean = false, playerId: Player['id'] | null = null) {
 
   if (!unban && sessionId) {
     // Drop player/watcher
@@ -76,9 +76,10 @@ export async function banPlayer(gameId: Game['id'], sessionId: Player['sessionId
   await retry(() => prisma.logEntry.create({ data: {
     gameId,
     playerId,
-    byHost: true,
+    sessionId,
+    hostId,
     action: unban ? 'unban' : 'ban',
-    data: sessionId ? `${sessionId}${LOG_DELIM}${name || ''}` : null,
+    data: name,
   } }))
 
   if (unban && ban.unban !== 1) console.warn(`Unban resulted in unbanning ${ban.unban} rows (Expected: 1).`)
@@ -86,10 +87,10 @@ export async function banPlayer(gameId: Game['id'], sessionId: Player['sessionId
 }
 
 
-export async function renamePlayer(id: Player['id'], newName: Player['name'], byHost: boolean = false) {
+export async function renamePlayer(id: Player['id'], newName: Player['name'], sessionId: Player['sessionId'], hostId: Player['sessionId'] = null) {
   const player = await retry(() => prisma.player.update({ where: { id }, data: { name: newName }, select: { id: true, name: true, gameId: true }}))
 
-  await retry(() => prisma.logEntry.create({ data: { gameId: player.gameId, playerId: id, byHost, action: 'rename', data: newName } }))
+  await retry(() => prisma.logEntry.create({ data: { gameId: player.gameId, playerId: id, sessionId, hostId, action: 'rename', data: newName } }))
 
   return player
 }
