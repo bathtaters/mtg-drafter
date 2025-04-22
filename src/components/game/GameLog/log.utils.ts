@@ -1,7 +1,6 @@
 import type { LogAction, LogEntry } from "@prisma/client"
 import type { LogOptions, LogEntryFull } from "types/game"
 import type { FilterId } from "types/logs"
-import { getSessionData } from "../shared/player.utils"
 import { timerText } from "assets/strings"
 
 const watcherActions: LogAction[] = ['join', 'leave', 'ban', 'unban']
@@ -9,15 +8,22 @@ const watcherActions: LogAction[] = ['join', 'leave', 'ban', 'unban']
 export const adaptEntry = <L extends Partial<LogEntry>>(entry: L) => ({ ...entry, time: entry.time && new Date(entry.time) })
 
 
-export const filterEntry = (entry: LogEntryFull | undefined, players: FilterId[], actions: LogEntry['action'][], options: LogOptions) => 
-  !entry || (
-    actions.includes(entry.action) &&
-    // No player for Ban/Unban = 'other'; No player for other actions = 'game'
-    players.includes(entry.playerId || (entry.action === 'ban' || entry.action === 'unban' ? "other" : "game" )) &&
-    // Hide playerActions done by host
-    ( !entry.playerId || !entry.byHost || !options?.hideHost || entry.action === 'ban' ) &&
-    ( !options.hideWatchers || !!entry.playerId || !watcherActions.includes(entry.action) )
+export const filterEntry = (entry: LogEntryFull | undefined, players: FilterId[], actions: LogEntry['action'][], options: LogOptions) => {
+  if (!entry) return true
+  if (!actions.includes(entry.action)) return false
+  
+  // Check PlayerID (or placeholder based on action)
+  const entryPlayer = entry.playerId || (
+    ['ban', 'unban'].includes(entry.action) ? "other" : "game"
   )
+  if (!players.includes(entryPlayer)) return false
+
+  // Hide player actions done by host (If hideHost is enabled)
+  if (options?.hideHost && entry.playerId && entry.hostId) return false
+  // Hide watcher actions (If hideWatchers is enabled)
+  if (options?.hideWatchers && !entry.playerId && watcherActions.includes(entry.action)) return false
+  return true
+}
 
 
 const endsInId = /id$/i
@@ -25,10 +31,4 @@ export const objToString = (obj?: Record<string,any>) => !obj ? "" : Object.entr
   .map(([key, val]) => `${key}: ${key === 'timerBase' ? timerText[val ?? 0]?.value || val : val}`).join(", ")
 
 
-export function getSession(entry: LogEntryFull) {
-  if (!entry.data || !watcherActions.includes(entry.action)) return null
-  
-  const [ id, name ] = getSessionData(entry.data)
-  if (!id) return null
-  return { id, name }
-}
+export const getName = ({ action, data }: LogEntryFull) => watcherActions.includes(action) ? data : undefined

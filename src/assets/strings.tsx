@@ -96,7 +96,7 @@ export const logFullDate = (dt: Date) => dt.toLocaleString(undefined, { timeStyl
 
 export const logTimestamp = (dt: Date) => dt.toLocaleTimeString(undefined, { timeStyle: 'short' }).replace(' ','').padStart(7, '0').slice(0,6).toLowerCase()
 
-export const formatLogAction = (action: LogAction, data: LogData, byHost: boolean, gameData?: Partial<Game>) => {
+export const formatLogAction = (action: LogAction, data: LogData, hostId: Game['hostId'], gameData?: Partial<Game>) => {
   // Log output: Player|Game <formatLogAction()> <data|card|none> <byHost>
 
   switch(action) {
@@ -106,11 +106,11 @@ export const formatLogAction = (action: LogAction, data: LogData, byHost: boolea
       const [ pack, pick = '' ] = data.split(':', 2)
       return ` pack-${pack.padStart(2,'0')} pick-${pick.padStart(2,'0')}`
 
-    case 'join': return byHost ? 'added' : 'joined'
-    case 'leave': return !byHost ? 'left' :
+    case 'join': return hostId ? 'added' : 'joined'
+    case 'leave': return !hostId ? 'left' :
       data === ALL_WATCHERS ? 'cleared' : 'removed' 
 
-    case 'rename': return byHost ? 'renamed' : 'renamed'
+    case 'rename': return hostId ? 'renamed' : 'renamed'
 
     case 'settings':
       if (!gameData) return 'settings updated'
