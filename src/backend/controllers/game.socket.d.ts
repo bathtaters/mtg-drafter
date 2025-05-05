@@ -2,6 +2,7 @@ import type { Event, Server, Socket } from 'socket.io'
 import type { Socket as Client } from 'socket.io-client'
 import type { GameCard, Pack, Ban } from '@prisma/client'
 import type { Game, LiveOptions, Player, PlayerFull, PlayerStatus, LogAction, BasicLands, Board, BanResponse } from 'types/game'
+import type { ViewEntryData } from 'types/logs'
 
 export interface GameServerToClient {
   updateGame:     (options: LiveOptions) => void;
@@ -28,6 +29,7 @@ export interface GameClientToServer {
   watcherLogin: (gameId: Game['id'], sessionId: NonNullable<Player['sessionId']>, password: string | null, callback: (success: boolean, reason?: string) => void) => void
   dropWatcher:  (gameId: Game['id'], sessionId: NonNullable<Player['sessionId']>, byHost?: boolean) => void
   banSession:   (gameId: Game['id'], sessionId: Player['sessionId'] | null, unban: boolean, playerId?: Player['id'] | null) => void
+  viewCards:    (gameId: Game['id'], sessionId: NonNullable<Player['sessionId']>, playerId: Player['id'], cards: ViewEntryData, callback: (success: boolean, reason?: string) => void) => void
 
   swapBoards: (gameCardId: GameCard['id'], toBoard: Board, callback: (gameCardId: GameCard['id'] | void, toBoard?: Board | void) => void) => void;
   setLands:   (playerId: Player['id'], lands: BasicLands, callback: (lands: BasicLands | void) => void) => void;

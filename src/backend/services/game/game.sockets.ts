@@ -3,10 +3,10 @@ import type { GameServer, GameSocket } from 'backend/controllers/game.socket.d'
 import { isDbErr } from 'backend/libs/db'
 import { nextRound, pauseGame, resumeGame, pickCard, updateGame, checkBan } from './game.services'
 import { getBotPicks } from './bot.services'
-import { setWatcher, setPassword, testPassword, userInGame, userIsWatcher } from './log.services'
+import { setWatcher, setPassword, testPassword, userInGame, userIsWatcher, canView } from './log.services'
 import validation, { authPassword, gameOptions } from 'types/game.validation'
 import { gameIsEnded } from 'components/game/shared/game.utils'
-import { banMsg, noPwMsg } from 'assets/strings'
+import { banMsg, noPwMsg, viewAuthError } from 'assets/strings'
 
 
 export default function addGameListeners(io: GameServer, socket: GameSocket, currentSessionId: Player['sessionId']) {
@@ -167,6 +167,12 @@ export default function addGameListeners(io: GameServer, socket: GameSocket, cur
       } catch (err: any) {
         socket.emit('errorMsg', `Error dropping watcher: ${err.message || 'Unknown'}`)
       }
+    })
+
+    socket.on('viewCards', async (gameId, sessionId, playerId, cards, callback) => {
+      const authErrorCode = await canView(gameId, sessionId, playerId, cards, false)
+      if (authErrorCode) callback(false, viewAuthError[authErrorCode] || viewAuthError.DEFAULT)
+      else callback(true)
     })
 }
 
