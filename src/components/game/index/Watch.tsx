@@ -13,7 +13,7 @@ import { banMsg } from 'assets/strings'
 
 export default function Watch(props: ServerProps) {
   const {
-    game, players, sidebarVisible, setSidebar,
+    game, players, sidebarVisible, setSidebar, ErrorComponent, ToastComponent,
     maxPackSize, holding, isBanned, loadingAll, ...basicProps
   } = useBasicGameController(props)
 
@@ -35,6 +35,8 @@ export default function Watch(props: ServerProps) {
       <Footer />
     </PlayerSidebar>
 
+    <ErrorComponent />
+    <ToastComponent />
 
     { !!loadingAll && <Overlay ><Spinner caption={loadingAll ? 'Loading...' : 'Reconnecting...'} /></Overlay> }
   </>)
