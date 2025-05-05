@@ -1,10 +1,12 @@
 import type { Player } from "types/game"
-import { LogAction } from "@prisma/client"
+import { LogAction, Board } from "@prisma/client"
 
 export type FilterId = Player['id']
 export type FilterList = { id: FilterId, name?: Player['name'] }[]
+export type ViewEntryData = Board | number
+export type ViewAuthError = "NOAUTH" | "PLAYER" | "DEFAULT" | "UI" | "MISSING"
 
-export const otherPlayers: FilterId[] = ["game", "other"]
+export const otherPlayers: FilterId[] = ['game', 'other']
 export const otherList: FilterList = otherPlayers.map((id) => ({ id }))
 
 export const playerActions: LogAction[] = ['pick', 'rename', 'join', 'leave']

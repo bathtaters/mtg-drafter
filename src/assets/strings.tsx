@@ -1,5 +1,6 @@
 import type { Layout } from "types/scryfall"
 import type { Game, PartialGame, BoardLands, GameStatus, LogAction, LogData, LogOptions, PickInfo } from "types/game"
+import type { ViewAuthError } from "types/logs"
 import type { ToastAlert } from "components/base/common/Alerts/alerts.d"
 import Link from "next/link"
 import { formatBytes, getObjectSum } from "components/base/services/common.services"
@@ -14,6 +15,14 @@ export const uploadHelp = "Expects a .txt of card names. \nOne per line with no 
 
 export const banMsg = "Access restricted"
 export const noPwMsg = "Password missing"
+
+export const viewAuthError: Record<ViewAuthError, string> = {
+  'NOAUTH': 'User is not an active watcher or host.',
+  'PLAYER': 'User has previously joined this game as player.',
+  'DEFAULT': 'Unable to authorize.',
+  'UI': 'Required selections were not made.',
+  'MISSING': 'Error connecting to game. Please refresh page and try again.',
+}
 
 export const FullGame = () => <p className="opacity-70 italic">
   Wait here for an opening or <Link href="/" className="link link-primary link-hover">start a new one</Link>.

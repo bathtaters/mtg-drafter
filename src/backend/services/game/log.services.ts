@@ -4,8 +4,9 @@ import type { LogFilterParam } from "types/log.validation"
 import prisma from "backend/libs/db"
 import { validate, hash } from "backend/utils/db/password.utils"
 import { getLastJoinSession, getName } from "backend/utils/game/player.utils"
-import { otherPlayers } from "types/logs"
+import { type ViewAuthError, type ViewEntryData, otherPlayers } from "types/logs"
 import { ALL_WATCHERS } from "assets/constants"
+import { gameIsEnded } from "components/game/shared/game.utils"
 
 const LOG_SALT = "92c23bc8fd75cb3e2880b983ce84d736"
 
@@ -29,7 +30,14 @@ export const getGameLog = (url: Game['url'], take?: number, skip?: number, fromS
         },
     },
 })
-  
+
+export const hasJoined = (gameId: Game['id'], sessionId: string) => prisma.logEntry.count({
+    where: { gameId, sessionId, action: 'join' }, take: 1
+}).then(Boolean)
+
+export const hasViewed = (gameId: Game['id'], sessionId: string) => prisma.logEntry.count({
+    where: { gameId, sessionId, action: 'view' }, take: 1
+}).then(Boolean)
   
 export const getLogSize = (gameId: Game['id']) => prisma.logEntry.count({ where: { gameId } })
 
@@ -98,4 +106,38 @@ export async function setWatcher(gameId: Game['id'], sessionId: string, join: bo
         prisma.watcher.delete({ where: { sessionId_gameId: { gameId, sessionId } } }),
         prisma.logEntry.create({ data: { gameId, sessionId, action: 'leave', data, hostId } }),
     ]).then((res) => res[0])
+}
+
+/**
+ * Check if the given user can view the pack or deck.
+ *  Can view if:
+ *  - User is the current host or an active watcher
+ *  - Game has ended OR user has never joined the game OR user is viewing their own deck/pack
+ * @param gameId ID of game to view cards from.
+ * @param sessionId Session of user who is requesting the view.
+ * @param playerId ID of player whose deck/pack to view.
+ * @param cards Deck board OR pack/round number to view.
+ * @param silent If true, do not log as a request.
+ * @returns Error code if not authorized OR null if authorized.
+ */
+export async function canView(gameId: Game['id'], sessionId: string, playerId: Player['id'], cards: ViewEntryData, silent = false): Promise<ViewAuthError | null> {
+    const [ isWatcher, game, hasJoined ] = await prisma.$transaction([
+        prisma.watcher.count({ where: { gameId, sessionId }, take: 1 }),
+        prisma.game.findUnique({ where: { id: gameId }, select: { hostId: true, round: true, roundCount: true } }),
+        prisma.logEntry.count({
+            // If user has joined as a player (other than the player whose deck will be viewed)
+            where: { gameId, sessionId, action: 'join', playerId: playerId && { not: playerId }},
+            take: 1,
+        }),
+    ])
+    
+    if (!isWatcher && game?.hostId !== sessionId) return "NOAUTH"
+    if (hasJoined && (!game || !gameIsEnded(game))) return "PLAYER"
+
+    // Log each view request
+    if (!silent) await prisma.logEntry.create({
+            data: { gameId, sessionId, playerId, action: 'view', data: cards.toString() }
+        })
+
+    return null
 }
