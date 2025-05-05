@@ -38,7 +38,7 @@ export default function useWatchController({
     const watchDisabled = !game?.watchKey
 
     const tabProps = useTabController<WatcherTabs>(isHost ? WatcherTabs.join : WatcherTabs.log, game, players, false)
-    const packViewData = usePackViewer(packs, tabProps.pickInfo?.data, players, game)
+    const packViewData = usePackViewer(packs, tabProps.pickInfo?.data, players, game, sessionId, socket.socket, newError)
 
     // Trigger actions when user logs in/out
     const setAuth = useCallback((authed: boolean) => {

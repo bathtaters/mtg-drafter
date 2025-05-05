@@ -1,6 +1,7 @@
 import type { MouseEventHandler } from 'react'
 import type { BasicPlayer, Game, GameProps, PartialGame, PickCard, PlayerFull, SwapCard } from 'types/game'
 import type { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
+import type { GameClient } from 'backend/controllers/game.socket.d'
 import { TabLabels } from 'types/game'
 import CardContainer from "../CardContainer/CardContainer"
 import CardToolbar from '../CardToolbar/CardToolbar'
@@ -15,12 +16,14 @@ import { getBoard, getGameStatus } from '../shared/game.utils'
 type Props = {
   game: Game | PartialGame,
   player?: PlayerFull,
+  sessionId?: BasicPlayer['sessionId'],
   players?: BasicPlayer[],
   pack?: GameProps['packs'][number],
   packs?: GameProps['packs'],
   playerTimer?: number,
   isHost?: boolean,
   roundOver?: boolean,
+  socket?: GameClient | null,
   pickCard: PickCard,
   swapCard: SwapCard,
   clickRoundBtn?: () => void,
@@ -29,9 +32,10 @@ type Props = {
   onPackLoad?: () => void,
   loadingPack: boolean,
   notify: AlertsReturn['newToast'],
+  newError: AlertsReturn['newError'],
 }
 
-export default function GameBody({ game, player, players, pack, packs, playerTimer, isHost, roundOver, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, onPackLoad, loadingPack, notify }: Props) {
+export default function GameBody({ game, player, sessionId, players, pack, packs, playerTimer, isHost, roundOver, socket, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, onPackLoad, loadingPack, notify, newError }: Props) {
 
   const {
     autopickCard, selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
@@ -40,7 +44,7 @@ export default function GameBody({ game, player, players, pack, packs, playerTim
 
   const pickInfo = usePickInfo(game, players, !packViewer)
 
-  const packViewData = usePackViewer(packs, pickInfo?.data, players, game)
+  const packViewData = usePackViewer(packs, pickInfo?.data, players, game, sessionId, socket, newError)
 
   if (!('round' in game) || game.round < 1 || !player) return (
     <GameBodyWrapper>

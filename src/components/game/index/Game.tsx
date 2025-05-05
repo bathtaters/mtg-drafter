@@ -43,16 +43,17 @@ export default function Game(props: ServerProps) {
         <Loader data={game || 404} message={props.error || (isBanned && banMsg)}>
           { player ?
             <GameBody
-              game={game as Game|PartialGame}
-              player={player} players={players} isHost={isHost} playerTimer={timer}
+              game={game as Game|PartialGame} player={player} sessionId={sessionId}
+              players={players} isHost={isHost} playerTimer={timer}
               roundOver={player?.pick != null && player.pick > maxPackSize}
-              pack={pack} packs={packs} pickCard={pickCard} swapCard={swapCard}
+              socket={socket.socket} pack={pack} packs={packs}
+              pickCard={pickCard} swapCard={swapCard}
               clickRoundBtn={canAdvance ? () => nextRound() : undefined}
               onLandClick={toggleLandModal}
               clickReload={reload}
               onPackLoad={startTimer}
               loadingPack={!!loadingPack}
-              notify={newToast}
+              notify={newToast} newError={newError}
             />
 
           : isHost ?
