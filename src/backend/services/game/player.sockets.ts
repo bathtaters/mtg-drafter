@@ -26,7 +26,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket, c
 
       // Handle Error
       } catch (err: any) {
-        socket.emit('error', `Error changing name: ${err.message || 'Unknown'}`)
+        socket.emit('errorMsg', `Error changing name: ${err.message || 'Unknown'}`)
       }
     })
     
@@ -68,7 +68,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket, c
 
       // Handle Error
       } catch (err: any) {
-        socket.emit('error', `Unable to ${status || 'set status'}: ${err.message || 'Unknown'}`)
+        socket.emit('errorMsg', `Unable to ${status || 'set status'}: ${err.message || 'Unknown'}`)
         callback(undefined)
       }
     })
@@ -86,7 +86,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket, c
 
       // Handle Error
       } catch (err: any) {
-        socket.emit('error', `Error updating card position: ${err.message || 'Unknown'}`)
+        socket.emit('errorMsg', `Error updating card position: ${err.message || 'Unknown'}`)
       }
     })
 
@@ -103,7 +103,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket, c
         
       // Handle Error
       } catch (err: any) {
-        socket.emit('error', `Error setting basic lands: ${err.message || 'Unknown'}`)
+        socket.emit('errorMsg', `Error setting basic lands: ${err.message || 'Unknown'}`)
       }
     })
 
@@ -124,7 +124,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket, c
         io.emit('updateBan', result)
         
       } catch (err: any) {
-        socket.emit('error', `Error updating ${sessionId ? 'user ban' : 'game lock'} status: ${err.message || 'Unknown'}`)
+        socket.emit('errorMsg', `Error updating ${sessionId ? 'user ban' : 'game lock'} status: ${err.message || 'Unknown'}`)
       }
     })
 }

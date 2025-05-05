@@ -13,7 +13,8 @@ export interface GameServerToClient {
   updateWatchPw:  (watchKey: Game['watchKey']) => void;
   updateWatcher:  (sessionId: NonNullable<Player['sessionId']>, joined: boolean, name?: string) => void
   updateBan:      (banData: BanResponse) => void;
-  error:          (message: string) => void;
+  errorMsg:       (message: string) => void; // Custom error
+  error:          (message: string) => void; // Sockets error
 }
 
 export interface GameClientToServer {

@@ -24,7 +24,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket, cur
 
       // Handle Error
       } catch (err: any) {
-        socket.emit('error', `Error updating game: ${err.message || 'Unknown'}`)
+        socket.emit('errorMsg', `Error updating game: ${err.message || 'Unknown'}`)
       }
     })
 
@@ -41,7 +41,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket, cur
 
       // Handle Error
       } catch (err: any) {
-        socket.emit('error', `Error changing rounds: ${err.message || 'Unknown'}`)
+        socket.emit('errorMsg', `Error changing rounds: ${err.message || 'Unknown'}`)
       }
     })
 
@@ -58,7 +58,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket, cur
 
       // Handle Error
       } catch (err: any) {
-        socket.emit('error', `Error pausing game: ${err.message || 'Unknown'}`)
+        socket.emit('errorMsg', `Error pausing game: ${err.message || 'Unknown'}`)
       }
     })
     
@@ -81,7 +81,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket, cur
 
       // Handle Error
       } catch (err: any) {
-        socket.emit('error', `Error picking card: ${err.message || 'Unknown'}`)
+        socket.emit('errorMsg', `Error picking card: ${err.message || 'Unknown'}`)
         callback(undefined)
       }
     })
@@ -101,7 +101,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket, cur
 
       // Handle Error
       } catch (err: any) {
-        socket.emit('error', `Error updating watch password: ${err.message || 'Unknown'}`)
+        socket.emit('errorMsg', `Error updating watch password: ${err.message || 'Unknown'}`)
       }
     })
 
@@ -165,7 +165,7 @@ export default function addGameListeners(io: GameServer, socket: GameSocket, cur
 
       // Handle Error
       } catch (err: any) {
-        socket.emit('error', `Error dropping watcher: ${err.message || 'Unknown'}`)
+        socket.emit('errorMsg', `Error dropping watcher: ${err.message || 'Unknown'}`)
       }
     })
 }
@@ -182,6 +182,6 @@ export async function handleBotPicks(io: GameServer, socket: GameSocket, gameId:
       io.emit('updatePick', bot.id, bot.pick, bot.passingToId)
     }
   } catch (err: any) {
-    socket.emit('error', `Error picking bot cards: ${err.message || 'Unknown'}`)
+    socket.emit('errorMsg', `Error picking bot cards: ${err.message || 'Unknown'}`)
   }
 }

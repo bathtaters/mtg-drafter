@@ -64,6 +64,11 @@ export default function useSocket<S extends Socket = Socket>(
       onFail && onFail({ message: 'Connection interrupted, please refresh the page' })
       updateIsConnected()
     }) as S;
+
+    socket.current.on('errorMsg', (message) => {
+      if (!onFail || debugSockets) console.error('Sockets errorMsg:', message)
+      onFail && onFail({ message })
+    }) as S;
   
     if (res.status !== 200 || !socket.current) {
       debugSockets && console.error('Error connecting sockets',res.statusText,res.status)
