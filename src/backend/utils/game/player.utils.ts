@@ -1,9 +1,5 @@
-import type { Game, Player } from 'types/game'
+import type { Game, LogEntryFull, Player } from 'types/game'
 import prisma from '../../libs/db'
-import { getSessionData } from 'components/game/shared/player.utils'
-import { LOG_DELIM } from 'assets/constants'
-
-export { getSessionData }
 
 /** Lookup a player's name based on a `sessionId`, `gameId` and/or `playerId`.
  *  In order of priority...
@@ -17,96 +13,118 @@ export { getSessionData }
  *  8. Latest rename logEntry.data via `sessionId` => `playerId` & `gameId`
  *  9. Latest rename logEntry.data from any game via `sessionId` => `playerId`
 */
-export async function getName(sessionId: Player['sessionId'], game: Game['id'] | null = null, playerId: Player['id'] | null = null) {
+export async function getName(sessionId: Player['sessionId'], gameId: Game['id'] | null = null, playerId: Player['id'] | null = null) {
   
-    // Priority 1
+    // Priority 1 -- Use PlayerID
     if (playerId) {
       const player = await prisma.player.findUnique({
-        where: { id: playerId },
+        where: { id: playerId, name: { not: null } },
         select: { name: true },
       })
       if (player?.name) return player.name
     }
     if (!sessionId) return null
-  
-  
-    // Priority 2
-    const players = await prisma.player.findMany({
-      where: { sessionId },
-      select: { gameId: true, name: true },
-    })
 
-    // Short-circuit to Priority 4 if no gameId
-    if (!game && players[0]?.name) return players[0].name
+    // Batch fetch -- Priorities 2-5
+    const [ player, ban, gamePlayer, gameBan ] = await prisma.$transaction([
+      // Priority 4 -- Player from most recent game
+      prisma.player.findFirst({
+        where: { sessionId, name: { not: null } },
+        select: { name: true },
+      }),
+      // Priority 5 -- Ban from most recent game
+      prisma.ban.findFirst({
+        where: { sessionId, name: { not: null } },
+        select: { name: true },
+      }),
+      ...(!gameId ? [] : [
+        // Priority 2 -- Current/Former player from this game
+        prisma.player.findFirst({
+          where: { gameId, sessionId, name: { not: null } },
+          select: { name: true },
+        }),
+        // Priority 3 -- Previous ban from this game
+        prisma.ban.findFirst({
+          where: { gameId, sessionId, name: { not: null } },
+          select: { name: true },
+        })
+      ])
+    ])
+    
+    // Batch respond -- Priorities 2-5
+    if (gamePlayer?.name) return gamePlayer.name
+    if (gameBan?.name) return gameBan.name
+    if (player?.name) return player.name
+    if (ban?.name) return ban.name
 
-    const playersGame = game ? players.find(({ gameId }) => gameId === game) : null
-    if (playersGame?.name) return playersGame.name
+    // Batch fetch = Priorities 6-9
+    const [ banLogs, joinLogs, gameBanLogs, gameJoinLogs ] = await prisma.$transaction([
+      // Priority 7 -- Join/rename/leave/ban/unban from most recent game
+      prisma.logEntry.findFirst({
+        where: { sessionId, action: { in: ['ban', 'unban', 'join', 'rename', 'leave'] }, data: { not: null } },
+        select: { data: true },
+        orderBy: { time: 'desc' },
+      }),
+      // Priority 9  -- Get name using PlayerId in Log from most recent game
+      prisma.logEntry.findFirst({
+        where: { sessionId, action: { in: ['join', 'leave'] }, playerId: { not: null } },
+        select: { action: true, time: true, player: { select: { id: true, name: true } } },
+        orderBy: { time: 'desc' },
+      }),
+      // Priority 6 -- Join/rename/leave/ban/unban from current game
+      ...(!gameId ? [] : [
+        prisma.logEntry.findFirst({
+          where: { gameId, sessionId, action: { in: ['ban', 'unban', 'join', 'rename', 'leave'] }, data: { not: null } },
+          select: { data: true },
+          orderBy: { time: 'desc' },
+        }),
+        // Priority 8  -- Get name using PlayerId in Log from current game
+        prisma.logEntry.findFirst({
+          where: { gameId, sessionId, action: { in: ['join', 'leave'] }, playerId: { not: null } },
+          select: { action: true, time: true, player: { select: { id: true, name: true } } },
+          orderBy: { time: 'desc' },
+        })
+      ])
+    ])
     
-    // Priority 3
-    const bans = await prisma.ban.findMany({
-      where: { sessionId },
-      select: { gameId: true, name: true },
-    })
-    const bansGame = game ? bans.find(({ gameId }) => gameId === game) : null
-    if (bansGame?.name) return bansGame.name
-  
-    // Priorities 4 & 5
-    if (players[0]?.name) return players[0].name
-    if (bans[0]?.name) return bans[0].name
-    
-    // Priorities 6 & 7
-    const banLogs = await prisma.logEntry.findMany({
-      where: { action: { in: ['ban', 'unban', 'join', 'leave'] }, data: { startsWith: `${sessionId}${LOG_DELIM}` } },
-      select: { gameId: true, data: true },
-      orderBy: { time: 'desc' },
-    })
-  
-    // Use game or latest entry if no game found
-    const banLogEntry = (game && banLogs.find(({ gameId }) => gameId === game)) || banLogs[0]
-    if (banLogEntry?.data) {
-      const banName = getSessionData(banLogEntry.data)[0]
-      if (banName) return banName
-    }
-    
-    // Priorities 8 & 9
-    const logs = await prisma.logEntry.findMany({
-      where: { action: { in: ['join', 'leave'] }, data: sessionId },
-      include: { player: { select: { id: true, name: true } } },
-      orderBy: { time: 'desc' },
-    })
-  
-    // Use game or latest entry if no game found
-    const logEntry = (game && logs.find(({ gameId }) => gameId === game)) || logs[0]
+    // Batch respond -- Priorities 6-7
+    if ((gameBanLogs as LogEntryFull)?.data) return (gameBanLogs as LogEntryFull).data
+    if (banLogs?.data) return banLogs.data
 
+    // Batch respond -- Priorities 8-9
+    const logEntry = gameJoinLogs && 'player' in gameJoinLogs && gameJoinLogs.player?.id ? gameJoinLogs : joinLogs
+    
     if (logEntry?.player?.id) {  
-      const lastRename = await prisma.logEntry.findFirst({
+      // If last action was a 'join', use the current name
+      if (logEntry.action === 'join' && logEntry.player.name) return logEntry.player.name
+
+      // Otherwise find the last rename before leaving
+      const renameEntry = await prisma.logEntry.findFirst({
         where: {
           playerId,
           action: 'rename',
+          data: { not: null },
           // If log entry was for them leaving, only search before the log entry
-          time: logEntry.action === 'leave' ? { lte: logEntry.time } : logEntry.time
+          time: logEntry.action === 'leave' ? { lte: logEntry.time } : { gte: logEntry.time }
         },
         select: { data: true },
         orderBy: { time: 'desc' },
       })
-      if (lastRename?.data) return lastRename.data
-      // If no rename history, use current player name
-      if (logEntry?.player?.name) return logEntry.player.name
+      if (renameEntry?.data) return renameEntry.data
     }
-  
-    return null
+    
+    // Final attempt = Player name from entry, or NULL
+    return logEntry?.player?.name || null
   }
 
-export const getLastJoinSession = (sessionId: Player['sessionId'], gameId: Game['id']) => prisma.logEntry.findMany({
-  where: { gameId, action: 'join', data: { startsWith: `${sessionId}${LOG_DELIM}` } },
+export const getLastJoinSession = (sessionId: Player['sessionId'], gameId: Game['id']) => prisma.logEntry.findFirst({
+  where: { gameId, sessionId, action: 'join' },
   select: { gameId: true, data: true },
   orderBy: { time: 'desc' },
-  take: 1,
-}).then((entries) => entries?.[0]?.data || null)
+}).then((entry) => entry?.data || null)
 
-export const getLastBan = (sessionId: Player['sessionId'], gameId: Game['id']) => prisma.logEntry.findMany({
-  where: { gameId, action: 'ban', data: { startsWith: `${sessionId}${LOG_DELIM}` } },
+export const getLastBan = (sessionId: Player['sessionId'], gameId: Game['id']) => prisma.logEntry.findFirst({
+  where: { gameId, sessionId, action: 'ban' },
   select: { gameId: true, playerId: true, data: true },
   orderBy: { time: 'desc' },
-  take: 1,
-}).then((entries) => entries?.[0] || null) as Promise<{ data: string | null, gameId: string, playerId: string | null } | null>
+})

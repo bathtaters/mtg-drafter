@@ -142,5 +142,3 @@ export const BOT = "___BOT___"
 export const ALL_WATCHERS = "__ALL__"
 
 export const AUTOMATED = "__AUTO__"
-
-export const LOG_DELIM = ':' // Seperator between SessionID & Name in Ban LogEntries

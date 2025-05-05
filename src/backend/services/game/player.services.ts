@@ -3,7 +3,7 @@ import type { Game, BasicLands, Player, BasicPlayer } from 'types/game'
 import prisma from '../../libs/db'
 import retry from '../../libs/retry'
 import { getTimerLength, adaptDbPlayer, hasPack } from 'backend/utils/game/game.utils'
-import { getName, getLastBan, getSessionData } from 'backend/utils/game/player.utils'
+import { getName, getLastBan } from 'backend/utils/game/player.utils'
 import { BOT } from 'assets/constants'
 
 const fullPlayer /* Prisma.PlayerInclude */ = {
@@ -63,7 +63,7 @@ export async function banPlayer(gameId: Game['id'], hostId: Player['sessionId'],
 
   } else {
     const lastBan = await getLastBan(sessionId, gameId)
-    if (lastBan?.data) name = getSessionData(lastBan.data)[1] || null
+    if (lastBan?.data) name = lastBan.data || null
     if (!playerId && lastBan?.playerId) playerId = lastBan?.playerId
   }
 
