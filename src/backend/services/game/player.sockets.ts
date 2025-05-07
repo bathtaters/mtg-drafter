@@ -3,7 +3,7 @@ import type { BasicLands, Player } from 'types/game'
 import { getExisitingSessionId } from 'backend/libs/auth'
 import { banPlayer, getPlayerGame, renamePlayer, setStatus, swapCard, updateLands } from './player.services'
 import { checkBanOrLock } from './game.services'
-import { hasViewed, setWatcher } from './log.services'
+import { getHasViewed, setWatcher } from './log.services'
 import { handleBotPicks } from './game.sockets'
 import { gameIsEnded } from 'components/game/shared/game.utils'
 import validation from 'types/game.validation'
@@ -46,11 +46,12 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket, c
         const isBanned = sessionId !== BOT &&  await checkBanOrLock(game.id, sessionId)
         if (isBanned) throw new Error(banMsg)
         
-        const isViewer = await hasViewed(game.id, sessionId)
-        if (isViewer) throw new Error(viewedMsg)
-
-        // Update DB
+        // Prevent players who have viewed cards from joining active games
         const leave = status === 'leave'
+        const hasViewed = !leave && !gameIsEnded(game) && await getHasViewed(game.id, sessionId)
+        if (hasViewed) throw new Error(viewedMsg)
+            
+        // Update DB
         const player = await setStatus(playerId, sessionId, leave, byHost ? currentSessionId : null)
         if (!player?.id) throw new Error('Player not found')
 

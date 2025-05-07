@@ -3,10 +3,11 @@ import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 
 import type { ServerProps, PlayerFullTimer, PackFull } from 'types/game'
 import { checkBan, getGame, getRoundPackSize } from '../services/game/game.services'
 import { getPlayer } from '../services/game/player.services'
+import { getHasJoined, getHasViewed } from '../services/game/log.services'
+import { unregGameAdapter, canWatch, gameIsEnded } from '../utils/game/game.utils'
 import { sessionIsHost } from 'components/game/shared/player.utils'
 import { getCtxSessionId, getReqSessionId } from '../libs/auth'
 import validation from 'types/game.validation'
-import { unregGameAdapter, canWatch } from '../utils/game/game.utils'
 
 const NOTFOUND = 'Unable to find game'
 
@@ -34,9 +35,15 @@ async function getGameProps(query: ParsedUrlQuery, sessionId: string, includePac
     // Only allow players to see unpicked cards
   })
 
-  return player || isHostOrWatcher ?
+  const response: ServerProps = player || isHostOrWatcher ?
     { options, players, player, sessionId, now, packSize, packs: packs as PackFull[] || [] } :
     { options: unregGameAdapter(options, sessionId), players, sessionId }
+  if (gameIsEnded(options)) return response
+  
+  // Include additional data
+  if (isHostOrWatcher) response.hasJoined = await getHasJoined(game.id, sessionId)
+  if (!player) response.hasViewed = await getHasViewed(game.id, sessionId)
+  return response
 }
 
 export async function serverSideHandler(ctx: GetServerSidePropsContext) {

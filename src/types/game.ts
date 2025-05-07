@@ -77,6 +77,8 @@ export interface ServerSuccess {
   packSize: number | null,
   player: PlayerFullTimer | null,
   sessionId: string,
+  hasJoined?: boolean,
+  hasViewed?: boolean,
   now: number,
   error?: never,
 }
@@ -87,6 +89,8 @@ export interface ServerUnreg {
   packSize?: never,
   player?: never,
   sessionId: string,
+  hasJoined?: boolean,
+  hasViewed?: boolean,
   now?: never,
   error?: never,
 }
@@ -98,6 +102,8 @@ export interface ServerFail {
   packSize?: never,
   player?: never,
   sessionId?: string,
+  hasJoined?: never,
+  hasViewed?: never,
   now?: never,
 }
 export type ServerProps = ServerSuccess | ServerFail | ServerUnreg

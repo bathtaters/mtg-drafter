@@ -31,11 +31,11 @@ export const getGameLog = (url: Game['url'], take?: number, skip?: number, fromS
     },
 })
 
-export const hasJoined = (gameId: Game['id'], sessionId: string) => prisma.logEntry.count({
+export const getHasJoined = (gameId: Game['id'], sessionId: string) => prisma.logEntry.count({
     where: { gameId, sessionId, action: 'join' }, take: 1
 }).then(Boolean)
 
-export const hasViewed = (gameId: Game['id'], sessionId: string) => prisma.logEntry.count({
+export const getHasViewed = (gameId: Game['id'], sessionId: string) => prisma.logEntry.count({
     where: { gameId, sessionId, action: 'view' }, take: 1
 }).then(Boolean)
   
