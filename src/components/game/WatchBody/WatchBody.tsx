@@ -15,15 +15,15 @@ export type Props = Pick<BasicController, "players"|"packs"|"newToast"> & LogWat
 export default function WatchBody({ children, ...props }: Props) {
   
   const {
-    pickInfo, packViewData,
+    pickInfo, packViewData, hideTabs,
     watchDisabled, authed, message, login, logout,
     selectedTab, selectTab, cardOptions, setCardOptions,
-  } = useWatchController(props)
+  } = useWatchController(props, !children)
 
   return (
     <WatchBodyWrapper className={cardOptions.width}>
       <WatchBodyHeader hide={!authed}>
-        <ContainerTabs tabs={WatcherTabs} selectedTab={selectedTab} selectTab={selectTab} hideTabs={props.isHost && children ? [] : [WatcherTabs.join]} />
+        <ContainerTabs tabs={WatcherTabs} selectedTab={selectedTab} selectTab={selectTab} hideTabs={hideTabs} />
 
         { selectedTab === WatcherTabs.cards ?
           <CardToolbar setCardOptions={setCardOptions} clickReload={props.reload} notify={props.newToast} />

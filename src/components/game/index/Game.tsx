@@ -19,8 +19,9 @@ import { banMsg } from 'assets/strings'
 
 export default function Game(props: ServerProps) {
   const {
-    game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize, isBanned, isHost, sessionId,
-    holding, canAdvance, pack, packs, sidebarVisible, landModal, hostModal, logModal, slots, gameLog, timer, socket,
+    game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize, sessionId,
+    isBanned, isHost, hasJoined, hasViewed, sidebarVisible, landModal, hostModal, logModal,
+    holding, canAdvance, pack, packs, slots, gameLog, timer, socket,
     saveDeck, setSidebar, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setOptions, setLoadingAll,
     nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropWatcher, banSession, dropPlayer,
     reload, startTimer, newError, newToast, ErrorComponent, ToastComponent,
@@ -60,16 +61,17 @@ export default function Game(props: ServerProps) {
             <WatchBody 
               game={game} packs={packs} gameLog={gameLog} socket={socket}
               players={players} sessionId={sessionId} isHost={isHost}
+              hasJoined={hasJoined} hasViewed={hasViewed}
               setSidebar={setSidebar} setLoadingAll={setLoadingAll}
               reload={reload} newToast={newToast} newError={newError}
             >
               {isHost && !player &&
-                <PlayerJoin title="Join Game As:" slots={slots} players={players} selectPlayer={setStatus} game={game} />
+                <PlayerJoin title="Join Game As:" slots={slots} players={players} hasViewed={hasViewed} selectPlayer={setStatus} game={game} />
               }
             </WatchBody>
 
           : /* Non-player / Non-host */
-            <PlayerJoin title="Pick a Seat:" slots={slots} players={players} selectPlayer={setStatus} game={game} />
+            <PlayerJoin title="Pick a Seat:" slots={slots} players={players} hasViewed={hasViewed} selectPlayer={setStatus} game={game} />
           }
         </Loader>
       </BodyWrapperStyle>

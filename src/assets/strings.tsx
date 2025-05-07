@@ -15,7 +15,7 @@ export const uploadHelp = "Expects a .txt of card names. \nOne per line with no 
 
 export const banMsg = "Access restricted"
 export const noPwMsg = "Password missing"
-export const viewedMsg = "User has viewed players' cards"
+export const viewedMsg = "Cannot join after viewing cards"
 
 export const viewAuthError: Record<ViewAuthError, string> = {
   'NOAUTH': 'User is not an active watcher or host.',

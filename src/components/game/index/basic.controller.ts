@@ -42,6 +42,7 @@ export default function useBasicGameController(props: ServerProps, hostModal: bo
     ...local, ...alerts, socket,
     sidebarVisible, setSidebar,
     gameLog, newError, newToast,
+    hasJoined: props.hasJoined, hasViewed: props.hasViewed,
     isConnected: socket.isConnected,
     reload: local.game?.url ? local.reload : undefined,
   }
