@@ -65,7 +65,7 @@ export function getPlayerButtonData(id: string, sessionId: string | null, isHost
   return {
     icon: "player",
     tooltip: hostPlayerTooltips.setHost,
-    action: setHost ? () => setHost(id) : undefined,
+    action: setHost ? () => setHost(sessionId) : undefined,
   }
 }
 
