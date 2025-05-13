@@ -100,7 +100,7 @@ export default function HostModal({
             heightClass="h-8"
           />
             
-          <Moderation label="Active Watchers" players={watchers} kickOne={dropWatcher} banOne={banPlayer} />
+          <Moderation label="Active Watchers" players={watchers} kickOne={dropWatcher} banOne={banPlayer} setHost={setHost} />
           
           <WatchersContainer label="More Actions">
             <CopyLink className={linkClass} {...copyProps} notify={notify} tooltip="">Copy Watch Link</CopyLink>

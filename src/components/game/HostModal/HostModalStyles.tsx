@@ -129,13 +129,15 @@ export const linkClass = "link link-hover link-primary"
 
 // Kick/Ban Component
 
-export const BanNameWrapper = ({ tooltip, id, isBanned, children }: { tooltip?: string, id?: string, isBanned?: boolean, children?: ReactNode }) => (
+export const BanNameWrapper = ({ tooltip, id, isLeft, isBanned, children }: { tooltip?: string, id?: string, isLeft?: boolean, isBanned?: boolean, children?: ReactNode }) => (
   <NameWrapper tooltip={tooltip} formatLight={!children}
-    className={`bg-base-100 py-1 pl-2 rounded-l-lg text-left ${
+    className={`bg-base-100 py-1 text-left ${
       isBanned ? 'text-error ' : ''
-    }tooltip-bottom before:not-italic before:font-light`}
+    }${
+      isLeft ? 'rounded-l-lg pl-2' : 'pl-1'
+    } tooltip-bottom before:not-italic before:font-light`}
   >
-    {children || `<...${id?.slice(-10)}>`}
+    {children || `<...${id?.slice(-9)}>`}
   </NameWrapper>
 )
 
