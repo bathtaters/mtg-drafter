@@ -2,13 +2,13 @@ import type { Watcher } from "@prisma/client"
 import type { Game, Player } from "types/game"
 import type { LogFilterParam } from "types/log.validation"
 import prisma from "backend/libs/db"
-import { validate, hash } from "backend/utils/db/password.utils"
+import { validate, hash, getWatchSalt } from "backend/utils/db/password.utils"
 import { getLastJoinSession, getName } from "backend/utils/game/player.utils"
 import { type ViewAuthError, type ViewEntryData, otherPlayers } from "types/logs"
 import { ALL_WATCHERS } from "assets/constants"
 import { gameIsEnded } from "components/game/shared/game.utils"
 
-const LOG_SALT = "92c23bc8fd75cb3e2880b983ce84d736"
+const WATCH_SALT = getWatchSalt()
 
 export const getGameLog = (url: Game['url'], take?: number, skip?: number, fromStart=false, filter?: LogFilterParam) => prisma.game.findUnique({
     where: { url },
@@ -59,12 +59,12 @@ export async function testPassword(id: string, password: string) {
     if (!game) return "Game not found"
     if (!game.watchKey) return "Log view is disabled"
 
-    const result = await validate(password, LOG_SALT, game.watchKey)
+    const result = await validate(password, WATCH_SALT, game.watchKey)
     return result ? undefined : "Incorrect password"
 }
 
 export async function setPassword(id: string, password: string | null, hostId: Player['sessionId']) {
-    if (password) password = await hash(password, LOG_SALT)
+    if (password) password = await hash(password, WATCH_SALT)
     try {
         const result = await prisma.$transaction([
             prisma.game.update({
