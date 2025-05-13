@@ -127,12 +127,14 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
   }, [emit, local.player?.id, local.renamePlayer, throwError])
 
 
-  const setOptions: Socket.SetOptions = useCallback((options, newHost) => {
+  const setOptions: Socket.SetOptions = useCallback((options) => {
     if (!local.game?.id) return throwError(formatError('Error renaming game: Game not loaded'))
+    
+    emit('setOptions', local.game.id, { ...options })
+    
+    if (options?.hostId) delete options.hostId // Don't force reload until sockets response
+    options && local.updateGame((game) => game && ({ ...game, ...options }))
 
-      options && local.updateGame((game) => game && ({ ...game, ...options }))
-
-    emit('setOptions', local.game.id, options, newHost)
   }, [emit, local.game?.id, local.updateGame, local.updateLocal, throwError])
 
 
