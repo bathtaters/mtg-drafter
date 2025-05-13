@@ -5,11 +5,13 @@ import type { SocketHook } from "components/base/libs/sockets"
 import type { ErrorAlert } from "components/base/common/Alerts/alerts.d"
 import type { GameClient, GameServerToClient } from "backend/controllers/game.socket.d"
 import { useCallback, useEffect, useState } from "react"
-import { WatcherTabs } from 'types/game'
-import usePackViewer from '../PackViewer/packViewer.controller'
-import { useTabController } from '../GameBody/pick.controller'
+import { useRouter } from "next/router"
+import usePackViewer from "../PackViewer/packViewer.controller"
+import { useTabController } from "../GameBody/pick.controller"
 import { gameIsEnded } from "../shared/game.utils"
+import { WatcherTabs } from "types/game"
 import { noPwMsg } from "assets/strings"
+import { shareGame, shareWatch } from "assets/constants"
 
 
 export type Props = {
@@ -34,6 +36,7 @@ export default function useWatchController({
     game, players, packs, socket, sessionId, isHost, hasJoined, hasViewed,
     setSidebar, reload, setLoadingAll, newError,
 }: Props, noChildren: boolean) {
+    const router = useRouter()
     const [authed, setAuthState] = useState(false)
     const [message, setMessage] = useState("")
     const gameEnded = gameIsEnded(game)
@@ -54,6 +57,8 @@ export default function useWatchController({
     // Check if user is already logged in on first load or if game/session changes
     useEffect(() => {
         if (isHost) {
+            if(game?.url && router.pathname.startsWith(shareWatch.url('')))
+                router.push(shareGame.url(game.url)) // Redirect hosts to Host page
             fetch()
             return setAuth(true)
         } else if (socket.socket && socket.isConnected && game?.id && sessionId) {
