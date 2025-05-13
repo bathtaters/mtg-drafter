@@ -6,10 +6,11 @@ import type { ErrorAlert } from "components/base/common/Alerts/alerts.d"
 import type { GameClient, GameServerToClient } from "backend/controllers/game.socket.d"
 import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/router"
+import { hashText } from "components/base/libs/encrypt"
+import { WatcherTabs } from "types/game"
 import usePackViewer from "../PackViewer/packViewer.controller"
 import { useTabController } from "../GameBody/pick.controller"
 import { gameIsEnded } from "../shared/game.utils"
-import { WatcherTabs } from "types/game"
 import { noPwMsg } from "assets/strings"
 import { shareGame, shareWatch } from "assets/constants"
 
@@ -61,6 +62,7 @@ export default function useWatchController({
                 router.push(shareGame.url(game.url)) // Redirect hosts to Host page
             fetch()
             return setAuth(true)
+
         } else if (socket.socket && socket.isConnected && game?.id && sessionId) {
             socket.socket.emit('watcherLogin', game.id, sessionId, null, (success, reason) => {
                 setAuth(success)
@@ -71,7 +73,7 @@ export default function useWatchController({
 
     // Login/Logout handlers
 
-    const login = (password: string) => {
+    const login = async (password: string) => {
         if (isHost) return setAuth(true)
         if (!sessionId) return setMessage("User token missing")
         setMessage("")
@@ -80,7 +82,8 @@ export default function useWatchController({
 
         setLoadingAll && setLoadingAll((v) => v + 1)
 
-        socket.emit('watcherLogin', game.id, sessionId, password, (success: boolean, reason?: string) => {
+        const encrypted = await hashText(password)
+        socket.emit('watcherLogin', game.id, sessionId, encrypted, (success: boolean, reason?: string) => {
             setAuth(success)
             setError(undefined)
             if (success) fetch()

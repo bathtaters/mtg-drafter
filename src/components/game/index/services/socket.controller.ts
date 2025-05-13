@@ -5,6 +5,7 @@ import type { ErrorAlert } from 'components/base/common/Alerts/alerts.d'
 import type { LocalController } from './local.controller'
 import type { Game, BasicLands, Player, Socket } from 'types/game'
 import { Dispatch, SetStateAction, useCallback } from 'react'
+import { hashText } from 'components/base/libs/encrypt'
 import { PlayerStatus } from 'types/game'
 import { reloadData, BasicController } from '../basic.controller'
 import { clientErrorsInConsole, debugSockets } from 'assets/constants'
@@ -206,10 +207,11 @@ export function useGameEmitters(local: LocalRequired, throwError: (alert: ErrorA
   }, [emit, local.game?.url, local.sessionId, local.setLoadingAll, local.setStatus, local.updatePlayer, local.updateLocal, throwError])
 
 
-  const setWatchPw: Socket.SetWatchPw = useCallback((password) => {
+  const setWatchPw: Socket.SetWatchPw = useCallback(async (password) => {
     if (!local.game?.id) return throwError(formatError('Error setting Watch password: Game not loaded'))
 
-    emit('setWatchPw', local.game.id, password || null)
+    const encrypted = await hashText(password)
+    emit('setWatchPw', local.game.id, encrypted)
   }, [emit, local.game?.id, throwError])
 
 
