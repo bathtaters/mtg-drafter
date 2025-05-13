@@ -24,7 +24,7 @@ export default gameData
 
 export const gameOptions = z.object({
   name: commonOptions.shape.name.optional(),
-  hostId: gameData.id.optional(),
+  hostId: gameData.session.optional(),
   url:  gameData.url.optional(),
   timerBase: commonOptions.shape.timer.optional(),
 })
