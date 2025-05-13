@@ -13,7 +13,7 @@ const formatError = (message: string): ErrorAlert => ({ message: `${message}. At
 
 export function getGameListeners(
   {
-    game, isWatchPage, isHost, sessionId,
+    game, sessionId,
     updateLocal, updateGame, renamePlayer, nextRound, pauseGame,
     pickCard, setStatus, banSession, setLoadingAll, setLoadingPack,
   }: LocalController,
@@ -86,10 +86,8 @@ export function getGameListeners(
     socket.on('updateTimer', updateTimer)
     socket.on('updateSlot', updateSlot)
     socket.on('updateBan', updateBan)
-    if (isHost || isWatchPage) {
-      socket.on('updateWatchPw', updateWatchPw)
-      socket.on('updateWatcher', updateWatcher)
-    }
+    socket.on('updateWatchPw', updateWatchPw)
+    socket.on('updateWatcher', updateWatcher)
     
     clientErrorsInConsole && socket.on('error', console.error)
 

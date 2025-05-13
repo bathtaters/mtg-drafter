@@ -29,7 +29,7 @@ export default function useBasicGameController(props: ServerProps, hostModal: bo
     gameURL(url),
     socketEndpoint(url),
     getGameListeners(local, newError, clearError, gameLog.fetch, setHostModal),
-    [local.game?.id, local.player?.id, local.isHost, local.sessionId, local.isWatchPage, gameLog.fetch],
+    [local.game?.id, local.player?.id, local.sessionId, gameLog.fetch],
     ({ message }) => newError({ title: 'Connection Error', message, button: 'Refresh' })
   )
   
