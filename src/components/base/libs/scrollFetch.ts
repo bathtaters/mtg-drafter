@@ -83,6 +83,7 @@ import { debounce, debounceGroup } from "components/base/services/common.service
  *     - `isFirst` - True if entry is the top-most entry
  *     - `isLoading` - True if entry is still loading (If `entry` is provided & this is True, `entry` is a Preview)
  *   -  `total` - Total count of entries (Used to generate placeholders)
+ *   -  `fetchAll` - Fill out all remaining data, returning it as a list.
  *   -  `reset` - Function to clear cache and begin reload process
  *   -  `fetch` - Trigger a manual fetch with specific params (Calls to this will be automatically debounced)
  *   -  `forceFetch` - Same as above, excpet this is NOT debounced and it will return the actual data.
@@ -261,9 +262,29 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
     [total, entries, preview, cursor, filter, childProps],
   )
 
+  const fetchAll = async (extraParams: Omit<Params, 'offset'|'isPreview'> = {} as Params) => {
+    if (total == null) return []
+    
+    let list: Entry[] = []
+    for (let idx = 0; idx < total; idx++) {
+      if (entries[idx]) {
+        list.push(entries[idx])
+        continue
+      }
+
+      // Download missing data
+      const newData = await forceFetch({ size: maxSize, ...extraParams, offset: idx } as Params)
+      for (const end = idx + newData.length; idx < end; idx++) {
+        list.push(newData[idx])
+      }
+    }
+
+    return list
+  }
+
   return {
     entries: entryData,
-    total, reset, 
+    total, fetchAll, reset, 
     fetch, forceFetch,
     enabled, setEnabled,
     error,   setError,
