@@ -85,7 +85,7 @@ import { debounce, debounceGroup } from "components/base/services/common.service
  *   -  `total` - Total count of entries (Used to generate placeholders)
  *   -  `reset` - Function to clear cache and begin reload process
  *   -  `fetch` - Trigger a manual fetch with specific params (Calls to this will be automatically debounced)
- *   -  `forceFetch` - Same as above, excpet this is NOT debounced
+ *   -  `forceFetch` - Same as above, excpet this is NOT debounced and it will return the actual data.
  *   -  `enabled` - True/False if fetching new data is enabled/disabled
  *   -  `setEnabled` - Sets value of `enabled`
  *   -  `error` - Error message, if there is currently an error
@@ -122,22 +122,28 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
     try {
       res = await handleFetch(queryString, { offset, size, isPreview, ...params } as Params)
     } catch (err: any) {
-      if (err?.message) return setError(err?.message)
+      if (err?.message) { setError(err?.message); return [] }
       else throw new Error(err.message)
     }
 
     // Update state, handle missing properties
-    if (!res) return setTotal((total) => total ?? 0)
+    if (!res) {
+      setTotal((total) => total ?? 0)
+      return []
+    }
     if (res.error) setError(error)
-    if (!('total' in res)) return;
+    if (!('total' in res)) return []
     
     const total = res.total
     if (total != null) setTotal(total)
-    if (!res.data) return;
+    if (!res.data) return []
 
     // Add data to cache
     const newData = [...res.data]
-    if (isPreview) return setPreview((prev) => prev && newData)
+    if (isPreview) {
+      setPreview((prev) => prev && newData)
+      return newData
+    }
 
     const resOffset = res.offset ?? offset ?? Math.max(0, total - newData.length)
     setEntries((log) => {
@@ -151,6 +157,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
       first: Math.max(resOffset + newData.length - 1, first),
       next: Math.max(total - resOffset, next),
     }))
+    return newData
   }, [handleFetch, minSize])
 
 
