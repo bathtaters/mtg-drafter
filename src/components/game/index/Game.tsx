@@ -83,7 +83,7 @@ export default function Game(props: ServerProps) {
 
     {!!toggleLogModal &&
       <GameLogModal
-        isOpen={logModal} setOpen={toggleLogModal}
+        isOpen={logModal} setOpen={toggleLogModal} isHost={isHost}
         gameLog={gameLog} players={players} packs={packs} gameEnded={gameIsEnded(game)}
       /> }
 

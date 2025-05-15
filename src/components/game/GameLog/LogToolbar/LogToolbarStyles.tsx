@@ -2,7 +2,7 @@ import type { MouseEventHandler, ReactNode } from "react"
 import DropdownMenu from "components/base/common/DropdownMenu"
 import FilterIcon from "components/svgs/FilterIcon"
 import GearIcon from "components/svgs/GearIcon"
-import { ExitIcon } from "components/svgs/MenuIcons"
+import { ExitIcon, ExportIcon } from "components/svgs/MenuIcons"
 import getColorClass from "components/base/libs/colors"
 import { clampText } from "components/base/services/common.services"
 import { ReloadButton } from "components/game/CardToolbar/CardToolbarStyles"
@@ -11,6 +11,13 @@ export const LogoutLabel = () => (
   <div className="flex justify-between">
     <span>Logout</span>
     <ExitIcon className="w-5 -mr-2" />
+  </div>
+)
+
+export const DownloadLabel = () => (
+  <div className="flex justify-between">
+    <span>Export JSON</span>
+    <ExportIcon className="w-5 -mr-2" />
   </div>
 )
 
