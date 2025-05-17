@@ -1,13 +1,15 @@
 import type { LogAction } from "@prisma/client"
-import type { Game, BasicPlayer, LogFull, LogEntryFull, GameCardFull, GameCardPartial, PackFull, CardOptions } from "types/game"
+import type { Game, BasicPlayer, LogFull, LogEntryFull, GameCardFull, GameCardPartial, PackFull, CardOptions, Player } from "types/game"
 import type { LogFilterParam } from "types/log.validation"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { fetcher } from "components/base/libs/fetch"
+import downloadTextFile from "components/base/libs/download"
 import { type FetchHandler, useDynamicScrollFetcher } from "components/base/libs/scrollFetch"
 import useToolbar from "../CardToolbar/toolbar.controller"
-import { adaptEntry, filterEntry } from "./log.utils"
+import { adaptEntry, filterEntry, stringifyLogEntries } from "./log.utils"
 import { logOptions, logFetchOptions, dynamicScrollPreloadDistancePx } from "assets/constants"
+import { LOG_EXT, logFilename } from "assets/strings"
 import { allActions, otherPlayers } from "types/logs"
 
 
@@ -40,11 +42,17 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
   }, [url])
 
   const {
-    entries, fetch, reset,
+    entries, fetchAll,
+    fetch, reset,
     enabled, setEnabled,
     error, setError,
     scrollParentRef, scrollItemProps, 
   } = useDynamicScrollFetcher(fetchLogs, { filter, initalEnabled: false, scrollMarginPxls: dynamicScrollPreloadDistancePx, ...logFetchOptions })
+
+  const downloadLog = async () => {
+    const jsonData = await fetchAll().then((data) => stringifyLogEntries(data, playerData))
+    downloadTextFile(logFilename(url), jsonData, LOG_EXT)
+  }
   
   // Handle minor changes -- Reset cache on URL change, reload preview on filter change
   useEffect(() => { reset(true) }, [url, reset])
@@ -60,6 +68,7 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
     options, setOptions,
     enabled, setEnabled,
     scrollParentRef, scrollItemProps,
+    downloadLog,
   }
 }
 

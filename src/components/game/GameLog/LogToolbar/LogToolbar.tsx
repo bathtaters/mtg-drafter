@@ -20,7 +20,7 @@ export default function LogToolbar({ gameLog, players, gameEnded, isHost, logout
         {Object.keys(gameLog.options).map((key) => (key !== 'hidePrivate' || gameEnded) && (!logout || key !== 'hideWatchers') &&
           <SettingToggle key={key} label={logOptionLabels[key]} value={!gameLog.options[key]} setValue={(val) => gameLog.setOptions((opt) => ({ ...opt, [key]: !val }))} />
         )}
-        { isHost && <SettingAction label={<DownloadLabel />} onClick={() => console.log("DOWNLOAD")} /> }
+        { isHost && <SettingAction label={<DownloadLabel />} onClick={gameLog.downloadLog} /> }
         { logout && <SettingAction label={<LogoutLabel />} onClick={logout} /> }
       </SettingsDropdown>
 

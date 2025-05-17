@@ -1,5 +1,5 @@
 import type { LogAction, LogEntry } from "@prisma/client"
-import type { LogOptions, LogEntryFull } from "types/game"
+import type { LogOptions, LogEntryFull, BasicPlayer } from "types/game"
 import type { FilterId } from "types/logs"
 import { timerText } from "assets/strings"
 
@@ -32,3 +32,31 @@ export const objToString = (obj?: Record<string,any>) => !obj ? "" : Object.entr
 
 
 export const getName = ({ action, data }: LogEntryFull) => watcherActions.includes(action) ? data : undefined
+
+
+/** Convert log entry objects into a JSON string,
+ * optionally including player names if playerData is provided. */
+export function stringifyLogEntries(entries: LogEntryFull[], playerData: BasicPlayer[] = []) {
+  // Create Player object using IDs as keys
+  const players = playerData.reduce(
+    (obj, { id, name }) => ({ ...obj, [id]: { name, id } }),
+    {} as Record<BasicPlayer['id'], Pick<BasicPlayer, 'id'|'name'>>
+  )
+
+  const jsonData = entries.map((entry) => JSON.stringify(stringifyLogEntry(entry, players))).join(",\n  ")
+  return `[\n  ${jsonData}\n]\n`
+}
+
+const stringifyLogCard = ({ cardId: id, card: { scryfallId, name }, foil, board }: NonNullable<LogEntryFull['card']>) => ({
+  name, foil, board, scryfallId, id,
+})
+
+const stringifyLogEntry = ({ action, card, data, hostId, playerId, sessionId, time }: LogEntryFull, players: Record<string, Pick<BasicPlayer,"id"|"name">>) => ({
+  time,
+  action,
+  player: playerId ? players[playerId] || playerId : null,
+  card: card && stringifyLogCard(card),
+  data: action === 'settings' ? data && JSON.parse(data) : data,
+  hostId,
+  sessionId,
+})

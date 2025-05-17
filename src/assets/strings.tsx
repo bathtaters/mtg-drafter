@@ -106,6 +106,9 @@ export const logFullDate = (dt: Date) => dt.toLocaleString(undefined, { timeStyl
 
 export const logTimestamp = (dt: Date) => dt.toLocaleTimeString(undefined, { timeStyle: 'short' }).replace(' ','').padStart(7, '0').slice(0,6).toLowerCase()
 
+export const logFilename = (gameUrl: string) => `drafter_log_${gameUrl}_${new Date().toLocaleDateString('en-CA').replaceAll('-','')}`
+export const LOG_EXT = '.json'
+
 export const formatLogAction = (action: LogAction, data: LogData, hostId: Game['hostId'], gameData?: Partial<Game>) => {
   // Log output: Player|Game <formatLogAction()> <data|card|none> <byHost>
 
