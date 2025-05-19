@@ -119,6 +119,10 @@ export const formatLogAction = (action: LogAction, data: LogData, hostId: Game['
       const [ pack, pick = '' ] = data.split(':', 2)
       return ` pack-${pack.padStart(2,'0')} pick-${pick.padStart(2,'0')}`
 
+    case 'view':
+      if (!data) return 'viewed'
+      return isNaN(+data) ? `${data}board viewed` : `pack-${data.padStart(2,'0')} viewed`
+
     case 'join': return hostId ? 'added' : 'joined'
     case 'leave': return !hostId ? 'left' :
       data === ALL_WATCHERS ? 'cleared' : 'removed' 
@@ -142,7 +146,7 @@ export const formatLogAction = (action: LogAction, data: LogData, hostId: Game['
     case 'ban':
     case 'unban':
       return `${action}ned`
-    
+      
     default: return `${action}ed`
   }
 }

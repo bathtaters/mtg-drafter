@@ -23,6 +23,7 @@ export const filterEntry = (entry: LogEntryFull | undefined, players: FilterId[]
   if (options?.hideHost && entry.playerId && entry.hostId) return false
   // Hide watcher actions (If hideWatchers is enabled)
   if (options?.hideWatchers && !entry.playerId && watcherActions.includes(entry.action)) return false
+  if (options?.hideWatchers && entry.action === 'view' && !entry.hostId) return false
   return true
 }
 

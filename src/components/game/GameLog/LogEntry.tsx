@@ -19,7 +19,7 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, chi
   
   const name = getName(entry)
   const isGame = ['settings','round'].includes(action)
-  const isWatcher = !isGame && !playerId && (!!sessionId || data === ALL_WATCHERS)
+  const isWatcher = action === 'view' ? !hostId : !isGame && !playerId && (!!sessionId || data === ALL_WATCHERS)
 
   const gameData: Partial<Game> | undefined = action === 'settings' ? data && JSON.parse(data) : undefined
 
@@ -54,7 +54,7 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, chi
         </EntryItem>
         <EntrySpace />
       </>:
-      sessionId && <>
+      sessionId && action !== 'view' && <>
         <EntryItem tip={sessionId} below={isFirst}>
           <CookieIcon className="w-5 fill-current" />
         </EntryItem>
@@ -84,6 +84,9 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, chi
 
       {/* By Host tag */}
       {hostId && <EntryItem color={-1} inv={true} tip={hostId} below={isFirst}>by host</EntryItem>}
+
+      {/* By Watcher tag */}
+      {action === 'view' && !hostId && <EntryItem color={-1} inv={true} tip={sessionId} below={isFirst}>by watcher</EntryItem>}
 
       {/* Create game data */}
       {action === 'settings' && gameData?.id && (
