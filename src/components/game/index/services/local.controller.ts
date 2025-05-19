@@ -27,6 +27,8 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   const [ slots,   updateSlots   ] = useState(getSlots(props.players))
   const [ pack,    updatePack    ] = useState<PackFull>()
   const [ maxPackSize, updatePackSize ] = useState(props.packSize ?? 0)
+  const [ hasJoined,   setJoined      ] = useState(props.hasJoined ?? false)
+  const [ hasViewed,   setViewed      ] = useState(props.hasViewed ?? false)
   
   const { timer, startTimer, resetTimer, storeTimer } = useTimerStore(props.player?.timer, props.now)
   
@@ -52,6 +54,8 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     updateSlots(getSlots(data.players))
     updatePack(newPack)
     updatePlayer(data.player || undefined)
+    setJoined(data.hasJoined ?? false)
+    setViewed(data.hasViewed ?? false)
   }, [storeTimer, resetTimer])
 
   
@@ -157,10 +161,10 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   return {
     loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer, updateGame, updateLocal,
     game, player, players, playerIdx, maxPackSize, holding, pack, packs, slots, timer,
-    isHost, canAdvance, isBanned, isWatchPage,
+    isHost, canAdvance, isBanned, isWatchPage, hasJoined, hasViewed,
     sessionId: props.sessionId,
     renamePlayer, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, banSession,
-    startTimer, reload,
+    setJoined, setViewed, startTimer, reload,
   }
 }
 
