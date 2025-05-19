@@ -131,12 +131,13 @@ export async function canView(gameId: Game['id'], sessionId: string, playerId: P
         }),
     ])
     
-    if (!isWatcher && game?.hostId !== sessionId) return "NOAUTH"
+    const isHost = game?.hostId === sessionId
+    if (!isWatcher && !isHost) return "NOAUTH"
     if (hasJoined && (!game || !gameIsEnded(game))) return "PLAYER"
 
     // Log each view request
     if (!silent) await prisma.logEntry.create({
-            data: { gameId, sessionId, playerId, action: 'view', data: cards.toString() }
+            data: { gameId, sessionId, playerId, action: 'view', data: cards.toString(), hostId: isHost ? sessionId : null }
         })
 
     return null
