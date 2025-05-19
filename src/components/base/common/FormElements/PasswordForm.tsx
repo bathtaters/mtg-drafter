@@ -23,7 +23,7 @@ export default function PasswordForm(
             <LabelStyle htmlFor={id} full={fullPage}>{label}</LabelStyle>
             { fullPage && <Spacer /> }
             <BoxBtnWrapper full={fullPage}>
-                <PasswordStyle id={id} value={password} placeholder={placeholder} onChange={handleChange} className={elemClass} autoComplete={isCreate ? 'new-password' : 'current-password'} />
+                <PasswordStyle id={id} name={id} value={password} placeholder={placeholder} onChange={handleChange} className={elemClass} autoComplete={isCreate ? 'new-password' : 'current-password'} />
                 { fullPage && <MessageStyle>{message}</MessageStyle> }
                 <ButtonStyle type="submit" className={elemClass} disabled={disabled && !password}>{password || !emptyBtn ? btnLabel : emptyBtn}</ButtonStyle>
             </BoxBtnWrapper>

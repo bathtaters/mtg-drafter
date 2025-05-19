@@ -97,7 +97,7 @@ export default function HostModal({
             btnLabel="Set" emptyBtn={game?.watchKey ? "Disable" : "Disabled"}
             placeholder={game?.watchKey ? "••••••••" : ""}
             onSubmit={setWatchPw} isCreate={true}
-            heightClass="h-8"
+            heightClass="h-8" id="new-password"
           />
             
           <Moderation label="Active Watchers" players={watchers} kickOne={dropWatcher} banOne={banPlayer} setHost={setHost} />
