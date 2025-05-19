@@ -132,8 +132,10 @@ export default function useLocalController(props: ServerProps, throwError: Alert
       (p) => ({ ...p, sessionId: join ? sessionId : null })
     ))
     updatePlayer((p) => p?.id !== playerId ? p : !join || !sessionId ? undefined : ({ ...p, sessionId }))
+
+    if (sessionId === props.sessionId) setJoined(true)
     if (!join) setLoadingAll((v) => v && v - 1)
-  }, [])
+  }, [props.sessionId])
 
 
   const banSession: Local.BanSession = useCallback(({ unban, ...data }) => {
