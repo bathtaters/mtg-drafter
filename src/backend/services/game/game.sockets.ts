@@ -171,8 +171,9 @@ export default function addGameListeners(io: GameServer, socket: GameSocket, cur
 
     socket.on('viewCards', async (gameId, sessionId, playerId, cards, callback) => {
       const authErrorCode = await canView(gameId, sessionId, playerId, cards, false)
-      if (authErrorCode) callback(false, viewAuthError[authErrorCode] || viewAuthError.DEFAULT)
-      else callback(true)
+      if (authErrorCode) return callback(false, viewAuthError[authErrorCode] || viewAuthError.DEFAULT)
+      callback(true)
+      io.emit('viewedCards', sessionId)
     })
 }
 
