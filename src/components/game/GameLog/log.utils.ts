@@ -2,6 +2,7 @@ import type { LogAction, LogEntry } from "@prisma/client"
 import type { LogOptions, LogEntryFull, BasicPlayer } from "types/game"
 import type { FilterId } from "types/logs"
 import { timerText } from "assets/strings"
+import { ALL_WATCHERS } from "assets/constants"
 
 const watcherActions: LogAction[] = ['join', 'leave', 'ban', 'unban']
 
@@ -31,7 +32,7 @@ export const objToString = (obj?: Record<string,any>) => !obj ? "" : Object.entr
   .map(([key, val]) => `${key}: ${key === 'timerBase' ? timerText[val ?? 0]?.value || val : val}`).join(", ")
 
 
-export const getName = ({ action, data }: LogEntryFull) => watcherActions.includes(action) ? data : undefined
+export const getName = ({ action, data }: LogEntryFull) => !watcherActions.includes(action) ? undefined : data === ALL_WATCHERS ? "All" : data
 
 
 /** Convert log entry objects into a JSON string,

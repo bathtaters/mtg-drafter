@@ -26,7 +26,7 @@ export const EntryWrapper = ({ children, childProps }: { children: ReactNode, ch
 
 export const EntryItem = (
   { tip, gameData, below, right, color, inv, children, onClick }:
-  { tip?: string, gameData?: Record<string,any>, below?: boolean, right?: boolean, color?: number, inv?: boolean, children: ReactNode, onClick?: MouseEventHandler }
+  { tip?: string | null, gameData?: Record<string,any>, below?: boolean, right?: boolean, color?: number, inv?: boolean, children: ReactNode, onClick?: MouseEventHandler }
 ) => (
   <span data-tip={tip || objToString(gameData)} onClick={onClick}
     className={`text-left ${tip || gameData ? `tooltip tooltip-primary ${below ? 'tooltip-bottom' : 'tooltip-top'
