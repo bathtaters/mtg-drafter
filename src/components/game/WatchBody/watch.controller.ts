@@ -5,7 +5,7 @@ import type { SocketHook } from "components/base/libs/sockets"
 import type { ErrorAlert } from "components/base/common/Alerts/alerts.d"
 import type { GameClient, GameServerToClient } from "backend/controllers/game.socket.d"
 import { useCallback, useEffect, useState } from "react"
-import { useRouter } from "next/router"
+import Router from "next/router"
 import { hashText } from "components/base/libs/encrypt"
 import { WatcherTabs } from "types/game"
 import usePackViewer from "../PackViewer/packViewer.controller"
@@ -38,7 +38,6 @@ export default function useWatchController({
     game, players, packs, socket, sessionId, isHost, hasJoined, hasViewed,
     onPackView, setSidebar, reload, setLoadingAll, newError,
 }: Props, noChildren: boolean) {
-    const router = useRouter()
     const [authed, setAuthState] = useState(false)
     const [message, setMessage] = useState("")
     const gameEnded = gameIsEnded(game)
@@ -59,8 +58,8 @@ export default function useWatchController({
     // Check if user is already logged in on first load or if game/session changes
     useEffect(() => {
         if (isHost) {
-            if(game?.url && router.pathname.startsWith(shareWatch.url('')))
-                router.push(shareGame.url(game.url)) // Redirect hosts to Host page
+            if(game?.url && Router.pathname.startsWith(shareWatch.url('')))
+                Router.push(shareGame.url(game.url)) // Redirect hosts to Host page
             fetch()
             return setAuth(true)
 
@@ -70,7 +69,7 @@ export default function useWatchController({
                 if (reason && reason !== noPwMsg) setMessage(reason)
             })
         }
-    }, [isHost, socket.socket, socket.isConnected, game?.id, sessionId, setAuth])
+    }, [game?.url, isHost, socket.socket, socket.isConnected, game?.id, sessionId, setAuth, fetch])
 
     // Login/Logout handlers
 

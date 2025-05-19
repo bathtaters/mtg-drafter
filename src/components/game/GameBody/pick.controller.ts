@@ -78,7 +78,7 @@ export default function usePickController(
 
   const [ packLoading, handleCardLoad ] = useLoadElements(onPackLoad, pack?.cards.length, !cardOptions.showArt, [pack?.index])
 
-  useEffect(() => { if (hidePack && !packViewer && selectedTab === 'pack') selectTab(TabLabels.main) }, [hidePack, packViewer, selectedTab])
+  useEffect(() => { if (hidePack && !packViewer && selectedTab === 'pack') selectTab(TabLabels.main) }, [hidePack, packViewer, selectedTab, selectTab])
   
   useEffect(() => {
     if (typeof pack?.index === 'number') {

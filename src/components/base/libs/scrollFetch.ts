@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { type IntersectionChildProps, useIntersection } from "./hooks"
 import { debounce, debounceGroup } from "components/base/services/common.services"
 
+const INIT_DATA = {}, INIT_PREV = [] as any[]
+
 /**
  * React Hook to dynamically fetch paginated data from an API.
  * 
@@ -43,7 +45,8 @@ import { debounce, debounceGroup } from "components/base/services/common.service
  * }
  * ```
  * - `filter` - Function to determine if a row should be visible (true)
- * - `initalEnabled/Data/Preview/Total` - Initial value of the respective iteams
+ * - `initalEnabled/Data/Preview/Total` - Initial value of the respective items
+ *    - *NOTE:* Any object/array values (i.e. `initialData`/`initialPreview`) should be **Memoized** to avoid excessive re-renders.
  *    - `Enabled` - True = hook is active, False = no actual fetched are performed
  *    - `Data` - Cache of all combined `data` responses (Ass an object with numeric keys)
  *    - `Preview` - Cache of preview data (`undefined` = no preview)
@@ -99,7 +102,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
   handleFetch: FetchHandler<Entry, Params>,
   {
     filter,
-    initalEnabled = true, initialData = {}, initialPreview = [], initialTotal,
+    initalEnabled = true, initialData = INIT_DATA, initialPreview = INIT_PREV, initialTotal,
     minSize = 0, maxSize = 1000, debounceMs = 500, 
     scrollMarginPxls = 200,
   }: DynamicFetcherOptions<Entry> = {},
@@ -132,7 +135,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
       setTotal((total) => total ?? 0)
       return []
     }
-    if (res.error) setError(error)
+    if (res.error) setError(res.error)
     if (!('total' in res)) return []
     
     const total = res.total
@@ -193,7 +196,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
     setError(undefined)
     setCursor(0)
     if (resetCache) setEntries(Array.isArray(initialData) ? arrayToObject(initialData) : initialData)
-  }, [])
+  }, [initialTotal, initialData, initialPreview])
 
 
   // Dynamic loading controller
@@ -265,7 +268,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
       
       return data
     },
-    [total, entries, preview, cursor, filter, childProps],
+    [total, entries, preview, cursor, displayCount, filter, childProps],
   )
 
   const fetchAll = async (extraParams: Omit<Params, 'offset'|'isPreview'> = {} as Params) => {

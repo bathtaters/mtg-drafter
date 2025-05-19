@@ -81,7 +81,7 @@ export default function usePackViewer(
             success && onPackView?.()
             if (!success && newError) newError(formatErr(reason || viewAuthError.DEFAULT))
         })
-    }, [viewType, selectedPlayer, round, game?.id, socket, sessionId])
+    }, [viewType, selectedPlayer, round, game?.id, socket, sessionId, newError, onPackView])
 
     return {
         pack, packVisible, viewPack,

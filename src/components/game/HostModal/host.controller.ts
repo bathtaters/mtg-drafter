@@ -9,7 +9,7 @@ import { BOT, shareWatch } from "assets/constants"
 export default function useHostController(game: Partial<Game> | undefined, setOptions: Socket.SetOptions, banSession: Socket.BanSession) {
   // Collapsing sections
   const [ expanded, setExpanded ] = useLocalStorage<number>('hostModalSection')
-  const toggleExpand = useCallback((index?: number) => index ? () => setExpanded((value) => value === index ? 0 : index) : () => setExpanded(0), [])
+  const toggleExpand = useCallback((index?: number) => index ? () => setExpanded((value) => value === index ? 0 : index) : () => setExpanded(0), [setExpanded])
 
   // Change timer
   const timerBase = game?.timerBase || 0

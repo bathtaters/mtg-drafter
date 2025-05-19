@@ -42,6 +42,7 @@ export default function useBasicGameController(props: ServerProps, hostModal: bo
   const onPackView = useCallback(() => {
       local.setViewed(true)
       gameLog.fetch()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local.setViewed, gameLog.fetch])
 
   return {
