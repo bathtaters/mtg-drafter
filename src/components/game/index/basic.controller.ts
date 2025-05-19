@@ -53,7 +53,7 @@ export type BasicController = ReturnType<typeof useBasicGameController>
 export async function reloadData(
     url: string | undefined,
     updateLocal: LocalController["updateLocal"],
-    throwError: AlertsReturn['newError'],
+    newError: AlertsReturn['newError'],
     reconnect?: () => Promise<void>
 ) {
     try {
@@ -65,6 +65,6 @@ export async function reloadData(
         if (reconnect) reconnect()
 
     } catch (err: any) {
-        throwError({ message: err.message, title: 'Data Error', button: 'Refresh' })
+        newError({ message: err.message, title: 'Data Error', button: 'Refresh' })
     }
 }

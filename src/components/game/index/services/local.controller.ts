@@ -13,7 +13,7 @@ import { shareWatch } from 'assets/constants'
 
 const isWatchRegex = RegExp(`^${shareWatch.url('')}[a-zA-Z0-9_-]+$`)
 
-export default function useLocalController(props: ServerProps, throwError: AlertsReturn['newError'], notify: AlertsReturn['newToast']) {
+export default function useLocalController(props: ServerProps, newError: AlertsReturn['newError'], notify: AlertsReturn['newToast']) {
   const router = useRouter()
   const isWatchPage = isWatchRegex.test(router.asPath)
 
@@ -61,8 +61,8 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   
   const reload = useCallback(() => {
     setLoadingAll((v) => v + 1)
-    reloadData(game?.url, updateLocal, throwError).finally(() => setLoadingAll((v) => v && v - 1))
-  }, [game?.url, updateLocal, throwError])
+    reloadData(game?.url, updateLocal, newError).finally(() => setLoadingAll((v) => v && v - 1))
+  }, [game?.url, updateLocal, newError])
 
 
   const nextRound: Local.NextRound = useCallback((round) => {
@@ -99,10 +99,10 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     }
     
     if (passingToId && player?.id === passingToId) updatePack((pack) => {
-      if (!pack) reloadData(game?.url, updateLocal, throwError)
+      if (!pack) reloadData(game?.url, updateLocal, newError)
       return pack
     })
-  }, [game?.url, player?.id, updateLocal, resetTimer, throwError])
+  }, [game?.url, player?.id, updateLocal, resetTimer, newError])
 
 
   const swapCard: Local.SwapCard = useCallback((pickedCardId, board) => {
