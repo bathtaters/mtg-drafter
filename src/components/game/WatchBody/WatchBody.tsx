@@ -10,7 +10,7 @@ import PasswordForm from 'components/base/common/FormElements/PasswordForm'
 import { WatchBodyHeader, WatchBodyWrapper, TabToolbarWrapper, WatchGameLogWrapper, ErrorContainer } from './WatchBodyStyles'
 import useWatchController, { type Props as LogWatchProps } from './watch.controller'
 
-export type Props = Pick<BasicController, "players"|"packs"|"newToast"> & LogWatchProps & { children?: ReactNode }
+export type Props = Pick<BasicController, "players"|"packs"|"newToast"|"setViewed"> & LogWatchProps & { children?: ReactNode }
 
 export default function WatchBody({ children, ...props }: Props) {
   

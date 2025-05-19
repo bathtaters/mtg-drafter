@@ -47,6 +47,7 @@ export default function usePackViewer(
     game?: Partial<Game>,
     sessionId?: Player['sessionId'],
     socket?: GameClient | null,
+    setViewed?: (viewed: boolean) => void,
     newError?: (alert: ErrorAlert) => string | undefined,
 ) {
     // Settings
@@ -77,6 +78,7 @@ export default function usePackViewer(
         const cards = viewType === TabLabels.pack ? round : viewType
         socket.emit('viewCards', game.id, sessionId, selectedPlayer, cards, (success: boolean, reason?: string) => {
             setPackVisible(success)
+            if (success && setViewed) setViewed(success)
             if (!success && newError) newError(formatErr(reason || viewAuthError.DEFAULT))
         })
     }, [viewType, selectedPlayer, round, game?.id, socket, sessionId])
