@@ -83,7 +83,7 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, chi
       </>}
 
       {/* By Host tag */}
-      {hostId && <EntryItem color={-1} inv={true} tip={hostId}>by host</EntryItem>}
+      {hostId && <EntryItem color={-1} inv={true} tip={hostId} below={isFirst}>by host</EntryItem>}
 
       {/* Create game data */}
       {action === 'settings' && gameData?.id && (

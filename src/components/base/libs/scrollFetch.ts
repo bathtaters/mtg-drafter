@@ -110,7 +110,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
   const [ total,   setTotal   ] = useState(initialTotal)
   const [ error,   setError   ] = useState<string>()
   const [ enabled, setEnabled ] = useState(initalEnabled)
-  const [ cursor,  setCursor  ] = useState({ first: 0, next: 0 })
+  const [ cursor,  setCursor  ] = useState(0)
 
 
   const forceFetch = useCallback(async ({ offset, size, isPreview, ...params }: Params = {} as Params) => {
@@ -154,10 +154,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
     })
 
     // Move cursor
-    setCursor(({ first, next }) => ({
-      first: Math.max(resOffset + newData.length - 1, first),
-      next: Math.max(total - resOffset, next),
-    }))
+    setCursor((prev) => Math.max(total - resOffset, prev))
     return newData
   }, [handleFetch, minSize])
 
@@ -194,7 +191,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
     setTotal(initialTotal)
     setPreview(initialPreview)
     setError(undefined)
-    setCursor({ first: 0, next: 0 })
+    setCursor(0)
     if (resetCache) setEntries(Array.isArray(initialData) ? arrayToObject(initialData) : initialData)
   }, [])
 
@@ -223,42 +220,51 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
   useEffect(() => { isFirstLoad.current = true }, [filter])
   
   // Main array of loaded/filtered data
-  const entryData = useMemo((): (EntryData<Entry> | null)[] | null =>
-    total == null ? null : Array.from({ length: total }).map((_, idx) => {
-      const index = total - idx - 1 // in reverse order to maintain constant indexes if items are added
+  const entryData = useMemo((): (EntryData<Entry> | null)[] | null => {
+      if (total == null) return null
+      
+      const data =  Array.from({ length: total }).map((_, idx) => {
+        const index = total - idx - 1 // in reverse order to maintain constant indexes if items are added
 
-      if (!entries[index]) {
-        const previewEntry = preview?.[idx - cursor.next + displayCount]
-        
-        /* Not loaded... */
-        if (!previewEntry) return {
-          index,
-          childProps: childProps(index),
-          isFirst: cursor.first === index,
-          isLoading: true,
+        if (!entries[index]) {
+          const previewEntry = preview?.[idx - cursor + displayCount]
+          
+          /* Not loaded... */
+          if (!previewEntry) return {
+            index,
+            childProps: childProps(index),
+            isFirst: false,
+            isLoading: true,
+          }
+          
+          /* Preview... */
+          return {
+            index,
+            entry: previewEntry,
+            childProps: childProps(index),
+            isFirst: false,
+            isLoading: true,
+          }
         }
-        
-        /* Preview... */
+
+        /* Filtered */
+        if (filter && !filter(entries[index])) return null
+
+        /* Regular entry */
         return {
           index,
-          entry: previewEntry,
-          childProps: childProps(index),
-          isFirst: cursor.first === index,
-          isLoading: true,
+          entry: entries[index],
+          isFirst: false,
+          isLoading: false,
         }
-      }
+      })
 
-      /* Filtered */
-      if (filter && !filter(entries[index])) return null
-
-      /* Regular entry */
-      return {
-        index,
-        entry: entries[index],
-        isFirst: cursor.first === index,
-        isLoading: false,
-      }
-    }),
+      // Set isFirst on the first non-null entry
+      const last = data.find((entry) => entry)
+      if (last) last.isFirst = true
+      
+      return data
+    },
     [total, entries, preview, cursor, filter, childProps],
   )
 
