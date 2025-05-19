@@ -27,7 +27,7 @@ export type Props = {
     hasJoined?: boolean,
     hasViewed?: boolean,
     reload?: () => any,
-    setViewed: Set<boolean>,
+    onPackView?: () => any,
     setSidebar?: Set<boolean>,
     newError: (alert: ErrorAlert) => any,
 }
@@ -36,7 +36,7 @@ export type Props = {
 export default function useWatchController({
     gameLog: { setEnabled, setError, fetch, error },
     game, players, packs, socket, sessionId, isHost, hasJoined, hasViewed,
-    setViewed, setSidebar, reload, setLoadingAll, newError,
+    onPackView, setSidebar, reload, setLoadingAll, newError,
 }: Props, noChildren: boolean) {
     const router = useRouter()
     const [authed, setAuthState] = useState(false)
@@ -45,7 +45,7 @@ export default function useWatchController({
     const watchDisabled = !game?.watchKey
 
     const tabProps = useTabController<WatcherTabs>(isHost && !hasViewed ? WatcherTabs.join : WatcherTabs.log, game, players, false)
-    const packViewData = usePackViewer(packs, tabProps.pickInfo?.data, players, game, sessionId, socket.socket, setViewed, newError)
+    const packViewData = usePackViewer(packs, tabProps.pickInfo?.data, players, game, sessionId, socket.socket, onPackView, newError)
 
     // Trigger actions when user logs in/out
     const setAuth = useCallback((authed: boolean) => {

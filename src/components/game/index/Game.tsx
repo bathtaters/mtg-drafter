@@ -24,7 +24,7 @@ export default function Game(props: ServerProps) {
     holding, canAdvance, pack, packs, slots, gameLog, timer, socket,
     saveDeck, setSidebar, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setOptions, setLoadingAll,
     nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropWatcher, banSession, dropPlayer,
-    setViewed, reload, startTimer, newError, newToast, ErrorComponent, ToastComponent,
+    onPackView, reload, startTimer, newError, newToast, ErrorComponent, ToastComponent,
   } = useGameController(props)
 
   return (<>
@@ -52,6 +52,7 @@ export default function Game(props: ServerProps) {
               clickRoundBtn={canAdvance ? () => nextRound() : undefined}
               onLandClick={toggleLandModal}
               clickReload={reload}
+              onPackView={onPackView}
               onPackLoad={startTimer}
               loadingPack={!!loadingPack}
               notify={newToast} newError={newError}
@@ -62,7 +63,7 @@ export default function Game(props: ServerProps) {
               game={game} packs={packs} gameLog={gameLog} socket={socket}
               players={players} sessionId={sessionId} isHost={isHost}
               hasJoined={hasJoined} hasViewed={hasViewed}
-              setViewed={setViewed} setSidebar={setSidebar} setLoadingAll={setLoadingAll}
+              onPackView={onPackView} setSidebar={setSidebar} setLoadingAll={setLoadingAll}
               reload={reload} newToast={newToast} newError={newError}
             >
               {isHost && !player &&

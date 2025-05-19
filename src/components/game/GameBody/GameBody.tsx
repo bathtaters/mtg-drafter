@@ -29,13 +29,14 @@ type Props = {
   clickRoundBtn?: () => void,
   onLandClick?: MouseEventHandler,
   clickReload?: () => void,
+  onPackView?: () => void,
   onPackLoad?: () => void,
   loadingPack: boolean,
   notify: AlertsReturn['newToast'],
   newError: AlertsReturn['newError'],
 }
 
-export default function GameBody({ game, player, sessionId, players, pack, packs, playerTimer, isHost, roundOver, socket, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, onPackLoad, loadingPack, notify, newError }: Props) {
+export default function GameBody({ game, player, sessionId, players, pack, packs, playerTimer, isHost, roundOver, socket, clickRoundBtn, onLandClick, pickCard, swapCard, clickReload, onPackView, onPackLoad, loadingPack, notify, newError }: Props) {
 
   const {
     autopickCard, selectedCard, deselectCard, clickPickButton, clickPackCard, clickBoardCard,
@@ -44,7 +45,7 @@ export default function GameBody({ game, player, sessionId, players, pack, packs
 
   const pickInfo = usePickInfo(game, players, !packViewer)
 
-  const packViewData = usePackViewer(packs, pickInfo?.data, players, game, sessionId, socket, newError)
+  const packViewData = usePackViewer(packs, pickInfo?.data, players, game, sessionId, socket, onPackView, newError)
 
   if (!('round' in game) || game.round < 1 || !player) return (
     <GameBodyWrapper>

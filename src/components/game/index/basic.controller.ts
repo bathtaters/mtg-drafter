@@ -1,5 +1,5 @@
 import type { ServerProps, ServerSuccess } from 'types/game'
-import { useEffect, useState, type Dispatch, type SetStateAction } from 'react'
+import { useCallback, useEffect, useState, type Dispatch, type SetStateAction } from 'react'
 import { fetcher } from 'components/base/libs/fetch'
 import useSocket from 'components/base/libs/sockets'
 import useAlerts, { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
@@ -38,8 +38,14 @@ export default function useBasicGameController(props: ServerProps, hostModal: bo
     [local.game?.url, local.updateLocal, newError, socket.reconnect], refreshOnRefocusDelay
   )
 
+  // For usePackViewer -- Set hasViewed state & refresh logs when viewing a pack
+  const onPackView = useCallback(() => {
+      local.setViewed(true)
+      gameLog.fetch()
+  }, [local.setViewed, gameLog.fetch])
+
   return {
-    ...local, ...alerts, socket,
+    ...local, ...alerts, socket, onPackView,
     sidebarVisible, setSidebar,
     gameLog, newError, newToast,
     isConnected: socket.isConnected,
