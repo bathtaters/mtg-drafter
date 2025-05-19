@@ -3,7 +3,10 @@ import { sortKeys } from "components/base/services/cardSort.services"
 import cardZoomLevels, { matchWidth } from "./cardZoomLevels"
 import { throttle } from "components/base/services/common.services"
 
-const remToPixel = (rem: string) => parseFloat(rem) * parseFloat(typeof window !== 'undefined' ? window.getComputedStyle(document.documentElement).fontSize : '16px')
+// Calculate the size of 1 REM in pixels (Refresh page to update)
+const remFactor = typeof window !== 'undefined' ? parseFloat(window.getComputedStyle(document.documentElement).fontSize) : parseFloat("16px")
+
+const remToPixel = (rem: string) => parseFloat(rem) * remFactor
 
 const widthOffsetPx = (remToPixel('1rem') + remToPixel('0.5rem')) * 2 // Total padding around card
 
