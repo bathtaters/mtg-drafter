@@ -33,7 +33,7 @@ async function main() {
 
   if (!args.quiet)   console.log('Arguments:', args)
   if (!args.cards)   await updateCards(cardDbUrl, args.reset, !args.quiet, args.threads, args.batches, args.upserts)
-  if (!args.images)  await updateImages(imageDbUrl, preferredDbUrl, args.reset, !args.quiet, args.threads, args.batches)
+  if (!args.images)  await updateImages(imageDbUrl, preferredDbUrl, args.reset, !args.quiet, args.threads, args.batches, args.upserts)
   if (!args.sets)    await updateSets(setsDbUrl, args.reset, !args.quiet, args.threads, args.batches)
   if (!args.version) await updateVersion(pkg.version, !args.quiet)
   if (!args.quiet)   console.log('DONE')
