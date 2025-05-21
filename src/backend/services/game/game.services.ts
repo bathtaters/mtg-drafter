@@ -196,6 +196,6 @@ export const checkBan = (gameId: Game['id'], sessionId: Player['sessionId']) => 
   where: { sessionId, gameId }, take: 1,
 }).then(Boolean)
 
-export const checkBanOrLock = (gameId: Game['id'], sessionId: Player['sessionId']) => prisma.ban.count({
-  where: { OR: [{ gameId, sessionId: null }, { gameId, sessionId }] }, take: 1,
+export const checkBanOrLock = (gameId: Game['id'], sessionId: Player['sessionId'], checkLock = true) => prisma.ban.count({
+  where: checkLock ? { OR: [{ gameId, sessionId: null }, { gameId, sessionId }] } : { gameId, sessionId }, take: 1,
 }).then(Boolean)

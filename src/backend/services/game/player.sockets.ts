@@ -43,7 +43,7 @@ export default function addPlayerListeners(io: GameServer, socket: GameSocket, c
         const sessionId = status === 'bot' ? BOT : getExisitingSessionId(socket.request)
         if (sessionId == null) throw new Error('Missing user identity')
 
-        const isBanned = sessionId !== BOT &&  await checkBanOrLock(game.id, sessionId)
+        const isBanned = sessionId !== BOT &&  await checkBanOrLock(game.id, sessionId, status === 'join')
         if (isBanned) throw new Error(banMsg)
         
         // Prevent players who have viewed cards from joining active games
