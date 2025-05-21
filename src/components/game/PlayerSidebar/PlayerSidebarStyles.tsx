@@ -41,7 +41,7 @@ export const SidebarButton = ({ hide, active, onClick }: { hide?: boolean, activ
       }
     >
       <div className="swap-off"><UserIcon className="w-full p-2 md:p-3 fill-current" /></div>
-      <div className="swap-on text-2xl md:text-4xl">▶</div> 
+      <div className="swap-on text-2xl md:text-4xl">✕</div> 
     </button>
   )
 
