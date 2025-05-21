@@ -1,7 +1,7 @@
 import type { GameOptions } from 'types/setup'
 import type { RetryOptions } from 'backend/libs/retry'
 import type { BoosterType, Layout } from 'types/scryfall'
-import type { LogOptions, TimerOptions, CardFull } from 'types/game'
+import type { LogOptions, TimerOptions, CardFull, LogAction } from 'types/game'
 import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
 import { Direction } from 'types/game'
 import { allActions } from 'types/logs'
@@ -142,3 +142,5 @@ export const BOT = "___BOT___"
 export const ALL_WATCHERS = "__ALL__"
 
 export const AUTOMATED = "__AUTO__"
+
+export const watcherActions: LogAction[] = ['join', 'leave', 'ban', 'unban']

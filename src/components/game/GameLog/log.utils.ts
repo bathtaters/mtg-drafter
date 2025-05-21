@@ -2,9 +2,7 @@ import type { LogAction, LogEntry } from "@prisma/client"
 import type { LogOptions, LogEntryFull, BasicPlayer } from "types/game"
 import type { FilterId } from "types/logs"
 import { timerText } from "assets/strings"
-import { ALL_WATCHERS } from "assets/constants"
-
-const watcherActions: LogAction[] = ['join', 'leave', 'ban', 'unban']
+import { ALL_WATCHERS, watcherActions } from "assets/constants"
 
 export const adaptEntry = <L extends Partial<LogEntry>>(entry: L) => ({ ...entry, time: entry.time && new Date(entry.time) })
 
