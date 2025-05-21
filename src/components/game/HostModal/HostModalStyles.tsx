@@ -137,7 +137,7 @@ export const BanNameWrapper = ({ tooltip, id, isLeft, isBanned, children }: { to
       isLeft ? 'rounded-l-lg pl-2' : 'pl-1'
     } tooltip-bottom before:not-italic before:font-light`}
   >
-    {children || `<...${id?.slice(-9)}>`}
+    {children || `<...${id?.slice(-7)}>`}
   </NameWrapper>
 )
 
