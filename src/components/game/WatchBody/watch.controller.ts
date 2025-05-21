@@ -108,8 +108,10 @@ export default function useWatchController({
             session === sessionId && setAuth(joined)
         const updateBan: GameServerToClient['updateBan'] = ({ sessionId: session, unban }) =>
             !unban && session === sessionId && setAuth(false)
-        const updateWatchPw: GameServerToClient['updateWatchPw'] = (watchKey) =>
-            !watchKey && setAuth(false)
+        const updateWatchPw: GameServerToClient['updateWatchPw'] = () => {
+            setAuth(false)
+            setMessage("Password has changed")
+        }
 
         socket.socket.on('updateWatcher', updateWatcher)
         socket.socket.on('updateWatchPw', updateWatchPw)

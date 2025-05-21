@@ -68,7 +68,7 @@ export function getGameListeners(
     }
     const updateWatchPw: GameServerToClient['updateWatchPw'] = (watchKey) => {
       debugSockets && console.debug('SOCKET','updateWatchPw',watchKey)
-      updateGame((game) => game && ({ ...game, watchKey, watchers: watchKey ? (game as Game).watchers : [] }))
+      updateGame((game) => game && ({ ...game, watchKey, watchers: [] }))
     }
     const updateWatcher: GameServerToClient['updateWatcher'] = (sessionId, joined, name) => {
       debugSockets && console.debug('SOCKET','updateWatcher',sessionId,joined)
