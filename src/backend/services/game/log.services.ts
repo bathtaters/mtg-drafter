@@ -5,7 +5,7 @@ import prisma from "backend/libs/db"
 import { validate, hash, getWatchSalt } from "backend/utils/db/password.utils"
 import { getLastJoinSession, getName } from "backend/utils/game/player.utils"
 import { type ViewAuthError, type ViewEntryData, otherPlayers } from "types/logs"
-import { ALL_WATCHERS } from "assets/constants"
+import { ALL_WATCHERS, watcherActions } from "assets/constants"
 import { gameIsEnded } from "components/game/shared/game.utils"
 
 const WATCH_SALT = getWatchSalt()
@@ -20,6 +20,10 @@ export const getGameLog = (url: Game['url'], take?: number, skip?: number, fromS
             where: filter && { AND: [
                 filter.actions  ? { action: { in: filter.actions } } : {},
                 filter.hideHost ? { OR: [ { playerId: null }, { hostId: null }, { action: 'ban' }] } : {},
+                filter.hideWatchers ? { NOT: { OR: [
+                    { playerId: null, action: { in: watcherActions } },
+                    { hostId:   null, action: 'view' },
+                ] } } : {},
                 !filter.players ? {} : otherPlayers.some((player) => filter.players?.includes(player)) ? 
                     { OR: [ { playerId: { in: filter.players } }, { playerId: null /* otherPlayers = NULL */ }] } :
                     { playerId: { in: filter.players } },
