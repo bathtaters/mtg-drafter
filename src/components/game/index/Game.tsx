@@ -65,6 +65,7 @@ export default function Game(props: ServerProps) {
               hasJoined={hasJoined} hasViewed={hasViewed}
               onPackView={onPackView} setSidebar={setSidebar} setLoadingAll={setLoadingAll}
               reload={reload} newToast={newToast} newError={newError}
+              clickRoundBtn={canAdvance ? () => nextRound() : undefined}
             >
               {isHost && !player &&
                 <PlayerJoin title="Join Game As:" slots={slots} players={players} hasViewed={hasViewed} selectPlayer={setStatus} game={game} />

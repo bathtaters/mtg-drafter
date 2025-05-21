@@ -7,12 +7,16 @@ import LogToolbar from '../GameLog/LogToolbar/LogToolbar'
 import CardToolbar from '../CardToolbar/CardToolbar'
 import ContainerTabs from '../GameBody/ContainerTabs'
 import PasswordForm from 'components/base/common/FormElements/PasswordForm'
-import { WatchBodyHeader, WatchBodyWrapper, TabToolbarWrapper, WatchGameLogWrapper, ErrorContainer } from './WatchBodyStyles'
+import { WatchBodyHeader, WatchBodyWrapper, TabToolbarWrapper, WatchGameLogWrapper, ErrorContainer, RoundButton } from './WatchBodyStyles'
 import useWatchController, { type Props as LogWatchProps } from './watch.controller'
+import { getGameStatus } from '../shared/game.utils'
 
-export type Props = Pick<BasicController, "players"|"packs"|"newToast"|"onPackView"> & LogWatchProps & { children?: ReactNode }
+export type Props = Pick<BasicController, "players"|"packs"|"newToast"|"onPackView"> & LogWatchProps & {
+  clickRoundBtn?: () => void,
+  children?: ReactNode,
+}
 
-export default function WatchBody({ children, ...props }: Props) {
+export default function WatchBody({ children, clickRoundBtn, ...props }: Props) {
   
   const {
     pickInfo, packViewData, hideTabs,
@@ -24,6 +28,7 @@ export default function WatchBody({ children, ...props }: Props) {
     <WatchBodyWrapper className={cardOptions.width}>
       <WatchBodyHeader hide={!authed}>
         <ContainerTabs tabs={WatcherTabs} selectedTab={selectedTab} selectTab={selectTab} hideTabs={hideTabs} />
+        { clickRoundBtn && <RoundButton onClick={clickRoundBtn} label={getGameStatus(props.game)} /> }
 
         { selectedTab === WatcherTabs.cards ?
           <CardToolbar setCardOptions={setCardOptions} clickReload={props.reload} notify={props.newToast} />
