@@ -1,27 +1,39 @@
 import type { MouseEvent } from "react"
-import type { GameCard, Board, TabLabels } from "@prisma/client"
-import type { Game, CardOptions, PackFull, PartialGame, PickCard, PlayerFull, SwapCard } from "types/game"
+import type { GameCard } from "@prisma/client"
 import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
+import type { Game, CardOptions, PackFull, PartialGame, PickCard, PlayerFull, SwapCard, Board, BasicPlayer } from "types/game"
+import { TabLabels } from "types/game"
 import { useCallback, useRef, useState, useEffect } from "react"
 import { useTimer, useLoadElements } from "components/base/libs/hooks"
 import getAutopickCard from "components/base/services/autoPick.service"
+import { usePickInfo } from "../PackViewer/packViewer.controller"
 import { redTimerSeconds } from "assets/constants"
 
 const DBL_CLICK_DELAY = 500,
   NEXT_PICK_DELAY = 100
+  
+    
+export function useTabController<Tabs extends string>(initialTab: Tabs, game?: Partial<Game>, players?: BasicPlayer[], skipPickInfo = true) {
+  const pickInfo = usePickInfo(game, players, skipPickInfo)
+  const [ selectedTab,  selectTab       ] = useState<Tabs>(initialTab)
+  const [ cardOptions,  setCardOptions  ] = useState<CardOptions>({ width: '', showArt: true, sort: undefined })
+
+  return { pickInfo, selectedTab, selectTab, cardOptions, setCardOptions }
+}
+
 
 export default function usePickController(
   pickCard: PickCard, swapCard: SwapCard, notify: AlertsReturn['newToast'],
-  pack?: PackFull, game?: Game|PartialGame, player?: PlayerFull, playerTimer?: number, onPackLoad?: () => void
+  pack?: PackFull, game?: Game|PartialGame, player?: PlayerFull, isHost?: boolean, playerTimer?: number, onPackLoad?: () => void
 ) {
   const hidePack = !game || !('round' in game) || game.round > game.roundCount || game.round < 1
+  const packViewer = isHost && game && 'round' in game && (!player || game.round > game.roundCount)
 
   const lastClick = useRef(-1)
   const nextPickAllowed = useRef(0)
-  const [ selectedTab,  selectTab       ] = useState<TabLabels>(hidePack ? 'main' : 'pack')
+  const { selectedTab, selectTab, cardOptions, setCardOptions } = useTabController<TabLabels>(hidePack ? TabLabels.main : TabLabels.pack)
   const [ selectedCard, setSelectedCard ] = useState<GameCard['id']>()
   const [ autopickCard, setAutopickCard ] = useState<string | number>()
-  const [ cardOptions,  setCardOptions  ] = useState<CardOptions>({ width: '', showArt: true, sort: undefined })
   
   const autoPick = useCallback(() => {
     if (typeof autopickCard === 'undefined' || nextPickAllowed.current > Date.now()) return;
@@ -66,12 +78,12 @@ export default function usePickController(
 
   const [ packLoading, handleCardLoad ] = useLoadElements(onPackLoad, pack?.cards.length, !cardOptions.showArt, [pack?.index])
 
-  useEffect(() => { if (hidePack && selectedTab === 'pack') selectTab('main') }, [hidePack, selectedTab])
+  useEffect(() => { if (hidePack && !packViewer && selectedTab === 'pack') selectTab(TabLabels.main) }, [hidePack, packViewer, selectedTab, selectTab])
   
   useEffect(() => {
     if (typeof pack?.index === 'number') {
-      if (pack.cards.find(({ playerId }) => !playerId)) selectTab('pack')
-      setAutopickCard(getAutopickCard(pack, player?.cards) || pack.index)
+      if (pack.cards.find(({ playerId }) => !playerId)) selectTab(TabLabels.pack)
+      setAutopickCard(getAutopickCard(pack, player?.cards)?.id || pack.index)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pack, player?.id, player?.cards.length])
@@ -81,7 +93,7 @@ export default function usePickController(
     selectedCard, deselectCard,
     clickPickButton, clickPackCard, clickBoardCard,
     cardOptions, setCardOptions,
-    selectedTab, selectTab, hidePack, timer,
+    selectedTab, selectTab, hidePack, packViewer, timer,
     packLoading, handleCardLoad,
   }
 }

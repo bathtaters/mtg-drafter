@@ -1,31 +1,33 @@
-import type { PlayerFull } from 'types/game'
-import { GameCard, TabLabels } from '@prisma/client'
+import { type PlayerFull, TabLabels } from 'types/game'
 import { TabsWrapper, TabStyle } from './GameBodyStyles'
 import { getBoard } from '../shared/game.utils'
 import { cardCounter } from 'assets/strings'
 
-type Props = {
-  pack?: GameCard[],
-  player: PlayerFull,
-  selectedTab: TabLabels,
-  selectTab: (tab: TabLabels) => void,
-  hidePack?: boolean,
+type Props<Tabs extends string> = {
+  tabs: Record<string, Tabs>,
+  selectedTab: Tabs,
+  selectTab: (tab: Tabs) => void,
+  hideTabs?: Tabs[],
+  badges?: Partial<Record<Tabs, string>>,
 }
 
-const allLabels = Object.values(TabLabels)
-const labelsMinusPack = allLabels.slice(1)
+export const getTabBadges = (player?: PlayerFull, packCount?: number) => player && ({
+  pack: packCount?.toString(),
+  main: cardCounter(getBoard(player.cards, TabLabels.main).length, player.basics[TabLabels.main]),
+  side: cardCounter(getBoard(player.cards, TabLabels.side).length, player.basics[TabLabels.side]),
+})
 
-export default function ContainerTabs({ pack, player, selectedTab, selectTab, hidePack }: Props) {
-  const tabs = hidePack ? labelsMinusPack : allLabels
+export default function ContainerTabs<Tabs extends string>({ tabs, selectedTab, selectTab, hideTabs, badges }: Props<Tabs>) {
+  const visibleTabs = !hideTabs ? Object.values(tabs) : Object.values(tabs).filter((tab) => !hideTabs.includes(tab))
   
   return (
     <TabsWrapper>
-      {tabs.map((label) => 
+      {visibleTabs.map((label) => 
         <TabStyle
           key={label} label={label}
           isSelected={selectedTab === label}
           onClick={() => selectTab(label)}
-          count={cardCounter(label === 'pack' ? pack?.length : getBoard(player.cards, label).length, player.basics[label])}
+          badge={badges?.[label]}
         />
       )}
     </TabsWrapper>

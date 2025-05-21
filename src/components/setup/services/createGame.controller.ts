@@ -19,9 +19,9 @@ export default function useCreateGame() {
     setError(null)
     setLoading(true)
 
-    return post(newGameURL(options.type), adaptOptions(options, file)).then(async (data) => {
-      if (!data?.url) return setError('Error creating game!')
-      return router.push(gameURL(data.url)).catch((err) => setError(err?.message || err))
+    return post(newGameURL(options.type), adaptOptions(options, file)).then(async (res) => {
+      if (res.status !== 200 || !res?.data?.url) return setError('Error creating game!')
+      return router.push(gameURL(res.data.url)).catch((err) => setError(err?.message || err))
     })
       .catch((err) => setError(err?.message || err))
       .finally(() =>  setLoading(false))

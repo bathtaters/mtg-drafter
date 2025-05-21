@@ -42,34 +42,19 @@ enum Board {
   side
 }
 
-enum TabLabels {
-  pack
-  main
-  side
-}
-
-enum GameStatus {
-  start
-  active
-  last
-  end
-}
-
-enum PlayerStatus {
-  join
-  leave
-}
-
 enum LogAction {
   pick
   join
   leave
+  ban
+  unban
   rename
 
   pause
 
   round
   settings
+  view
 }
 
 enum DataType {
@@ -106,10 +91,10 @@ model Game {
   timerBase  Int?
 
   players   Player[] @relation("GamePlayers")
-  host      Player?  @relation("GameHost", fields: [hostId], references: [id])
-  hostId    String?  @unique
+  hostId    String?
   watchKey  String?
-  watchId   String?
+  watchers  Watcher[]
+  banned    Ban[]
 
   log LogEntry[]
 }
@@ -191,12 +176,19 @@ model Player {
   basics    Json       @default("{\"main\":{\"w\":0,\"u\":0,\"b\":0,\"r\":0,\"g\":0},\"side\":{\"w\":0,\"u\":0,\"b\":0,\"r\":0,\"g\":0}}")
 
   game       Game       @relation("GamePlayers", fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  hostOf     Game?      @relation("GameHost")
   gameId     String
   logEntries LogEntry[]
 
-  @@unique([gameId, sessionId])
   @@index([gameId])
+}
+
+model Watcher {
+  gameId    String
+  sessionId String
+  name      String?
+  
+  game      Game    @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@id([sessionId, gameId])
 }
 
 model Pack {
@@ -227,25 +219,29 @@ model GameCard {
 }
 
 model LogEntry {
-  id     String    @id @default(cuid(2))
-  time   DateTime  @default(now())
-  action LogAction
-  data   String?
-  byHost Boolean   @default(false)
+  id        String    @id @default(cuid(2))
+  time      DateTime  @default(now())
+  action    LogAction
+  data      String?
+  sessionId String?
+  hostId    String?
 
-  game   Game      @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  player Player?   @relation(fields: [playerId], references: [id])
-  card   GameCard? @relation(fields: [cardId], references: [id])
+  game      Game      @relation(fields: [gameId],   references: [id], onDelete: Cascade, onUpdate: Cascade)
+  player    Player?   @relation(fields: [playerId], references: [id])
+  card      GameCard? @relation(fields: [cardId],   references: [id])
 
-  gameId   String
-  playerId String?
-  cardId   String?
+  gameId    String
+  playerId  String?
+  cardId    String?
 }
 
-model Enums {
-  id           String       @id
-  TabLabels    TabLabels
-  GameStatus   GameStatus
-  PlayerStatus PlayerStatus
-  LogAction    LogAction
+model Ban {
+  id        String @id @default(cuid(2))
+  sessionId String?
+  gameId    String?
+  name      String?
+  note      String?
+
+  game      Game? @relation(fields: [gameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@unique([sessionId, gameId])
 }

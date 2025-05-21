@@ -11,6 +11,7 @@ export const
   gameURL = (gameIdentifier: string) => `/game/${gameIdentifier}`,
   gameAPI = (gameURL: any) => `/api/game/${typeof gameURL === 'string' ? gameURL : INVALID_PATH}/all`,
   socketEndpoint = (gameURL: any) => `/api/game/${typeof gameURL === 'string' ? gameURL : INVALID_PATH}/socket`,
+  scryfallLink = (scryfallId: string) => `https://scryfall.com/card/${scryfallId}`,
   scryfallImageUrl = (sfId: string, front = true, fmt: ScryfallImgFmt = 'large') =>
     `https://${front ? 'cards' : 'backs'}.scryfall.io/${fmt}/${front ? 'front/' : ''}${sfId[0]}/${sfId[1]}/${sfId}.${fmt === 'png' ? 'png' : 'jpg'}`
 

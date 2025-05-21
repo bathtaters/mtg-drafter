@@ -30,7 +30,7 @@ const getColorRating = (card: CardFull, colorRank: ReturnType<typeof colorBase>)
 
 
 export default function getAutopickCard(pack: PackFull, playerCards: GameCardFull[] = []) {
-  if (!playerCards.length) return getMaxValue(pack.cards, (a, b) => pickSort(a.card,b.card))?.id
+  if (!playerCards.length) return getMaxValue(pack.cards, (a, b) => pickSort(a.card,b.card))
 
   // Order colors in player's main board from most to least
   const colorRank = playerCards.filter((card) => card.board === 'main').reduce((colors, card) => {
@@ -42,5 +42,5 @@ export default function getAutopickCard(pack: PackFull, playerCards: GameCardFul
   return getMaxValue(pack.cards, (a, b) =>
     (getColorRating(b.card, colorRank) - getColorRating(a.card, colorRank)) ||
     pickSort(a.card, b.card)
-  )?.id
+  )
 }

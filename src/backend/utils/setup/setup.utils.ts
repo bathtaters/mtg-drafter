@@ -1,9 +1,9 @@
 import type { PackCard } from 'types/setup'
 import { nanoid } from 'nanoid'
 import { randomPop } from 'backend/libs/random'
-import { urlLength } from 'assets/constants'
+import { urlLimits } from 'assets/constants'
 
-export const randomUrl = () => nanoid(urlLength)
+export const randomUrl = () => nanoid(urlLimits.minLength)
 
 export const createPlayers = (playerCount: number) => [...Array(playerCount)].map((_,idx) => ({ name: `Player ${idx + 1}` }))
 

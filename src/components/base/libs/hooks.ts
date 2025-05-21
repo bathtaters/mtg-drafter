@@ -1,4 +1,5 @@
-import { DependencyList, useCallback, useEffect, useRef, useState, useReducer, useMemo, MouseEventHandler } from 'react'
+import type { DependencyList, MouseEventHandler, Ref } from 'react'
+import { useCallback, useEffect, useRef, useState, useReducer, useMemo } from 'react'
 import useNotification from './notifications'
 import { hoverAfterClickDelay, redTimerSeconds } from "assets/constants"
 import { timerAlertMsg, timerAlertOpts } from 'assets/strings'
@@ -166,6 +167,43 @@ export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependenci
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies)
+}
+
+
+export type IntersectionHandler = (index: number, entry: IntersectionObserverEntry) => void
+export type IntersectionChildProps<E extends HTMLElement = HTMLElement> = { ['data-index']: number, ref: Ref<E> }
+
+export function useIntersection(handleIntersect: IntersectionHandler, options: IntersectionObserverInit = {}, deps: any[] = []) {
+  const parentRef = useRef<HTMLElement>(null)
+  const childrenRef = useRef<HTMLElement[]>([])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const index = (entry.target as HTMLElement).dataset.index
+          index && handleIntersect(parseInt(index), entry)
+        }
+      }),{
+        root: 'root' in options ? options.root : parentRef.current,
+        rootMargin: options.rootMargin,
+        threshold: options.threshold,
+      }
+    );
+
+    const children = [...childrenRef.current]
+    children.forEach((ref) => ref && observer.observe(ref))
+    return () => children.forEach((ref) => ref && observer.unobserve(ref))
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deps should cover handleIntersect
+  }, [...deps, options.root, options.rootMargin, options.threshold])
+
+  return {
+    parentRef,
+    childProps: (index: number): IntersectionChildProps => ({
+      ['data-index']: index,
+      ref: (el: HTMLElement | null) => { if (el) childrenRef.current[index] = el },
+    })
+  }
 }
 
 

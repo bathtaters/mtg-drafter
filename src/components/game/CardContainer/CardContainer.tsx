@@ -1,14 +1,15 @@
 import type { ReactNode, MouseEvent, MouseEventHandler } from "react"
-import type { TabLabels } from "@prisma/client"
-import type { CardFull, CardOptions, BoardLands } from "types/game"
+import { CardOptions, BoardLands, TabLabels, GameCardFull, PickInfo } from "types/game"
 import Card from "../Card/Card"
 import ContainerHeader from "./CardContainerHeader"
-import { CardContainerWrapper, CardsWrapper, NoPack, NoCards, RoundOver, LoadingPack, PausedGame } from "./CardContainerStyles"
+import { CardContainerWrapper, CardsWrapper, NoPack, NoCards, RoundOver, LoadingPack, PausedGame, NotLive } from "./CardContainerStyles"
 import { packSort, sortKeys } from "components/base/services/cardSort.services"
 
 type Props = {
-  label: TabLabels,
-  cards?: { id: string, foil?: boolean, card: CardFull }[] | "roundEnd",
+  type: TabLabels | "select",
+  round?: number,
+  name?: string | null,
+  cards?: Pick<GameCardFull, "id"|"foil"|"card"|"playerId">[] | "roundEnd",
   lands?: BoardLands,
   loading?: number,
   paused?: boolean,
@@ -20,24 +21,31 @@ type Props = {
   selectedId?: string,
   highlightId?: string,
   cardOptions: CardOptions,
+  overrideBody?: ReactNode,
+  pickInfo?: PickInfo,
 }
 
-export default function CardContainer({ label, cards, lands, loading = 0, paused, children, onClick, onCardLoad, onBgdClick, onLandClick, selectedId, highlightId, cardOptions }: Props) {
+
+export default function CardContainer({ type, round, name, cards, lands, loading = 0, paused, children, onClick, onCardLoad, onBgdClick, onLandClick, selectedId, highlightId, cardOptions, overrideBody, pickInfo }: Props) {
   const count = typeof cards === 'string' ? undefined : cards?.length
   
   return (
     <CardContainerWrapper 
       title={
-        <ContainerHeader label={label} count={count} lands={lands} onLandClick={onLandClick}>
+        <ContainerHeader
+          label={type} count={count} lands={lands} onLandClick={onLandClick}
+          prefix={name && `${name} – `}
+          suffix={type === TabLabels.pack && round && ` ${round}`}
+        >
           {children}
         </ContainerHeader>
       }
-      isPrimary={label !== 'pack'} onClick={onBgdClick}
+      isPrimary={type !== TabLabels.pack && type !== 'select'} onClick={onBgdClick}
     >
       { paused && <PausedGame /> }
       <CardsWrapper hideCards={loading > 0}>
-        {loading < 0 ? null : typeof cards === 'string' ? <RoundOver /> : !cards ? <NoPack /> : !count ? <NoCards /> :
-          cards.slice().sort((a,b) => packSort[cardOptions.sort ?? sortKeys[0]](a.card, b.card)).map(({ id, foil, card }, idx) => 
+        {overrideBody ? overrideBody : loading < 0 ? null : typeof cards === 'string' ? <RoundOver /> : !cards ? <NoPack /> : !count ? <NoCards /> :
+          cards.toSorted((a,b) => packSort[cardOptions.sort ?? sortKeys[0]](a.card, b.card)).map(({ id, foil, card, playerId }) => 
             <Card
               card={card} key={id} isFoil={foil}
               showImage={cardOptions.showArt}
@@ -46,11 +54,13 @@ export default function CardContainer({ label, cards, lands, loading = 0, paused
               onLoad={onCardLoad}
               isSelected={selectedId === id}
               isHighlighted={!selectedId && highlightId === id}
-              container={label}
+              container={type === 'select' ? TabLabels.pack : type}
+              pickInfo={pickInfo ? pickInfo[id] ?? {} : undefined}
             />
           )
         }
       </CardsWrapper>
+      { name && (type === TabLabels.main || type === TabLabels.side) && <NotLive /> }
 
       { !!loading && <LoadingPack loading={loading} count={cards?.length} /> }
     </CardContainerWrapper>

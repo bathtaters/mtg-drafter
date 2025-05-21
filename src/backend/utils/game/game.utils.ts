@@ -2,8 +2,12 @@ import type { Merge } from 'types/global'
 import type { Game as DbGame, Player as DbPlayer } from '@prisma/client'
 import type { Game, BasicPlayer, Player, PartialGame } from 'types/game'
 import { gameUrlRegEx } from 'assets/urls'
-import { getNeighborIdx } from 'components/game/shared/game.utils'
+import { gameIsLocked, getNeighborIdx } from 'components/game/shared/game.utils'
 import { defaultTimer, officialRulesIdx, timerOptions } from 'assets/constants'
+import { playerIsBanned } from 'components/game/shared/player.utils'
+
+// Pass through shared utils (Mainly to keep track of which are shared w/ the backend)
+export { gameIsEnded, canWatch, getCurrentPack, getHolding, getPlayerIdx } from 'components/game/shared/game.utils'
 
 export const getMaxPackSize = (packCounts: { packIdx: number, _count: number }[], round: number, roundCount: number, playerCount: number) => {
   if (!round || !roundCount || !playerCount || round > roundCount) return 0
@@ -20,10 +24,10 @@ export const getMaxPackSize = (packCounts: { packIdx: number, _count: number }[]
 }
 
 export const adaptDbGame = <G extends Partial<DbGame>>(game?: G | null) => (
-  !game || typeof game.pause !== 'bigint' ? game : {
+  !game ? game : {
     ...game,
     watchKey: game.watchKey && "Enabled",
-    pause: Number(game.pause)
+    pause: typeof game.pause === 'bigint' ? Number(game.pause) : game.pause
   }
 ) as Merge<G, Game> | null | undefined
 
@@ -51,7 +55,8 @@ export const hasPack = (game: Pick<Game,"round"|"roundCount">, players: Pick<Bas
   return neighborIdx === -1 || players[playerIdx].pick <= players[neighborIdx].pick
 }
 
-export const unregGameAdapter = ({ id, name, url, watchKey }: PartialGame) => ({ id, name, url, watchKey })
+export const unregGameAdapter = ({ id, name, url, watchKey, banned }: Game, sessionId: string) =>
+  ({ id, name, url, watchKey, locked: gameIsLocked(id, banned), isBanned: playerIsBanned({ id, banned }, sessionId) }) as PartialGame
 
 export function getTimerLength(cardCount: number, timerBase: number) {
   if (timerBase === officialRulesIdx && cardCount === 11) return 25 // Fix for official rules

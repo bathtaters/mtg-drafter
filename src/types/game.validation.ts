@@ -1,18 +1,15 @@
 import z, { fillAndLowerCaseObject, nanoId } from "backend/libs/validation"
-import { Board, Color, PlayerStatus } from "@prisma/client"
+import { Board, Color, PlayerStatus } from "types/game"
 import { commonOptions } from "./setup.validation"
-import { setupLimits, urlLength } from "assets/constants"
+import { setupLimits, urlLimits } from "assets/constants"
 
 export const boardLands = z.object(fillAndLowerCaseObject(Color, z.number().nonnegative().int()))
 
-export const logAuth = {
-  id:       z.string().cuid2(),
-  password: z.string().min(1).nullable(),
-}
+export const authPassword = z.string().min(1).nullable()
 
 const gameData = {
   session: nanoId(),
-  url:     nanoId(urlLength),
+  url:     nanoId(urlLimits.minLength),
   id:      z.string().cuid2(),
   name:    commonOptions.shape.name,
   round:   z.number().int().nonnegative().lte(setupLimits.packs.max + 1),
@@ -20,7 +17,14 @@ const gameData = {
   board:   z.nativeEnum(Board),
   basics:  z.object(fillAndLowerCaseObject(Board, boardLands)),
   idOrNum: z.union([ z.string().cuid2(), z.number() ]),
-  bool:    z.boolean().default(false)
+  bool:    z.boolean().default(false),
 }
 
 export default gameData
+
+export const gameOptions = z.object({
+  name: commonOptions.shape.name.optional(),
+  hostId: gameData.session.optional(),
+  url:  gameData.url.optional(),
+  timerBase: commonOptions.shape.timer.optional(),
+})

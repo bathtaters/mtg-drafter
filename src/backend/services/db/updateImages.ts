@@ -8,7 +8,7 @@ import { createMultiUpdate } from '../../utils/db/db.utils'
 const multiUpdate = createMultiUpdate<ImageData>('Card', ['scryfallId', 'side'], ['img'], prisma)
 
 
-export default async function updateImages(imgJsonUrl: string, preferredJsonUrl: string, fullUpdate = false, enableLog = false, maxThreads = 1000, dbBatchSize = 5000) {
+export default async function updateImages(imgJsonUrl: string, preferredJsonUrl: string, fullUpdate = false, enableLog = false, maxThreads = 1000, dbBatchSize = 5000, upsertTxLimit = 32000) {
 
   const imgUrl = await fetchBulkUrl(imgJsonUrl)
   if (!imgUrl) return console.error('Unable to retrieve ImageURI data')
@@ -58,8 +58,17 @@ export default async function updateImages(imgJsonUrl: string, preferredJsonUrl:
 
   enableLog && console.log('Downloaded',preferred.length,'Preferred Art IDs')
 
-  const res = await prisma.card.updateMany({ where: { scryfallId: { in: preferred }, img: { not: null } }, data: { preferredArt: true } })
+  // Split 'preferredArt' into 'upsertTxLimit' size updates
+  count = 0
+  while (preferred.length) {
+    const res = await prisma.card.updateMany({
+      data: { preferredArt: true },
+      where: { img: { not: null }, scryfallId: { in: preferred.slice(0, upsertTxLimit) } },
+    })
+    count += res.count
+    preferred = preferred.slice(upsertTxLimit)
+  }
 
   enableLog && console.timeEnd('Preferred Art')
-  enableLog && console.log('Set',res.count,'preferred images')
+  enableLog && console.log('Set',count,'preferred images')
 }

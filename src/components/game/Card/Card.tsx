@@ -1,9 +1,9 @@
 import { Fragment, MouseEventHandler } from "react"
-import { type CardFull, Direction } from "types/game"
-import { Board, TabLabels } from "@prisma/client"
+import { type CardFull, Direction, TabLabels, Board, PickInfo } from "types/game"
 import RenderedCard from "./RenderedCard/RenderedCard"
-import { CardWrapper, FlipButton, ImgWrapper, MeldBadge, RotateButton, SwapButton } from "./GameCardStyles"
+import { CardWrapper, FlipButton, ImgWrapper, MeldBadge, PickBadge, RotateButton, SwapButton } from "./GameCardStyles"
 import useCardImage from "./image.controller"
+import { pickInfoText } from "assets/strings"
 
 type Props = {
   card: CardFull,
@@ -15,9 +15,10 @@ type Props = {
   onClick?: MouseEventHandler,
   onLoad?: () => Promise<void> | void,
   className?: string,
+  pickInfo?: PickInfo[string],
 }
 
-export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, container, showImage, onClick, onLoad, className = '' }: Props) {
+export default function Card({ card, isFoil, isSelected, isHighlighted, container, showImage, onClick, onLoad, className = '', pickInfo }: Props) {
   const { images, cardFaces, sideIdx, sideCount, direction, reversed, showBadge, showFlip, handleFlip, isRotater, handleRotate } = useCardImage(card, className, showImage, onLoad)
   const isBoard = container in Board
 
@@ -46,7 +47,8 @@ export default function CardDisplay({ card, isFoil, isSelected, isHighlighted, c
     >
       {showFlip && <FlipButton onClick={handleFlip} isBack={sideIdx > 0} low={card.layout === 'flip'} />}
       {isRotater && sideIdx < 1 && <RotateButton onClick={handleRotate} isRotater={!!direction || direction === Direction.N} />}
-      {isBoard && <SwapButton board={container as Board} onClick={onClick} low={card.layout === 'flip'} />}
+      {isBoard && !pickInfo && <SwapButton board={container as Board} onClick={onClick} low={card.layout === 'flip'} />}
+      {pickInfo && <PickBadge text={pickInfoText(pickInfo, isBoard)} />}
     </CardWrapper>
   )
 }

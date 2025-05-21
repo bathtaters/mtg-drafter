@@ -1,3 +1,4 @@
+import type { Player } from '@prisma/client'
 import type { BoosterOptions, CubeOptions, GenericOptions } from 'types/setup'
 import prisma from '../../libs/db'
 import retry from '../../libs/retry'
@@ -16,42 +17,29 @@ export async function newBoosterGame({ packList, basics, ...options }: BoosterOp
 
 // Generic Creator
 
-async function newGame(options: GenericOptions, sessionId?: string) {
+async function newGame(options: GenericOptions, hostId: Player['sessionId'] = null) {
 
-  const { id, url } = await retry(() => prisma.game.create({ data: {
-    name: options.name,
-    url: randomUrl(),
-    roundCount: options.roundCount,
-    players: { create: createPlayers(options.playerCount) },
-    timerBase: options.timer || null,
-    packs: { create: options.packs.map((pack,index) => ({
-      index,
-      cards: { create: pack }
-    })) },
-  }}))
-  
-  if (!sessionId) return url
-  const host = await prisma.player.findFirst({ where: { gameId: id }, select: { id: true }})
-  if (!host) return url
-  
-  // Add host
-  await retry(() => prisma.$transaction([
-    prisma.player.update({
-      where: { id: host.id },
-      data: { sessionId }
-    }),
-    prisma.game.update({
-      where: { id },
-      data: {
-        hostId: host.id,
-        log: { create: {
-          action: 'join',
-          data: sessionId,
-          player: { connect: { id: host.id } },
-          byHost: true,
-        }},
-      }
-    })
-  ]))
-  return url
+  const game = await retry(() => prisma.game.create({
+    select: {
+      id: true, name: true, url: true,
+      roundCount: true, timerBase: true, hostId: true,
+    },
+    data: {
+      name: options.name,
+      url: randomUrl(),
+      roundCount: options.roundCount,
+      hostId,
+      players: { create: createPlayers(options.playerCount) },
+      timerBase: options.timer || null,
+      packs: { create: options.packs.map((pack,index) => ({
+        index,
+        cards: { create: pack }
+      })) },
+    },
+  }))
+
+  await retry(() => prisma.logEntry.create({
+    data: { gameId: game.id, hostId, action: 'settings', data: JSON.stringify(game) }
+  }))
+  return game.url
 }

@@ -2,6 +2,8 @@ import type { Game, ServerProps, BasicLands, PartialGame } from 'types/game'
 import GameHeader from 'components/game/GameHeader/GameHeader'
 import PlayerJoin from 'components/game/PlayerJoin/PlayerJoin'
 import GameBody from 'components/game/GameBody/GameBody'
+import WatchBody from '../WatchBody/WatchBody'
+import PlayerSidebar from '../PlayerSidebar/PlayerSidebar'
 import LandsModal from 'components/game/LandsModal/LandsModal'
 import HostModal from 'components/game/HostModal/HostModal'
 import GameLogModal from 'components/game/GameLog/GameLogModal'
@@ -11,48 +13,67 @@ import Loader from 'components/base/Loader'
 import Footer from 'components/base/Footer'
 import { BodyWrapperStyle, SetPageTitle } from 'components/base/styles/AppStyles'
 import useGameController from 'components/game/index/game.controller'
-import { gameIsEnded, gameIsPaused } from '../shared/game.utils'
-import PlayerSidebar from '../PlayerSidebar/PlayerSidebar'
+import { gameIsEnded } from '../shared/game.utils'
+import { banMsg } from 'assets/strings'
 
 
 export default function Game(props: ServerProps) {
   const {
-    game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize,
-    holding, canAdvance, pack, sidebarVisible, landModal, hostModal, logModal, slots, gameLog, timer, 
-    saveDeck, setSidebar, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setTitle,
-    nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropPlayer,
-    reload, startTimer, newError, newToast, ErrorComponent, ToastComponent,
+    game, player, players, playerIdx, isConnected, loadingPack, loadingAll, maxPackSize, sessionId,
+    isBanned, isHost, hasJoined, hasViewed, sidebarVisible, landModal, hostModal, logModal,
+    holding, canAdvance, pack, packs, slots, gameLog, timer, socket,
+    saveDeck, setSidebar, toggleLandModal, toggleHostModal, toggleLogModal, renamePlayer, setOptions, setLoadingAll,
+    nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, setWatchPw, dropWatcher, banSession, dropPlayer,
+    onPackView, reload, startTimer, newError, newToast, ErrorComponent, ToastComponent,
   } = useGameController(props)
 
   return (<>
     <SetPageTitle title={game?.name || ""} />
 
     <PlayerSidebar
-      game={game} players={players} playerIdx={playerIdx} holding={holding} packSize={maxPackSize}
+      game={game} players={players} playerIdx={playerIdx} forceShow={isHost} holding={holding} packSize={maxPackSize}
       isOpen={sidebarVisible} setOpen={setSidebar}
     >
       <GameHeader
-        game={game} players={players} playerIdx={playerIdx} holding={holding} packSize={maxPackSize} isConnected={isConnected} saveDeck={saveDeck}
-        openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer} dropPlayer={dropPlayer} notify={newToast}
+        game={game} players={players} playerIdx={playerIdx} isHost={isHost} holding={holding} packSize={maxPackSize} isConnected={isConnected}
+        openLands={toggleLandModal} openHost={toggleHostModal} renamePlayer={renamePlayer} dropPlayer={dropPlayer}
+        saveDeck={saveDeck} notify={newToast}
       />
       
       <BodyWrapperStyle>
-        <Loader data={game || 404} message={props.error}>
-          { !player ?
-            <PlayerJoin slots={slots} players={players} selectPlayer={setStatus} /> :
-            
+        <Loader data={game || 404} message={props.error || (isBanned && banMsg)}>
+          { player ?
             <GameBody
-              game={game as Game|PartialGame}
-              player={player} playerTimer={timer}
-              roundOver={player.pick > maxPackSize}
-              pack={pack} pickCard={pickCard} swapCard={swapCard}
+              game={game as Game|PartialGame} player={player} sessionId={sessionId}
+              players={players} isHost={isHost} playerTimer={timer}
+              roundOver={player?.pick != null && player.pick > maxPackSize}
+              socket={socket.socket} pack={pack} packs={packs}
+              pickCard={pickCard} swapCard={swapCard}
               clickRoundBtn={canAdvance ? () => nextRound() : undefined}
               onLandClick={toggleLandModal}
               clickReload={reload}
+              onPackView={onPackView}
               onPackLoad={startTimer}
               loadingPack={!!loadingPack}
-              notify={newToast}
+              notify={newToast} newError={newError}
             />
+
+          : isHost ?
+            <WatchBody 
+              game={game} packs={packs} gameLog={gameLog} socket={socket}
+              players={players} sessionId={sessionId} isHost={isHost}
+              hasJoined={hasJoined} hasViewed={hasViewed}
+              onPackView={onPackView} setSidebar={setSidebar} setLoadingAll={setLoadingAll}
+              reload={reload} newToast={newToast} newError={newError}
+              clickRoundBtn={canAdvance ? () => nextRound() : undefined}
+            >
+              {isHost && !player &&
+                <PlayerJoin title="Join Game As:" slots={slots} players={players} hasViewed={hasViewed} selectPlayer={setStatus} game={game} />
+              }
+            </WatchBody>
+
+          : /* Non-player / Non-host */
+            <PlayerJoin title="Pick a Seat:" slots={slots} players={players} hasViewed={hasViewed} selectPlayer={setStatus} game={game} />
           }
         </Loader>
       </BodyWrapperStyle>
@@ -64,8 +85,8 @@ export default function Game(props: ServerProps) {
 
     {!!toggleLogModal &&
       <GameLogModal
-        isOpen={logModal} setOpen={toggleLogModal}
-        log={gameLog} players={players} gameEnded={gameIsEnded(game)}
+        isOpen={logModal} setOpen={toggleLogModal} isHost={isHost}
+        gameLog={gameLog} players={players} packs={packs} gameEnded={gameIsEnded(game)}
       /> }
 
     {!!toggleLandModal &&
@@ -78,13 +99,10 @@ export default function Game(props: ServerProps) {
     {!!toggleHostModal &&
       <HostModal
         isOpen={hostModal} setOpen={toggleHostModal}
-        title={game?.name} setTitle={setTitle}
-        paused={gameIsPaused(game)} pauseGame={pauseGame}
-        players={players} renamePlayer={renamePlayer}
-        hostId={(game as Game).hostId} setStatus={setStatus}
-        watchUrl={game?.watchKey && game?.url}
-        setLog={toggleLogModal} setWatchPw={setWatchPw}
-        notify={newToast}
+        game={game} setOptions={setOptions} pauseGame={pauseGame} 
+        players={players} renamePlayer={renamePlayer} setStatus={setStatus}
+        setWatchPw={setWatchPw} dropWatcher={dropWatcher} banSession={banSession}
+        setLog={toggleLogModal} notify={newToast}
     />}
 
     <ErrorComponent />

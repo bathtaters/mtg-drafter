@@ -1,5 +1,5 @@
 import type { MouseEventHandler, ReactNode } from "react"
-import type { GameStatus } from "@prisma/client"
+import type { GameStatus } from "types/game"
 import Link from "next/link"
 import Header from "components/base/Header"
 import DropdownMenu, { type Props as DropdownProps } from "components/base/common/DropdownMenu"

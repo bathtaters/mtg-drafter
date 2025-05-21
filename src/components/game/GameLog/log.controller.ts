@@ -1,44 +1,77 @@
 import type { LogAction } from "@prisma/client"
-import type { Game, BasicPlayer, LogFull } from "types/game"
-import { useCallback, useMemo, useState } from "react"
+import type { Game, BasicPlayer, LogFull, LogEntryFull, GameCardFull, GameCardPartial, PackFull, CardOptions, Player } from "types/game"
+import type { LogFilterParam } from "types/log.validation"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { fetcher } from "components/base/libs/fetch"
-import { allActions, otherPlayers, filterLogs } from "./log.utils"
-import { debounce } from "components/base/services/common.services"
-import { logOptions } from "assets/constants"
+import downloadTextFile from "components/base/libs/download"
+import { type FetchHandler, useDynamicScrollFetcher } from "components/base/libs/scrollFetch"
+import useToolbar from "../CardToolbar/toolbar.controller"
+import { adaptEntry, filterEntry, stringifyLogEntries } from "./log.utils"
+import { logOptions, logFetchOptions, dynamicScrollPreloadDistancePx } from "assets/constants"
+import { LOG_EXT, logFilename } from "assets/strings"
+import { allActions, otherPlayers } from "types/logs"
 
-const DEBOUNCE_DELAY = 500
+
+export function useCardPopout(packs?: PackFull[]) {
+  const [card, showCard] = useState<GameCardFull | GameCardPartial>()
+  const setCard = (card?: GameCardPartial) => showCard(card ? packs?.[card.packIdx].cards.find(({ id }) => id === card.id) ?? card : card)
+
+  const [{ width }, setCardOptions] = useState<CardOptions>({ width: '', showArt: true })
+  const { zoom, setZoom } = useToolbar({ setCardOptions, notify: ({ message }) => console.error(message) })
+
+  return { card, setCard, width, zoom, setZoom }
+}
+
 
 export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) {
   const allPlayers = useMemo(() => playerData.map(({ id }) => id).concat(otherPlayers), [playerData])
-
-  const [ logs,    setLog     ] = useState<LogFull>()
-  const [ error,   setError   ] = useState<string>()
   const [ players, setPlayers ] = useState(allPlayers)
   const [ options, setOptions ] = useState(logOptions)
   const [ actions, setActions ] = useLocalStorage<LogAction[]>('logActions')
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const refresh = useCallback(debounce(() => {
+  const filter = useCallback((entry?: LogEntryFull) => filterEntry(entry, players, actions, options), [players, actions, options])
 
-    fetcher<LogFull>(`/api/game/${url}/log`).then((data) => {
-      if (typeof data === 'number') return setError(`Error <${data}> while fetching log.`)
-      setLog(data.map((entry) => ({ ...entry, time: new Date(entry.time) })))
-      setError(undefined)
-    })
+  const fetchLogs = useCallback<FetchHandler<LogEntryFull, LogParams>>(async (query, params) => {
+    const res = await fetcher<LogFull>(`/api/game/${url}/log?${query}`)
+    if (res.status === 204) return; // End of log
+    if (res.status !== 200 || res.error || res.data?.total == null) return { error: `Error <${res.status}> while fetching log.` }
 
-  }, DEBOUNCE_DELAY), [url])
+    const data = params.offset == null && !params.isPreview ? res.data.log.toReversed() : res.data.log
+    return { data: data.map(adaptEntry), total: res.data.total, offset: res.data.offset }
+  }, [url])
+
+  const {
+    entries, fetchAll,
+    fetch, reset,
+    enabled, setEnabled,
+    error, setError,
+    scrollParentRef, scrollItemProps, 
+  } = useDynamicScrollFetcher(fetchLogs, { filter, initalEnabled: false, scrollMarginPxls: dynamicScrollPreloadDistancePx, ...logFetchOptions })
+
+  const downloadLog = async () => {
+    const jsonData = await fetchAll().then((data) => stringifyLogEntries(data, playerData))
+    downloadTextFile(logFilename(url), jsonData, LOG_EXT)
+  }
   
-  
+  // Handle minor changes -- Reset cache on URL change, reload preview on filter change
+  useEffect(() => { reset(true) }, [url, reset])
+  useEffect(() => { reset(false) }, [enabled, reset])
+  useEffect(() => { fetch({ filter: { ...options, players, actions }, isPreview: true }) }, [options, players, actions, fetch])
   
   return {
-    list: filterLogs(logs, players, actions, options),
+    entries, fetch, reset,
     allActions, allPlayers,
-    error, setError, refresh,
+    error, setError,
     players, setPlayers,
     actions, setActions,
     options, setOptions,
+    enabled, setEnabled,
+    scrollParentRef, scrollItemProps,
+    downloadLog,
   }
 }
 
 export type GameLog = ReturnType<typeof useGameLog>
+
+export type LogParams = { offset?: number, size?: number, isPreview?: boolean, filter?: LogFilterParam }

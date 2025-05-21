@@ -54,7 +54,7 @@ export const PacksWrapper = ({ children }: { children: ReactNode }) => (
   <div className="min-h-[18rem] flex flex-col gap-2 items-center px-4 py-2">{children}</div>
 )
 
-export const PackSelector = (props: Parameters<typeof Selector>['0']) => <Selector {...props} className="select-secondary max-w-[19rem] w-full" />
+export const PackSelector = <ID extends string|number>(props: Parameters<typeof Selector<ID>>['0']) => <Selector {...props} className="select-secondary max-w-[19rem] w-full" />
 
 export const PackButtonWrapper = ({ children }: { children: ReactNode }) => (
   <div className="join place-self-stretch">{children}</div>

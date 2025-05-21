@@ -1,41 +1,32 @@
-import type { Dispatch, SetStateAction } from "react"
-import type { BasicPlayer } from "types/game"
-import type { GameLog } from "./log.controller"
-import { useState } from "react"
-import LogToolbar from "./LogToolbar/LogToolbar"
+import type { BasicPlayer, PackFull } from "types/game"
+import { useCardPopout, type GameLog } from "./log.controller"
 import LogEntry from "./LogEntry"
 import { LogContainer, ErrorContainer, CardModal } from "./LogStyles"
+import { ArtSize } from "../CardToolbar/CardToolbarStyles"
+import cardZoomLevels from "../CardToolbar/cardZoomLevels"
 
 export type Props = {
+  gameLog: GameLog,
   players: BasicPlayer[],
-  log: GameLog,
-  gameEnded: boolean,
-  logout?: () => void,
-  sidebarVisible?: boolean,
-  setSidebar?: Dispatch<SetStateAction<boolean>>,
+  packs?: PackFull[],
 }
 
-export default function GameLog({ log, players, gameEnded, logout, sidebarVisible, setSidebar }: Props) {
-  const [cardImg, setCardImg] = useState<string|null>(null)
 
-  return log.error ? <ErrorContainer text={log.error} /> : 
+export default function GameLog({ gameLog, players, packs }: Props) {
+  const { card, setCard, zoom, setZoom, width } = useCardPopout(packs)
+  
+  return gameLog.error ? <ErrorContainer text={gameLog.error} /> : 
 
-    <LogContainer toolbar={
-      <LogToolbar
-        log={log} players={players} gameEnded={gameEnded} logout={logout}
-        sidebarVisible={sidebarVisible} setSidebar={setSidebar}
-      />
-    }>
-      {!log.list ? "Loading..." : log.list.map((entry, idx) =>
-        <LogEntry
-          key={entry.id}
-          entry={entry}
-          players={players}
-          isFirst={!idx}
-          isPrivate={log.options.hidePrivate}
-          setCardImg={setCardImg}
-        />
-      )}
-      <CardModal src={cardImg} alt="Popout Card Image" close={() => setCardImg(null)} />
+    <LogContainer ref={gameLog.scrollParentRef}>
+      {gameLog.entries == null ? "Loading..." :
+        !gameLog.entries.length ? "No entries yet" :
+        gameLog.entries.map((entry) => entry && (
+          <LogEntry key={entry.index} {...entry}  isPrivate={gameLog.options.hidePrivate} players={players} setCard={setCard} />
+        ))
+      }
+
+      <CardModal card={card} close={() => setCard(undefined)} className={width}>
+        <ArtSize aria-label="Card zoom" value={zoom} setValue={setZoom} min={0} max={cardZoomLevels.length - 1} />
+      </CardModal>
     </LogContainer>
 }

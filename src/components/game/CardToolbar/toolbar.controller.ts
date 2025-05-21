@@ -1,12 +1,12 @@
 import type { CardOptions } from "types/game"
-import type { AlertsReturn } from "components/base/common/Alerts/alerts.hook"
+import type { ToastAlert } from "components/base/common/Alerts/alerts.d"
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { sortKeys } from "components/base/services/cardSort.services"
 import cardZoomLevels from "./cardZoomLevels"
 import { zoomToPixels, warn } from "./toolbar.utils"
 
-export type ToolbarProps = { setCardOptions: Dispatch<SetStateAction<CardOptions>>, notify: AlertsReturn['newToast'], clickReload?: () => void }
+export type ToolbarProps = { setCardOptions: Dispatch<SetStateAction<CardOptions>>, notify: (alert: ToastAlert) => any, clickReload?: () => void }
 
 const getMaxZoom = () => {
   let z = cardZoomLevels.length

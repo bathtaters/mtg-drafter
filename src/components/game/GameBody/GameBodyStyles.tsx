@@ -1,37 +1,49 @@
-import type { GameStatus, TabLabels } from "@prisma/client"
-import { ReactNode, MouseEventHandler, CSSProperties, Fragment } from "react"
+import { TabLabels, WatcherTabs } from "types/game"
+import { type ReactNode, type MouseEventHandler, type CSSProperties, Fragment } from "react"
 import PackIcon from "components/svgs/PackIcon"
 import DeckIcon from "components/svgs/DeckIcon"
+import GearIcon from "components/svgs/GearIcon"
+import LogIcon from "components/svgs/LogIcon"
+import UserIcon from "components/svgs/UserIcon"
+import TimerIcon from "components/svgs/TimerIcon"
 import { formatTime, camelToTitle } from "components/base/services/common.services"
 import { hostButtonLabel } from "assets/strings"
 import { redTimerSeconds } from "assets/constants"
-import TimerIcon from "components/svgs/TimerIcon"
 
-export const containerIcon: Record<TabLabels, ReactNode> = {
+export const containerIcon: Record<TabLabels | WatcherTabs | "select", ReactNode> = {
   pack: <PackIcon className="h-5 md:h-7 fill-secondary-content stroke-secondary mr-1 md:mr-2 hidden sm:block" />,
   main: <DeckIcon className="h-5 md:h-7 fill-primary-content stroke-primary mr-1 md:mr-2 hidden sm:block" />,
   side: <DeckIcon className="h-5 md:h-7 fill-primary stroke-primary-content opacity-70 mr-1 md:mr-2 hidden sm:block" />,
+  select: <GearIcon className="h-5 md:h-7 fill-secondary mr-1 md:mr-2 hidden sm:block" />,
+  log: <LogIcon className="h-5 md:h-7 fill-primary mr-1 md:mr-2 hidden sm:block" bgdClass="fill-primary-content" />,
+  cards: <PackIcon className="h-5 md:h-7 fill-secondary-content stroke-secondary mr-1 md:mr-2 hidden sm:block" />,
+  join: <UserIcon className="h-5 md:h-7 fill-secondary-content stroke-secondary mr-1 md:mr-2 hidden sm:block" />,
 }
+
+const primaryTabs = [TabLabels.pack, WatcherTabs.cards, WatcherTabs.join, "select"]
 
 
 export const GameBodyHeader = ({ children }: { children?: ReactNode }) => <div className="relative w-full max-w-6xl m-auto">{children}</div>
 
-export const TabsWrapper = ({ children }: { children: ReactNode }) => <div className="tabs tabs-lg tabs-boxed justify-center gap-2 mb-6 bg-transparent">{children}</div>
+
+export const TabsWrapper = ({ children }: { children: ReactNode }) => (
+  <div className="tabs tabs-lg tabs-boxed justify-center gap-2 mb-6 bg-transparent">{children}</div>
+)
 
 
 export const TabStyle = (
-  { label, count, isSelected, onClick }: 
-  { label: TabLabels, count?: string, isSelected?: boolean, onClick?: MouseEventHandler }
+  { label, badge, isSelected, onClick }: 
+  { label: string, badge?: string, isSelected?: boolean, onClick?: MouseEventHandler }
 ) => (
   <div
-    className={`indicator flex-nowrap tab ${label === "pack" ? " tab-secondary" : " tab-primary"}${isSelected ? " tab-active" : ""}`}
+    className={`indicator flex-nowrap tab ${primaryTabs.includes(label) ? " tab-secondary" : " tab-primary"}${isSelected ? " tab-active" : ""}`}
     onClick={onClick}
   >
-    {containerIcon[label]}
+    {containerIcon[label as keyof typeof containerIcon]}
     <span className="text-xl md:text-2xl font-medium">{camelToTitle(label)}</span>
-    {count && 
+    {badge && 
       <span className="indicator-item indicator-center indicator-bottom -bottom-1 whitespace-nowrap badge badge-neutral badge-sm sm:badge-md shadow shadow-black">
-        {count}
+        {badge}
       </span>
     }
   </div>
@@ -68,15 +80,16 @@ export const PickCardButton = ({ disabled, isEmpty, onClick }: { disabled?: bool
 )
 
 
-export const RoundButton = ({ label, onClick }: { onClick: MouseEventHandler, label?: GameStatus }) => (
-  <div className="w-full text-center my-4">
-    <button type="button" onClick={onClick} className="btn btn-secondary btn-xl text-xl h-16 w-48 m-auto">
-      {label && hostButtonLabel[label]}
-    </button>
-  </div>
-)
+export const RoundButton = ({ disabled, label, onClick }: { disabled?: boolean, onClick: MouseEventHandler, label?: keyof typeof hostButtonLabel }) => 
+  label && hostButtonLabel[label] && (
+    <div className="w-full text-center my-4">
+      <button type="button" onClick={onClick} disabled={disabled} className="btn btn-secondary btn-xl text-xl h-16 w-48 m-auto">
+        {hostButtonLabel[label]}
+      </button>
+    </div>
+  )
 
 
 export const GameBodyWrapper = ({ className = '', children }: { className?: string, children?: ReactNode }) => (
-  <div className={`flex flex-col text-center relative ${className}`}>{children}</div>
+  <div className={`flex flex-col text-center h-full relative ${className}`}>{children}</div>
 )

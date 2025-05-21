@@ -1,18 +1,25 @@
-import type { GameCard, Board, GameStatus } from "@prisma/client"
-import type { Game, BasicPlayer, PackMin, ServerProps } from "types/game"
+import type { GameCard } from "@prisma/client"
+import { Game, BasicPlayer, PackMin, Board, GameStatus, ServerProps } from "types/game"
 import { mod } from "components/base/services/common.services"
+
+export const canWatch = (game?: { watchers?: { sessionId?: string | null }[] }, session?: string): boolean =>
+  !game?.watchers || !session ? false :
+    game.watchers.some(({ sessionId }) => session === sessionId)
 
 export const gameIsPaused = (game?: Partial<Game>): game is Game & { pause: number } => typeof game?.pause === 'number'
 
 export const gameIsEnded = (game?: Partial<Game>): boolean =>
   typeof game?.round === 'number' && game.round > (game.roundCount || 0)
 
+export const gameIsLocked = (id?: Game['id'], banned?: Game['banned']) => !id || !banned ? false :
+  banned.some(({ gameId, sessionId }) => !sessionId && gameId === id)
+
 export const getBoard = <C extends GameCard>(playerCards: C[], board: Board) => playerCards.filter(({ board: cardBoard }) => board === cardBoard)
 
 export const getGameStatus = (game?: Partial<Game>): GameStatus | undefined =>
   typeof game?.round !== 'number' ? undefined :
-    game.round < 1 ? 'start' : gameIsEnded(game) ? 'end' :
-    game.round === game.roundCount ? 'last' : 'active'
+    game.round < 1 ? GameStatus.start : gameIsEnded(game) ? GameStatus.end :
+    game.round === game.roundCount ? GameStatus.last : GameStatus.active
 
 export const getOppIdx = (playerIdx: number, playerCount: number) => {
   if (playerIdx < 0) return;
@@ -53,19 +60,21 @@ export const getNeighborIdx = (game: Partial<Game> | undefined, playerCount: num
     (playerIdx + 1) % playerCount
 }
 
-export const getPackIdx = (game: Pick<Game,"round"|"roundCount"> | undefined, players: Pick<BasicPlayer,"id"|"pick">[], player: Pick<BasicPlayer,"id"> | null) => {
+export const getPackIdx = (game: Pick<Game,"round"|"roundCount"> | undefined, players: Pick<BasicPlayer,"id"|"pick">[], player: Pick<BasicPlayer,"id"> | null, forcePick?: number) => {
   if (!game || game.round < 1 || game.round > game.roundCount) return -1
   
   const playerIdx = getPlayerIdx(players, player)
   if (playerIdx === -1) return -1
 
-  const neighborIdx = getNeighborIdx(game, players.length, playerIdx)
-  if (neighborIdx !== -1 && players[playerIdx].pick > players[neighborIdx].pick) return -1
+  if (forcePick == null) {
+    // Check if pack was passed
+    const neighborIdx = getNeighborIdx(game, players.length, playerIdx)
+    if (neighborIdx !== -1 && players[playerIdx].pick > players[neighborIdx].pick) return -1
+    // Set pick to current pack
+    forcePick = players[playerIdx].pick - 1
+  }
 
-  return (game.round - 1) * players.length + mod(
-    (playerIdx + (players[playerIdx].pick - 1) * (passingRight(game) ? -1 : 1)),
-    players.length
-  )
+  return (game.round - 1) * players.length + mod((playerIdx + forcePick * (passingRight(game) ? -1 : 1)), players.length)
 }
 
 export const getRoundPackSize = (packs: PackMin[], playerCount: number, game?: Partial<Game>) => {
@@ -92,14 +101,12 @@ export const getHolding = (players: Pick<BasicPlayer,"pick">[], packSize: number
 
 export const getSlots = (players?: BasicPlayer[]) => players ? players.filter(({ sessionId }) => !sessionId).map(({ id }) => id) : []
 
-export const playerIsHost = (player?: Partial<BasicPlayer>, game?: Partial<Game>): game is Game => game?.hostId ? game.hostId === player?.id : false
-
 export const getCanAdvance = (game?: Partial<Game>, players: BasicPlayer[] = [], holding: number[] = []) =>
   game && typeof game.round === 'number' &&
     (game.round < 1 ? players.every(({ sessionId }) => sessionId) : holding.every((h) => !h))
 
-export const getCurrentPack = ({ packs, options, player, players }: ServerProps) => {
-  const pack = packs?.[getPackIdx(options, players, player)]
+export const getCurrentPack = ({ packs, options, player, players }: Pick<ServerProps, 'options'|'packs'|'player'|'players'>) => {
+  const pack = packs?.[getPackIdx(options as Game, players ?? [], player ?? null)]
   return pack &&  ({
     ...pack, cards: pack.cards.filter(({ playerId }) => !playerId)
   })

@@ -1,6 +1,5 @@
 import type { MouseEventHandler, ReactNode } from "react"
-import type { Color, TabLabels } from "@prisma/client"
-import type { BoardLands } from "types/game"
+import type { Color, BoardLands, TabLabels } from "types/game"
 import { CardCounter, ContainerHeaderStyle, ContainerLabelStyle, LandButton, LandContainerStyle, LandCounterStyle } from "./CardContainerStyles"
 import { colorClass, colorPip, hoverClass } from "components/base/styles/manaIcons"
 import { colorOrder } from "assets/sort.constants"
@@ -15,10 +14,10 @@ const LandCounter = ({ color, count }: { color: Lowercase<Color>, count: number 
   </LandCounterStyle>
 )
 
-export default function ContainerHeader({ label, count, children, lands, onLandClick }: { label: TabLabels, count?: number, children?: ReactNode, lands?: BoardLands, onLandClick?: MouseEventHandler }) {
+export default function ContainerHeader({ label, prefix, suffix, count, children, lands, onLandClick }: { label: TabLabels | "select", prefix?: ReactNode, suffix?: ReactNode, count?: number, children?: ReactNode, lands?: BoardLands, onLandClick?: MouseEventHandler }) {
   return (
     <ContainerHeaderStyle>
-      <ContainerLabelStyle>{containerIcon[label]}{camelToTitle(label)}{<CardCounter text={cardCounter(count, lands)} />}</ContainerLabelStyle>
+      <ContainerLabelStyle>{containerIcon[label]}{prefix}{camelToTitle(label)}{suffix}{label !== 'select' && <CardCounter text={cardCounter(count, lands)} />}</ContainerLabelStyle>
       {children}
       <LandContainerStyle onClick={onLandClick}>
         { !lands ? "" : !getObjectSum(lands) ? <LandButton /> :

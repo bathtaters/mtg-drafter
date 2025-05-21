@@ -11,22 +11,23 @@ export type Props = HTMLProps<HTMLInputElement> & {
   caption?: ReactNode,
   wrapperClass?: string,
   boxClass?: string,
+  captionClass?: string,
   setValue?: (value: string) => void,
 }
 
-export default function RangeInput({ caption, value, keys, setValue, min = 0, max = 100, step = 1, wrapperClass, boxClass, ...props }: Props) {
+export default function RangeInput({ caption, value, keys, setValue, min = 0, max = 100, step = 1, wrapperClass, boxClass, captionClass, ...props }: Props) {
 
   const length = useMemo(() => Math.round((+max - +min) / +step + 1), [min, max, step])
   if (isNaN(length)) throw rangeValueError(min, max, step)
 
-  const key = keys && value && +value in keys ? keys[+value] : value as string | number | undefined
+  const key = keys && value != null && +value in keys ? keys[+value] : value as string | number | undefined
 
   return (
     <RangeContainer
       caption={caption}
       value={typeof key === 'object' ? key.value : key}
       tooltip={`${props['aria-label'] || ''}${typeof key === 'object' ? key.tooltip || key.value : ''}`}
-      className={wrapperClass} boxClass={boxClass}
+      className={wrapperClass} boxClass={boxClass} captionClass={captionClass}
     >
 
       <RangeInputElem

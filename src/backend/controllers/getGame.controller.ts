@@ -1,11 +1,13 @@
 import type { ParsedUrlQuery } from 'querystring'
 import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next'
-import type { ServerProps, ServerSuccess, PlayerFullTimer, ServerFail, PackFull } from 'types/game'
-import { getGame, getRoundPackSize } from '../services/game/game.services'
+import type { ServerProps, PlayerFullTimer, PackFull } from 'types/game'
+import { checkBan, getGame, getRoundPackSize } from '../services/game/game.services'
 import { getPlayer } from '../services/game/player.services'
+import { getHasJoined, getHasViewed } from '../services/game/log.services'
+import { unregGameAdapter, canWatch, gameIsEnded } from '../utils/game/game.utils'
+import { sessionIsHost } from 'components/game/shared/player.utils'
 import { getCtxSessionId, getReqSessionId } from '../libs/auth'
 import validation from 'types/game.validation'
-import { unregGameAdapter } from 'backend/utils/game/game.utils'
 
 const NOTFOUND = 'Unable to find game'
 
@@ -16,31 +18,44 @@ async function getGameProps(query: ParsedUrlQuery, sessionId: string, includePac
 
   const game = await getGame(url, includePacks)
   if (!game) return { error: NOTFOUND }
+
+  const isBanned = await checkBan(game.id, sessionId)
+  if (isBanned) return { error: "", options: unregGameAdapter(game, sessionId), sessionId }
   
   try { packSize = await getRoundPackSize(game.id, game.round, game.roundCount, game.players.length) }
-  catch(e: any) { return { error: `Server Error: ${e.message}`, options: unregGameAdapter(game) } }
+  catch(e: any) { return { error: `Server Error: ${e.message}`, options: unregGameAdapter(game, sessionId), sessionId } }
 
   const { players, packs, ...options } = game
   const now = Date.now()
   const player = await getPlayer(sessionId, players, game, packSize, now) as PlayerFullTimer | null // Convert type JSON value -> BasicLands
-
-  const watchId = !player && options.watchId === sessionId
   
-  return !watchId && !player ?
-    { options: unregGameAdapter(options), players, sessionId } :
-    { options, players, player, sessionId, now, packSize, packs: packs as PackFull[] || [] }
+  const isHostOrWatcher = sessionIsHost(options, sessionId) || canWatch(options, sessionId)
+  if (includePacks && !isHostOrWatcher) (packs as PackFull[]).forEach((pack) => {
+    pack.cards = pack.cards.filter(({ playerId }) => !playerId)
+    // Only allow players to see unpicked cards
+  })
+
+  const response: ServerProps = player || isHostOrWatcher ?
+    { options, players, player, sessionId, now, packSize, packs: packs as PackFull[] || [] } :
+    { options: unregGameAdapter(options, sessionId), players, sessionId }
+  if (gameIsEnded(options)) return response
+  
+  // Include additional data
+  if (isHostOrWatcher) response.hasJoined = await getHasJoined(game.id, sessionId)
+  if (!player) response.hasViewed = await getHasViewed(game.id, sessionId)
+  return response
 }
 
 export async function serverSideHandler(ctx: GetServerSidePropsContext) {
   return getGameProps(ctx.query, getCtxSessionId(ctx), false)
 }
 
-export async function apiHandler(req: NextApiRequest, res: NextApiResponse<ServerSuccess>) {
+export async function apiHandler(req: NextApiRequest, res: NextApiResponse<ServerProps>) {
   const props = await getGameProps(req.query, getReqSessionId(req, res), true)
-  if (props.error) {
-    console.error('Game API Error -- game:',req.query.url,', player:',getReqSessionId(req,res),'--',props.error)
-    res.writeHead(props.error === NOTFOUND ? 404 : 400, props.error)
+  if (typeof props.error === "string") {
+    if (props.error) console.error('Game API Error -- game:',req.query.url,', player:',getReqSessionId(req,res),'--',props.error)
+    res.status(props.error === NOTFOUND ? 404 : !props.error ? 403 : 400).json(props)
   } else {
-    res.status(200).json(props as ServerSuccess)
+    res.status(200).json(props)
   }
 }

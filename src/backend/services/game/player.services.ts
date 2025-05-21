@@ -1,8 +1,10 @@
-import type { GameCard, Board } from '@prisma/client'
+import type { GameCard, Board, Ban } from '@prisma/client'
 import type { Game, BasicLands, Player, BasicPlayer } from 'types/game'
 import prisma from '../../libs/db'
 import retry from '../../libs/retry'
 import { getTimerLength, adaptDbPlayer, hasPack } from 'backend/utils/game/game.utils'
+import { getName, getLastBan } from 'backend/utils/game/player.utils'
+import { BOT } from 'assets/constants'
 
 const fullPlayer /* Prisma.PlayerInclude */ = {
   cards: { include: { card: { include: { otherFaces: { include: { card: true } } } } } }
@@ -26,25 +28,69 @@ export async function getPlayer(sessionId: Player['sessionId'], playerList: Basi
 }
 
 
-export async function setStatus(id: Player['id'], sessionId: Player['sessionId'] = null, byHost: boolean = false) {
-  const player = await retry(() => prisma.player.update({ where: { id }, data: { sessionId } }))
+export async function setStatus(id: Player['id'], sessionId: Player['sessionId'], leave: boolean, hostId: Player['sessionId'] = null) {
+  const player = await retry(() => prisma.player.update({ where: { id }, data: { sessionId: leave ? null : sessionId } }))
 
   await retry(() => prisma.logEntry.create({ data: {
     gameId: player.gameId,
     playerId: id,
-    byHost,
-    action: sessionId ? 'join' : 'leave',
-    data: sessionId,
+    sessionId,
+    hostId,
+    action: leave ? 'leave' : 'join',
   } }))
 
   return adaptDbPlayer(player)
 }
 
 
-export async function renamePlayer(id: Player['id'], newName: Player['name'], byHost: boolean = false) {
+export async function banPlayer(gameId: Game['id'], hostId: Player['sessionId'], sessionId: Player['sessionId'] = null, unban: boolean = false, playerId: Player['id'] | null = null) {
+
+  if (!unban && sessionId) {
+    // Drop player/watcher
+    await retry(() => prisma.$transaction([
+      prisma.watcher.deleteMany({ where: { gameId, sessionId } }),
+      prisma.player.updateMany({
+        where: { gameId, sessionId },
+        data: { sessionId: null },
+      }),
+    ]))
+  }
+
+  // Get Name/PlayerID
+  let name: string | null = null
+  if (!unban || !sessionId) {
+    name = await getName(sessionId, gameId, playerId)
+
+  } else {
+    const lastBan = await getLastBan(sessionId, gameId)
+    if (lastBan?.data) name = lastBan.data || null
+    if (!playerId && lastBan?.playerId) playerId = lastBan?.playerId
+  }
+
+  const ban: Partial<Ban & { unban: number }> = await retry(() => !unban ? 
+    prisma.ban.create({ data: { gameId, sessionId, name } }) :
+    prisma.ban.deleteMany({ where: { gameId, sessionId } })
+      .then(({ count }) => ({ unban: count }))
+  )
+
+  await retry(() => prisma.logEntry.create({ data: {
+    gameId,
+    playerId,
+    sessionId,
+    hostId,
+    action: unban ? 'unban' : 'ban',
+    data: name,
+  } }))
+
+  if (unban && ban.unban !== 1) console.warn(`Unban resulted in unbanning ${ban.unban} rows (Expected: 1).`)
+  return { gameId, playerId, sessionId, name, ...ban, unban: Boolean(ban.unban) }
+}
+
+
+export async function renamePlayer(id: Player['id'], newName: Player['name'], sessionId: Player['sessionId'], hostId: Player['sessionId'] = null) {
   const player = await retry(() => prisma.player.update({ where: { id }, data: { name: newName }, select: { id: true, name: true, gameId: true }}))
 
-  await retry(() => prisma.logEntry.create({ data: { gameId: player.gameId, playerId: id, byHost, action: 'rename', data: newName } }))
+  await retry(() => prisma.logEntry.create({ data: { gameId: player.gameId, playerId: id, sessionId, hostId, action: 'rename', data: newName } }))
 
   return player
 }
@@ -63,3 +109,13 @@ export function swapCard(gameCardId: GameCard['id'], toBoard: Board) {
     select: { id: true, board: true },
   }))
 }
+
+export const getBots = (gameId: Game['id']) => prisma.player.findMany({
+  where: { gameId, sessionId: BOT },
+  include: fullPlayer,
+})
+
+export const getPlayerGame = (playerId: Player['id']) => prisma.player.findFirst({
+  where: { id: playerId },
+  select: { game: { select: { id: true, round: true, roundCount: true } } },
+}).then((res) => res?.game)

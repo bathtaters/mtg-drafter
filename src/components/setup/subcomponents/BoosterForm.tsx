@@ -17,7 +17,7 @@ type Props = {
     packList: (value: string[]) => void,
     basics: (value: boolean) => void,
   }
-  setPack: (idx: number) => (code: string) => void,
+  setPack: (idx: number) => (code?: string) => void,
   addPack: false | (() => void),
   rmvPack: false | (() => void),
 }

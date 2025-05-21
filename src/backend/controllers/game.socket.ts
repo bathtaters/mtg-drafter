@@ -11,7 +11,7 @@ import addPlayerListeners from 'backend/services/game/player.sockets'
 const getSessionId = (req: IncomingMessage) => parseCookies({ req }).sessionId
 
 export default async function gameSockets(io: GameServer, req: NextApiRequest, res: NextApiResponse) {
-  const sessionId = getReqSessionId(req,res)
+  const initialSessionId = getReqSessionId(req,res)
 
   const exists = await gameExists(req.query.url)
   if (!exists) return 400
@@ -20,17 +20,18 @@ export default async function gameSockets(io: GameServer, req: NextApiRequest, r
     if (!exists) return socket.disconnect(true)
 
     socket.setMaxListeners(MAX_GAME_CONN)
+    const currentSessionId = getSessionId(socket.request) || initialSessionId
 
-    addGameListeners(io, socket)
-    addPlayerListeners(io, socket)
+    addGameListeners(io, socket, currentSessionId)
+    addPlayerListeners(io, socket, currentSessionId)
 
     if (debugSockets) {
       socket.use(async (ev, next) => {
-        console.debug('RX Socket Event:', io.path(), getSessionId(socket.request), ...ev)
+        console.debug('RX Socket Event:', io.path(), currentSessionId, ...ev)
         next()
       })
 
-      console.debug('New Connection', io.path(), sessionId)
+      console.debug('New Connection', io.path(), initialSessionId)
     }
   })
 }

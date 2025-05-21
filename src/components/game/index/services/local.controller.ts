@@ -1,13 +1,22 @@
+import type { Ban } from '@prisma/client'
 import type { PackFull, ServerProps, Local, PlayerFull } from 'types/game'
 import { useCallback, useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
 import { spliceInPlace, updateArrayIdx } from 'components/base/services/common.services'
-import { gameIsPaused, getCanAdvance, getCurrentPack, getHolding, getPlayerIdx, getSlots, playerIsHost } from '../../shared/game.utils'
+import { gameIsPaused, getCanAdvance, getCurrentPack, getHolding, getPlayerIdx, getSlots } from '../../shared/game.utils'
+import { playerIsBanned, sessionIsHost } from 'components/game/shared/player.utils'
 import { reloadData } from '../basic.controller'
 import { useTimerStore } from 'components/base/libs/hooks'
 import { AlertsReturn } from 'components/base/common/Alerts/alerts.hook'
+import { shareWatch } from 'assets/constants'
 
 
-export default function useLocalController(props: ServerProps, throwError: AlertsReturn['newError'], notify: AlertsReturn['newToast']) {
+const isWatchRegex = RegExp(`^${shareWatch.url('')}[a-zA-Z0-9_-]+$`)
+
+export default function useLocalController(props: ServerProps, newError: AlertsReturn['newError'], notify: AlertsReturn['newToast']) {
+  const router = useRouter()
+  const isWatchPage = isWatchRegex.test(router.asPath)
+
   const [loadingAll,  setLoadingAll] = useState(1)
   const [loadingPack, setLoadingPack] = useState(1)
 
@@ -18,16 +27,19 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   const [ slots,   updateSlots   ] = useState(getSlots(props.players))
   const [ pack,    updatePack    ] = useState<PackFull>()
   const [ maxPackSize, updatePackSize ] = useState(props.packSize ?? 0)
+  const [ hasJoined,   setJoined      ] = useState(props.hasJoined ?? false)
+  const [ hasViewed,   setViewed      ] = useState(props.hasViewed ?? false)
   
   const { timer, startTimer, resetTimer, storeTimer } = useTimerStore(props.player?.timer, props.now)
   
-  const isHost = playerIsHost(player, game)
+  const isHost = sessionIsHost(game, props.sessionId)
+  const isBanned = playerIsBanned(game, props.sessionId)
   const holding = getHolding(players, maxPackSize, game)
   const canAdvance = isHost && getCanAdvance(game, players, holding)
   const playerIdx = useMemo(() => getPlayerIdx(players, player), [player, players])
 
   const updateLocal = useCallback((data: ServerProps) => {
-    if ('error' in data) throw new Error(`Cannot update data: ${data.error}`)
+    if (data.error) throw new Error(`Cannot update data: ${data.error}`)
 
     const newPack = getCurrentPack(data)
     if (newPack && data.player?.pick && data.player.pick <= (data.packSize ?? 0)) storeTimer(data.player?.timer, data.now)
@@ -38,11 +50,19 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     updateGame(data.options)
     updatePacks(data.packs || [])
     updatePackSize(data.packSize || 0)
-    updatePlayers(data.players)
+    updatePlayers(data.players || [])
     updateSlots(getSlots(data.players))
     updatePack(newPack)
     updatePlayer(data.player || undefined)
+    setJoined(data.hasJoined ?? false)
+    setViewed(data.hasViewed ?? false)
   }, [storeTimer, resetTimer])
+
+  
+  const reload = useCallback(() => {
+    setLoadingAll((v) => v + 1)
+    reloadData(game?.url, updateLocal, newError).finally(() => setLoadingAll((v) => v && v - 1))
+  }, [game?.url, updateLocal, newError])
 
 
   const nextRound: Local.NextRound = useCallback((round) => {
@@ -79,10 +99,10 @@ export default function useLocalController(props: ServerProps, throwError: Alert
     }
     
     if (passingToId && player?.id === passingToId) updatePack((pack) => {
-      if (!pack) reloadData(game?.url, updateLocal, throwError)
+      if (!pack) reloadData(game?.url, updateLocal, newError)
       return pack
     })
-  }, [game?.url, player?.id, updateLocal, resetTimer, throwError])
+  }, [game?.url, player?.id, updateLocal, resetTimer, newError])
 
 
   const swapCard: Local.SwapCard = useCallback((pickedCardId, board) => {
@@ -97,27 +117,56 @@ export default function useLocalController(props: ServerProps, throwError: Alert
   }, [])
 
 
-  const setStatus: Local.SetStatus = useCallback((playerId, sessionId) => {
-    updateSlots((s) => sessionId ? spliceInPlace(s, (pid) => pid === playerId) : s.concat(playerId))
-    updatePlayers((list) => list && updateArrayIdx(list,
-      ({ id }) => id === playerId, (p) => ({ ...p, sessionId })
-    ))
-    updatePlayer((p) => p?.id !== playerId ? p : sessionId ? ({ ...p, sessionId }) : undefined)
-    if (!sessionId) setLoadingAll((v) => v && v - 1)
-  }, [])
-  
+  const setStatus: Local.SetStatus = useCallback((playerId, sessionId, join, name) => {
+    if (!playerId) return updateGame(
+      (game) => !game || !('watchers' in game) || !game.watchers || !sessionId ? game : {
+        ...game,
+        watchers: join ? game.watchers.concat({ sessionId, name: name || null }) :
+          game.watchers.filter(({ sessionId: session }) => session !== sessionId),
+      }
+    )
 
-  const reload = useCallback(() => {
-    setLoadingAll((v) => v + 1)
-    reloadData(game?.url, updateLocal, throwError).finally(() => setLoadingAll((v) => v && v - 1))
-  }, [game?.url, updateLocal, throwError])
+    updateSlots((s) => join ? spliceInPlace(s, (pid) => pid === playerId) : s.concat(playerId))
+    updatePlayers((list) => list && updateArrayIdx(list,
+      ({ id }) => id === playerId,
+      (p) => ({ ...p, sessionId: join ? sessionId : null })
+    ))
+    updatePlayer((p) => p?.id !== playerId ? p : !join || !sessionId ? undefined : ({ ...p, sessionId }))
+
+    if (sessionId === props.sessionId) setJoined(true)
+    if (!join) setLoadingAll((v) => v && v - 1)
+  }, [props.sessionId])
+
+
+  const banSession: Local.BanSession = useCallback(({ unban, ...data }) => {
+    if (!unban && data.sessionId) setStatus(data.playerId, data.sessionId, false)
+    
+    updateGame((game) => {
+      if (!game) return game
+
+      if ('banned' in game) return {
+        ...game,
+        banned: !unban ?
+          (game.banned || []).concat(data as Ban) :
+          (game.banned || []).filter(({ sessionId }) => sessionId !== (data.sessionId || null))
+      }
+      return {
+        ...game,
+        locked: !unban,
+        isBanned: props.sessionId === data.sessionId ? !unban : game.isBanned
+      }
+    })
+    if (props.sessionId === data.sessionId) reload()
+  }, [props.sessionId, reload, setStatus])
 
 
   return {
     loadingPack, setLoadingPack, loadingAll, setLoadingAll, updatePlayer, updateGame, updateLocal,
-    game, player, players, playerIdx, maxPackSize, holding, isHost, canAdvance, pack, packs, slots, timer,
+    game, player, players, playerIdx, maxPackSize, holding, pack, packs, slots, timer,
+    isHost, canAdvance, isBanned, isWatchPage, hasJoined, hasViewed,
     sessionId: props.sessionId,
-    renamePlayer, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, reload, startTimer, 
+    renamePlayer, nextRound, pauseGame, pickCard, swapCard, setLands, setStatus, banSession,
+    setJoined, setViewed, startTimer, reload,
   }
 }
 

@@ -6,6 +6,7 @@ import OpponentIcon from "components/svgs/OpponentIcon"
 import CardIcon from "components/svgs/CardIcon"
 import PackIcon from "components/svgs/PackIcon"
 import { camelToTitle } from "components/base/services/common.services"
+import BotIcon from "components/svgs/BotIcon"
 
 const statsIcon = { pick: CardIcon, holding: PackIcon }
 
@@ -13,7 +14,12 @@ export const EmptyPlayerContainer = ({ className = "h-20" }: { className?: strin
 
 export const UserMarker = () => (
   <span className="inline-block ml-1 sm:mr-px tooltip tooltip-right" data-tip="You">
-    <UserIcon className="fill-primary/70 h-2 sm:h-3" />
+    <UserIcon className="fill-primary/70 h-3 md:h-4" />
+  </span>
+)
+export const BotMarker = () => (
+  <span className="inline-block ml-1 sm:mr-px tooltip tooltip-right" data-tip="Bot">
+    <BotIcon className="fill-current stroke-current opacity-70 h-4 md:h-5 w-auto" />
   </span>
 )
 export const HostMarker = () => (

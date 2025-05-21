@@ -6,9 +6,12 @@ export const NoCards = () => <EmptyStyle>No cards.</EmptyStyle>
 export const NoPack = () => <EmptyStyle>Awaiting next pack.</EmptyStyle>
 export const RoundOver = () => <EmptyStyle>Awaiting next round.</EmptyStyle>
 export const PausedGame = () => <EmptyStyle>The game is paused.</EmptyStyle>
+export const NotLive = () => <div className="text-sm font-extralight italic text-base-content opacity-60 mt-8">
+  Cards are not updated in real time. Click reload button to update.
+</div>
 
 // loading -1 = loading pack; loading > 0 = loading images
-export const LoadingPack = ({ loading, count = 0 }: { loading: number, count?: number  }) => (
+export const LoadingPack = ({ loading, count = 0 }: { loading: number, count?: number  }) => loading == null ? loading : (
   <EmptyStyle>
     <RadialProgress value={count - loading} maxValue={count} />
     <div className="mt-8">{loading < 1 ? 'Looking for pack' : 'Loading cards'}.</div>
@@ -19,7 +22,7 @@ export const CardContainerWrapper = ({ title, isPrimary, children, onClick }: {
    title: ReactNode, isPrimary: boolean, children: ReactNode, onClick?: MouseEventHandler
 }) => (
   <div onClick={onClick} className={
-    `relative rounded-lg shadow-md shadow-black mb-8 ${
+    `relative rounded-lg shadow-md shadow-black mb-8 flex-grow ${
       isPrimary ? 'text-primary bg-primary-content/40' : 'text-secondary bg-secondary-content/40'
     }`
   }>

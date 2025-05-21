@@ -1,12 +1,20 @@
-import type { Card, Game as DbGame, Pack, GameCard, Player as DbPlayer, Board, PlayerStatus, LogEntry, LogAction, FaceInCard } from "@prisma/client"
+import type { Card, Game as DbGame, Pack, GameCard, Player as DbPlayer, Board, Color, LogEntry, LogAction, FaceInCard, Ban, Watcher } from "@prisma/client"
 import type { SortKey } from "components/base/services/cardSort.services"
 import type { Layout } from "./scryfall"
-import z from "backend/libs/validation"
-import { boardLands } from "./game.validation"
+
+// -- ENUMs -- \\
+
+export { Color, Rarity, Side, Board, LogAction } from '@prisma/client'
+
+export enum TabLabels { pack = 'pack', main = 'main', side = 'side' }
+export enum WatcherTabs { log = 'log', cards = 'cards', join = 'join' }
+export enum GameStatus { start = 'start', active = 'active', last = 'last', end = 'end' }
+export enum PlayerStatus { join = 'join', leave = 'leave', bot = 'bot' }
+export enum Direction { N = 'N', E = 'E', S = 'S', W = 'W' }
 
 // -- DATABASE JSONs -- \\
 
-export type BoardLands = z.infer<typeof boardLands>
+export type BoardLands = Record<Lowercase<Color>, number>
 export type BasicLands = { [board in Board]: BoardLands } & { pack: never }
 
 
@@ -14,26 +22,29 @@ export type BasicLands = { [board in Board]: BoardLands } & { pack: never }
 
 export interface Player extends Omit<DbPlayer, 'timer'> { timer: number | null, basics: BasicLands }
 export type BasicPlayer = Pick<Player, "id"|"name"|"sessionId"|"pick">
+export type BasicWatcher = Pick<Watcher, "sessionId"|"name">
 
-export interface Game extends Omit<DbGame, 'pause'> { pause: number | null }
-export type PartialGame = Pick<Game,"id"|"name"|"url"|"watchKey">
+export interface Game extends Omit<DbGame, 'pause'> { pause: number | null, watchers: BasicWatcher[], banned: Ban[] }
+export type PartialGame = Pick<Game,"id"|"name"|"url"|"watchKey"> & { locked: boolean, isBanned: boolean }
 export type ListedGame = Pick<Game,"id"|"name"|"url"|"hostId"> & { player?: BasicPlayer }
+export type LiveOptions = Partial<Pick<Game, "name"|"hostId"|"url"|"timerBase">>
 
 export type CardStrict = Omit<Card,"layout"> & { layout: Layout | null }
 export type CardFull = CardStrict & { otherFaces: Array<{ card: CardStrict, backImg: FaceInCard['backImg'] }> }
 export type GameCardFull = GameCard & { card: CardFull }
+export type GameCardPartial = GameCard & { card: Pick<Card,'name'|'scryfallId'|'img'> }
 
 export type PackMin = { cards: Pick<GameCard, "playerId">[] }
 export type PackFull = Pack & { cards: GameCardFull[] }
 export type PlayerFullTimer = Player & { cards: GameCardFull[], basics: BasicLands }
 export type PlayerFull = Omit<PlayerFullTimer, 'timer'>
 
+export type BanResponse = Partial<Ban> & { playerId: string | null, unban: boolean }
 
 // -- USER OPTIONS -- \\
 
-export enum Direction { N = 'N', E = 'E', S = 'S', W = 'W' }
 export type CardOptions = { width: string, showArt: boolean, sort?: SortKey }
-export type LogOptions = { hideHost: boolean, hidePrivate: boolean }
+export type LogOptions = { hideHost: boolean, hidePrivate: boolean, hideWatchers: boolean }
 export type TimerOptions = { secPerCard: number, secOffset?: number, roundTo?: number, minSec?: number, maxSec?: number }
 
 // -- LOG TYPES -- \\
@@ -48,11 +59,12 @@ export type LogData<Action extends LogAction = LogAction> =
    null
 
 export interface LogEntryFull extends LogEntry {
-  card: (GameCard & { card: Card }) | null,
+  card: GameCardPartial | null,
   data: LogData
 }
-export type LogFull = LogEntryFull[]
-
+export type LogFull = { log: LogEntryFull[], offset?: number, total: number }
+export type LogList = { [index: number]: LogEntryFull }
+export type PickInfo = { [cardId: string]: { name?: string | null, pack?: number, pick?: number } }
 
 // -- API TYPES -- \\
 
@@ -65,6 +77,8 @@ export interface ServerSuccess {
   packSize: number | null,
   player: PlayerFullTimer | null,
   sessionId: string,
+  hasJoined?: boolean,
+  hasViewed?: boolean,
   now: number,
   error?: never,
 }
@@ -75,6 +89,8 @@ export interface ServerUnreg {
   packSize?: never,
   player?: never,
   sessionId: string,
+  hasJoined?: boolean,
+  hasViewed?: boolean,
   now?: never,
   error?: never,
 }
@@ -85,7 +101,9 @@ export interface ServerFail {
   packs?: never,
   packSize?: never,
   player?: never,
-  sessionId?: never,
+  sessionId?: string,
+  hasJoined?: never,
+  hasViewed?: never,
   now?: never,
 }
 export type ServerProps = ServerSuccess | ServerFail | ServerUnreg
@@ -103,24 +121,27 @@ export namespace Local {
   export type PickCard     = (playerId: Player['id'], pick: Player['pick'], passingToId?: Player['id']) => void
   export type SwapCard     = (gameCardId: GameCard['id'], board: Board) => void
   export type SetLands     = (basics: BasicLands) => void
-  export type SetStatus    = (playerId: Player['id'], sessionId: Player['sessionId'], isSelf?: boolean) => void
+  export type SetStatus    = (playerId: Player['id'] | null, sessionId: Player['sessionId'] | null, join: boolean, name?: string) => void
+  export type BanSession   = (data: BanResponse) => void
 }
 
 export namespace Socket {
   export type RenamePlayer  = (name: Player['name'], playerId?: Player['id'], byHost?: boolean) => void
-  export type SetTitle      = (title: Game['name']) => void
+  export type SetOptions    = (options: LiveOptions) => void
   export type NextRound     = () => void
   export type PauseGame     = (resume?: boolean) => void
   export type PickCard      = (gameCardOrPack: GameCard['id'] | Pack['index']) => void
   export type SwapCard      = (gameCardId: GameCard['id'], toBoard: Board) => void
   export type SetLands      = (lands: BasicLands) => void
   export type SetStatus     = (playerId: Player['id'], status?: PlayerStatus, byHost?: boolean) => void
-  export type SetWatchPw    = (password: string | null) => void
+  export type SetWatchPw    = (password: string | null) => Promise<void>
+  export type DropWatcher   = (sessionId: NonNullable<Player['sessionId']>) => void
+  export type BanSession    = (sessionId: Player['sessionId'] | null, unban?: boolean, playerId?: Player['id']) => void
 }
 
 // Aliases
 export type RenamePlayer  = Socket.RenamePlayer
-export type SetTitle      = Socket.SetTitle
+export type SetOptions    = Socket.SetOptions
 export type NextRound     = Socket.NextRound
 export type PauseGame     = Socket.PauseGame
 export type PickCard      = Socket.PickCard
@@ -128,3 +149,4 @@ export type SwapCard      = Socket.SwapCard
 export type SetLands      = Socket.SetLands
 export type SetStatus     = Socket.SetStatus
 export type SetWatchPw    = Socket.SetWatchPw
+export type BanSession    = Socket.BanSession

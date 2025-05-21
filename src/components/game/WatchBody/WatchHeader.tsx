@@ -1,16 +1,12 @@
 import type { GameProps } from "types/game"
 import GameHeaderBase from "../GameHeader/GameHeaderBase"
-import { RoundCounter } from 'components/game/GameHeader/GameHeaderStyles'
+import { RoundCounter } from '../GameHeader/GameHeaderStyles'
 import { useSimpleHeader } from "../GameHeader/header.controller"
 import { roundCounter } from "assets/strings"
 
+type Props = { game?: GameProps['options'] }
 
-type Props = {
-    game?: GameProps['options'],
-}
-
-
-export default function GameLogHeader({ game }: Props) {
+export default function WatchHeader({ game }: Props) {
 
     const { gameStatus } = useSimpleHeader(game)
     

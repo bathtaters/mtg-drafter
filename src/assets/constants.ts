@@ -1,10 +1,10 @@
 import type { GameOptions } from 'types/setup'
 import type { RetryOptions } from 'backend/libs/retry'
 import type { BoosterType, Layout } from 'types/scryfall'
-import type { LogOptions, TimerOptions, CardFull } from 'types/game'
+import type { LogOptions, TimerOptions, CardFull, LogAction } from 'types/game'
 import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
-import { allActions } from 'components/game/GameLog/log.utils'
 import { Direction } from 'types/game'
+import { allActions } from 'types/logs'
 
 //  Settings
 
@@ -15,6 +15,7 @@ export const storageDefaults = Object.freeze({
     showArt: true,
     sortBy: 0,
     logActions: allActions,
+    hostModalSection: 1,
   }),
 
   shareGame = {
@@ -29,7 +30,7 @@ export const storageDefaults = Object.freeze({
     url: (gameUrl: string) => `/game/watch/${gameUrl}`,
   },
 
-  logOptions: LogOptions = { hideHost: false, hidePrivate: true },
+  logOptions: LogOptions = { hideHost: false, hidePrivate: true, hideWatchers: true },
 
   // See strings: timerLabels for labels
   defaultTimer: TimerOptions = { secPerCard: 3.3, secOffset: -8, roundTo: 5, minSec: 5 },
@@ -75,7 +76,7 @@ export const
 
   fileSettings = { id: "cubeFile", type: "text/plain", maxSize: 10 * 1024 * 1024 /* = 10 MB */, },
 
-  urlLength = 9
+  urlLimits = { minLength: 9, maxLength: 9 }
 
 // UI Tweaks
 
@@ -110,6 +111,10 @@ export const skipBoosterTypes: BoosterType[] = []
 
 // Advanced Tweaks + Debug Settings
 
+export const logFetchOptions = { minSize: 100, maxSize: 500, debounceMs: 350 }
+
+export const dynamicScrollPreloadDistancePx = 450 // See Intersection API - "root margin"
+
 export const CUBE_LIST_END = /^\s*#?\s*(?:side|maybe)\s*board/i // don't look at cards below this line
 
 export const retryDefaults: RetryOptions = { maxRetries: 10, delay: 10, errCodes: ['P2034'], logRetry: console.warn } // delay10/max10 = max delay 5sec
@@ -129,3 +134,13 @@ export const enableDropping = true
 export const logSheetNames = false
 
 export const serverSideImageOptimize = false
+
+// Actual constants (DON'T CHANGE!)
+
+export const BOT = "___BOT___"
+
+export const ALL_WATCHERS = "__ALL__"
+
+export const AUTOMATED = "__AUTO__"
+
+export const watcherActions: LogAction[] = ['join', 'leave', 'ban', 'unban']

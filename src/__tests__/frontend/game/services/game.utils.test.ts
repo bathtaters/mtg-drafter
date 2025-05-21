@@ -8,7 +8,6 @@ it.todo('getGameStatus')
 it.todo('getOppIdx')
 
 it.todo('getSlots')
-it.todo('playerIsHost')
 it.todo('canAdvance')
 it.todo('filterPackIds')
 

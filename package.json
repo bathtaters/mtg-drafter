@@ -1,6 +1,6 @@
 {
   "name": "mtg-drafter",
-  "version": "2.4.0",
+  "version": "2.5.1",
   "description": "Multi-player TCG draft simulator.",
   "private": true,
   "scripts": {
@@ -11,7 +11,8 @@
     "clean": "podman stop -i mtg-drafter && podman rm -i mtg-drafter && podman rmi mtg-drafter",
     "lint": "next lint",
     "test": "jest",
-    "ssl": "npx local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3041 --target 3040"
+    "ssl": "npx local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3041 --target 3040",
+    "devdb": "cockroach start-single-node --insecure --store=path=\"$PWD/cockroach-data\" --listen-addr=localhost:26257 --http-addr=localhost:3045"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"

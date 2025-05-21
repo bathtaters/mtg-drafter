@@ -4,8 +4,8 @@ import { BoxBtnWrapper, ButtonStyle, FormWrapper, LabelStyle, MessageStyle, Pass
 
 
 export default function PasswordForm(
-    { label="Enter Password", fullPage, btnLabel="Submit", emptyBtn, message="", onSubmit, id="password", placeholder="", isCreate=false }:
-    { label?: string, btnLabel?: string, emptyBtn?: string, message?: string, id?: string, placeholder?: string, fullPage?: boolean, isCreate?: boolean, onSubmit?: (password: string) => Promise<void> | void }
+    { label="Enter Password", btnLabel="Submit", emptyBtn, message="", id="password", placeholder="", fullPage, heightClass, isCreate, onSubmit, disabled }:
+    { label?: string, btnLabel?: string, emptyBtn?: string, message?: string, id?: string, placeholder?: string, fullPage?: boolean, heightClass?: string, isCreate?: boolean, onSubmit?: (password: string) => Promise<void> | void, disabled?: boolean }
 ) {
     const [password, setPassword] = useState("")
 
@@ -17,14 +17,15 @@ export default function PasswordForm(
         setPassword("")
     }
 
+    const elemClass = heightClass ? `${heightClass} min-h-0` : ""
     return (
         <FormWrapper full={fullPage} onSubmit={handleSubmit}>
             <LabelStyle htmlFor={id} full={fullPage}>{label}</LabelStyle>
             { fullPage && <Spacer /> }
             <BoxBtnWrapper full={fullPage}>
-                <PasswordStyle id={id} value={password} placeholder={placeholder} onChange={handleChange} autoComplete={isCreate ? 'new-password' : 'current-password'} />
+                <PasswordStyle id={id} name={id} value={password} placeholder={placeholder} onChange={handleChange} className={elemClass} autoComplete={isCreate ? 'new-password' : 'current-password'} />
                 { fullPage && <MessageStyle>{message}</MessageStyle> }
-                <ButtonStyle type="submit">{password || !emptyBtn ? btnLabel : emptyBtn}</ButtonStyle>
+                <ButtonStyle type="submit" className={elemClass} disabled={disabled && !password}>{password || !emptyBtn ? btnLabel : emptyBtn}</ButtonStyle>
             </BoxBtnWrapper>
             { !fullPage && <MessageStyle>{message}</MessageStyle> }
         </FormWrapper>
