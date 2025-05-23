@@ -3,7 +3,7 @@ import type { CardSet as JsonCard } from '../../../types/json'
 import prisma from '../../libs/db'
 import fetchJson from '../../libs/fetchJson'
 import Batcher from '../../libs/Batcher'
-import { adaptCardToDb, adaptFacesToDb } from '../../utils/db/card.utils'
+import { adaptCardToDb, adaptFacesToDb, cardFilter } from '../../utils/db/card.utils'
 import { isMtgJsonKey, updateMtgJson } from './updateSettings'
 import { ignoreScryfallBackIds } from 'assets/urls'
 
@@ -29,10 +29,11 @@ export default async function updateCards(url: string, fullUpdate = false, enabl
   const faceUpdate = new Batcher(2 * dbBatchSize, async (data: Prisma.FaceInCardCreateManyInput[]) => {
     await prisma.faceInCard.createMany({ data, skipDuplicates: !fullUpdate })
   })
-  
+
   await fetchJson<JsonCard>(url, async (data, key) => {
     if (isMtgJsonKey(key)) return updateMtgJson("cards", key, data, url)
-    
+    if (!cardFilter(data)) return;
+
     await cardUpdate.add(adaptCardToDb(data))
     for (const face of adaptFacesToDb(data)) { await faceUpdate.add(face) }
 

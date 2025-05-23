@@ -38,3 +38,5 @@ export const adaptFacesToDb = ({ uuid, layout, side, otherFaceIds, identifiers }
   const backImg = side === 'a' && layout === 'meld' && identifiers?.scryfallCardBackId ? scryfallImageUrl(identifiers.scryfallCardBackId, false) : null
   return otherFaceIds ? otherFaceIds.map((cardId) => ({ selfId: uuid, cardId, backImg })) : []
 }
+
+export const cardFilter = ({ layout, language }: JsonCard) => layout !== 'token' && language === 'English'
