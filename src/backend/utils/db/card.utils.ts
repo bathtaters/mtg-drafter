@@ -3,7 +3,13 @@ import type { CardSet as JsonCard } from '../../../types/json'
 import type { Layout } from 'types/scryfall'
 import { scryfallImageUrl } from 'assets/urls'
 
-export const normalizeName = (name: string) => name.replace(/\s\/\/\s.+$/,'').replace(/[^a-zA-Z0-9 ]/g, '').replace('&', 'and').toLowerCase()
+export const normalizeName = (name: string) =>  // Standardize:
+  name.replace(/\s\/\/\s.+$/,'')                // - Multi-faced cards
+    .trim().replace(/\s\s+|-|&|and/g, ' ')      // - White-space/symbolic text
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // - Modified letters (eg. accents)
+    .replace(/[^a-zA-Z0-9 ]/g, '')              // - All other symbols (eg. apostrophes)
+    .toLowerCase()                              // - Casing
+    
 
 export const adaptCardToDb = ({
   uuid, name, number, flavorName, setCode, manaCost, type, text,
