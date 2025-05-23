@@ -22,7 +22,6 @@ export const adaptCardToDb = ({
 
   scryfallId: identifiers?.scryfallId,
   multiverseId: identifiers?.multiverseId,
-  img: side && side !== 'a' ? null : identifiers?.scryfallId ? scryfallImageUrl(identifiers.scryfallId) : null,
 
   footer: toughness != null ? `${power}/${toughness}` : loyalty || defense,
 
