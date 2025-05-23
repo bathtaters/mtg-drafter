@@ -1,3 +1,5 @@
+import { PrismaClient } from "@prisma/client"
+
 // -- TYPESCRIPT HELPERS -- \\
 
 export type Merge<A, B> = Omit<A, keyof B> & Pick<B, keyof A & keyof B>
@@ -15,3 +17,7 @@ export declare global {
       fromEntries<K extends string|number|symbol, V>(entries: Array<[K, V]>): Record<K,V>,
     }
 }
+
+// -- PRISMA HELPERS -- \\
+
+export type DbTables = keyof Omit<PrismaClient, `$${string}` | symbol>
