@@ -8,7 +8,7 @@ export default async function handler(ctx: GetServerSidePropsContext): Promise<G
 
     try {
         const games = await prisma.game.findMany({
-            where: { players: { some: { sessionId } } },
+            where: { OR: [ { hostId: sessionId }, { players: { some: { sessionId } } } ] },
             select: {
                 id: true,
                 name: true,
@@ -22,10 +22,10 @@ export default async function handler(ctx: GetServerSidePropsContext): Promise<G
         })
 
         return {
-            games: games.map(({ players, ...game }) => ({
+            games: games.map(({ players, ...game }) => players?.length ? {
                 ...game,
                 player: players[0]
-            }))
+            } : game)
         }
 
     } catch (err: any) {
