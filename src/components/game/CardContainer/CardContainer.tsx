@@ -45,7 +45,7 @@ export default function CardContainer({ type, round, name, cards, lands, loading
       { paused && <PausedGame /> }
       <CardsWrapper hideCards={loading > 0}>
         {overrideBody ? overrideBody : loading < 0 ? null : typeof cards === 'string' ? <RoundOver /> : !cards ? <NoPack /> : !count ? <NoCards /> :
-          cards.toSorted((a,b) => packSort[cardOptions.sort ?? sortKeys[0]](a.card, b.card)).map(({ id, foil, card, playerId }) => 
+          cards.toSorted((a,b) => packSort[cardOptions.sort ?? sortKeys[0]](a.card, b.card)).map(({ id, foil, card }) => 
             <Card
               card={card} key={id} isFoil={foil}
               showImage={cardOptions.showArt}

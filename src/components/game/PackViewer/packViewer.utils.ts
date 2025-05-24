@@ -1,8 +1,6 @@
 import type { BasicPlayer, GameCardFull, LogEntryFull, PackFull, PickInfo, TabLabels } from "types/game"
 import { getPackIdx } from "../shared/game.utils"
-import { objToQuery } from "components/base/libs/fetch"
 
-export const logQryFilter = objToQuery({ filter: { actions: ["pick"] } })
 
 export const logToPickInfo = (logEntries: LogEntryFull[], players?: BasicPlayer[]) => logEntries.reduce(
     (picks, entry) => {
