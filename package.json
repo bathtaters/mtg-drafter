@@ -28,13 +28,13 @@
     "dotenv": "^16.4.5",
     "mana-font": "^1.14.0",
     "nanoid": "^5.0.2",
-    "next": "15.1.0",
+    "next": "^15.1.8",
     "nookies": "^2.5.2",
-    "react": "19.0.0",
+    "react": "^19.1.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
-    "react-dom": "19.0.0",
-    "sharp": "^0.33.4",
+    "react-dom": "^19.1.0",
+    "sharp": "0.x.x",
     "socket.io": "^4.5.2",
     "socket.io-client": "^4.5.2",
     "stream-json": "^1.8.0",
@@ -47,12 +47,12 @@
     "@types/formidable": "^3.4.0",
     "@types/jest": "^29.5.12",
     "@types/multer": "^1.4.7",
-    "@types/react": "19.0.1",
-    "@types/react-dom": "19.0.2",
+    "@types/react": "^19.1.5",
+    "@types/react-dom": "^19.1.5",
     "@types/stream-json": "^1.7.7",
     "autoprefixer": "^10.4.12",
     "eslint": "^9.17.0",
-    "eslint-config-next": "15.1.0",
+    "eslint-config-next": "^15.1.8",
     "jest": "^29.3.1",
     "jest-environment-jsdom": "^29.3.1",
     "postcss": "^8.4.16",
@@ -60,9 +60,5 @@
     "tailwindcss": "^3.1.8",
     "tsx": "^4.16.5",
     "typescript": "^5.1.6"
-  },
-  "overrides": {
-    "@types/react": "19.0.1",
-    "@types/react-dom": "19.0.2"
   }
 }
