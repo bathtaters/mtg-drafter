@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { type IntersectionChildProps, useIntersection } from "./hooks"
+import { objToQuery } from "./fetch"
 import { debounce, debounceGroup } from "components/base/services/common.services"
 
 const INIT_DATA = {}, INIT_PREV = [] as any[]
@@ -307,20 +308,6 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
 // *** --- UTILITIES --- *** //
 
 const arrayToObject = <T>(arr: T[]) => Object.fromEntries(arr.map((v,i) => [i,v]))
-
-const anyToString = (value: any): string | null => value == null ? null :
-  typeof value?.toJSON === 'function' ? value.toJSON() :
-  (typeof value !== 'object' || value instanceof RegExp) &&
-    typeof value?.toString === 'function' ? value.toString() : JSON.stringify(value)
-
-export const objToQuery = (params: any) => {
-  let query: Record<string, string> = {}
-  for (const key in params) {
-      const val = anyToString(params[key])
-      if (val != null) query[key] = val
-  }
-  return new URLSearchParams(query).toString()
-}
 
 /** Logic for which objects to load -- NOTE: indexList starts with most recently 'seen' index */
 const listToParams = (indexList: number[], total: number | undefined, minSize: number, maxSize: number, isReverseOrder?: boolean): Pick<FetchParams, 'offset'|'size'> => {
