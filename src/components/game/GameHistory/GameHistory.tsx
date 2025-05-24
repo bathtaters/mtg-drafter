@@ -24,7 +24,7 @@ export default function GameHistory({ games, error }: GameHistoryServerSideProps
                   key={id}
                   game={name}
                   player={player?.name}
-                  isHost={hostId === player?.id}
+                  isHost={!player || hostId === player?.sessionId}
                   link={gameURL(url)}
                 />
               ) }
