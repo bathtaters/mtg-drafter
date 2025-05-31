@@ -1,5 +1,6 @@
 import type { MouseEventHandler, ReactNode } from "react"
 import DropdownMenu from "components/base/common/DropdownMenu"
+import Spinner from "components/base/common/Spinner"
 import FilterIcon from "components/svgs/FilterIcon"
 import GearIcon from "components/svgs/GearIcon"
 import { ExitIcon, ExportIcon } from "components/svgs/MenuIcons"
@@ -14,10 +15,14 @@ export const LogoutLabel = () => (
   </div>
 )
 
-export const DownloadLabel = () => (
+export const DownloadLabel = ({ loading }: { loading: boolean }) => (
   <div className="flex justify-between">
     <span>Export JSON</span>
-    <ExportIcon className="w-5 -mr-2" />
+    {loading ?
+      <Spinner className="w-5 -mr-2" hideWrapper={true} />
+      :
+      <ExportIcon className="w-5 -mr-2" />
+    }
   </div>
 )
 
@@ -32,7 +37,7 @@ export const TabToolbarWrapper = ({ clickReload, children }: { clickReload?: Mou
 
 export const SettingsDropdown = ({ children }: { children: ReactNode }) => (
   <DropdownMenu labelClass="btn-sm btn-circle btn-ghost" forceOpen="click"
-    menuClass="p-2 shadow-lg shadow-black bg-primary-content rounded-box w-48 md:w-52"
+    menuClass="p-2 shadow-lg shadow-black bg-primary-content rounded-box w-52 md:w-56"
     label={<GearIcon className="fill-current w-5" />}
   >
     {children}
@@ -42,13 +47,18 @@ export const SettingsDropdown = ({ children }: { children: ReactNode }) => (
 export const SettingToggle = ({ label, value, setValue }: { label: ReactNode, value: boolean, setValue: (value: boolean) => void }) => (
   <label className="label cursor-pointer">
     <input type="checkbox" className="toggle toggle-primary" checked={value} onChange={(ev) => setValue(ev.target.checked)} />
-    <span className="label-text">{label}</span> 
+    <div className="flex justify-end align-middle label-text">{label}</div>
   </label>
 )
 
-export const SettingAction = ({ label, onClick }: { label: ReactNode, onClick: () => void }) => (
-  <label className="label cursor-pointer">
-    <a className="label-text block w-full h-full" onClick={onClick}>{label}</a>
+export const SettingAction = ({ label, onClick, loading }: { label: ReactNode, onClick: () => void, loading?: boolean }) => (
+  <label className={`label ${loading ? 'cursor-wait' : 'cursor-pointer'}`}>
+    <a
+      className={`label-text block w-full h-full${loading ? ' opacity-50 pointer-events-none' : ''}`}
+      onClick={loading ? undefined : onClick}
+    >
+      {label}
+    </a>
   </label>
 )
 

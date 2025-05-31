@@ -48,7 +48,7 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
     error, setError,
   } = useAdvancedFetch(fetchLogs, { filter, initalEnabled: false, ...logFetchOptions })
 
-  const downloadLog = async () => {
+  const download = async () => {
     const jsonData = await fetchAll().then((data) => stringifyLogEntries(data, playerData))
     downloadTextFile(logFilename(url), jsonData, LOG_EXT)
   }
@@ -66,7 +66,7 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
     actions, setActions,
     options, setOptions,
     enabled, setEnabled,
-    downloadLog,
+    download,
   }
 }
 

@@ -4,6 +4,7 @@ import LogFilter from "./LogFilter"
 import { ToolbarWrapper, FilterDropdown, SettingsDropdown, SettingToggle, SettingAction, LogoutLabel, DownloadLabel } from "./LogToolbarStyles"
 import { logOptionLabels } from "assets/strings"
 import { gameActionList, otherList, playerActionList } from "types/logs"
+import { useState } from "react"
 
 type Props = {
   gameLog: GameLog,
@@ -14,13 +15,19 @@ type Props = {
 }
 
 export default function LogToolbar({ gameLog, players, gameEnded, isHost, logout }: Props) {
+  const [ downloading, setDownloading ] = useState(false)
+  const download = () => {
+    setDownloading(true)
+    gameLog.download().finally(() => setDownloading(false))
+  }
+
   return (
     <ToolbarWrapper>
       <SettingsDropdown>
         {Object.keys(gameLog.options).map((key) => (key !== 'hidePrivate' || gameEnded) && (!logout || key !== 'hideWatchers') &&
           <SettingToggle key={key} label={logOptionLabels[key]} value={!gameLog.options[key]} setValue={(val) => gameLog.setOptions((opt) => ({ ...opt, [key]: !val }))} />
         )}
-        { isHost && <SettingAction label={<DownloadLabel />} onClick={gameLog.downloadLog} /> }
+        { isHost && <SettingAction label={<DownloadLabel loading={downloading} />} onClick={download} loading={downloading} /> }
         { logout && <SettingAction label={<LogoutLabel />} onClick={logout} /> }
       </SettingsDropdown>
 

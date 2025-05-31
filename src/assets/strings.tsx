@@ -96,10 +96,10 @@ export const cardLayoutText: {[layout in Layout]?: string} = {
 }
 
 export const logOptionLabels: Record<keyof LogOptions | "showSidebar", ReactNode> = {
-  hideHost: <span>Show Host<HostIcon className="ml-2 w-5 ms-2x" /></span>,
-  hidePrivate: <span>Show Secrets<CardIcon className="ml-2 w-5 stroke-current fill-primary-content inline" /></span>,
-  hideWatchers: <span>Show Watchers<WatcherIcon className="ml-2 w-5 fill-current inline" /></span>,
-  showSidebar: <span>Show Players<UserIcon className="ml-2 w-5 fill-current inline" /></span>,
+  hideHost: <><span>Show Host</span><HostIcon className="ml-2 w-5 ms-2x" /></>,
+  hidePrivate: <><span>Show Secrets</span><CardIcon className="ml-2 w-5 stroke-current fill-primary-content inline" /></>,
+  hideWatchers: <><span>Show Watchers</span><WatcherIcon className="ml-2 w-5 fill-current inline" /></>,
+  showSidebar: <><span>Show Players</span><UserIcon className="ml-2 w-5 fill-current inline" /></>,
 }
 
 export const logFullDate = (dt: Date) => dt.toLocaleString(undefined, { timeStyle: 'medium', dateStyle: 'medium'})
