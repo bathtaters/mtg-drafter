@@ -173,7 +173,7 @@ export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependenci
 export type IntersectionHandler = (index: number, entry: IntersectionObserverEntry) => void
 export type IntersectionChildProps<E extends HTMLElement = HTMLElement> = { ['data-index']: number, ref: Ref<E> }
 
-export function useIntersection(handleIntersect: IntersectionHandler, options: IntersectionObserverInit = {}, deps: any[] = []) {
+export function useIntersection(handleIntersect: IntersectionHandler, { root, rootMargin, threshold }: IntersectionObserverInit = {}) {
   const parentRef = useRef<HTMLElement>(null)
   const childrenRef = useRef<HTMLElement[]>([])
 
@@ -184,18 +184,18 @@ export function useIntersection(handleIntersect: IntersectionHandler, options: I
           const index = (entry.target as HTMLElement).dataset.index
           index && handleIntersect(parseInt(index), entry)
         }
-      }),{
-        root: 'root' in options ? options.root : parentRef.current,
-        rootMargin: options.rootMargin,
-        threshold: options.threshold,
-      }
+      }),
+      { root: typeof root === 'undefined' ? parentRef.current : root, rootMargin, threshold },
     );
 
     const children = [...childrenRef.current]
     children.forEach((ref) => ref && observer.observe(ref))
-    return () => children.forEach((ref) => ref && observer.unobserve(ref))
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- deps should cover handleIntersect
-  }, [...deps, options.root, options.rootMargin, options.threshold])
+    
+    return () => {
+      children.forEach((ref) => ref && observer.unobserve(ref))
+      observer.disconnect()
+    }
+  }, [handleIntersect, root, rootMargin, threshold])
 
   return {
     parentRef,

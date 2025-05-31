@@ -162,25 +162,27 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
     return newData
   }, [handleFetch, minSize])
 
+  const isError = !!error, isPreview = !!preview // For deps arrays
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- Debounce function
-  const groupFetch = useCallback(
-    debounceGroup<number>((offsets) => enabled && !error &&
-      forceFetch(listToParams(offsets, total, minSize, maxSize, isFirstLoad.current) as Params)
-    , debounceMs),
-    [total, enabled, !error, forceFetch, debounceMs]
+  const groupFetch = useMemo(() =>
+    debounceGroup<number>(
+      (offsets) => enabled && !isError && forceFetch(listToParams(offsets, total, minSize, maxSize, isFirstLoad.current) as Params),
+      debounceMs,
+    ),
+    [
+      total, enabled, isError, forceFetch, minSize, maxSize, debounceMs,
+      entries, filter, cursor, preview, // IntersectionObserver dependencies
+    ]
   )
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- Debounce function
-  const nonPreviewFetch = useCallback(
-    debounce((params: Params = {} as Params) => enabled && !error && forceFetch(params), debounceMs),
-    [enabled, !error, forceFetch, debounceMs]
+  const nonPreviewFetch = useMemo(() =>
+    debounce((params: Params = {} as Params) => enabled && !isError && forceFetch(params), debounceMs),
+    [enabled, isError, forceFetch, debounceMs]
   )
   
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- Debounce function
-  const previewFetch = useCallback(
-    debounce((params: Params = {} as Params) => enabled && !error && !!preview && forceFetch(params), debounceMs),
-    [enabled, !error, !preview, forceFetch, debounceMs]
+  const previewFetch = useMemo(() =>
+    debounce((params: Params = {} as Params) => enabled && !isError && isPreview && forceFetch(params), debounceMs),
+    [enabled, isError, isPreview, forceFetch, debounceMs]
   )
 
 
@@ -201,15 +203,16 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
 
 
   // Dynamic loading controller
-  const { parentRef, childProps } = useIntersection(
-    (index) => groupFetch(index),
-    { threshold: 1, rootMargin: `${scrollMarginPxls ?? 0}px 0px ${scrollMarginPxls ?? 0}px 0px` },
-    [groupFetch, total, entries, filter, cursor, preview],
-  )
+  const { parentRef, childProps } = useIntersection(groupFetch, {
+    threshold: 1, rootMargin: `${scrollMarginPxls ?? 0}px 0px ${scrollMarginPxls ?? 0}px 0px`,
+  })
 
 
   // Get count of loaded + unfiltered
-  const displayCount = useMemo(() => Object.keys(entries).reduce((count, idx) => +(!filter || filter(entries[idx])) + count, 0), [entries, filter])
+  const displayCount = useMemo(() => Object.keys(entries).reduce(
+    (count, idx) => +(!filter || filter(entries[idx])) + count, 0),
+    [entries, filter],
+  )
   
   // Clear preview data if it is unused
   const previewCount = preview?.length

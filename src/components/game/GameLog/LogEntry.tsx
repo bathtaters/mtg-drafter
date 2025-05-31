@@ -125,7 +125,6 @@ type FullProps = {
 }
 
 type Props = Omit<FullProps, 'entry'> & {
-  index: number,
-  isLoading: boolean,
   entry?: FullProps['entry'],
+  isLoading: boolean,
 }
