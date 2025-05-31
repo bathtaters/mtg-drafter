@@ -113,7 +113,7 @@ export const skipBoosterTypes: BoosterType[] = []
 
 export const logFetchOptions = { minSize: 100, maxSize: 500, debounceMs: 350 }
 
-export const dynamicScrollPreloadDistancePx = 450 // See Intersection API - "root margin"
+export const dynamicScrollOptions = { threshold: 1, rootMargin: '450px 0px 450px 0px' } // See Intersection API documentation
 
 export const CUBE_LIST_END = /^\s*#?\s*(?:side|maybe)\s*board/i // don't look at cards below this line
 

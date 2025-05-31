@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { type IntersectionChildProps, useIntersection } from "./hooks"
 import { objToQuery } from "./fetch"
 import { debounce, debounceGroup } from "components/base/services/common.services"
 
 const INIT_DATA = {}, INIT_PREV = [] as any[]
 
 /**
- * React Hook to dynamically fetch paginated data from an API.
+ * React Hook to generate debounced fetch functions for a paginated API endpoint.
  * 
  * This requires you to write a function to do the fetching.
  * (NOTE That handleFetch should be wrapped in useCallback if created inside a React component)
@@ -42,7 +41,6 @@ const INIT_DATA = {}, INIT_PREV = [] as any[]
  *  minSize?: number,
  *  maxSize?: number,
  *  debounceMs?: number,
- *  scrollMarginPxls?: number,
  * }
  * ```
  * - `filter` - Function to determine if a row should be visible (true)
@@ -54,7 +52,6 @@ const INIT_DATA = {}, INIT_PREV = [] as any[]
  *    - `Total` - Total number of entries in database
  * - `minSize/maxSize` - Minimum/Maximum number of entries to ask for in a single request
  * - `debounceMs` - Number of milliseonds worth of requests to bundle into a single request.
- * - `scrollMarginPxls` - Number of pixels an Element should be above/below the root to trigger a preload.
  * 
  * @returns All values/functions returned to User
  * ```ts
@@ -62,7 +59,6 @@ const INIT_DATA = {}, INIT_PREV = [] as any[]
  *   entries: ({
  *     index: number, (Should be used as `key` attribute if required)
  *     entry?: Entry,
- *     childProps?: IntersectionChildProps<HTMLElement>,
  *     isFirst: boolean,
  *     isLoading: boolean
  *   } | null)[] | null,
@@ -70,20 +66,17 @@ const INIT_DATA = {}, INIT_PREV = [] as any[]
  *   reset: boolean, 
  *   fetch: (params?: Params) => void,
  *   forceFetch: (options: { offset: number, size: number, isPreview: boolean } & Record<string,any>) => Params,
+ *   intersectFetch: IntersectionHandler,
  *   enabled: boolean,
  *   setEnabled: (enable: boolean) => void,
  *   error: string,
  *   setError: (msg: string) => void,
- *   scrollParentRef: Ref,
- *   scrollItemProps: (index: number) => Ref,
  * }
  * ```
  *  - `entries` - List with data used to build components
  *     - `key` - Generic key for usign .map (= index)
  *     - `index` - Index value from database
  *     - `entry` - User `Entry` data
- *     - `childProps` - Spread this within a child component to force loading that specific offset
- *        whe it becomes visible (Will change to `undefined` once the entry has been cached)
  *     - `isFirst` - True if entry is the top-most entry
  *     - `isLoading` - True if entry is still loading (If `entry` is provided & this is True, `entry` is a Preview)
  *   -  `total` - Total count of entries (Used to generate placeholders)
@@ -91,21 +84,18 @@ const INIT_DATA = {}, INIT_PREV = [] as any[]
  *   -  `reset` - Function to clear cache and begin reload process
  *   -  `fetch` - Trigger a manual fetch with specific params (Calls to this will be automatically debounced)
  *   -  `forceFetch` - Same as above, excpet this is NOT debounced and it will return the actual data.
+ *   -  `intersectFetch` - Fetch function that cab be passed to the ***useIntersection*** hook as the `handleIntersect` parameter.
  *   -  `enabled` - True/False if fetching new data is enabled/disabled
  *   -  `setEnabled` - Sets value of `enabled`
  *   -  `error` - Error message, if there is currently an error
  *   -  `setError` - Sets value of `error` (Set to `undefined` to clear error)
- *   -  `scrollParentRef` - React 'ref' that should be passed to immediate parent of item list (Must be IMMEDIATE parent!)
- *   -  `scrollItemProps` - Function to generate a React 'ref' based off the index value
- *        (Should be called using 'index' from every immediate child of `scrollParentRef`representing an entry)
  */
-export function useDynamicScrollFetcher<Entry, Params extends FetchParams = FetchParams>(
+export default function useDynamicScrollFetcher<Entry, Params extends FetchParams = FetchParams>(
   handleFetch: FetchHandler<Entry, Params>,
   {
     filter,
     initalEnabled = true, initialData = INIT_DATA, initialPreview = INIT_PREV, initialTotal,
     minSize = 0, maxSize = 1000, debounceMs = 500, 
-    scrollMarginPxls = 200,
   }: DynamicFetcherOptions<Entry> = {},
 ) {
   const isFirstLoad = useRef(true)
@@ -164,14 +154,14 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
 
   const isError = !!error, isPreview = !!preview // For deps arrays
 
-  const groupFetch = useMemo(() =>
+  const intersectFetch = useMemo(() =>
     debounceGroup<number>(
       (offsets) => enabled && !isError && forceFetch(listToParams(offsets, total, minSize, maxSize, isFirstLoad.current) as Params),
       debounceMs,
     ),
     [
       total, enabled, isError, forceFetch, minSize, maxSize, debounceMs,
-      entries, filter, cursor, preview, // IntersectionObserver dependencies
+      entries, filter, cursor, preview, // These dependencies are required to make the IntersectionObserver API work
     ]
   )
 
@@ -200,12 +190,6 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
     setCursor(0)
     if (resetCache) setEntries(Array.isArray(initialData) ? arrayToObject(initialData) : initialData)
   }, [initialTotal, initialData, initialPreview])
-
-
-  // Dynamic loading controller
-  const { parentRef, childProps } = useIntersection(groupFetch, {
-    threshold: 1, rootMargin: `${scrollMarginPxls ?? 0}px 0px ${scrollMarginPxls ?? 0}px 0px`,
-  })
 
 
   // Get count of loaded + unfiltered
@@ -239,7 +223,6 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
           /* Not loaded... */
           if (!previewEntry) return {
             index,
-            childProps: childProps(index),
             isFirst: false,
             isLoading: true,
           }
@@ -248,7 +231,6 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
           return {
             index,
             entry: previewEntry,
-            childProps: childProps(index),
             isFirst: false,
             isLoading: true,
           }
@@ -272,7 +254,7 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
       
       return data
     },
-    [total, entries, preview, cursor, displayCount, filter, childProps],
+    [total, entries, preview, cursor, displayCount, filter],
   )
 
   const fetchAll = async (extraParams: Omit<Params, 'offset'|'isPreview'> = {} as Params) => {
@@ -298,11 +280,9 @@ export function useDynamicScrollFetcher<Entry, Params extends FetchParams = Fetc
   return {
     entries: entryData,
     total, fetchAll, reset, 
-    fetch, forceFetch,
+    fetch, forceFetch, intersectFetch,
     enabled, setEnabled,
     error,   setError,
-    scrollParentRef: parentRef,
-    scrollItemProps: childProps
   }
 }
 
@@ -358,31 +338,9 @@ export type DynamicFetcherOptions<Entry> = {
   minSize?: number,
   maxSize?: number,
   debounceMs?: number,
-  scrollMarginPxls?: number,
 }
 
 export type FetchParams = Record<string, any> & { offset?: number, size?: number, isPreview?: boolean }
 export type FetchResponse<Data> = { data?: Data[], total: number, offset?: number, error?: string } | { error: string }
-export type EntryData<Entry> = { index: number, entry?: Entry, childProps?: IntersectionChildProps<HTMLElement>, isFirst: boolean, isLoading: boolean }
+export type EntryData<Entry> = { index: number, entry?: Entry, isFirst: boolean, isLoading: boolean }
 export type FetchHandler<Entry, Params extends FetchParams> = (queryString: string, params: Params) => Promise<FetchResponse<Entry> | undefined>
-
-type HookReturn<Entry, Params> = {
-  entries: ({
-    key: number,
-    index: number,
-    entry?: Entry,
-    childProps?: IntersectionChildProps<HTMLElement>,
-    isFirst: boolean,
-    isLoading: boolean
-  } | null)[] | null,
-  total: number,
-  reset: boolean, 
-  fetch: (params?: Params) => void,
-  forceFetch: (options: { offset: number, size: number, isPreview: boolean } & Record<string,any>) => Params,
-  enabled: boolean,
-  setEnabled: (enable: boolean) => void,
-  error: string,
-  setError: (msg: string) => void,
-  scrollParentRef: any,
-  scrollItemProps: any[],
-}

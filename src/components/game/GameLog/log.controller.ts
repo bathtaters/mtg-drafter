@@ -5,10 +5,10 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { fetcher } from "components/base/libs/fetch"
 import downloadTextFile from "components/base/libs/download"
-import { type FetchHandler, useDynamicScrollFetcher } from "components/base/libs/scrollFetch"
+import useDynamicScrollFetcher, { type FetchHandler } from "components/base/libs/scrollFetch"
 import useToolbar from "../CardToolbar/toolbar.controller"
 import { adaptEntry, filterEntry, stringifyLogEntries } from "./log.utils"
-import { logOptions, logFetchOptions, dynamicScrollPreloadDistancePx } from "assets/constants"
+import { logOptions, logFetchOptions } from "assets/constants"
 import { LOG_EXT, logFilename } from "assets/strings"
 import { allActions, otherPlayers } from "types/logs"
 
@@ -43,11 +43,10 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
 
   const {
     entries, fetchAll,
-    fetch, reset,
+    fetch, intersectFetch, reset,
     enabled, setEnabled,
     error, setError,
-    scrollParentRef, scrollItemProps, 
-  } = useDynamicScrollFetcher(fetchLogs, { filter, initalEnabled: false, scrollMarginPxls: dynamicScrollPreloadDistancePx, ...logFetchOptions })
+  } = useDynamicScrollFetcher(fetchLogs, { filter, initalEnabled: false, ...logFetchOptions })
 
   const downloadLog = async () => {
     const jsonData = await fetchAll().then((data) => stringifyLogEntries(data, playerData))
@@ -60,14 +59,13 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
   useEffect(() => { fetch({ filter: { ...options, players, actions }, isPreview: true }) }, [options, players, actions, fetch])
   
   return {
-    entries, fetch, reset,
+    entries, fetch, intersectFetch, reset,
     allActions, allPlayers,
     error, setError,
     players, setPlayers,
     actions, setActions,
     options, setOptions,
     enabled, setEnabled,
-    scrollParentRef, scrollItemProps,
     downloadLog,
   }
 }
