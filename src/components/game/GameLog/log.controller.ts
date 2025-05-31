@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLocalStorage } from "components/base/libs/storage"
 import { fetcher } from "components/base/libs/fetch"
 import downloadTextFile from "components/base/libs/download"
-import useDynamicScrollFetcher, { type FetchHandler } from "components/base/libs/scrollFetch"
+import useAdvancedFetch, { type FetchHandler } from "components/base/libs/advancedFetch"
 import useToolbar from "../CardToolbar/toolbar.controller"
 import { adaptEntry, filterEntry, stringifyLogEntries } from "./log.utils"
 import { logOptions, logFetchOptions } from "assets/constants"
@@ -46,7 +46,7 @@ export default function useGameLog(url: Game['url'], playerData: BasicPlayer[]) 
     fetch, intersectFetch, reset,
     enabled, setEnabled,
     error, setError,
-  } = useDynamicScrollFetcher(fetchLogs, { filter, initalEnabled: false, ...logFetchOptions })
+  } = useAdvancedFetch(fetchLogs, { filter, initalEnabled: false, ...logFetchOptions })
 
   const downloadLog = async () => {
     const jsonData = await fetchAll().then((data) => stringifyLogEntries(data, playerData))

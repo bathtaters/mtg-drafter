@@ -90,13 +90,13 @@ const INIT_DATA = {}, INIT_PREV = [] as any[]
  *   -  `error` - Error message, if there is currently an error
  *   -  `setError` - Sets value of `error` (Set to `undefined` to clear error)
  */
-export default function useDynamicScrollFetcher<Entry, Params extends FetchParams = FetchParams>(
+export default function useAdvancedFetch<Entry, Params extends FetchParams = FetchParams>(
   handleFetch: FetchHandler<Entry, Params>,
   {
     filter,
     initalEnabled = true, initialData = INIT_DATA, initialPreview = INIT_PREV, initialTotal,
     minSize = 0, maxSize = 1000, debounceMs = 500, 
-  }: DynamicFetcherOptions<Entry> = {},
+  }: AdvancedFetchOptions<Entry> = {},
 ) {
   const isFirstLoad = useRef(true)
   const [ entries, setEntries ] = useState(Array.isArray(initialData) ? arrayToObject(initialData) : initialData)
@@ -329,7 +329,7 @@ const listToParams = (indexList: number[], total: number | undefined, minSize: n
 
 // *** --- TYPES --- *** //
 
-export type DynamicFetcherOptions<Entry> = {
+export type AdvancedFetchOptions<Entry> = {
   filter?: (entry: Entry) => boolean,
   initalEnabled?: boolean,
   initialData?: Entry[] | Record<number, Entry>,
