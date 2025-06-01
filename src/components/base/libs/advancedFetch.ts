@@ -159,10 +159,7 @@ export default function useAdvancedFetch<Entry, Params extends FetchParams = Fet
       (offsets) => enabled && !isError && forceFetch(listToParams(offsets, total, minSize, maxSize, isFirstLoad.current) as Params),
       debounceMs,
     ),
-    [
-      total, enabled, isError, forceFetch, minSize, maxSize, debounceMs,
-      entries, filter, cursor, preview, // These dependencies are required to make the IntersectionObserver API work
-    ]
+    [total, enabled, isError, forceFetch, minSize, maxSize, debounceMs]
   )
 
   const nonPreviewFetch = useMemo(() =>
