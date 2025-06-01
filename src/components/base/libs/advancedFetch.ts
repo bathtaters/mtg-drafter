@@ -152,24 +152,24 @@ export default function useAdvancedFetch<Entry, Params extends FetchParams = Fet
     return newData
   }, [handleFetch, minSize])
 
-  const isError = !!error, isPreview = !!preview // For deps arrays
+  const hasError = !!error, noPreview = !preview // For deps arrays
 
-  const intersectFetch = useMemo(() =>
+  const intersectFetch = useMemo(() => !enabled || hasError ? () => {} :
     debounceGroup<number>(
-      (offsets) => enabled && !isError && forceFetch(listToParams(offsets, total, minSize, maxSize, isFirstLoad.current) as Params),
+      (offsets) => forceFetch(listToParams(offsets, total, minSize, maxSize, isFirstLoad.current) as Params),
       debounceMs,
     ),
-    [total, enabled, isError, forceFetch, minSize, maxSize, debounceMs]
+    [total, enabled, hasError, forceFetch, minSize, maxSize, debounceMs]
   )
 
-  const nonPreviewFetch = useMemo(() =>
-    debounce((params: Params = {} as Params) => enabled && !isError && forceFetch(params), debounceMs),
-    [enabled, isError, forceFetch, debounceMs]
+  const nonPreviewFetch = useMemo(() => !enabled || hasError ? () => {} :
+    debounce((params: Params = {} as Params) => forceFetch(params), debounceMs),
+    [enabled, hasError, forceFetch, debounceMs]
   )
   
-  const previewFetch = useMemo(() =>
-    debounce((params: Params = {} as Params) => enabled && !isError && isPreview && forceFetch(params), debounceMs),
-    [enabled, isError, isPreview, forceFetch, debounceMs]
+  const previewFetch = useMemo(() => !enabled || hasError || noPreview ? () => {} :
+    debounce((params: Params = {} as Params) => forceFetch(params), debounceMs),
+    [enabled, hasError, noPreview, forceFetch, debounceMs]
   )
 
 
