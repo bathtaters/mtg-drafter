@@ -171,13 +171,13 @@ export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependenci
 
 
 export type IntersectionHandler = (index: number, entry: IntersectionObserverEntry) => void
-export type IntersectionChildProps<E extends HTMLElement = HTMLElement> = { ['data-index']: number, ref: Ref<E> }
 
 export function useIntersection(handleIntersect: IntersectionHandler, { root, rootMargin, threshold }: IntersectionObserverInit = {}) {
   const parentRef = useRef<HTMLElement>(null)
-  const childrenRef = useRef<HTMLElement[]>([])
 
   useEffect(() => {
+    if (!parentRef.current) return
+
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -186,24 +186,17 @@ export function useIntersection(handleIntersect: IntersectionHandler, { root, ro
         }
       }),
       { root: typeof root === 'undefined' ? parentRef.current : root, rootMargin, threshold },
-    );
+    )
 
-    const children = [...childrenRef.current]
-    children.forEach((ref) => ref && observer.observe(ref))
-    
-    return () => {
-      children.forEach((ref) => ref && observer.unobserve(ref))
-      observer.disconnect()
+    const children = parentRef.current.children
+    for (let i = 0; i < children.length; i++) {
+      observer.observe(children[i])
     }
+    
+    return () => observer.disconnect()
   }, [handleIntersect, root, rootMargin, threshold])
 
-  return {
-    parentRef,
-    childProps: (index: number): IntersectionChildProps => ({
-      ['data-index']: index,
-      ref: (el: HTMLElement | null) => { if (el) childrenRef.current[index] = el },
-    })
-  }
+  return parentRef
 }
 
 

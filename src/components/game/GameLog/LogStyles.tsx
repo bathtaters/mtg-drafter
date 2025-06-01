@@ -3,7 +3,6 @@ import { TabLabels, type GameCardFull, type GameCardPartial } from "types/game"
 import Image from "next/image"
 import Link from "next/link"
 import Card from "../Card/Card"
-import { IntersectionChildProps } from "components/base/libs/hooks"
 import getColorClass from "components/base/libs/colors"
 import { objToString } from "./log.utils"
 import { scryfallLink } from "assets/urls"
@@ -20,8 +19,8 @@ export const LogContainer = ({ children, ref }: { children: ReactNode, ref?: Ref
 
 export const ErrorContainer = ({ text }: { text: string }) => <p className="opacity-80 italic">{text}</p>
 
-export const EntryWrapper = ({ children, childProps }: { children: ReactNode, childProps?: IntersectionChildProps<any> }) => (
-  <li className="flex flex-wrap items-center my-0.5 gap-y-0.5" {...childProps}>{children}</li>
+export const EntryWrapper = ({ children, index }: { children: ReactNode, index?: number }) => (
+  <li className="flex flex-wrap items-center my-0.5 gap-y-0.5" data-index={index}>{children}</li>
 )
 
 export const EntryItem = (
@@ -86,8 +85,8 @@ export const MissingCard = () => <span className="italic opacity-50">Empty Pack<
 
 export const EntrySpace = () => <span className="inline-block w-1"></span>
 
-export const EntryLoading = ({ childProps }: { childProps?: IntersectionChildProps }) => (
-  <EntryWrapper childProps={childProps}>
+export const EntryLoading = ({ index }: { index?: number }) => (
+  <EntryWrapper index={index}>
     <div className="skeleton bg-base-content/20 h-4 w-10" />
     <EntrySpace />
     <div className="skeleton bg-base-content/20 h-6 w-20" />
