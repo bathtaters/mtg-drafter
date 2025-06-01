@@ -301,12 +301,12 @@ const listToParams = (indexList: number[], total: number | undefined, minSize: n
     // Find min/max, stopping early if max size is reached
     if (num < offset) {
       offset = num
-      if (end - offset > maxSize)
+      if (end - offset >= maxSize)
         return { offset, size: maxSize }
       
     } else if (num > end) {
       end = num
-      if (end - offset > maxSize)
+      if (end - offset >= maxSize)
         return { offset: end - maxSize, size: maxSize }
     }
   }
