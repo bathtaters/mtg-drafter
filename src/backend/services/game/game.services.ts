@@ -1,201 +1,294 @@
-import { GameCard, Board, Pack } from '@prisma/client'
-import type { Game, LiveOptions, Player } from 'types/game'
-import prisma from '../../libs/db'
-import retry from '../../libs/retry'
-import { adaptDbGame, getMaxPackSize, getNextPlayerId } from '../../utils/game/game.utils'
+import { GameCard, Board, Pack } from "@prisma/client";
+import type { Game, LiveOptions, Player } from "types/game";
+import prisma from "../../libs/db";
+import retry from "../../libs/retry";
+import {
+  adaptDbGame,
+  getMaxPackSize,
+  getNextPlayerId,
+} from "../../utils/game/game.utils";
 
+const basicPlayer /* Prisma.Game$playersArgs */ = {
+  select: { id: true, name: true, sessionId: true, pick: true },
+};
+const basicGame /* Prisma.GameArgs */ = {
+  select: {
+    id: true,
+    round: true,
+    roundCount: true,
+    players: { select: { id: true } },
+  },
+};
 
-const basicPlayer /* Prisma.Game$playersArgs */ = { select: { id: true, name: true, sessionId: true, pick: true } }
-const basicGame /* Prisma.GameArgs */ = { select: { id: true, round: true, roundCount: true, players: { select: { id: true } } }}
-
-
-export function getGame(url?: Game['url'], includePacks = true, id?: Game['id']) {
-  return prisma.game.findUnique({
-    where: url == null ? { id } : { url },
-    include: {
-      players: basicPlayer,
-      watchers: { select: { sessionId: true, name: true } },
-      banned: true,
-      packs: includePacks && {
-        orderBy: { index: 'asc' }, include: {
-          cards: {
-            include: {
-              card: { include: { otherFaces: { include: { card: true } } } }
-            }
-          }
-        }
-      }
-    }
-  }).then(adaptDbGame)
+export function getGame(
+  url?: Game["url"],
+  includePacks = true,
+  id?: Game["id"]
+) {
+  return prisma.game
+    .findUnique({
+      where: url == null ? { id } : { url },
+      include: {
+        players: basicPlayer,
+        watchers: { select: { sessionId: true, name: true } },
+        banned: true,
+        packs: includePacks && {
+          orderBy: { index: "asc" },
+          include: {
+            cards: {
+              include: {
+                card: { include: { otherFaces: { include: { card: true } } } },
+              },
+            },
+          },
+        },
+      },
+    })
+    .then(adaptDbGame);
 }
 
-export function getRoundPackSize(gameId: Game["id"], round: number, roundCount: number, playerCount: number) {
-  return prisma.gameCard.groupBy({
-    where: { gameId },
-    by: ['packIdx'],
-    orderBy: { packIdx: 'asc' },
-    _count: true
-  }).then((counts) => getMaxPackSize(counts, round, roundCount, playerCount))
+export function getRoundPackSize(
+  gameId: Game["id"],
+  round: number,
+  roundCount: number,
+  playerCount: number
+) {
+  return prisma.gameCard
+    .groupBy({
+      where: { gameId },
+      by: ["packIdx"],
+      orderBy: { packIdx: "asc" },
+      _count: true,
+    })
+    .then((counts) => getMaxPackSize(counts, round, roundCount, playerCount));
 }
 
-
-export function updateGame(id: Game['id'], options: LiveOptions, hostId: Player['sessionId'], newHost?: Player['id']) {
+export function updateGame(
+  id: Game["id"],
+  options: LiveOptions,
+  hostId: Player["sessionId"],
+  newHost?: Player["id"]
+) {
   const select = Object.keys(options).reduce(
     (opts, key) => ({ ...opts, [key]: true }),
-    {} as Record<keyof LiveOptions, true>,
-  )
-  if (options.timerBase === 0) options.timerBase = null
-  return retry(() => prisma.$transaction([
-    prisma.game.update({ where: { id }, data: options, select }),
+    {} as Record<keyof LiveOptions, true>
+  );
+  if (options.timerBase === 0) options.timerBase = null;
+  return retry(() =>
+    prisma.$transaction([
+      prisma.game.update({ where: { id }, data: options, select }),
 
-    prisma.logEntry.create({ data: { gameId: id, hostId, action: 'settings', data: JSON.stringify(options), playerId: newHost } })
-  ])).then(([result]) => result)
+      prisma.logEntry.create({
+        data: {
+          gameId: id,
+          hostId,
+          action: "settings",
+          data: JSON.stringify(options),
+          playerId: newHost,
+        },
+      }),
+    ])
+  ).then(([result]) => result);
 }
 
-
-export async function nextRound(id: Game['id'], round: Game['round'], hostId: Player['sessionId']) {
-  const game = await retry(() => prisma.game.update({
-    where: { id },
-    data: {
-      round: round,
-      players: { updateMany: {
-        where: {}, data: { pick: 1 },
-      }},
-    },
-    select: { round: true, roundCount: true }
-  }))
-  if (!game) throw new Error('Game not found')
-
-  await retry(() => prisma.logEntry.create({ data: {
-    gameId: id, hostId, action: 'round',
-    data: `${game.round > game.roundCount ? 'END' : game.round}`
-  } }))
-
-  return game.round
-}
-
-
-export async function pauseGame(id: Game['id'], hostId: Player['sessionId']) {
-  const game = await retry(() => prisma.$transaction([
+export async function nextRound(
+  id: Game["id"],
+  round: Game["round"],
+  hostId: Player["sessionId"]
+) {
+  const game = await retry(() =>
     prisma.game.update({
       where: { id },
-      data: { pause: Date.now() },
-      select: { pause: true },
-    }),
-    prisma.logEntry.create({ data: { gameId: id, hostId, action: 'pause' } }),
-  ]))
+      data: {
+        round: round,
+        players: {
+          updateMany: {
+            where: {},
+            data: { pick: 1 },
+          },
+        },
+      },
+      select: { round: true, roundCount: true },
+    })
+  );
+  if (!game) throw new Error("Game not found");
 
-  return Number(game[0].pause ?? 0)
+  await retry(() =>
+    prisma.logEntry.create({
+      data: {
+        gameId: id,
+        hostId,
+        action: "round",
+        data: `${game.round > game.roundCount ? "END" : game.round}`,
+      },
+    })
+  );
+
+  return game.round;
 }
 
-export async function resumeGame(id: Game['id'], hostId: Player['sessionId']) {
+export async function pauseGame(id: Game["id"], hostId: Player["sessionId"]) {
+  const game = await retry(() =>
+    prisma.$transaction([
+      prisma.game.update({
+        where: { id },
+        data: { pause: Date.now() },
+        select: { pause: true },
+      }),
+      prisma.logEntry.create({ data: { gameId: id, hostId, action: "pause" } }),
+    ])
+  );
+
+  return Number(game[0].pause ?? 0);
+}
+
+export async function resumeGame(id: Game["id"], hostId: Player["sessionId"]) {
   const game = await prisma.game.findFirstOrThrow({
     where: { id },
     select: { id: true, pause: true },
-  })
+  });
 
-  const increment = Date.now() - Number(game.pause)
+  const increment = Date.now() - Number(game.pause);
 
-  await retry(() => prisma.$transaction([
-    prisma.player.updateMany({
-      where: { gameId: game.id },
-      data: { timer: { increment } },
-    }),
-    prisma.game.update({
-      where: { id: game.id },
-      data: { pause: null },
-    }),
-    prisma.logEntry.create({ data: {
-      gameId: game.id,
-      hostId,
-      action: 'pause',
-      data: `${(increment / 1000).toFixed(1)}`
-    } })
-  ]))
-  return null
+  await retry(() =>
+    prisma.$transaction([
+      prisma.player.updateMany({
+        where: { gameId: game.id },
+        data: { timer: { increment } },
+      }),
+      prisma.game.update({
+        where: { id: game.id },
+        data: { pause: null },
+      }),
+      prisma.logEntry.create({
+        data: {
+          gameId: game.id,
+          hostId,
+          action: "pause",
+          data: `${(increment / 1000).toFixed(1)}`,
+        },
+      }),
+    ])
+  );
+  return null;
 }
 
+export async function pickCard(
+  playerId: Player["id"],
+  gameCardOrPack: GameCard["id"] | Pack["index"],
+  sessionId: Player["sessionId"] = null,
+  board: Board = "main"
+) {
+  if (!(await prisma.player.count({ where: { id: playerId } })))
+    return "Player";
 
-export async function pickCard(playerId: Player['id'], gameCardOrPack: GameCard['id'] | Pack['index'], sessionId: Player['sessionId'] = null, board: Board = "main") {
-  if (!(await prisma.player.count({ where: { id: playerId }}))) return 'Player'
-
-  let game: Pick<Game,"id"|"round"|"roundCount"> & { players: { id: Player['id'] }[] },
-    player: Pick<Player,"id"|"gameId"|"pick">
+  let game: Pick<Game, "id" | "round" | "roundCount"> & {
+      players: { id: Player["id"] }[];
+    },
+    player: Pick<Player, "id" | "gameId" | "pick">;
 
   try {
     // Pick w/o card
-    if (typeof gameCardOrPack === 'number') {
+    if (typeof gameCardOrPack === "number") {
       const txRes = await prisma.player.findFirstOrThrow({
         where: { id: playerId },
-        select: { game: basicGame }
-      })
-      game = txRes.game
+        select: { game: basicGame },
+      });
+      game = txRes.game;
 
-      if (await prisma.gameCard.count({ where: { gameId: game.id, packIdx: gameCardOrPack, playerId: null }}))
-        throw new Error("Attempting to skip pack with pickable cards")
+      if (
+        await prisma.gameCard.count({
+          where: { gameId: game.id, packIdx: gameCardOrPack, playerId: null },
+        })
+      )
+        throw new Error("Attempting to skip pack with pickable cards");
 
-      player = await retry(() => prisma.player.update({
-        where: { id: playerId },
-        data: { pick: { increment: 1 }, timer: null },
-        select: { id: true, pick: true, gameId: true },
-      }))
-    
-    // Pick w/ card
-    } else {
-      const txRes = await retry(() => prisma.$transaction([
-        prisma.gameCard.findFirstOrThrow({
-          where: { id: gameCardOrPack, playerId: null },
-          select: { pack: { select: { game: basicGame }}}
-        }),
+      player = await retry(() =>
         prisma.player.update({
           where: { id: playerId },
           data: { pick: { increment: 1 }, timer: null },
           select: { id: true, pick: true, gameId: true },
-        }),
-        prisma.gameCard.update({
-          where: { id: gameCardOrPack },
-          data: { playerId, board },
-        }),
-      ]))
+        })
+      );
 
-      game = txRes[0].pack.game
-      player = txRes[1]
+      // Pick w/ card
+    } else {
+      const txRes = await retry(() =>
+        prisma.$transaction([
+          prisma.gameCard.findFirstOrThrow({
+            where: { id: gameCardOrPack, playerId: null },
+            select: { pack: { select: { game: basicGame } } },
+          }),
+          prisma.player.update({
+            where: { id: playerId },
+            data: { pick: { increment: 1 }, timer: null },
+            select: { id: true, pick: true, gameId: true },
+          }),
+          prisma.gameCard.update({
+            where: { id: gameCardOrPack },
+            data: { playerId, board },
+          }),
+        ])
+      );
+
+      game = txRes[0].pack.game;
+      player = txRes[1];
     }
-
-
   } catch (err: any) {
     // P2025 = GameCard not found
-    if (err.code = 'P2025') return 'Card'
-    throw err
+    if ((err.code = "P2025")) return "Card";
+    throw err;
   }
-  
-  await retry(() => prisma.logEntry.create({ data: {
-    gameId: game.id,
-    sessionId,
-    playerId,
-    cardId: typeof gameCardOrPack === 'string' ? gameCardOrPack : undefined,
-    action: 'pick',
-    data: `${game.round}:${player.pick - 1}`
-  } }))
-  return { ...player, passingToId: getNextPlayerId(playerId, game) }
-}
 
+  await retry(() =>
+    prisma.logEntry.create({
+      data: {
+        gameId: game.id,
+        sessionId,
+        playerId,
+        cardId: typeof gameCardOrPack === "string" ? gameCardOrPack : undefined,
+        action: "pick",
+        data: `${game.round}:${player.pick - 1}`,
+      },
+    })
+  );
+  return { ...player, passingToId: getNextPlayerId(playerId, game) };
+}
 
 export async function gameExists(gameUrl: string | string[] | undefined) {
-  if (!gameUrl || typeof gameUrl !== 'string') {
-    console.error(`Fetch game/player: Invalid gameURL (${gameUrl})`)
-    return false
+  if (!gameUrl || typeof gameUrl !== "string") {
+    console.error(`Fetch game/player: Invalid gameURL (${gameUrl})`);
+    return false;
   }
 
-  const gameExists = await prisma.game.count({ where: { url: gameUrl } })
-  if (!gameExists) console.error(`Fetch game: GameURL not found (${gameUrl})`)
-  return !!gameExists
+  const gameExists = await prisma.game.count({ where: { url: gameUrl } });
+  if (!gameExists) console.error(`Fetch game: GameURL not found (${gameUrl})`);
+  return !!gameExists;
 }
 
-export const checkBan = (gameId: Game['id'], sessionId: Player['sessionId']) => prisma.ban.count({
-  where: { sessionId, gameId }, take: 1,
-}).then(Boolean)
+export const checkBan = (gameId: Game["id"], sessionId: Player["sessionId"]) =>
+  prisma.ban
+    .count({
+      where: { sessionId, gameId },
+      take: 1,
+    })
+    .then(Boolean);
 
-export const checkBanOrLock = (gameId: Game['id'], sessionId: Player['sessionId'], checkLock = true) => prisma.ban.count({
-  where: checkLock ? { OR: [{ gameId, sessionId: null }, { gameId, sessionId }] } : { gameId, sessionId }, take: 1,
-}).then(Boolean)
+export const checkBanOrLock = (
+  gameId: Game["id"],
+  sessionId: Player["sessionId"],
+  checkLock = true
+) =>
+  prisma.ban
+    .count({
+      where: checkLock
+        ? {
+            OR: [
+              { gameId, sessionId: null },
+              { gameId, sessionId },
+            ],
+          }
+        : { gameId, sessionId },
+      take: 1,
+    })
+    .then(Boolean);

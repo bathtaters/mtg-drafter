@@ -1,3 +1,3 @@
-import getColorClass from 'components/base/libs/colors'
+import getColorClass from "components/base/libs/colors";
 
-it.todo('getColorClass')
+it.todo("getColorClass");

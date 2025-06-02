@@ -1,80 +1,129 @@
-import type { ReactNode } from "react"
-import type { Game, BasicPlayer, BasicWatcher } from "types/game"
-import type { SetHost } from "./host.controller"
-import { PlayerWrapper, PlayerButton, PlayersWrapper, BanNameWrapper, NoPlayers } from "./HostModalStyles"
-import { BOT } from "assets/constants"
-import { hostPlayerTooltips } from "assets/strings"
-
+import type { ReactNode } from "react";
+import type { Game, BasicPlayer, BasicWatcher } from "types/game";
+import type { SetHost } from "./host.controller";
+import {
+  PlayerWrapper,
+  PlayerButton,
+  PlayersWrapper,
+  BanNameWrapper,
+  NoPlayers,
+} from "./HostModalStyles";
+import { BOT } from "assets/constants";
+import { hostPlayerTooltips } from "assets/strings";
 
 export type Props = {
-  label?: string,
-  players: BasicPlayer[] | BasicWatcher[],
-  banned?: Game['banned'],
-  kickOne: (playerId: string) => void,
-  banOne: (sessionId?: string | null, unban?: boolean, playerId?: string) => void,
-  setHost?: SetHost,
-  children?: ReactNode,
-}
-  
-export default function Moderation({ label, players, banned, kickOne, banOne, setHost, children }: Props) {
-  if (!players.length) return <NoPlayers>No players found</NoPlayers>
+  label?: string;
+  players: BasicPlayer[] | BasicWatcher[];
+  banned?: Game["banned"];
+  kickOne: (playerId: string) => void;
+  banOne: (
+    sessionId?: string | null,
+    unban?: boolean,
+    playerId?: string
+  ) => void;
+  setHost?: SetHost;
+  children?: ReactNode;
+};
 
-  return (<>
-    <PlayersWrapper label={label}>
-      {players.map((player) => 'id' in player ?
-        // Game Player
-        <ModerationEntry key={player.id}
-          id={player.sessionId} name={player.name}
-          kick={() => kickOne(player.id)}
-          ban={() => banOne(player.sessionId, false, player.id)}
-        />
-        :
-        // Game Watcher
-        <ModerationEntry key={player.sessionId}
-          id={player.sessionId} name={player.name}
-          host={setHost && (() => setHost(player.sessionId))}
-          kick={() => kickOne(player.sessionId)}
-          ban={() => banOne(player.sessionId)}
-        />
-      )}
-    </PlayersWrapper>
-    
-    {children}
+export default function Moderation({
+  label,
+  players,
+  banned,
+  kickOne,
+  banOne,
+  setHost,
+  children,
+}: Props) {
+  if (!players.length) return <NoPlayers>No players found</NoPlayers>;
 
-    { banned &&
-      <PlayersWrapper label="Ban List">
-        {banned.map(({ id, sessionId, name, note }) => 
-          <ModerationEntry key={id} id={sessionId} name={name} note={note}
-            unban={() => banOne(sessionId, true)}
-          />
+  return (
+    <>
+      <PlayersWrapper label={label}>
+        {players.map((player) =>
+          "id" in player ? (
+            // Game Player
+            <ModerationEntry
+              key={player.id}
+              id={player.sessionId}
+              name={player.name}
+              kick={() => kickOne(player.id)}
+              ban={() => banOne(player.sessionId, false, player.id)}
+            />
+          ) : (
+            // Game Watcher
+            <ModerationEntry
+              key={player.sessionId}
+              id={player.sessionId}
+              name={player.name}
+              host={setHost && (() => setHost(player.sessionId))}
+              kick={() => kickOne(player.sessionId)}
+              ban={() => banOne(player.sessionId)}
+            />
+          )
         )}
       </PlayersWrapper>
-    }
-  </>)
+
+      {children}
+
+      {banned && (
+        <PlayersWrapper label="Ban List">
+          {banned.map(({ id, sessionId, name, note }) => (
+            <ModerationEntry
+              key={id}
+              id={sessionId}
+              name={name}
+              note={note}
+              unban={() => banOne(sessionId, true)}
+            />
+          ))}
+        </PlayersWrapper>
+      )}
+    </>
+  );
 }
 
-
-function ModerationEntry({ id, name, note, host, kick, ban, unban }: EntryProps) {
-  if (!id) return null
+function ModerationEntry({
+  id,
+  name,
+  note,
+  host,
+  kick,
+  ban,
+  unban,
+}: EntryProps) {
+  if (!id) return null;
   return (
     <PlayerWrapper>
-      { host && <PlayerButton icon="player" tooltip={hostPlayerTooltips.setHost} action={host} /> }
-      <BanNameWrapper id={id || undefined} isBanned={!!unban} isLeft={!host} tooltip={note || undefined}>
+      {host && (
+        <PlayerButton
+          icon="player"
+          tooltip={hostPlayerTooltips.setHost}
+          action={host}
+        />
+      )}
+      <BanNameWrapper
+        id={id || undefined}
+        isBanned={!!unban}
+        isLeft={!host}
+        tooltip={note || undefined}
+      >
         {name}
       </BanNameWrapper>
-      { kick && <PlayerButton icon="kick" tooltip="Kick" action={kick} /> }
-      { ban && id !== BOT && <PlayerButton icon="ban" tooltip="Ban" action={ban} /> }
-      { unban && <PlayerButton icon="unban" tooltip="Unban" action={unban} />}
+      {kick && <PlayerButton icon="kick" tooltip="Kick" action={kick} />}
+      {ban && id !== BOT && (
+        <PlayerButton icon="ban" tooltip="Ban" action={ban} />
+      )}
+      {unban && <PlayerButton icon="unban" tooltip="Unban" action={unban} />}
     </PlayerWrapper>
-  )
+  );
 }
 
 type EntryProps = {
-  id?: string | null,
-  name?: string | null,
-  note?: string | null,
-  host?: () => void,
-  kick?: () => void,
-  ban?: () => void,
-  unban?: () => void,
-}
+  id?: string | null;
+  name?: string | null;
+  note?: string | null;
+  host?: () => void;
+  kick?: () => void;
+  ban?: () => void;
+  unban?: () => void;
+};

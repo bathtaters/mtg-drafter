@@ -1,70 +1,109 @@
-import type { ReactNode } from "react"
-import { BotMarker, HostMarker, OppMarker, UserMarker } from "./PlayerContainerElemStyles"
+import type { ReactNode } from "react";
+import {
+  BotMarker,
+  HostMarker,
+  OppMarker,
+  UserMarker,
+} from "./PlayerContainerElemStyles";
 
 const themes = {
   self: [
-    /* Outer */ 'border border-primary bg-primary-content',
-    /* Inner */ '',
-    /* Title */ 'text-primary',
-    /* Other */ 'text-primary',
+    /* Outer */ "border border-primary bg-primary-content",
+    /* Inner */ "",
+    /* Title */ "text-primary",
+    /* Other */ "text-primary",
   ],
   opp: [
-    /* Outer */ 'bg-[color-mix(in_oklab,oklch(var(--a)),oklch(var(--b1))_85%)]',
-    /* Inner */ '',
-    /* Title */ '',
-    /* Other */ '',
-  ]
-}
+    /* Outer */ "bg-[color-mix(in_oklab,oklch(var(--a)),oklch(var(--b1))_85%)]",
+    /* Inner */ "",
+    /* Title */ "",
+    /* Other */ "",
+  ],
+};
 
-export default function PlayerContainerStyle(
-  { title, header, subtitle, children, isMini, isHost, disconnected, color, isBot, className = "" }:
-  PlayerContainerStyleProps
-) {
+export default function PlayerContainerStyle({
+  title,
+  header,
+  subtitle,
+  children,
+  isMini,
+  isHost,
+  disconnected,
+  color,
+  isBot,
+  className = "",
+}: PlayerContainerStyleProps) {
   return (
-    <div className={`stats shadow-sm shadow-black overflow-visible ${isMini ? 'h-10 md:h-12 rounded-lg' : 'min-h-24'} ${color ? themes[color][0] : ''} ${className}`}>
-      <div className={`stat ${isMini ? 'p-0 gap-0' : 'rounded-2xl'} ${color ? themes[color][1] : ''}`}>
-        
-        <div className={`stat-figure ${
-          isMini ? 'grid grid-cols-2 grid-rows-2 gap-x-1' : '-mr-3 md:mr-0'
-        } ${color ? themes[color][3] : ''}`}>
+    <div
+      className={`stats shadow-sm shadow-black overflow-visible ${isMini ? "h-10 md:h-12 rounded-lg" : "min-h-24"} ${color ? themes[color][0] : ""} ${className}`}
+    >
+      <div
+        className={`stat ${isMini ? "p-0 gap-0" : "rounded-2xl"} ${color ? themes[color][1] : ""}`}
+      >
+        <div
+          className={`stat-figure ${
+            isMini ? "grid grid-cols-2 grid-rows-2 gap-x-1" : "-mr-3 md:mr-0"
+          } ${color ? themes[color][3] : ""}`}
+        >
           {children}
         </div>
 
-        {header && <div className="stat-title text-xs md:text-base">{header}</div>}
-        
-        <div className={`stat-value font-medium min-w-0 ${
-          isMini ? 'row-span-3 self-center text-base flex items-center' : 'flex items-center'
-        } ${
-          disconnected && isMini ? "opacity-60 italic" : ''} ${color ? themes[color][2] : ''
-        }`}>
-          {!isMini ? null :
-            color === 'self' ? <UserMarker /> :
-            isBot ? <BotMarker /> :
-            color === 'opp' ? <OppMarker /> :
-            isHost ? <HostMarker /> : <span className="w-1" />
-          }
-          <span className={isMini ? "text-xs md:text-base ml-1 mr-2 flex-grow truncate" : "text-lg md:text-2xl flex-grow min-w-0 -ml-2 mb-1"}>{title}</span>
+        {header && (
+          <div className="stat-title text-xs md:text-base">{header}</div>
+        )}
+
+        <div
+          className={`stat-value font-medium min-w-0 ${
+            isMini
+              ? "row-span-3 self-center text-base flex items-center"
+              : "flex items-center"
+          } ${disconnected && isMini ? "opacity-60 italic" : ""} ${
+            color ? themes[color][2] : ""
+          }`}
+        >
+          {!isMini ? null : color === "self" ? (
+            <UserMarker />
+          ) : isBot ? (
+            <BotMarker />
+          ) : color === "opp" ? (
+            <OppMarker />
+          ) : isHost ? (
+            <HostMarker />
+          ) : (
+            <span className="w-1" />
+          )}
+          <span
+            className={
+              isMini
+                ? "text-xs md:text-base ml-1 mr-2 flex-grow truncate"
+                : "text-lg md:text-2xl flex-grow min-w-0 -ml-2 mb-1"
+            }
+          >
+            {title}
+          </span>
         </div>
 
-        {subtitle && <div className={`stat-desc ${color ? themes[color][3] : ''}`}>{subtitle}</div>}
-
+        {subtitle && (
+          <div className={`stat-desc ${color ? themes[color][3] : ""}`}>
+            {subtitle}
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
-
-export type ColorTheme = "self" | "opp" | undefined
+export type ColorTheme = "self" | "opp" | undefined;
 
 type PlayerContainerStyleProps = {
-  title: ReactNode,
-  header?: ReactNode,
-  subtitle?: ReactNode,
-  children?: ReactNode,
-  isMini?: boolean,
-  isHost?: boolean,
-  isBot?: boolean,
-  disconnected?: boolean,
-  color?: ColorTheme,
-  className?: string,
-}
+  title: ReactNode;
+  header?: ReactNode;
+  subtitle?: ReactNode;
+  children?: ReactNode;
+  isMini?: boolean;
+  isHost?: boolean;
+  isBot?: boolean;
+  disconnected?: boolean;
+  color?: ColorTheme;
+  className?: string;
+};

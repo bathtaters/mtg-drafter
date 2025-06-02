@@ -1,3 +1,3 @@
-import { packSort } from 'components/base/services/cardSort.services'
+import { packSort } from "components/base/services/cardSort.services";
 
-it.todo('packSort')
+it.todo("packSort");

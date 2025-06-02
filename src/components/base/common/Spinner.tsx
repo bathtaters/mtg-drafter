@@ -1,4 +1,4 @@
-type Props = { caption?: string, className?: string, hideWrapper?: boolean }
+type Props = { caption?: string; className?: string; hideWrapper?: boolean };
 
 export default function Spinner({
   caption = "",
@@ -6,12 +6,19 @@ export default function Spinner({
   hideWrapper = false,
 }: Props) {
   const innerHtml = (
-      <div className={`flex justify-center items-end text-xl font-light ${className}`} role="status">
-        <span>{caption}</span>
-        <span className="loading loading-dots loading-sm" />
-      </div>
-  )
-  return hideWrapper ?
-    innerHtml :
-    <div className="flex justify-center items-center flex-grow">{innerHtml}</div>
+    <div
+      className={`flex justify-center items-end text-xl font-light ${className}`}
+      role="status"
+    >
+      <span>{caption}</span>
+      <span className="loading loading-dots loading-sm" />
+    </div>
+  );
+  return hideWrapper ? (
+    innerHtml
+  ) : (
+    <div className="flex justify-center items-center flex-grow">
+      {innerHtml}
+    </div>
+  );
 }

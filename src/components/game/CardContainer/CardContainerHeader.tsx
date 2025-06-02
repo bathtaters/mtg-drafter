@@ -1,29 +1,80 @@
-import type { MouseEventHandler, ReactNode } from "react"
-import type { Color, BoardLands, TabLabels } from "types/game"
-import { CardCounter, ContainerHeaderStyle, ContainerLabelStyle, LandButton, LandContainerStyle, LandCounterStyle } from "./CardContainerStyles"
-import { colorClass, colorPip, hoverClass } from "components/base/styles/manaIcons"
-import { colorOrder } from "assets/sort.constants"
-import { cardCounter } from "assets/strings"
-import { getObjectSum, camelToTitle } from "components/base/services/common.services"
-import { containerIcon } from "../GameBody/GameBodyStyles"
+import type { MouseEventHandler, ReactNode } from "react";
+import type { Color, BoardLands, TabLabels } from "types/game";
+import {
+  CardCounter,
+  ContainerHeaderStyle,
+  ContainerLabelStyle,
+  LandButton,
+  LandContainerStyle,
+  LandCounterStyle,
+} from "./CardContainerStyles";
+import {
+  colorClass,
+  colorPip,
+  hoverClass,
+} from "components/base/styles/manaIcons";
+import { colorOrder } from "assets/sort.constants";
+import { cardCounter } from "assets/strings";
+import {
+  getObjectSum,
+  camelToTitle,
+} from "components/base/services/common.services";
+import { containerIcon } from "../GameBody/GameBodyStyles";
 
-const LandCounter = ({ color, count }: { color: Lowercase<Color>, count: number }) => !count ? null : (
-  <LandCounterStyle className={`${colorClass[color]} ${hoverClass[color]} border-solid border-1`}>
-    <span className={colorPip[color]} />
-    <span>{count}</span>
-  </LandCounterStyle>
-)
+const LandCounter = ({
+  color,
+  count,
+}: {
+  color: Lowercase<Color>;
+  count: number;
+}) =>
+  !count ? null : (
+    <LandCounterStyle
+      className={`${colorClass[color]} ${hoverClass[color]} border-solid border-1`}
+    >
+      <span className={colorPip[color]} />
+      <span>{count}</span>
+    </LandCounterStyle>
+  );
 
-export default function ContainerHeader({ label, prefix, suffix, count, children, lands, onLandClick }: { label: TabLabels | "select", prefix?: ReactNode, suffix?: ReactNode, count?: number, children?: ReactNode, lands?: BoardLands, onLandClick?: MouseEventHandler }) {
+export default function ContainerHeader({
+  label,
+  prefix,
+  suffix,
+  count,
+  children,
+  lands,
+  onLandClick,
+}: {
+  label: TabLabels | "select";
+  prefix?: ReactNode;
+  suffix?: ReactNode;
+  count?: number;
+  children?: ReactNode;
+  lands?: BoardLands;
+  onLandClick?: MouseEventHandler;
+}) {
   return (
     <ContainerHeaderStyle>
-      <ContainerLabelStyle>{containerIcon[label]}{prefix}{camelToTitle(label)}{suffix}{label !== 'select' && <CardCounter text={cardCounter(count, lands)} />}</ContainerLabelStyle>
+      <ContainerLabelStyle>
+        {containerIcon[label]}
+        {prefix}
+        {camelToTitle(label)}
+        {suffix}
+        {label !== "select" && <CardCounter text={cardCounter(count, lands)} />}
+      </ContainerLabelStyle>
       {children}
       <LandContainerStyle onClick={onLandClick}>
-        { !lands ? "" : !getObjectSum(lands) ? <LandButton /> :
-            colorOrder.map((c) => <LandCounter key={c} color={c} count={lands[c]} />)
-        }
+        {!lands ? (
+          ""
+        ) : !getObjectSum(lands) ? (
+          <LandButton />
+        ) : (
+          colorOrder.map((c) => (
+            <LandCounter key={c} color={c} count={lands[c]} />
+          ))
+        )}
       </LandContainerStyle>
     </ContainerHeaderStyle>
-  )
+  );
 }

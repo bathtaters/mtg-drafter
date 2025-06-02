@@ -1,3 +1,3 @@
-import { zoomToPixels } from 'components/game/CardToolbar/toolbar.utils'
+import { zoomToPixels } from "components/game/CardToolbar/toolbar.utils";
 
-it.todo('zoomToPixels')
+it.todo("zoomToPixels");

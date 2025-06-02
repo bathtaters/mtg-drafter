@@ -1,39 +1,38 @@
-import type { AppProps } from 'next/app'
-import Head from 'next/head'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import { AppWrapperStyle } from '../components/base/styles/AppStyles'
-import { initialValues } from 'components/game/CardToolbar/cardZoomLevels'
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { AppWrapperStyle } from "../components/base/styles/AppStyles";
+import { initialValues } from "components/game/CardToolbar/cardZoomLevels";
 
-import '../styles/globals.css'
-import 'mana-font/css/mana.min.css'
+import "../styles/globals.css";
+import "mana-font/css/mana.min.css";
 
-import { Inter, EB_Garamond } from "next/font/google"
-const inter = Inter({ subsets: ['latin'] })
-const garamond = EB_Garamond({ subsets: ['latin'] })
-
+import { Inter, EB_Garamond } from "next/font/google";
+const inter = Inter({ subsets: ["latin"] });
+const garamond = EB_Garamond({ subsets: ["latin"] });
 
 function App({ Component, pageProps }: AppProps) {
   return (
     <>
-    <Head>
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-    </Head>
-    <AppWrapperStyle>
-      <style jsx global>{`
-        :root {
-          --font-inter: ${inter.style.fontFamily};
-          --font-garamond: ${garamond.style.fontFamily};
-          ${initialValues}
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <AppWrapperStyle>
+        <style jsx global>{`
+          :root {
+            --font-inter: ${inter.style.fontFamily};
+            --font-garamond: ${garamond.style.fontFamily};
+            ${initialValues}
           }
-          `}</style>
+        `}</style>
 
-      <DndProvider backend={HTML5Backend}>
-        <Component {...pageProps} />
-      </DndProvider>
-    </AppWrapperStyle>
+        <DndProvider backend={HTML5Backend}>
+          <Component {...pageProps} />
+        </DndProvider>
+      </AppWrapperStyle>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

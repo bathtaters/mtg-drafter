@@ -1,12 +1,20 @@
 /* Copied from SVG Repo -- Public Domain: https://www.svgrepo.com/svg/368258/chair */
-export default function EmptyIcon({ className = "w-8 h-auto" }: { className?: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-64 0 512 512" className={`fill-current stroke-none ${className}`}>
-            <path d="M384 432c0 8.8-7.2 16-16 16h-32c-8.78 0-16-7.2-16-16V288l-64 32v176c0 8.8-7.2 16-16 16h-32c-8.8
+export default function EmptyIcon({
+  className = "w-8 h-auto",
+}: {
+  className?: string;
+}) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="-64 0 512 512"
+      className={`fill-current stroke-none ${className}`}
+    >
+      <path
+        d="M384 432c0 8.8-7.2 16-16 16h-32c-8.78 0-16-7.2-16-16V288l-64 32v176c0 8.8-7.2 16-16 16h-32c-8.8
                 0-16-7.2-16-16V320H64v176c0 8.8-7.2 16-16 16H16c-8.8 0-16-7.2-16-16V288c0-16 0-16 15.85-23.93L128 208V64c0-35.2
                 28.8-64 64-64h128c35.2 0 64 28.8 64 64v368z"
-            />
-        </svg>
-    )
-  }
-  
+      />
+    </svg>
+  );
+}

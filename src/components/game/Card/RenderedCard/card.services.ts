@@ -1,52 +1,80 @@
-import type { Card, Color } from "@prisma/client"
-import type { CardStrict, CardFull } from "types/game"
-import { camelToTitle } from "components/base/services/common.services"
-import { bgdClass } from "components/base/styles/manaIcons"
-import { layoutDirection, reversibleLayouts } from "assets/constants"
-import { cardLayoutText } from "assets/strings"
+import type { Card, Color } from "@prisma/client";
+import type { CardStrict, CardFull } from "types/game";
+import { camelToTitle } from "components/base/services/common.services";
+import { bgdClass } from "components/base/styles/manaIcons";
+import { layoutDirection, reversibleLayouts } from "assets/constants";
+import { cardLayoutText } from "assets/strings";
 
-export const flippableLayouts = [...Object.keys(layoutDirection), ...reversibleLayouts]
+export const flippableLayouts = [
+  ...Object.keys(layoutDirection),
+  ...reversibleLayouts,
+];
 
-export const getArtBoxText = (layout: CardStrict['layout'], sideCount: number): string | false | null => 
-  layout && (cardLayoutText[layout] || 
-    (sideCount > 1 && `${sideCount > 2 ? `${sideCount}-way ` : ''}${camelToTitle(layout)}`)
-  )
+export const getArtBoxText = (
+  layout: CardStrict["layout"],
+  sideCount: number
+): string | false | null =>
+  layout &&
+  (cardLayoutText[layout] ||
+    (sideCount > 1 &&
+      `${sideCount > 2 ? `${sideCount}-way ` : ""}${camelToTitle(layout)}`));
 
-export const getCardNames = ({ name, flavorName, faceName, side }: CardStrict) => {
+export const getCardNames = ({
+  name,
+  flavorName,
+  faceName,
+  side,
+}: CardStrict) => {
   // Retuns: [Title Name, Subtitle Name]
-  if (!flavorName) return [faceName || name, null]
-  if (!side) return [flavorName, name]
-  return [flavorName.split(" // ")[side.charCodeAt(0) - 97] || flavorName, faceName]
-}
-
+  if (!flavorName) return [faceName || name, null];
+  if (!side) return [flavorName, name];
+  return [
+    flavorName.split(" // ")[side.charCodeAt(0) - 97] || flavorName,
+    faceName,
+  ];
+};
 
 // Special codes { 'BRACE CODE': 'mana.css code'  }
-const specials: Record<string,string> = {
-  'T': 'tap'
-}
+const specials: Record<string, string> = {
+  T: "tap",
+};
 
-const braceRegex = /\{(.{1,3})\}/g
-const symbolTag = (symbol: string, shadow?: boolean) => 
-  `<span class="ms ms-cost text-[0.8em]${shadow ? ` ms-shadow my-auto mx-[0.07em]` : ''} ms-${symbol}"></span>`
+const braceRegex = /\{(.{1,3})\}/g;
+const symbolTag = (symbol: string, shadow?: boolean) =>
+  `<span class="ms ms-cost text-[0.8em]${shadow ? ` ms-shadow my-auto mx-[0.07em]` : ""} ms-${symbol}"></span>`;
 
-export const symbolFix = (text: string | null, shadow?: boolean) => !text ? '' :
-  text.replaceAll(braceRegex, (_, symb) => {
-      if (symb in specials) symb = specials[symb]
-      return symbolTag(symb.replace(/\//g,'').toLowerCase(), shadow)
-  })
+export const symbolFix = (text: string | null, shadow?: boolean) =>
+  !text
+    ? ""
+    : text.replaceAll(braceRegex, (_, symb) => {
+        if (symb in specials) symb = specials[symb];
+        return symbolTag(symb.replace(/\//g, "").toLowerCase(), shadow);
+      });
 
-export const splitLines = (text: string | null) => !text ? [] : text.split('\n')
+export const splitLines = (text: string | null) =>
+  !text ? [] : text.split("\n");
 
-export const getBgdColor = ({ colors, types }: Card) => 
-  colors.length == 1 ? bgdClass[colors[0].toLowerCase() as Lowercase<Color>] :
-  colors.length ? bgdClass.multi : types.includes('Land') ? bgdClass.land : bgdClass.none
-
+export const getBgdColor = ({ colors, types }: Card) =>
+  colors.length == 1
+    ? bgdClass[colors[0].toLowerCase() as Lowercase<Color>]
+    : colors.length
+      ? bgdClass.multi
+      : types.includes("Land")
+        ? bgdClass.land
+        : bgdClass.none;
 
 // Image controller utils:
 
-export const getNextFace = (currentFace: number, faceCount: number) => (currentFace + 1) % faceCount
+export const getNextFace = (currentFace: number, faceCount: number) =>
+  (currentFace + 1) % faceCount;
 
-export const isReversible = ({ layout, otherFaces }: CardFull) => otherFaces.length === 1 && (!layout || reversibleLayouts.includes(layout))
+export const isReversible = ({ layout, otherFaces }: CardFull) =>
+  otherFaces.length === 1 && (!layout || reversibleLayouts.includes(layout));
 
-export const showFlipButton = ({ layout, otherFaces }: CardFull, showImages: boolean) =>
-  otherFaces.length > 1 ? !showImages : otherFaces.length === 1 && flippableLayouts.includes(layout || 'normal')
+export const showFlipButton = (
+  { layout, otherFaces }: CardFull,
+  showImages: boolean
+) =>
+  otherFaces.length > 1
+    ? !showImages
+    : otherFaces.length === 1 && flippableLayouts.includes(layout || "normal");

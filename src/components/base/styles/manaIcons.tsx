@@ -1,4 +1,4 @@
-import { Color, Rarity } from "@prisma/client"
+import { Color, Rarity } from "@prisma/client";
 
 export const colorClass: Record<Lowercase<Color>, string> = {
   w: "text-ms bg-msw",
@@ -6,7 +6,7 @@ export const colorClass: Record<Lowercase<Color>, string> = {
   b: "text-ms bg-msb",
   r: "text-ms bg-msr",
   g: "text-ms bg-msg",
-}
+};
 
 export const hoverClass: Record<Lowercase<Color>, string> = {
   w: "hover:text-msw hover:bg-ms border-msw",
@@ -14,7 +14,7 @@ export const hoverClass: Record<Lowercase<Color>, string> = {
   b: "hover:text-msb hover:bg-ms border-msb",
   r: "hover:text-msr hover:bg-ms border-msr",
   g: "hover:text-msg hover:bg-ms border-msg",
-}
+};
 
 export const colorPip: Record<Lowercase<Color>, string> = {
   w: "ms ms-w",
@@ -22,24 +22,27 @@ export const colorPip: Record<Lowercase<Color>, string> = {
   b: "ms ms-b",
   r: "ms ms-r",
   g: "ms ms-g",
-}
+};
 
-export const bgdClass: Record<Lowercase<Color>|"none"|"multi"|"land", string> = {
-  w: 'bg-bgw',
-  u: 'bg-bgu',
-  b: 'bg-bgb',
-  r: 'bg-bgr',
-  g: 'bg-bgg',
-  none: 'bg-bgc',
-  multi: 'bg-bgmulti',
-  land: 'bg-bgland',
-}
+export const bgdClass: Record<
+  Lowercase<Color> | "none" | "multi" | "land",
+  string
+> = {
+  w: "bg-bgw",
+  u: "bg-bgu",
+  b: "bg-bgb",
+  r: "bg-bgr",
+  g: "bg-bgg",
+  none: "bg-bgc",
+  multi: "bg-bgmulti",
+  land: "bg-bgland",
+};
 
 export const rarityClass: Record<Rarity, string> = {
-  mythic:   'text-mythic',
-  rare:     'text-rare',
-  uncommon: 'text-uncommon',
-  common:   'text-common',
-  bonus:    '',
-  special:  '',
-}
+  mythic: "text-mythic",
+  rare: "text-rare",
+  uncommon: "text-uncommon",
+  common: "text-common",
+  bonus: "",
+  special: "",
+};

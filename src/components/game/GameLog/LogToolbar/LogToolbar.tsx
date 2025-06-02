@@ -1,42 +1,103 @@
-import type { BasicPlayer, Game } from "types/game"
-import type { GameLog } from "../log.controller"
-import LogFilter from "./LogFilter"
-import { ToolbarWrapper, FilterDropdown, SettingsDropdown, SettingToggle, SettingAction, LogoutLabel, DownloadLabel } from "./LogToolbarStyles"
-import { logOptionLabels } from "assets/strings"
-import { gameActionList, otherList, playerActionList } from "types/logs"
-import { useState } from "react"
+import type { BasicPlayer, Game } from "types/game";
+import type { GameLog } from "../log.controller";
+import LogFilter from "./LogFilter";
+import {
+  ToolbarWrapper,
+  FilterDropdown,
+  SettingsDropdown,
+  SettingToggle,
+  SettingAction,
+  LogoutLabel,
+  DownloadLabel,
+} from "./LogToolbarStyles";
+import { logOptionLabels } from "assets/strings";
+import { gameActionList, otherList, playerActionList } from "types/logs";
+import { useState } from "react";
 
 type Props = {
-  gameLog: GameLog,
-  players: BasicPlayer[],
-  gameEnded: boolean,
-  isHost?: boolean,
-  logout?: () => void,
-}
+  gameLog: GameLog;
+  players: BasicPlayer[];
+  gameEnded: boolean;
+  isHost?: boolean;
+  logout?: () => void;
+};
 
-export default function LogToolbar({ gameLog, players, gameEnded, isHost, logout }: Props) {
-  const [ downloading, setDownloading ] = useState(false)
+export default function LogToolbar({
+  gameLog,
+  players,
+  gameEnded,
+  isHost,
+  logout,
+}: Props) {
+  const [downloading, setDownloading] = useState(false);
   const download = () => {
-    setDownloading(true)
-    gameLog.download().finally(() => setDownloading(false))
-  }
+    setDownloading(true);
+    gameLog.download().finally(() => setDownloading(false));
+  };
 
   return (
     <ToolbarWrapper>
       <SettingsDropdown>
-        {Object.keys(gameLog.options).map((key) => (key !== 'hidePrivate' || gameEnded) && (!logout || key !== 'hideWatchers') &&
-          <SettingToggle key={key} label={logOptionLabels[key]} value={!gameLog.options[key]} setValue={(val) => gameLog.setOptions((opt) => ({ ...opt, [key]: !val }))} />
+        {Object.keys(gameLog.options).map(
+          (key) =>
+            (key !== "hidePrivate" || gameEnded) &&
+            (!logout || key !== "hideWatchers") && (
+              <SettingToggle
+                key={key}
+                label={logOptionLabels[key]}
+                value={!gameLog.options[key]}
+                setValue={(val) =>
+                  gameLog.setOptions((opt) => ({ ...opt, [key]: !val }))
+                }
+              />
+            )
         )}
-        { isHost && <SettingAction label={<DownloadLabel loading={downloading} />} onClick={download} loading={downloading} /> }
-        { logout && <SettingAction label={<LogoutLabel />} onClick={logout} /> }
+        {isHost && (
+          <SettingAction
+            label={<DownloadLabel loading={downloading} />}
+            onClick={download}
+            loading={downloading}
+          />
+        )}
+        {logout && <SettingAction label={<LogoutLabel />} onClick={logout} />}
       </SettingsDropdown>
 
       <FilterDropdown>
-        <LogFilter label="Actions" buttons={playerActionList} baseList={gameLog.allActions} selected={gameLog.actions} setSelected={gameLog.setActions} invert={true} hideAll={true} />
-        <LogFilter label=" "       buttons={gameActionList}   baseList={gameLog.allActions} selected={gameLog.actions} setSelected={gameLog.setActions} invert={true} offset={playerActionList.length}  />
-        <LogFilter label="Players" buttons={players}          baseList={gameLog.allPlayers} selected={gameLog.players} setSelected={gameLog.setPlayers} hideAll={true} />
-        <LogFilter label=""        buttons={otherList}        baseList={gameLog.allPlayers} selected={gameLog.players} setSelected={gameLog.setPlayers} invert={true}  />
+        <LogFilter
+          label="Actions"
+          buttons={playerActionList}
+          baseList={gameLog.allActions}
+          selected={gameLog.actions}
+          setSelected={gameLog.setActions}
+          invert={true}
+          hideAll={true}
+        />
+        <LogFilter
+          label=" "
+          buttons={gameActionList}
+          baseList={gameLog.allActions}
+          selected={gameLog.actions}
+          setSelected={gameLog.setActions}
+          invert={true}
+          offset={playerActionList.length}
+        />
+        <LogFilter
+          label="Players"
+          buttons={players}
+          baseList={gameLog.allPlayers}
+          selected={gameLog.players}
+          setSelected={gameLog.setPlayers}
+          hideAll={true}
+        />
+        <LogFilter
+          label=""
+          buttons={otherList}
+          baseList={gameLog.allPlayers}
+          selected={gameLog.players}
+          setSelected={gameLog.setPlayers}
+          invert={true}
+        />
       </FilterDropdown>
     </ToolbarWrapper>
-  )
+  );
 }

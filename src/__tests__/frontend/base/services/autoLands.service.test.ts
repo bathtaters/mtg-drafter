@@ -1,3 +1,3 @@
-import getAutoLands from 'components/base/services/autoLands.service'
+import getAutoLands from "components/base/services/autoLands.service";
 
-it.todo('getAutoLands')
+it.todo("getAutoLands");
