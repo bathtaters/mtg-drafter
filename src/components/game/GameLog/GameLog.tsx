@@ -24,12 +24,14 @@ export default function GameLog({ gameLog, players, packs }: Props) {
       {gameLog.entries == null ? "Loading..." :
         !gameLog.entries.length ? "No entries yet" :
         gameLog.entries.map((entry) => entry && (
-          <LogEntry key={entry.index}
-            {...entry}
-            isPrivate={gameLog.options.hidePrivate}
-            players={players}
-            setCard={setCard}
-          />
+          <EntryWrapper key={entry.entry?.id ?? entry.index} index={entry.index} hidden={entry.isFiltered}>
+            <LogEntry 
+              {...entry}
+              isPrivate={gameLog.options.hidePrivate}
+              players={players}
+              setCard={setCard}
+            />
+          </EntryWrapper>
         ))
       }
 

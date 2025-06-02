@@ -19,8 +19,9 @@ export const LogContainer = ({ children, ref }: { children: ReactNode, ref?: Ref
 
 export const ErrorContainer = ({ text }: { text: string }) => <p className="opacity-80 italic">{text}</p>
 
-export const EntryWrapper = ({ children, index }: { children: ReactNode, index?: number }) => (
-  <li className="flex flex-wrap items-center my-0.5 gap-y-0.5" data-index={index}>{children}</li>
+export const EntryWrapper = ({ children, index, hidden }: { children: ReactNode, index?: number, hidden?: boolean }) => (
+  hidden ? <li className="hidden" data-index={index} />
+  : <li className="flex flex-wrap items-center my-0.5 gap-y-0.5" data-index={index}>{children}</li>
 )
 
 export const EntryItem = (
@@ -85,8 +86,8 @@ export const MissingCard = () => <span className="italic opacity-50">Empty Pack<
 
 export const EntrySpace = () => <span className="inline-block w-1"></span>
 
-export const EntryLoading = ({ index }: { index?: number }) => (
-  <EntryWrapper index={index}>
+export const EntryLoading = () => (
+  <>
     <div className="skeleton bg-base-content/20 h-4 w-10" />
     <EntrySpace />
     <div className="skeleton bg-base-content/20 h-6 w-20" />
@@ -96,5 +97,5 @@ export const EntryLoading = ({ index }: { index?: number }) => (
     <div className="skeleton bg-base-content/20 h-6 w-16" />
     <EntrySpace />
     <div className="skeleton bg-base-content/20 h-6 w-32" />
-  </EntryWrapper>
+  </>
 )

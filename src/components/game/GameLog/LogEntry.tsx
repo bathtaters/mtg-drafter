@@ -1,16 +1,17 @@
 import type { BasicPlayer, Game, GameCardPartial, LogEntryFull } from "types/game"
+import type { EntryData } from "components/base/libs/advancedFetch"
 import CookieIcon from "components/svgs/CookieIcon"
 import BotIcon from "components/svgs/BotIcon"
 import GearIcon from "components/svgs/GearIcon"
 import WatcherIcon from "components/svgs/WatcherIcon"
-import { EntryWrapper, EntryItem, EntrySpace, MissingCard, EntryLoading } from "./LogStyles"
+import { EntryItem, EntrySpace, MissingCard, EntryLoading } from "./LogStyles"
 import { getName } from "./log.utils"
 import { formatLogAction, logFullDate, logTimestamp } from "assets/strings"
 import { ALL_WATCHERS, BOT } from "assets/constants"
 import { allActions } from "types/logs"
 
 
-function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, index }: FullProps) {
+function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard }: FullProps) {
   const { time, action, data, hostId, sessionId, playerId, card, gameId } = entry
   
   const playerIdx = playerId ? players.findIndex(({ id }) => id === playerId) : -2
@@ -23,7 +24,7 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, ind
   const gameData: Partial<Game> | undefined = action === 'settings' ? data && JSON.parse(data) : undefined
 
   return(
-    <EntryWrapper index={index}>
+    <>
       {/* Date */}
       <EntryItem tip={logFullDate(time)} below={isFirst} right={true}>{logTimestamp(time)}</EntryItem>
       <EntrySpace />
@@ -91,7 +92,7 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, ind
       {action === 'settings' && gameData?.id && (
         <EntryItem gameData={gameData} below={isFirst}><GearIcon className="w-5 fill-current ml-2" /></EntryItem>
       )}
-    </EntryWrapper>
+    </>
   )
 }
 
@@ -99,7 +100,7 @@ function FullLogEntry({ entry, players, isFirst, isPrivate = false, setCard, ind
 const LogEntry = ({ isLoading, index, ...props }: Props) => (
   /* Not loaded entry */
   !props.entry ?
-    <EntryLoading index={index} /> :
+    <EntryLoading /> :
 
   /* Preview entry */
   isLoading ?
@@ -112,17 +113,13 @@ const LogEntry = ({ isLoading, index, ...props }: Props) => (
 
 export default LogEntry
 
-
-type FullProps = {
-  index: number,
-  entry: LogEntryFull,
+type Props = EntryData<LogEntryFull> & {
   players: BasicPlayer[],
-  isFirst?: boolean,
   isPrivate?: boolean,
   setCard: (card?: GameCardPartial) => void,
 }
 
-type Props = Omit<FullProps, 'entry'> & {
-  entry?: FullProps['entry'],
-  isLoading: boolean,
+type FullProps = Omit<Props, 'entry'> & {
+  entry: NonNullable<Props['entry']>
 }
+
