@@ -1,31 +1,31 @@
-import type { ReactNode } from "react"
-import Head from "next/head"
+import type { ReactNode } from "react";
+import Head from "next/head";
 
-type Children = { children: ReactNode }
+type Children = { children: ReactNode };
 
 export const AppWrapperStyle = ({ children }: Children) => (
   <div className="h-full w-full min-w-[24rem] min-h-[35rem] overflow-x-clip">
-    <div className="h-full flex flex-col">
-      {children}
-    </div>
+    <div className="h-full flex flex-col">{children}</div>
   </div>
-)
+);
 
 export const HeaderWrapperStyle = ({ children }: Children) => (
   <div className="p-0 sm:p-1 mb-1 sm:mb-2 bg-base-300 text-base-content w-full">
-    <nav className="navbar justify-around items-center w-full max-w-6xl m-auto p-4">{children}</nav>
+    <nav className="navbar justify-around items-center w-full max-w-6xl m-auto p-4">
+      {children}
+    </nav>
   </div>
-)
+);
 
 export const BodyWrapperStyle = ({ children }: Children) => (
   <main className="flex-grow w-full py-2 px-4 md:px-6">{children}</main>
-)
+);
 
 export const FooterWrapperStyle = ({ children }: Children) => (
   <footer className="footer footer-center bg-base-300 text-base-content w-full mt-6">
     <div className="w-full max-w-6xl m-auto p-4">{children}</div>
   </footer>
-)
+);
 
 export const SetPageTitle = ({ title }: { title: string }) => (
   <Head>
@@ -33,6 +33,8 @@ export const SetPageTitle = ({ title }: { title: string }) => (
     <meta name="title" content={`Mtg Drafter - ${title}`} />
     <meta property="og:title" content={`Mtg Drafter - ${title}`} />
   </Head>
-)
+);
 
-export const EmptyStyle = ({ children }:{ children: ReactNode }) => <div className="italic opacity-60 my-12">{children}</div>
+export const EmptyStyle = ({ children }: { children: ReactNode }) => (
+  <div className="italic opacity-60 my-12">{children}</div>
+);

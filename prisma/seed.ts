@@ -5,6 +5,8 @@ import updateCards from '../src/backend/services/db/updateCards'
 import updateImages from '../src/backend/services/db/updateImages'
 import updateSets from '../src/backend/services/db/updateSets'
 import { updateVersion } from 'backend/services/db/updateSettings'
+import { customDbModify } from 'backend/services/db/updateDb'
+import { normalizeName } from 'backend/utils/db/card.utils'
 import { cardDbUrl, imageDbUrl, preferredDbUrl, setsDbUrl } from '../src/assets/urls'
 import pkg from "../package.json"
 
@@ -12,6 +14,7 @@ import pkg from "../package.json"
 const options /*: ParseArgsConfig['options']*/ = {
   /* Command-Line Arguments */              // ARGUMENT  | DESCRIPTION
   quiet:   { short: "q", type: "boolean" }, // (q)uiet   | Run without logging
+  modify:  { short: "m", type: "boolean" }, // (m)odify  | ONLY run custom DB modification (Current: Normalize names)
   reset:   { short: "r", type: "boolean" }, // (r)eset   | Full reset
   cards:   { short: "c", type: "boolean" }, // (c)ards   | Ignore cards
   images:  { short: "i", type: "boolean" }, // (i)mages  | Ignore scryfall images
@@ -32,6 +35,7 @@ async function main() {
   }
 
   if (!args.quiet)   console.log('Arguments:', args)
+  if (args.modify)   return customDbModify('card', ['uuid'], ['normalName'], ({ name }) => name ? ({ normalName: normalizeName(name) }) : null, ['name'], !args.quiet, args.batches)
   if (!args.cards)   await updateCards(cardDbUrl, args.reset, !args.quiet, args.threads, args.batches, args.upserts)
   if (!args.images)  await updateImages(imageDbUrl, preferredDbUrl, args.reset, !args.quiet, args.threads, args.batches, args.upserts)
   if (!args.sets)    await updateSets(setsDbUrl, args.reset, !args.quiet, args.threads, args.batches)

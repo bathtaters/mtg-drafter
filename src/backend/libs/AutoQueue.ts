@@ -1,38 +1,44 @@
 // BASE CLASS
 class Queue<I = any> {
   /* Adapted from Blindman67 answer here: https://codereview.stackexchange.com/a/255758 */
-  private _head?: ListItem<I>
-  private _tail?: ListItem<I>
+  private _head?: ListItem<I>;
+  private _tail?: ListItem<I>;
 
   protected _enqueue(item: I) {
-    const newTail: ListItem<I> = { item }
-    if (this._head) this._tail = this._tail!.next = newTail
-    else this._tail = this._head = newTail
+    const newTail: ListItem<I> = { item };
+    if (this._head) this._tail = this._tail!.next = newTail;
+    else this._tail = this._head = newTail;
   }
   protected _dequeue() {
-    const oldHead = this._head
-    if (oldHead) this._head = oldHead.next
-    return oldHead?.item
+    const oldHead = this._head;
+    if (oldHead) this._head = oldHead.next;
+    return oldHead?.item;
   }
-  protected _peek() { return this._head?.item }
+  protected _peek() {
+    return this._head?.item;
+  }
 }
 
 /** A job queue that will automatically execute jobs sequentially */
-export default class AutoQueue<Arg = any, Ret = any> extends Queue<AutoQueueItem<Arg, Ret>> {
+export default class AutoQueue<Arg = any, Ret = any> extends Queue<
+  AutoQueueItem<Arg, Ret>
+> {
   /* Adapted from Exodus 4D answer here: https://stackoverflow.com/a/63208885 */
-  private _pendingPromise: boolean
-  private _promiseAll: Promise<void>
-  private _resolveAll?: () => void
+  private _pendingPromise: boolean;
+  private _promiseAll: Promise<void>;
+  private _resolveAll?: () => void;
 
   /** Create new job queue */
   constructor() {
-    super()
-    this._pendingPromise = false
-    this._promiseAll = Promise.resolve()
+    super();
+    this._pendingPromise = false;
+    this._promiseAll = Promise.resolve();
   }
 
   /** Promise that will resolve when queue empties */
-  get promise() { return this._promiseAll }
+  get promise() {
+    return this._promiseAll;
+  }
 
   /**
    * Add a job to the queue and begin executing jobs
@@ -41,12 +47,15 @@ export default class AutoQueue<Arg = any, Ret = any> extends Queue<AutoQueueItem
    * @returns Resolves upon job completion, rejects if job throws/rejects
    */
   add(job: (arg: Arg) => Promise<Ret> | Ret, arg: Arg) {
-    if (!this._resolveAll) this._promiseAll = new Promise((res) => { this._resolveAll = res })
+    if (!this._resolveAll)
+      this._promiseAll = new Promise((res) => {
+        this._resolveAll = res;
+      });
 
     return new Promise((resolve, reject) => {
-      this._enqueue({ job, arg, resolve, reject })
-      this.run()
-    })
+      this._enqueue({ job, arg, resolve, reject });
+      this.run();
+    });
   }
 
   /**
@@ -54,43 +63,40 @@ export default class AutoQueue<Arg = any, Ret = any> extends Queue<AutoQueueItem
    * @returns Resolves to true if job was successfully dequeued or false if queue is empty or currently running
    */
   private async run() {
-    if (this._pendingPromise) return false
+    if (this._pendingPromise) return false;
 
-    const next = this._dequeue()
+    const next = this._dequeue();
 
     if (!next) {
-      if (this._resolveAll) this._resolveAll()
-      return false
+      if (this._resolveAll) this._resolveAll();
+      return false;
     }
 
     try {
-      this._pendingPromise = true
+      this._pendingPromise = true;
 
-      let result = await next.job(next.arg)
+      let result = await next.job(next.arg);
 
-      this._pendingPromise = false
-      next.resolve(result)
-
+      this._pendingPromise = false;
+      next.resolve(result);
     } catch (e) {
-      this._pendingPromise = false
-      next.reject(e)
-
+      this._pendingPromise = false;
+      next.reject(e);
     } finally {
-      this.run()
+      this.run();
     }
 
-    return true
+    return true;
   }
 }
 
-
 // TYPES
 
-type ListItem<I> = { item: I, next?: ListItem<I> }
+type ListItem<I> = { item: I; next?: ListItem<I> };
 
 interface AutoQueueItem<A, R> {
-  arg: A,
-  job: (arg: A) => Promise<R> | R,
-  resolve: (result: R) => void,
-  reject: (reason?: any) => void
+  arg: A;
+  job: (arg: A) => Promise<R> | R;
+  resolve: (result: R) => void;
+  reject: (reason?: any) => void;
 }

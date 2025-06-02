@@ -1,35 +1,42 @@
-import type { CubeFile, UploadType } from "types/setup"
-import { useState, useCallback } from "react"
-import { upload } from "components/base/libs/fetch"
-import { fileSettings } from "assets/constants"
-import { cubeListURL } from "assets/urls"
-import { maxSizeError } from "assets/strings"
-
+import type { CubeFile, UploadType } from "types/setup";
+import { useState, useCallback } from "react";
+import { upload } from "components/base/libs/fetch";
+import { fileSettings } from "assets/constants";
+import { cubeListURL } from "assets/urls";
+import { maxSizeError } from "assets/strings";
 
 export default function useCubeFile() {
-  const [ file, _setFile ] = useState<CubeFile | null>(null)
-  const [ loading, setLoading ] = useState(false)
+  const [file, _setFile] = useState<CubeFile | null>(null);
+  const [loading, setLoading] = useState(false);
 
+  const setFile = useCallback(
+    (file: File | null) => {
+      if (!file) return _setFile(null);
+      if (file.size > fileSettings.maxSize)
+        return _setFile({
+          name: file.name,
+          error: maxSizeError(file.size, fileSettings.maxSize),
+        });
 
-  const setFile = useCallback((file: File | null) => {
-    if (!file) return _setFile(null)
-    if (file.size > fileSettings.maxSize) return _setFile({ name: file.name, error: maxSizeError(file.size, fileSettings.maxSize) })
+      setLoading(true);
 
-    setLoading(true)
-    
-    return upload<UploadType>(cubeListURL, file, fileSettings.id).then((res) => {
-      
-      if (res.status !== 200 || !res.data) res.data = { error: `Return Code: ${res.status}` }
-      
-      if ('error' in res.data) _setFile({ name: file.name, error: res.data.error })
-      else _setFile({ name: file.name, data: res.data })
+      return upload<UploadType>(cubeListURL, file, fileSettings.id).then(
+        (res) => {
+          if (res.status !== 200 || !res.data)
+            res.data = { error: `Return Code: ${res.status}` };
 
-      setLoading(false)
-    })
-  }, [_setFile, setLoading])
+          if ("error" in res.data)
+            _setFile({ name: file.name, error: res.data.error });
+          else _setFile({ name: file.name, data: res.data });
 
+          setLoading(false);
+        }
+      );
+    },
+    [_setFile, setLoading]
+  );
 
-  return { file, setFile, loading }
+  return { file, setFile, loading };
 }
 
-export type SetFile = ReturnType<typeof useCubeFile>['setFile']
+export type SetFile = ReturnType<typeof useCubeFile>["setFile"];

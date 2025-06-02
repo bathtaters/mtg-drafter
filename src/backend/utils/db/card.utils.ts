@@ -1,40 +1,89 @@
-import type { Prisma, Color, Rarity, Side } from '@prisma/client'
-import type { CardSet as JsonCard } from '../../../types/json'
-import type { Layout } from 'types/scryfall'
-import { scryfallImageUrl } from 'assets/urls'
+import type { Prisma, Color, Rarity, Side } from "@prisma/client";
+import type { CardSet as JsonCard } from "../../../types/json";
+import type { Layout } from "types/scryfall";
+import { scryfallImageUrl } from "assets/urls";
 
-export const normalizeName = (name: string) => name.replace(/\s\/\/\s.+$/,'').replace(/[^a-zA-Z0-9 ]/g, '').replace('&', 'and').toLowerCase()
+export const normalizeName = (
+  name: string // Standardize:
+) =>
+  name
+    .replace(/\s\/\/\s.+$/, "") // - Multi-faced cards
+    .trim()
+    .replace(/\s\s+|-|&|and/g, " ") // - White-space/symbolic text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // - Modified letters (eg. accents)
+    .replace(/[^a-zA-Z0-9 ]/g, "") // - All other symbols (eg. apostrophes)
+    .toLowerCase(); // - Casing
 
 export const adaptCardToDb = ({
-  uuid, name, number, flavorName, setCode, manaCost, type, text,
-  power, toughness, loyalty, defense, rarity, colors,
-  types, manaValue, identifiers, layout,
-  faceName, side, asciiName
+  uuid,
+  name,
+  number,
+  flavorName,
+  setCode,
+  manaCost,
+  type,
+  text,
+  power,
+  toughness,
+  loyalty,
+  defense,
+  rarity,
+  colors,
+  types,
+  manaValue,
+  identifiers,
+  layout,
+  faceName,
+  side,
+  asciiName,
 }: JsonCard): Prisma.CardCreateManyInput => ({
-  
-  uuid, flavorName, setCode, manaCost, type, text, manaValue, faceName,
-  
-  name: name || 'N/A',
-  number: number || null,
-  types: types || [], 
+  uuid,
+  flavorName,
+  setCode,
+  manaCost,
+  type,
+  text,
+  manaValue,
+  faceName,
 
-  normalName: !side || side === 'a' ? normalizeName(flavorName || asciiName || name || 'N/A') : null,
+  name: name || "N/A",
+  number: number || null,
+  types: types || [],
+
+  normalName:
+    !side || side === "a"
+      ? normalizeName(flavorName || asciiName || name || "N/A")
+      : null,
 
   scryfallId: identifiers?.scryfallId,
   multiverseId: identifiers?.multiverseId,
-  img: side && side !== 'a' ? null : identifiers?.scryfallId ? scryfallImageUrl(identifiers.scryfallId) : null,
 
   footer: toughness != null ? `${power}/${toughness}` : loyalty || defense,
 
-  monoColor: !colors || colors.length !== 1 ? null : colors[0] as Color, 
-  
-  colors: colors ? colors as Color[] : [],
-  rarity: rarity ? rarity as Rarity : null,
-  side: side ? side as Side : null,
-  layout: layout ? layout as Layout : null,
-})
+  monoColor: !colors || colors.length !== 1 ? null : (colors[0] as Color),
 
-export const adaptFacesToDb = ({ uuid, layout, side, otherFaceIds, identifiers }: JsonCard): Prisma.FaceInCardCreateManyInput[] => {
-  const backImg = side === 'a' && layout === 'meld' && identifiers?.scryfallCardBackId ? scryfallImageUrl(identifiers.scryfallCardBackId, false) : null
-  return otherFaceIds ? otherFaceIds.map((cardId) => ({ selfId: uuid, cardId, backImg })) : []
-}
+  colors: colors ? (colors as Color[]) : [],
+  rarity: rarity ? (rarity as Rarity) : null,
+  side: side ? (side as Side) : null,
+  layout: layout ? (layout as Layout) : null,
+});
+
+export const adaptFacesToDb = ({
+  uuid,
+  layout,
+  side,
+  otherFaceIds,
+  identifiers,
+}: JsonCard): Prisma.FaceInCardCreateManyInput[] => {
+  const backImg =
+    side === "a" && layout === "meld" && identifiers?.scryfallCardBackId
+      ? scryfallImageUrl(identifiers.scryfallCardBackId, false)
+      : null;
+  return otherFaceIds
+    ? otherFaceIds.map((cardId) => ({ selfId: uuid, cardId, backImg }))
+    : [];
+};
+
+export const cardFilter = ({ layout, language }: JsonCard) =>
+  layout !== "token" && language === "English";

@@ -1,20 +1,25 @@
-import type { ChangeEvent, ChangeEventHandler, HTMLProps } from "react"
+import type { ChangeEvent, ChangeEventHandler, HTMLProps } from "react";
 
 export default function NumberInput(props: HTMLProps<HTMLInputElement>) {
   return (
-    <input type="number" pattern="[0-9]*" inputMode="decimal" formNoValidate onFocus={(ev) => ev.target.select()} {...props} />
-  )
+    <input
+      type="number"
+      pattern="[0-9]*"
+      inputMode="decimal"
+      formNoValidate
+      onFocus={(ev) => ev.target.select()}
+      {...props}
+    />
+  );
 }
 
-export type NumberInputProps = HTMLProps<HTMLInputElement>
-
+export type NumberInputProps = HTMLProps<HTMLInputElement>;
 
 // export interface NumberInputProps extends Omit<HTMLProps<HTMLInputElement>, "min"|"max"|"value"|"onChange"> {
 //   min?: number, max?: number, value: number,
 //   onChange: (value: number) => void,
 //   wrapperClass?: string, buttonClass?: string,
 // }
-
 
 // export default function NumberInput({ wrapperClass, buttonClass, ...inputProps }: NumberInputProps) {
 //   const { decHandler, incHandler, changeHandler, invalidHandler } = useNumberPicker(inputProps)
@@ -29,14 +34,13 @@ export type NumberInputProps = HTMLProps<HTMLInputElement>
 //   )
 // }
 
-
 // -- Controller -- \\
 
 // Prevent tooltip when value is outside of min/max limit
 // const invalidHandler: ChangeEventHandler<HTMLInputElement> = (ev) => ev.currentTarget.value.length && ev.preventDefault()
 
 // const useNumberPicker = ({ value, onChange, min, max }: NumberInputProps) => ({
-  
+
 //   invalidHandler,
 
 //   changeHandler: (ev: ChangeEvent<HTMLInputElement>) => {

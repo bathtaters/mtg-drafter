@@ -1,92 +1,155 @@
-import type { Prisma, PrismaClient } from '@prisma/client'
+import type { Prisma, PrismaClient } from "@prisma/client";
 
-type KeyArr<T> = Extract<keyof T, string>[]
+type KeyArr<T> = Extract<keyof T, string>[];
 
-const sleepOnFail = 1000 * 10
+const sleepOnFail = 1000 * 10;
 
-const addQuotes = /[^a-z0-9]/ // Not tested w/ numbers yet
+const addQuotes = /[^a-z0-9]/; // Not tested w/ numbers yet
 
 const catchSql = (err: any) => {
-  console.error('Encountered error, pausing before continue',err)
-  return new Promise((res) => { setTimeout(() => res(0), sleepOnFail) })
-}
+  console.error("Encountered error, pausing before continue", err);
+  return new Promise((res) => {
+    setTimeout(() => res(0), sleepOnFail);
+  });
+};
 
+export function createMultiUpdate<T>(
+  tableName: Prisma.ModelName,
+  whereKeys: KeyArr<T>,
+  updateKeys: KeyArr<T>
+): (updateObj: T[], prisma: PrismaClient) => Promise<number>;
+export function createMultiUpdate<T>(
+  tableName: Prisma.ModelName,
+  whereKeys: KeyArr<T>,
+  updateKeys: KeyArr<T>,
+  prisma: PrismaClient
+): (updateObj: T[]) => Promise<number>;
+export function createMultiUpdate<T>(
+  tableName: Prisma.ModelName,
+  whereKeys: KeyArr<T>,
+  updateKeys: KeyArr<T>,
+  prisma?: PrismaClient
+) {
+  checkInjection([tableName, ...whereKeys, ...updateKeys], "multiUpdate");
 
-export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>): (updateObj: T[], prisma: PrismaClient) => Promise<number>
-export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>, prisma: PrismaClient): (updateObj: T[]) => Promise<number>
-export function createMultiUpdate<T>(tableName: Prisma.ModelName, whereKeys: KeyArr<T>, updateKeys: KeyArr<T>, prisma?: PrismaClient) {
-  checkInjection([tableName, ...whereKeys, ...updateKeys], 'multiUpdate')
+  let table = addQuotes.test(tableName) ? `"${tableName}"` : tableName,
+    wheres = whereKeys.map((whereKey) =>
+      addQuotes.test(whereKey) ? `"${whereKey}"` : whereKey
+    ),
+    updates = updateKeys.map((updateKey) =>
+      addQuotes.test(updateKey) ? `"${updateKey}"` : updateKey
+    );
 
-  let
-    table  = addQuotes.test(tableName) ? `"${tableName}"` : tableName,
-    wheres  = whereKeys.map((whereKey)   => addQuotes.test(whereKey)  ? `"${whereKey}"`  : whereKey),
-    updates = updateKeys.map((updateKey) => addQuotes.test(updateKey) ? `"${updateKey}"` : updateKey)
+  const cmd = (updateObj: T[]) =>
+    `UPDATE ${table} SET ${
+      // Each UpdateKey
+      updates
+        .map(
+          (update, u) =>
+            `${update} = (CASE ${
+              // Each Object
+              updateObj
+                .map(
+                  (obj, i) =>
+                    `WHEN ${
+                      // Each WhereKey
+                      wheres
+                        .map(
+                          (where, w) =>
+                            obj[whereKeys[w]] != null &&
+                            `${where}${typeof obj[whereKeys[w]] === "string" ? "::STRING" : ""} = $${1 + i + w * updateObj.length}`
+                        )
+                        .filter(Boolean)
+                        .join(" AND ")
+                    } THEN ${
+                      // UpdateValue
+                      obj[updateKeys[u]] == null
+                        ? "NULL"
+                        : `$${1 + i + (wheres.length + u) * updateObj.length}`
+                    }`
+                )
+                .join(" ")
+            } END)`
+        )
+        .join(", ")
 
-  const cmd = (updateObj: T[]) => `UPDATE ${table} SET ${
-
-    // Each UpdateKey
-    updates.map((update, u) => `${update} = (CASE ${
-
+      // WhereKey[0] only
+    } WHERE ${wheres[0]} IN (${
       // Each Object
-      updateObj.map((obj, i) => `WHEN ${
+      updateObj
+        .map((obj, i) => obj[whereKeys[0]] != null && `$${1 + i}`)
+        .filter(Boolean)
+        .join(",")
+    })`;
 
-        // Each WhereKey
-        wheres.map((where, w) => obj[whereKeys[w]] != null &&
-          `${where}${typeof obj[whereKeys[w]] === 'string' ? '::STRING' : ''} = $${1 + i + w * updateObj.length}`
-        ).filter(Boolean).join(' AND ')
+  const args = (updateObj: T[]) =>
+    whereKeys
+      .concat(updateKeys)
+      .flatMap((key) =>
+        updateObj.map((obj) => (obj[key] == null ? "NULL" : obj[key]))
+      );
 
-      } THEN ${ 
-        
-        // UpdateValue
-        obj[updateKeys[u]] == null ? 'NULL' : `$${
-          1 + i + (wheres.length + u) * updateObj.length
-        }`
-      }`).join(' ')
-
-    } END)`).join(', ')
-
-  // WhereKey[0] only
-  } WHERE ${wheres[0]} IN (${
-
-    // Each Object
-    updateObj.map((obj,i) => obj[whereKeys[0]] != null && `$${1 + i}`).filter(Boolean).join(',')
-  })`
-
-  const args = (updateObj: T[]) => whereKeys.concat(updateKeys).flatMap(
-    (key) => updateObj.map((obj) => obj[key] == null ? 'NULL' : obj[key])
-  )
-
-  
-
-  return prisma ? (updateObj: T[]) => prisma.$executeRawUnsafe(cmd(updateObj), ...args(updateObj)).catch(catchSql) :
-    (updateObj: T[], prisma: PrismaClient) => prisma.$executeRawUnsafe(cmd(updateObj), ...args(updateObj)).catch(catchSql)
+  return prisma
+    ? (updateObj: T[]) =>
+        prisma
+          .$executeRawUnsafe(cmd(updateObj), ...args(updateObj))
+          .catch(catchSql)
+    : (updateObj: T[], prisma: PrismaClient) =>
+        prisma
+          .$executeRawUnsafe(cmd(updateObj), ...args(updateObj))
+          .catch(catchSql);
 }
 
+export function createMultiUpsert<T>(
+  tableName: Prisma.ModelName,
+  updateKeys: KeyArr<T>
+): (updateObj: T[], prisma: PrismaClient) => Promise<number>;
+export function createMultiUpsert<T>(
+  tableName: Prisma.ModelName,
+  updateKeys: KeyArr<T>,
+  prisma: PrismaClient
+): (updateObj: T[]) => Promise<number>;
+export function createMultiUpsert<T>(
+  tableName: Prisma.ModelName,
+  updateKeys: KeyArr<T>,
+  prisma?: PrismaClient
+) {
+  checkInjection([tableName, ...updateKeys], tableName);
 
-export function createMultiUpsert<T>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>): (updateObj: T[], prisma: PrismaClient) => Promise<number>
-export function createMultiUpsert<T>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>, prisma: PrismaClient): (updateObj: T[]) => Promise<number>
-export function createMultiUpsert<T>(tableName: Prisma.ModelName, updateKeys: KeyArr<T>, prisma?: PrismaClient) {
-  checkInjection([tableName, ...updateKeys], tableName)
+  const table = addQuotes.test(tableName) ? `"${tableName}"` : tableName,
+    updates = updateKeys.map((updateKey) =>
+      addQuotes.test(updateKey) ? `"${updateKey}"` : updateKey
+    );
 
-  const table  = addQuotes.test(tableName) ? `"${tableName}"` : tableName,
-    updates = updateKeys.map((updateKey) => addQuotes.test(updateKey) ? `"${updateKey}"` : updateKey)
-    
-  const cmd = (updateObj: T[]) => `UPSERT INTO ${table} (${updates.join(', ')}) VALUES ${
-    updateObj.map((obj, i) => 
-      `(${updates.map((_, j) =>
-          obj[updateKeys[j]] == null ? 'NULL' : `$${1 + j + i * updates.length}`
-        ).join(', ')})`
-    ).join(', ')
-  }`
+  const cmd = (updateObj: T[]) =>
+    `UPSERT INTO ${table} (${updates.join(", ")}) VALUES ${updateObj
+      .map(
+        (obj, i) =>
+          `(${updates
+            .map((_, j) =>
+              obj[updateKeys[j]] == null
+                ? "NULL"
+                : `$${1 + j + i * updates.length}`
+            )
+            .join(", ")})`
+      )
+      .join(", ")}`;
 
-  const args = (updateObj: T[]) => updateObj.flatMap(
-    (obj) => updateKeys.map((key) => obj[key] == null ? 'NULL' : obj[key])
-  )
+  const args = (updateObj: T[]) =>
+    updateObj.flatMap((obj) =>
+      updateKeys.map((key) => (obj[key] == null ? "NULL" : obj[key]))
+    );
 
-  return prisma ? (updateObj: T[]) => prisma.$executeRawUnsafe(cmd(updateObj), ...args(updateObj)).catch(catchSql) :
-    (updateObj: T[], prisma: PrismaClient) => prisma.$executeRawUnsafe(cmd(updateObj), ...args(updateObj)).catch(catchSql)
+  return prisma
+    ? (updateObj: T[]) =>
+        prisma
+          .$executeRawUnsafe(cmd(updateObj), ...args(updateObj))
+          .catch(catchSql)
+    : (updateObj: T[], prisma: PrismaClient) =>
+        prisma
+          .$executeRawUnsafe(cmd(updateObj), ...args(updateObj))
+          .catch(catchSql);
 }
-
 
 // FILL IN VALS TO TEXT (For debug output)
 // const sql = (text: string, vals: any[]) => {
@@ -96,32 +159,215 @@ export function createMultiUpsert<T>(tableName: Prisma.ModelName, updateKeys: Ke
 
 // Injection Checking
 
-const illegalKeyRegex = /[^a-zA-Z0-9_]/
+const illegalKeyRegex = /[^a-zA-Z0-9_]/;
 const illegalKeyList = [
-  "ADD", "EXTERNAL", "PROCEDURE", "ALL", "FETCH", "PUBLIC", "ALTER", "FILE", "RAISERROR", "AND", "FILLFACTOR", "READ", "ANY", "FOR", "READTEXT", "AS", "FOREIGN",
-  "RECONFIGURE", "ASC", "FREETEXT", "REFERENCES", "AUTHORIZATION", "FREETEXTTABLE", "REPLICATION", "BACKUP", "FROM", "RESTORE", "BEGIN", "FULL", "RESTRICT", "BETWEEN",
-  "FUNCTION", "RETURN", "BREAK", "GOTO", "REVERT", "BROWSE", "GRANT", "REVOKE", "BULK", "GROUP", "RIGHT", "BY", "HAVING", "ROLLBACK", "CASCADE", "HOLDLOCK", "ROWCOUNT",
-  "CASE", "IDENTITY", "ROWGUIDCOL", "CHECK", "IDENTITY_INSERT", "RULE", "CHECKPOINT", "IDENTITYCOL", "SAVE", "CLOSE", "IF", "SCHEMA", "CLUSTERED", "IN", "SECURITYAUDIT",
-  "COALESCE", "INDEX", "SELECT", "COLLATE", "INNER", "SEMANTICKEYPHRASETABLE", "COLUMN", "INSERT", "SEMANTICSIMILARITYDETAILSTABLE", "COMMIT", "INTERSECT",
-  "SEMANTICSIMILARITYTABLE", "COMPUTE", "INTO", "SESSION_USER", "CONSTRAINT", "IS", "SET", "CONTAINS", "JOIN", "SETUSER", "CONTAINSTABLE", "KEY", "SHUTDOWN", "CONTINUE",
-  "KILL", "SOME", "CONVERT", "LEFT", "STATISTICS", "CREATE", "LIKE", "SYSTEM_USER", "CROSS", "LINENO", "TABLE", "CURRENT", "LOAD", "TABLESAMPLE", "CURRENT_DATE", "MERGE",
-  "TEXTSIZE", "CURRENT_TIME", "NATIONAL", "THEN", "CURRENT_TIMESTAMP", "NOCHECK", "TO", "CURRENT_USER", "NONCLUSTERED", "TOP", "CURSOR", "NOT", "TRAN", "DATABASE", "NULL",
-  "TRANSACTION", "DBCC", "NULLIF", "TRIGGER", "DEALLOCATE", "OF", "TRUNCATE", "DECLARE", "OFF", "TRY_CONVERT", "DEFAULT", "OFFSETS", "TSEQUAL", "DELETE", "ON", "UNION",
-  "DENY", "OPEN", "UNIQUE", "DESC", "OPENDATASOURCE", "UNPIVOT", "DISK", "OPENQUERY", "UPDATE", "DISTINCT", "OPENROWSET", "UPDATETEXT", "DISTRIBUTED", "OPENXML", "USE",
-  "DOUBLE", "OPTION", "USER", "DROP", "OR", "VALUES", "DUMP", "ORDER", "VARYING", "ELSE", "OUTER", "VIEW", "END", "OVER", "WAITFOR", "ERRLVL", "PERCENT", "WHEN", "ESCAPE",
-  "PIVOT", "WHERE", "EXCEPT", "PLAN", "WHILE", "EXEC", "PRECISION", "WITH", "EXECUTE", "PRIMARY", "WITHIN GROUP", "EXISTS", "PRINT", "WRITETEXT", "EXIT", "PROC"
-]
+  "ADD",
+  "EXTERNAL",
+  "PROCEDURE",
+  "ALL",
+  "FETCH",
+  "PUBLIC",
+  "ALTER",
+  "FILE",
+  "RAISERROR",
+  "AND",
+  "FILLFACTOR",
+  "READ",
+  "ANY",
+  "FOR",
+  "READTEXT",
+  "AS",
+  "FOREIGN",
+  "RECONFIGURE",
+  "ASC",
+  "FREETEXT",
+  "REFERENCES",
+  "AUTHORIZATION",
+  "FREETEXTTABLE",
+  "REPLICATION",
+  "BACKUP",
+  "FROM",
+  "RESTORE",
+  "BEGIN",
+  "FULL",
+  "RESTRICT",
+  "BETWEEN",
+  "FUNCTION",
+  "RETURN",
+  "BREAK",
+  "GOTO",
+  "REVERT",
+  "BROWSE",
+  "GRANT",
+  "REVOKE",
+  "BULK",
+  "GROUP",
+  "RIGHT",
+  "BY",
+  "HAVING",
+  "ROLLBACK",
+  "CASCADE",
+  "HOLDLOCK",
+  "ROWCOUNT",
+  "CASE",
+  "IDENTITY",
+  "ROWGUIDCOL",
+  "CHECK",
+  "IDENTITY_INSERT",
+  "RULE",
+  "CHECKPOINT",
+  "IDENTITYCOL",
+  "SAVE",
+  "CLOSE",
+  "IF",
+  "SCHEMA",
+  "CLUSTERED",
+  "IN",
+  "SECURITYAUDIT",
+  "COALESCE",
+  "INDEX",
+  "SELECT",
+  "COLLATE",
+  "INNER",
+  "SEMANTICKEYPHRASETABLE",
+  "COLUMN",
+  "INSERT",
+  "SEMANTICSIMILARITYDETAILSTABLE",
+  "COMMIT",
+  "INTERSECT",
+  "SEMANTICSIMILARITYTABLE",
+  "COMPUTE",
+  "INTO",
+  "SESSION_USER",
+  "CONSTRAINT",
+  "IS",
+  "SET",
+  "CONTAINS",
+  "JOIN",
+  "SETUSER",
+  "CONTAINSTABLE",
+  "KEY",
+  "SHUTDOWN",
+  "CONTINUE",
+  "KILL",
+  "SOME",
+  "CONVERT",
+  "LEFT",
+  "STATISTICS",
+  "CREATE",
+  "LIKE",
+  "SYSTEM_USER",
+  "CROSS",
+  "LINENO",
+  "TABLE",
+  "CURRENT",
+  "LOAD",
+  "TABLESAMPLE",
+  "CURRENT_DATE",
+  "MERGE",
+  "TEXTSIZE",
+  "CURRENT_TIME",
+  "NATIONAL",
+  "THEN",
+  "CURRENT_TIMESTAMP",
+  "NOCHECK",
+  "TO",
+  "CURRENT_USER",
+  "NONCLUSTERED",
+  "TOP",
+  "CURSOR",
+  "NOT",
+  "TRAN",
+  "DATABASE",
+  "NULL",
+  "TRANSACTION",
+  "DBCC",
+  "NULLIF",
+  "TRIGGER",
+  "DEALLOCATE",
+  "OF",
+  "TRUNCATE",
+  "DECLARE",
+  "OFF",
+  "TRY_CONVERT",
+  "DEFAULT",
+  "OFFSETS",
+  "TSEQUAL",
+  "DELETE",
+  "ON",
+  "UNION",
+  "DENY",
+  "OPEN",
+  "UNIQUE",
+  "DESC",
+  "OPENDATASOURCE",
+  "UNPIVOT",
+  "DISK",
+  "OPENQUERY",
+  "UPDATE",
+  "DISTINCT",
+  "OPENROWSET",
+  "UPDATETEXT",
+  "DISTRIBUTED",
+  "OPENXML",
+  "USE",
+  "DOUBLE",
+  "OPTION",
+  "USER",
+  "DROP",
+  "OR",
+  "VALUES",
+  "DUMP",
+  "ORDER",
+  "VARYING",
+  "ELSE",
+  "OUTER",
+  "VIEW",
+  "END",
+  "OVER",
+  "WAITFOR",
+  "ERRLVL",
+  "PERCENT",
+  "WHEN",
+  "ESCAPE",
+  "PIVOT",
+  "WHERE",
+  "EXCEPT",
+  "PLAN",
+  "WHILE",
+  "EXEC",
+  "PRECISION",
+  "WITH",
+  "EXECUTE",
+  "PRIMARY",
+  "WITHIN GROUP",
+  "EXISTS",
+  "PRINT",
+  "WRITETEXT",
+  "EXIT",
+  "PROC",
+];
 
-const injectionErr = (val: any, isReserved: boolean, table: string) => new Error(`${table ? `Column in ${table}` : 'Table name'} ${
-  isReserved ? 'is a reserved keyword:' : typeof val === 'string' ? 
-    'contains non-alphanumeric characters:' : `is not a string: <${typeof val}>`
-  } ${val}`)
+const injectionErr = (val: any, isReserved: boolean, table: string) =>
+  new Error(
+    `${table ? `Column in ${table}` : "Table name"} ${
+      isReserved
+        ? "is a reserved keyword:"
+        : typeof val === "string"
+          ? "contains non-alphanumeric characters:"
+          : `is not a string: <${typeof val}>`
+    } ${val}`
+  );
 
-export const checkInjection = (val: any, tableName = ''): false | void => {
+export const checkInjection = (val: any, tableName = ""): false | void => {
   if (!val) return;
-  if (Array.isArray(val)) return val.forEach((v) => checkInjection(v, tableName))
-  if (typeof val === 'object') Object.keys(val).forEach((v) => checkInjection(v, tableName))
-  else if (typeof val !== 'string' || illegalKeyRegex.test(val)) throw injectionErr(val, false, tableName)
-  else if (illegalKeyList.includes(val.toUpperCase())) throw injectionErr(val, true, tableName)
+  if (Array.isArray(val))
+    return val.forEach((v) => checkInjection(v, tableName));
+  if (typeof val === "object")
+    Object.keys(val).forEach((v) => checkInjection(v, tableName));
+  else if (typeof val !== "string" || illegalKeyRegex.test(val))
+    throw injectionErr(val, false, tableName);
+  else if (illegalKeyList.includes(val.toUpperCase()))
+    throw injectionErr(val, true, tableName);
   return false;
-}
+};

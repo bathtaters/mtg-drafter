@@ -1,22 +1,31 @@
-import type { BoosterOptions, CubeOptions } from "types/setup"
-import type { GameOptions, CubeFile } from "types/setup"
+import type { BoosterOptions, CubeOptions } from "types/setup";
+import type { GameOptions, CubeFile } from "types/setup";
 
-const adaptCube = ({ name, players, timer, packs, packSize }: GameOptions, file: CubeFile|null): CubeOptions => ({
+const adaptCube = (
+  { name, players, timer, packs, packSize }: GameOptions,
+  file: CubeFile | null
+): CubeOptions => ({
   name,
   playerCount: +players,
   timer: +timer,
   roundCount: +packs,
   packSize: +packSize,
-  cardList: file?.data?.accepted || []
-})
+  cardList: file?.data?.accepted || [],
+});
 
-const adaptBooster = ({ name, players, timer, packList, basics }: GameOptions): BoosterOptions => ({
+const adaptBooster = ({
+  name,
+  players,
+  timer,
+  packList,
+  basics,
+}: GameOptions): BoosterOptions => ({
   name,
   playerCount: +players,
   timer: +timer,
   packList,
   basics,
-})
+});
 
-export const adaptOptions = (options: GameOptions, file: CubeFile|null) => 
-  options.type === 'Cube' ? adaptCube(options,file) : adaptBooster(options)
+export const adaptOptions = (options: GameOptions, file: CubeFile | null) =>
+  options.type === "Cube" ? adaptCube(options, file) : adaptBooster(options);

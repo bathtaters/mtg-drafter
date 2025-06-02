@@ -1,10 +1,10 @@
-import type { GameOptions } from 'types/setup'
-import type { RetryOptions } from 'backend/libs/retry'
-import type { BoosterType, Layout } from 'types/scryfall'
-import type { LogOptions, TimerOptions, CardFull, LogAction } from 'types/game'
-import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels"
-import { Direction } from 'types/game'
-import { allActions } from 'types/logs'
+import type { GameOptions } from "types/setup";
+import type { RetryOptions } from "backend/libs/retry";
+import type { BoosterType, Layout } from "types/scryfall";
+import type { LogOptions, TimerOptions, CardFull, LogAction } from "types/game";
+import cardZoomLevels from "components/game/CardToolbar/cardZoomLevels";
+import { Direction } from "types/game";
+import { allActions } from "types/logs";
 
 //  Settings
 
@@ -17,23 +17,28 @@ export const storageDefaults = Object.freeze({
     logActions: allActions,
     hostModalSection: 1,
   }),
-
   shareGame = {
     title: "Mtg Drafter",
     message: "Join the draft",
     url: (gameUrl: string) => `/game/${gameUrl}`,
   },
-
   shareWatch = {
     title: "Mtg Drafter",
     message: "Observe the draft",
     url: (gameUrl: string) => `/game/watch/${gameUrl}`,
   },
-
-  logOptions: LogOptions = { hideHost: false, hidePrivate: true, hideWatchers: true },
-
+  logOptions: LogOptions = {
+    hideHost: false,
+    hidePrivate: true,
+    hideWatchers: true,
+  },
   // See strings: timerLabels for labels
-  defaultTimer: TimerOptions = { secPerCard: 3.3, secOffset: -8, roundTo: 5, minSec: 5 },
+  defaultTimer: TimerOptions = {
+    secPerCard: 3.3,
+    secOffset: -8,
+    roundTo: 5,
+    minSec: 5,
+  },
   timerOptions: Array<Partial<TimerOptions> | null> = [
     null,
     { secPerCard: 1, minSec: 24 * 60 * 60 }, // Daily: 24 hours
@@ -47,22 +52,19 @@ export const storageDefaults = Object.freeze({
     { secPerCard: 1.9, minSec: 3 }, // Speed: 20 sec / 15 cards
   ],
   // !! If you update the above table, set this to the index of the official rules in timerOptions !! //
-  officialRulesIdx = 7 // Fixes timer to match official rules on this timerOptions index (Force pick 4 = 25 sec)
-
+  officialRulesIdx = 7; // Fixes timer to match official rules on this timerOptions index (Force pick 4 = 25 sec)
 
 // Setup validation
 
-export const
-  setupLimits = {
-    name:     { minLength: 1, maxLength: 22 },
-    players:  { min: 1, max: 12 },
-    timer:    { min: 0, max: timerOptions.length - 1 },
-    packs:    { min: 1, max: 5  },
+export const setupLimits = {
+    name: { minLength: 1, maxLength: 22 },
+    players: { min: 1, max: 12 },
+    timer: { min: 0, max: timerOptions.length - 1 },
+    packs: { min: 1, max: 5 },
     packSize: { min: 1, max: 20 },
     boosterCode: { min: 5, max: 30 },
-    cubeSize: { max: 720 * 4    },
-  }, 
-
+    cubeSize: { max: 720 * 4 },
+  },
   setupDefaults: GameOptions = Object.freeze({
     type: "Cube",
     name: "",
@@ -70,17 +72,19 @@ export const
     timer: "0",
     packs: "3",
     packSize: "15",
-    packList: ["KLD:draft","KLD:draft","AER:draft"],
-    basics: true
+    packList: ["KLD:draft", "KLD:draft", "AER:draft"],
+    basics: true,
   }),
-
-  fileSettings = { id: "cubeFile", type: "text/plain", maxSize: 10 * 1024 * 1024 /* = 10 MB */, },
-
-  urlLimits = { minLength: 9, maxLength: 9 }
+  fileSettings = {
+    id: "cubeFile",
+    type: "text/plain",
+    maxSize: 10 * 1024 * 1024 /* = 10 MB */,
+  },
+  urlLimits = { minLength: 9, maxLength: 9 };
 
 // UI Tweaks
 
-export const redTimerSeconds = 10
+export const redTimerSeconds = 10;
 
 const meldDirection: { [setCode: string]: Direction } = {
   EMN: Direction.W,
@@ -88,59 +92,77 @@ const meldDirection: { [setCode: string]: Direction } = {
   V17: Direction.W,
   BRO: Direction.E,
   PBRO: Direction.E,
-}
+};
 
-export const layoutDirection:  {[layout in Layout]?: ((card: CardFull, showImages: boolean) => Direction | undefined)} = {
+export const layoutDirection: {
+  [layout in Layout]?: (
+    card: CardFull,
+    showImages: boolean
+  ) => Direction | undefined;
+} = {
   /* Rotate otherFace */
   flip: () => Direction.S,
   split: () => Direction.E,
   aftermath: () => Direction.W,
-  meld: ({ setCode }, showImages) => showImages && setCode ? meldDirection[setCode] : undefined
-}
+  meld: ({ setCode }, showImages) =>
+    showImages && setCode ? meldDirection[setCode] : undefined,
+};
 
 export const typeDirection: { [type: string]: Direction } = {
   /* Rotate main face */
   Battle: Direction.E,
-}
+};
 
-export const reversibleLayouts: Layout[] = ['meld', 'modal_dfc', 'transform'] /* Flip card over */
+export const reversibleLayouts: Layout[] = [
+  "meld",
+  "modal_dfc",
+  "transform",
+]; /* Flip card over */
 
-export const hideBoosterNames: BoosterType[] = ['default', 'draft']
+export const hideBoosterNames: BoosterType[] = ["default", "draft"];
 
-export const skipBoosterTypes: BoosterType[] = []
+export const skipBoosterTypes: BoosterType[] = [];
 
 // Advanced Tweaks + Debug Settings
 
-export const logFetchOptions = { minSize: 100, maxSize: 500, debounceMs: 350 }
+export const logFetchOptions = { minSize: 100, maxSize: 500, debounceMs: 350 };
 
-export const dynamicScrollPreloadDistancePx = 450 // See Intersection API - "root margin"
+export const dynamicScrollOptions = {
+  threshold: 1,
+  rootMargin: "450px 0px 450px 0px",
+}; // See Intersection API documentation
 
-export const CUBE_LIST_END = /^\s*#?\s*(?:side|maybe)\s*board/i // don't look at cards below this line
+export const CUBE_LIST_END = /^\s*#?\s*(?:side|maybe)\s*board/i; // don't look at cards below this line
 
-export const retryDefaults: RetryOptions = { maxRetries: 10, delay: 10, errCodes: ['P2034'], logRetry: console.warn } // delay10/max10 = max delay 5sec
+export const retryDefaults: RetryOptions = {
+  maxRetries: 10,
+  delay: 10,
+  errCodes: ["P2034"],
+  logRetry: console.warn,
+}; // delay10/max10 = max delay 5sec
 
-export const refreshOnRefocusDelay = 3 * 60 * 1000
+export const refreshOnRefocusDelay = 3 * 60 * 1000;
 
-export const hoverAfterClickDelay = 4 * 1000 // How long to wait after clicking before allowing hovering on/off
+export const hoverAfterClickDelay = 4 * 1000; // How long to wait after clicking before allowing hovering on/off
 
-export const MAX_GAME_CONN = 20
+export const MAX_GAME_CONN = 20;
 
-export const debugSockets = false
+export const debugSockets = false;
 
-export const clientErrorsInConsole = true
+export const clientErrorsInConsole = true;
 
-export const enableDropping = true
+export const enableDropping = true;
 
-export const logSheetNames = false
+export const logSheetNames = false;
 
-export const serverSideImageOptimize = false
+export const serverSideImageOptimize = false;
 
 // Actual constants (DON'T CHANGE!)
 
-export const BOT = "___BOT___"
+export const BOT = "___BOT___";
 
-export const ALL_WATCHERS = "__ALL__"
+export const ALL_WATCHERS = "__ALL__";
 
-export const AUTOMATED = "__AUTO__"
+export const AUTOMATED = "__AUTO__";
 
-export const watcherActions: LogAction[] = ['join', 'leave', 'ban', 'unban']
+export const watcherActions: LogAction[] = ["join", "leave", "ban", "unban"];

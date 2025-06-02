@@ -1,110 +1,197 @@
-import type { EventHandler, MouseEventHandler, ReactNode, SyntheticEvent } from "react"
-import type { Board } from "@prisma/client"
-import { Direction } from "types/game"
-import DeckIcon from "components/svgs/DeckIcon"
-import ReloadIcon from "components/svgs/ReloadIcon"
+import type {
+  EventHandler,
+  MouseEventHandler,
+  ReactNode,
+  SyntheticEvent,
+} from "react";
+import type { Board } from "@prisma/client";
+import { Direction } from "types/game";
+import DeckIcon from "components/svgs/DeckIcon";
+import ReloadIcon from "components/svgs/ReloadIcon";
 
-const dirClass: { [dir in Direction]: string } = { N: '', E: 'rotate-90', S: 'rotate-180', W: '-rotate-90' }
+const dirClass: { [dir in Direction]: string } = {
+  N: "",
+  E: "rotate-90",
+  S: "rotate-180",
+  W: "-rotate-90",
+};
 
-const stopProp = <E extends SyntheticEvent>(handler?: EventHandler<E>) => handler && ((ev: E) => {
-  ev.preventDefault(); ev.stopPropagation(); handler(ev)
-})
+const stopProp = <E extends SyntheticEvent>(handler?: EventHandler<E>) =>
+  handler &&
+  ((ev: E) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    handler(ev);
+  });
 
 export const CardWrapper = ({
-  isSelected, isHighlighted, isFoil, direction = Direction.N, reversed,
-  onClick, className, image, rendered, children 
+  isSelected,
+  isHighlighted,
+  isFoil,
+  direction = Direction.N,
+  reversed,
+  onClick,
+  className,
+  image,
+  rendered,
+  children,
 }: WrapperProps) => (
   <span
     onClick={onClick}
     className={`flex justify-center items-center relative group hover:z-[31] rounded-card${
-      typeof reversed === 'boolean' ? ' flip-container' : ''} ${className}`}
+      typeof reversed === "boolean" ? " flip-container" : ""
+    } ${className}`}
   >
-    <div className={`pointer-events-none select-none w-full h-full transition-transform duration-300 motion-reduce:duration-700 ${
-      typeof reversed === 'boolean' ? 'flip-inner ' : ''
-    }${
-      reversed ? 'flipped ' : ''
-    }${
-      direction !== Direction.N ? 'z-30 ' : ''
-    }${
-      dirClass[direction]
-    }`}>
-      <div className={`absolute top-[-1.5%] left-[-2%] w-[104%] h-[103%] z-0 rounded-card ${
-        isSelected ? 'bg-secondary' : isHighlighted ? 'bg-error' : 'bg-transparent'
-      }`} />
-      {isFoil &&
-        <div className="animate-foil bg-foil rounded-card opacity-100 mix-blend-screen
+    <div
+      className={`pointer-events-none select-none w-full h-full transition-transform duration-300 motion-reduce:duration-700 ${
+        typeof reversed === "boolean" ? "flip-inner " : ""
+      }${reversed ? "flipped " : ""}${
+        direction !== Direction.N ? "z-30 " : ""
+      }${dirClass[direction]}`}
+    >
+      <div
+        className={`absolute top-[-1.5%] left-[-2%] w-[104%] h-[103%] z-0 rounded-card ${
+          isSelected
+            ? "bg-secondary"
+            : isHighlighted
+              ? "bg-error"
+              : "bg-transparent"
+        }`}
+      />
+      {isFoil && (
+        <div
+          className="animate-foil bg-foil rounded-card opacity-100 mix-blend-screen
           absolute top-0 left-0 bottom-0 right-0 z-[35] bg-[length:200%_200%]
-          transition-all duration-300 motion-reduce:duration-700" />}
+          transition-all duration-300 motion-reduce:duration-700"
+        />
+      )}
       {image}
       {rendered}
     </div>
     {children}
   </span>
-)
+);
 
-
-export const ImgWrapper = ({ flipSide, isTop, children }: { flipSide: number, isTop: boolean, children: ReactNode }) => (
-  <div className={`absolute top-0 w-full h-full ${
-    flipSide === 1 ? 'flip-front ' : flipSide === 2 ? 'flip-back ' : ''}${flipSide || isTop ? 'z-20' : '-z-10'
-  } rounded-card overflow-hidden`}>
+export const ImgWrapper = ({
+  flipSide,
+  isTop,
+  children,
+}: {
+  flipSide: number;
+  isTop: boolean;
+  children: ReactNode;
+}) => (
+  <div
+    className={`absolute top-0 w-full h-full ${
+      flipSide === 1 ? "flip-front " : flipSide === 2 ? "flip-back " : ""
+    }${flipSide || isTop ? "z-20" : "-z-10"} rounded-card overflow-hidden`}
+  >
     {children}
   </div>
-)
+);
 
-
-export const SwapButton = ({ board, low, onClick }: { board: Board, low?: boolean, onClick?: MouseEventHandler }) =>
-  <button type="button" onClick={onClick} className={
-      `hidden group-hover:flex absolute ${low ? 'top-[12em]' : 'top-[5em]'} left-[0.75em] z-30
+export const SwapButton = ({
+  board,
+  low,
+  onClick,
+}: {
+  board: Board;
+  low?: boolean;
+  onClick?: MouseEventHandler;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`hidden group-hover:flex absolute ${low ? "top-[12em]" : "top-[5em]"} left-[0.75em] z-30
       btn justify-center items-center gap-[0.5em] p-0 m-0 
       font-serif w-[5em] h-[3em] text-[1em] min-h-0
-      pointer-events-auto opacity-50 hover:opacity-90`
-  }>
-    <span className="normal-case">{board === 'main' ? 'Side' : 'Main'}</span>
-    <DeckIcon className={`h-[2em] inline ${board === 'main' ? 'fill-base-content stroke-base-300' : 'fill-base-300 stroke-base-content'}`} />
+      pointer-events-auto opacity-50 hover:opacity-90`}
+  >
+    <span className="normal-case">{board === "main" ? "Side" : "Main"}</span>
+    <DeckIcon
+      className={`h-[2em] inline ${board === "main" ? "fill-base-content stroke-base-300" : "fill-base-300 stroke-base-content"}`}
+    />
   </button>
+);
 
-
-export const FlipButton = ({ isBack, low, onClick }: { isBack?: boolean, low?: boolean, onClick?: MouseEventHandler }) =>
-  <button type="button" onClick={stopProp(onClick)} onMouseEnter={stopProp(onClick)} onMouseLeave={stopProp(onClick)} className={
-      `hidden group-hover:flex absolute ${low ? 'top-[8em]' : 'top-[3.5em]'} right-[0.75em] z-30
+export const FlipButton = ({
+  isBack,
+  low,
+  onClick,
+}: {
+  isBack?: boolean;
+  low?: boolean;
+  onClick?: MouseEventHandler;
+}) => (
+  <button
+    type="button"
+    onClick={stopProp(onClick)}
+    onMouseEnter={stopProp(onClick)}
+    onMouseLeave={stopProp(onClick)}
+    className={`hidden group-hover:flex absolute ${low ? "top-[8em]" : "top-[3.5em]"} right-[0.75em] z-30
       btn btn-circle w-[2em] h-[2em] text-[1.5em] p-0 m-0 min-h-0 ${
-        isBack ? 'bg-base-content text-base-100 hover:bg-base-content' : ''
-      } pointer-events-auto opacity-50 hover:opacity-60`
-  }>
-    <i className={`ms ${isBack ? 'ms-untap' : 'ms-tap'} w-full`} />
+        isBack ? "bg-base-content text-base-100 hover:bg-base-content" : ""
+      } pointer-events-auto opacity-50 hover:opacity-60`}
+  >
+    <i className={`ms ${isBack ? "ms-untap" : "ms-tap"} w-full`} />
   </button>
+);
 
-export const RotateButton = ({ isRotater, onClick }: { isRotater?: boolean, onClick?: MouseEventHandler }) =>
-  <button type="button" onClick={stopProp(onClick)} onMouseEnter={stopProp(onClick)} onMouseLeave={stopProp(onClick)} className={
-      `hidden group-hover:flex absolute top-[3.5em] left-[5em] z-30
+export const RotateButton = ({
+  isRotater,
+  onClick,
+}: {
+  isRotater?: boolean;
+  onClick?: MouseEventHandler;
+}) => (
+  <button
+    type="button"
+    onClick={stopProp(onClick)}
+    onMouseEnter={stopProp(onClick)}
+    onMouseLeave={stopProp(onClick)}
+    className={`hidden group-hover:flex absolute top-[3.5em] left-[5em] z-30
       btn btn-circle w-[2em] h-[2em] text-[1.5em] p-0 m-0 min-h-0 ${
-        isRotater ? 'bg-base-content text-base-100 hover:bg-base-content' : ''
-      } pointer-events-auto opacity-50 hover:opacity-60`
-  }>
-    <ReloadIcon className={`w-3/4 fill-current transition-transform duration-300 motion-reduce:duration-700 ${
-      isRotater ? 'rotate-180' : 'rotate-0'
-    }`} />
+        isRotater ? "bg-base-content text-base-100 hover:bg-base-content" : ""
+      } pointer-events-auto opacity-50 hover:opacity-60`}
+  >
+    <ReloadIcon
+      className={`w-3/4 fill-current transition-transform duration-300 motion-reduce:duration-700 ${
+        isRotater ? "rotate-180" : "rotate-0"
+      }`}
+    />
   </button>
+);
 
 export const MeldBadge = ({ image }: { image?: boolean }) => (
   <div className="flip-back z-20">
-    <div className={`${image ? 'my-[60%]' : 'my-[27%]'} mx-auto w-3/5 h-auto font-serif text-[1.6em] badge p-[4%] opacity-80 pointer-events-none`}>
+    <div
+      className={`${image ? "my-[60%]" : "my-[27%]"} mx-auto w-3/5 h-auto font-serif text-[1.6em] badge p-[4%] opacity-80 pointer-events-none`}
+    >
       Meld Piece
     </div>
   </div>
-)
+);
 
-export const PickBadge = ({ text }: { text?: ReactNode }) => text && (
-  <div className="absolute bottom-0 left-0 z-30 flex justify-center items-center py-0 px-4 m-0 
+export const PickBadge = ({ text }: { text?: ReactNode }) =>
+  text && (
+    <div
+      className="absolute bottom-0 left-0 z-30 flex justify-center items-center py-0 px-4 m-0 
     font-serif w-auto h-[2em] text-[1.1em] bg-base-300/70 text-base-content rounded-lg
-    group-hover:opacity-0 transition-opacity duration-300">
-    {text}
-  </div>
-)
+    group-hover:opacity-0 transition-opacity duration-300"
+    >
+      {text}
+    </div>
+  );
 
 type WrapperProps = {
-  isSelected?: boolean, isHighlighted?: boolean, isFoil?: boolean,
-  direction?: Direction, reversed?: boolean,
-  onClick?: MouseEventHandler, className: string,
-  image?: ReactNode, rendered?: ReactNode, children?: ReactNode
-}
+  isSelected?: boolean;
+  isHighlighted?: boolean;
+  isFoil?: boolean;
+  direction?: Direction;
+  reversed?: boolean;
+  onClick?: MouseEventHandler;
+  className: string;
+  image?: ReactNode;
+  rendered?: ReactNode;
+  children?: ReactNode;
+};

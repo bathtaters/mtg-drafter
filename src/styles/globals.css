@@ -3,27 +3,53 @@
 @tailwind utilities;
 
 @layer base {
-  .text-scale-xl { @apply text-lg   sm:text-xl   print:text-lg;   }
-  .text-scale-lg { @apply text-base sm:text-lg   print:text-base; }
-  .text-scale-md { @apply text-sm   sm:text-base print:text-sm;   }
-  .text-scale-sm { @apply text-xs   sm:text-sm   print:text-xs;   }
-  .text-scale-xs { @apply text-2xs  sm:text-xs   print:text-2xs;  }
+  .text-scale-xl {
+    @apply text-lg   sm:text-xl   print:text-lg;
+  }
+  .text-scale-lg {
+    @apply text-base sm:text-lg   print:text-base;
+  }
+  .text-scale-md {
+    @apply text-sm   sm:text-base print:text-sm;
+  }
+  .text-scale-sm {
+    @apply text-xs   sm:text-sm   print:text-xs;
+  }
+  .text-scale-xs {
+    @apply text-2xs  sm:text-xs   print:text-2xs;
+  }
 
-  html, body, #__next { @apply h-full w-full; }
+  html,
+  body,
+  #__next {
+    @apply h-full w-full;
+  }
   body {
     @apply relative  leading-none  font-sans;
     @apply text-scale-md  print:text-xs;
   }
-  
-  h1 { @apply font-medium  text-4xl  sm:text-5xl  print:text-4xl; }
-  h2 { @apply font-bold    text-2xl  sm:text-3xl  print:text-2xl; }
-  h3 { @apply font-medium  text-base sm:text-lg   print:text-base; }
-  h4 { @apply font-bold    text-xs   sm:text-base print:text-xs; }
 
-  .btn { @apply font-sans; }
-  
+  h1 {
+    @apply font-medium  text-4xl  sm:text-5xl  print:text-4xl;
+  }
+  h2 {
+    @apply font-bold    text-2xl  sm:text-3xl  print:text-2xl;
+  }
+  h3 {
+    @apply font-medium  text-base sm:text-lg   print:text-base;
+  }
+  h4 {
+    @apply font-bold    text-xs   sm:text-base print:text-xs;
+  }
+
+  .btn {
+    @apply font-sans;
+  }
+
   /* Capitialized buttons for daisyUI v4  */
-  .btn { @apply uppercase; }
+  .btn {
+    @apply uppercase;
+  }
 }
 
 @layer components {
@@ -32,18 +58,25 @@
   input[type="number"]::-webkit-outer-spin-button {
     @apply p-1;
   }
-  
+
   /* Fix focus styling on ghost buttons (Modal X button) */
-  .btn.btn-ghost:focus-visible { @apply outline-none bg-gray-500/40; }
-  
+  .btn.btn-ghost:focus-visible {
+    @apply outline-none bg-gray-500/40;
+  }
+
   /* Fix combining tooltip w/ btn */
-  .tooltip.btn { @apply before:normal-case before:font-normal before:content-[attr(data-tip)]; }
+  .tooltip.btn {
+    @apply before:normal-case before:font-normal before:content-[attr(data-tip)];
+  }
 
   /* Fix scrollable sidebar */
-  html:has(.drawer-toggle:checked) { scrollbar-gutter: auto; }
-  
+  html:has(.drawer-toggle:checked) {
+    scrollbar-gutter: auto;
+  }
+
   /* Add Tab variants to daisyUI */
-  .tabs-boxed .tab, .tabs-boxed .tab.tab-primary  {
+  .tabs-boxed .tab,
+  .tabs-boxed .tab.tab-primary {
     --tab-color: oklch(var(--p) / var(--tw-text-opacity));
     --tab-bg: oklch(var(--pc) / var(--tw-bg-opacity));
   }
@@ -51,69 +84,108 @@
     --tab-color: oklch(var(--s) / var(--tw-text-opacity));
     --tab-bg: oklch(var(--sc) / var(--tw-bg-opacity));
   }
-  .tabs-boxed .tab.tab-accent    {
+  .tabs-boxed .tab.tab-accent {
     --tab-color: oklch(var(--a) / var(--tw-text-opacity));
     --tab-bg: oklch(var(--ac) / var(--tw-bg-opacity));
   }
-  .tabs-boxed .tab:is(.tab-active, [aria-selected="true"]):not(.tab-disabled):not([disabled]),
+  .tabs-boxed
+    .tab:is(.tab-active, [aria-selected="true"]):not(.tab-disabled):not(
+      [disabled]
+    ),
   .tabs-boxed .tab:is(input:checked) {
     background-color: var(--tab-color);
     color: var(--tab-bg);
   }
 
   /* Hide browser buttons in number input boxes */
-  .hide-arrows { appearance: textfield; }
+  .hide-arrows {
+    appearance: textfield;
+  }
   .hide-arrows::-webkit-inner-spin-button,
   .hide-arrows::-webkit-outer-spin-button {
     @apply m-0 appearance-none;
   }
-  .show-arrows { appearance: initial; }
+  .show-arrows {
+    appearance: initial;
+  }
   .show-arrows::-webkit-inner-spin-button,
   .show-arrows::-webkit-outer-spin-button {
     @apply m-auto appearance-auto;
   }
 
   /* Add player-drawer-offset to allow drawer button to popout */
-  .drawer-end > .drawer-toggle ~ .drawer-side > .player-drawer-offset:not(.drawer-overlay) {
-    @apply translate-x-[calc(100%-2rem)] md:translate-x-[calc(100%-3rem)]
+  .drawer-end
+    > .drawer-toggle
+    ~ .drawer-side
+    > .player-drawer-offset:not(.drawer-overlay) {
+    @apply translate-x-[calc(100%-2rem)] md:translate-x-[calc(100%-3rem)];
   }
 
-  .drawer-end > .drawer-toggle:checked ~ .drawer-side > .player-drawer-offset:not(.drawer-overlay) {
-    @apply translate-x-0
+  .drawer-end
+    > .drawer-toggle:checked
+    ~ .drawer-side
+    > .player-drawer-offset:not(.drawer-overlay) {
+    @apply translate-x-0;
   }
 }
 
 @layer utilities {
-  
   /* Style scrollbars */
-  *, :hover {
+  *,
+  :hover {
     scrollbar-color: auto auto;
     scrollbar-width: thin;
   }
-  *::-webkit-scrollbar       { @apply w-1.5 h-1; }
-  *::-webkit-scrollbar-track { @apply my-1.5 bg-transparent; }
-  *::-webkit-scrollbar-thumb { @apply rounded-full bg-base-content/60 hover:bg-base-content; }
-  .scrollbar-primary::-webkit-scrollbar-thumb   { @apply bg-[color-mix(in_oklab,oklch(var(--p)),black_20%)] hover:bg-primary;   }
-  .scrollbar-secondary::-webkit-scrollbar-thumb { @apply bg-[color-mix(in_oklab,oklch(var(--s)),black_20%)] hover:bg-secondary; }
-  .scrollbar-accent::-webkit-scrollbar-thumb    { @apply bg-[color-mix(in_oklab,oklch(var(--a)),black_20%)] hover:bg-accent;    }
-  .scrollbar-primary   { scrollbar-color: color-mix(in oklab, oklch(var(--p)), black 20%) transparent; }
-  .scrollbar-secondary { scrollbar-color: color-mix(in oklab, oklch(var(--s)), black 20%) transparent; }
-  .scrollbar-accent    { scrollbar-color: color-mix(in oklab, oklch(var(--a)), black 20%) transparent; }
-  .scrollbar-primary:hover   { scrollbar-color: oklch(var(--p)) transparent; }
-  .scrollbar-secondary:hover { scrollbar-color: oklch(var(--s)) transparent; }
-  .scrollbar-accent:hover    { scrollbar-color: oklch(var(--a)) transparent; }
+  *::-webkit-scrollbar {
+    @apply w-1.5 h-1;
+  }
+  *::-webkit-scrollbar-track {
+    @apply my-1.5 bg-transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-base-content/60 hover:bg-base-content;
+  }
+  .scrollbar-primary::-webkit-scrollbar-thumb {
+    @apply bg-[color-mix(in_oklab,oklch(var(--p)),black_20%)] hover:bg-primary;
+  }
+  .scrollbar-secondary::-webkit-scrollbar-thumb {
+    @apply bg-[color-mix(in_oklab,oklch(var(--s)),black_20%)] hover:bg-secondary;
+  }
+  .scrollbar-accent::-webkit-scrollbar-thumb {
+    @apply bg-[color-mix(in_oklab,oklch(var(--a)),black_20%)] hover:bg-accent;
+  }
+  .scrollbar-primary {
+    scrollbar-color: color-mix(in oklab, oklch(var(--p)), black 20%) transparent;
+  }
+  .scrollbar-secondary {
+    scrollbar-color: color-mix(in oklab, oklch(var(--s)), black 20%) transparent;
+  }
+  .scrollbar-accent {
+    scrollbar-color: color-mix(in oklab, oklch(var(--a)), black 20%) transparent;
+  }
+  .scrollbar-primary:hover {
+    scrollbar-color: oklch(var(--p)) transparent;
+  }
+  .scrollbar-secondary:hover {
+    scrollbar-color: oklch(var(--s)) transparent;
+  }
+  .scrollbar-accent:hover {
+    scrollbar-color: oklch(var(--a)) transparent;
+  }
 
   /* Add 3d card flip effect (w/ reduced & non-reduced motion options) */
   .flip-container {
     @apply [perspective:62rem] motion-reduce:[perspective:none];
   }
 
-  * { @apply [--mtgd-rotate-y:0deg] }
+  * {
+    @apply [--mtgd-rotate-y:0deg];
+  }
   .flip-inner {
-    transform: translate(var(--tw-translate-x),var(--tw-translate-y))
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y))
       rotate(var(--tw-rotate)) rotateY(var(--mtgd-rotate-y))
-      skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y))
-      scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+      skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x))
+      scaleY(var(--tw-scale-y));
   }
   .flip-container > .flip-inner {
     @apply relative transition-transform duration-500 [transform-style:preserve-3d];

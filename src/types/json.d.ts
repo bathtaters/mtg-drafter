@@ -302,8 +302,11 @@ export type CardToken = {
   watermark?: string;
 };
 export type PriceFormats = {
-  mtgo?: Record<'cardhoarder', PriceList>;
-  paper?: Record<'cardkingdom' | 'cardmarket' | 'cardsphere' | 'tcgplayer', PriceList>;
+  mtgo?: Record<"cardhoarder", PriceList>;
+  paper?: Record<
+    "cardkingdom" | "cardmarket" | "cardsphere" | "tcgplayer",
+    PriceList
+  >;
 };
 export type PriceList = {
   buylist?: PricePoints;
@@ -590,21 +593,36 @@ export type Translations = {
   Sanskrit?: string;
   Spanish?: string;
 };
-export type AllPrintingsFile = { meta: Meta; data: Record<string, Set>; };
-export type AllPricesFile = { meta: Meta; data: Record<string, PriceFormats>; };
-export type AllPricesTodayFile = { meta: Meta; data: Record<string, PriceFormats>; };
-export type AllIdentifiersFile = { meta: Meta; data: Record<string, CardSet>; };
-export type AtomicCardsFile = { meta: Meta; data: Record<string, CardAtomic>; };
-export type CompiledListFile = { meta: Meta; data: string[]; };
-export type EnumValues = { meta: Meta; data: Record<string, Record<string, string[]>>};
-export type LegacyFile = { meta: Meta; data: Record<string, CardSet>; };
-export type LegacyAtomicFile = { meta: Meta; data: Record<string, CardAtomic>; };
-export type ModernFile = { meta: Meta; data: Record<string, CardSet>; };
-export type ModernAtomicFile = { meta: Meta; data: Record<string, CardAtomic>; };
-export type PauperAtomicFile = { meta: Meta; data: Record<string, CardAtomic>; };
-export type PioneerFile = { meta: Meta; data: Record<string, CardSet>; };
-export type PioneerAtomicFile = { meta: Meta; data: Record<string, CardAtomic>; };
-export type StandardFile = { meta: Meta; data: Record<string, CardSet>; };
-export type StandardAtomicFile = { meta: Meta; data: Record<string, CardAtomic>; };
-export type VintageFile = { meta: Meta; data: Record<string, CardSet>; };
-export type VintageAtomicFile = { meta: Meta; data: Record<string, CardAtomic>; };
+export type AllPrintingsFile = { meta: Meta; data: Record<string, Set> };
+export type AllPricesFile = { meta: Meta; data: Record<string, PriceFormats> };
+export type AllPricesTodayFile = {
+  meta: Meta;
+  data: Record<string, PriceFormats>;
+};
+export type AllIdentifiersFile = { meta: Meta; data: Record<string, CardSet> };
+export type AtomicCardsFile = { meta: Meta; data: Record<string, CardAtomic> };
+export type CompiledListFile = { meta: Meta; data: string[] };
+export type EnumValues = {
+  meta: Meta;
+  data: Record<string, Record<string, string[]>>;
+};
+export type LegacyFile = { meta: Meta; data: Record<string, CardSet> };
+export type LegacyAtomicFile = { meta: Meta; data: Record<string, CardAtomic> };
+export type ModernFile = { meta: Meta; data: Record<string, CardSet> };
+export type ModernAtomicFile = { meta: Meta; data: Record<string, CardAtomic> };
+export type PauperAtomicFile = { meta: Meta; data: Record<string, CardAtomic> };
+export type PioneerFile = { meta: Meta; data: Record<string, CardSet> };
+export type PioneerAtomicFile = {
+  meta: Meta;
+  data: Record<string, CardAtomic>;
+};
+export type StandardFile = { meta: Meta; data: Record<string, CardSet> };
+export type StandardAtomicFile = {
+  meta: Meta;
+  data: Record<string, CardAtomic>;
+};
+export type VintageFile = { meta: Meta; data: Record<string, CardSet> };
+export type VintageAtomicFile = {
+  meta: Meta;
+  data: Record<string, CardAtomic>;
+};

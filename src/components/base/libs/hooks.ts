@@ -1,235 +1,308 @@
-import type { DependencyList, MouseEventHandler, Ref } from 'react'
-import { useCallback, useEffect, useRef, useState, useReducer, useMemo } from 'react'
-import useNotification from './notifications'
-import { hoverAfterClickDelay, redTimerSeconds } from "assets/constants"
-import { timerAlertMsg, timerAlertOpts } from 'assets/strings'
+import type { DependencyList, MouseEventHandler, Ref } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useReducer,
+  useMemo,
+} from "react";
+import useNotification from "./notifications";
+import { hoverAfterClickDelay, redTimerSeconds } from "assets/constants";
+import { timerAlertMsg, timerAlertOpts } from "assets/strings";
 
-const remaining = (end?: number|null, roundTo = 1, current = Date.now()) =>
-  end && end > current ? Math.round((end - current) / roundTo) : undefined
+const remaining = (end?: number | null, roundTo = 1, current = Date.now()) =>
+  end && end > current ? Math.round((end - current) / roundTo) : undefined;
 
-export function useTimer(endTime?: number|null, pauseTime?: number|null, onEnd = () => {}, notifySec = redTimerSeconds, tickMs = 1000) {
-  const timer = useRef<NodeJS.Timer>(undefined)
-  const { current, send } = useNotification()
+export function useTimer(
+  endTime?: number | null,
+  pauseTime?: number | null,
+  onEnd = () => {},
+  notifySec = redTimerSeconds,
+  tickMs = 1000
+) {
+  const timer = useRef<NodeJS.Timer>(undefined);
+  const { current, send } = useNotification();
 
   const stop = useCallback(() => {
-    clearInterval(timer.current as any)
-    timer.current = undefined
-    current?.close()
-  }, [current])
+    clearInterval(timer.current as any);
+    timer.current = undefined;
+    current?.close();
+  }, [current]);
 
-  const [ countdown, setCountdown ] = useState(remaining(endTime, tickMs))
+  const [countdown, setCountdown] = useState(remaining(endTime, tickMs));
 
-  const update = useCallback((end?: number|null) => {
-    const rem = remaining(end, tickMs)
-    setCountdown(rem)
+  const update = useCallback(
+    (end?: number | null) => {
+      const rem = remaining(end, tickMs);
+      setCountdown(rem);
 
-    if (typeof rem === 'number') {
-      // Open/close notification
-      notifySec && !current && rem === notifySec && send(timerAlertMsg(notifySec), timerAlertOpts)
-      rem > notifySec && current?.close()
-
-    } else if (typeof end === 'number') {
-      current?.close()
-      onEnd()
-    }
-    return typeof rem === 'number'
-  }, [onEnd, tickMs, notifySec, current, send])
+      if (typeof rem === "number") {
+        // Open/close notification
+        notifySec &&
+          !current &&
+          rem === notifySec &&
+          send(timerAlertMsg(notifySec), timerAlertOpts);
+        rem > notifySec && current?.close();
+      } else if (typeof end === "number") {
+        current?.close();
+        onEnd();
+      }
+      return typeof rem === "number";
+    },
+    [onEnd, tickMs, notifySec, current, send]
+  );
 
   useEffect(() => {
-    if (!pauseTime && update(endTime)) timer.current = setInterval(() => update(endTime) || stop(), tickMs / 2)
+    if (!pauseTime && update(endTime))
+      timer.current = setInterval(() => update(endTime) || stop(), tickMs / 2);
     else {
-      stop()
-      if (pauseTime && endTime) setCountdown(remaining(endTime, tickMs, pauseTime))
+      stop();
+      if (pauseTime && endTime)
+        setCountdown(remaining(endTime, tickMs, pauseTime));
     }
-    return stop
-  }, [update, stop, endTime, pauseTime, tickMs])
+    return stop;
+  }, [update, stop, endTime, pauseTime, tickMs]);
 
-  return countdown
+  return countdown;
 }
 
+type TimerStore =
+  | "standby" /* run upon reciving timer */
+  | "active" /* timer is running */
+  | number /* stored value */
+  | undefined; /* empty */
 
-type TimerStore = 'standby' /* run upon reciving timer */ | 'active' /* timer is running */ | number /* stored value */ | undefined /* empty */
+export function useTimerStore(
+  initTimer?: number | null,
+  initOffset?: number | null
+) {
+  const [timer, setTimer] = useState<number>();
 
-export function useTimerStore(initTimer?: number | null, initOffset?: number | null) {
-  const [ timer, setTimer ] = useState<number>()
-  
-  const timerStore = useRef<TimerStore>(initTimer == null || initOffset == null ? undefined : initTimer - initOffset)
+  const timerStore = useRef<TimerStore>(
+    initTimer == null || initOffset == null ? undefined : initTimer - initOffset
+  );
 
-  const resetTimer = useCallback(() => setTimer(timerStore.current = undefined), [])
+  const resetTimer = useCallback(
+    () => setTimer((timerStore.current = undefined)),
+    []
+  );
 
   const startTimer = useCallback(() => {
     // Start timer
-    if (typeof timerStore.current === 'number') {
-      setTimer(timerStore.current + Date.now())
-      timerStore.current = 'active'
-      
-    // Place in standby mode
+    if (typeof timerStore.current === "number") {
+      setTimer(timerStore.current + Date.now());
+      timerStore.current = "active";
+
+      // Place in standby mode
     } else if (!timerStore.current) {
-      timerStore.current = 'standby'
+      timerStore.current = "standby";
     }
-  }, [])
+  }, []);
 
+  const storeTimer = useCallback(
+    (timer?: number | null, offset?: number | null) => {
+      if (timer == null || offset == null) return resetTimer();
 
-  const storeTimer = useCallback((timer?: number | null, offset?: number | null) => {
-    if (timer == null || offset == null) return resetTimer()
-    
-    setTimer((clock) => {
-      // Store value & disable timer
-      if (typeof timerStore.current !== 'string' && (clock == undefined || clock >= Date.now()) && timer > offset) {
-        timerStore.current = timer - offset
-        return undefined
-  
-      // Start/Update timer
-      } else {
-        timerStore.current = 'active'
-        return timer - offset + Date.now()
-      }
-    })
-  }, [resetTimer])
+      setTimer((clock) => {
+        // Store value & disable timer
+        if (
+          typeof timerStore.current !== "string" &&
+          (clock == undefined || clock >= Date.now()) &&
+          timer > offset
+        ) {
+          timerStore.current = timer - offset;
+          return undefined;
 
-  return { timer, startTimer, resetTimer, storeTimer }
+          // Start/Update timer
+        } else {
+          timerStore.current = "active";
+          return timer - offset + Date.now();
+        }
+      });
+    },
+    [resetTimer]
+  );
+
+  return { timer, startTimer, resetTimer, storeTimer };
 }
 
+export function useLoadElements(
+  onLoadAll?: () => void,
+  elementCount?: number,
+  skip = false,
+  depends: any[] = []
+) {
+  const [loadCount, setLoadCount] = useState(elementCount);
 
-export function useLoadElements(onLoadAll?: () => void, elementCount?: number, skip = false, depends: any[] = []) {
-  const [ loadCount, setLoadCount ] = useState(elementCount)
-  
-  const handleElementLoad = useCallback(() => setLoadCount((loadCount) => loadCount ? loadCount - 1 : loadCount), [])
+  const handleElementLoad = useCallback(
+    () => setLoadCount((loadCount) => (loadCount ? loadCount - 1 : loadCount)),
+    []
+  );
 
   useEffect(() => {
     if (loadCount === 0) {
-      setLoadCount(undefined)
-      onLoadAll && onLoadAll()
+      setLoadCount(undefined);
+      onLoadAll && onLoadAll();
     }
-  }, [loadCount, onLoadAll])
+  }, [loadCount, onLoadAll]);
 
   useEffect(() => {
-    if (typeof elementCount !== 'number') return setLoadCount(undefined)
-    
-    if (!skip) return setLoadCount(elementCount)
+    if (typeof elementCount !== "number") return setLoadCount(undefined);
 
-    onLoadAll && onLoadAll()
-    setLoadCount(0)
+    if (!skip) return setLoadCount(elementCount);
+
+    onLoadAll && onLoadAll();
+    setLoadCount(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elementCount, ...depends])
+  }, [elementCount, ...depends]);
 
-  return [ loadCount, handleElementLoad ] as [ number | undefined, () => void ]
+  return [loadCount, handleElementLoad] as [number | undefined, () => void];
 }
 
-
-export enum HoverAction { Leave = 0, Enter = 1, Click = 2, FirstClick = 3 }
-
-export function useHoverClick<Key extends number|string = string>(handleAction: (action: HoverAction, key?: Key) => void): (key?: Key) => MouseEventHandler {
-  const wasClicked = useRef(false)
-  const disableHover = useRef(false)
-
-  return useCallback((key) => (ev) => {
-    ev.stopPropagation()
-  
-    switch (ev.type) {
-      case 'mouseenter':
-        disableHover.current !== true && handleAction(HoverAction.Enter, key)
-        break
-      case 'mouseleave':
-        if (disableHover.current === true) break
-        handleAction(HoverAction.Leave, key)
-        wasClicked.current = false
-        break
-      case 'click':
-        disableHover.current = true
-        setTimeout(() => disableHover.current = false, hoverAfterClickDelay)
-      default:
-        handleAction(wasClicked.current ? HoverAction.Click : HoverAction.FirstClick, key)
-        wasClicked.current = true
-    }
-  }, [handleAction])
+export enum HoverAction {
+  Leave = 0,
+  Enter = 1,
+  Click = 2,
+  FirstClick = 3,
 }
 
+export function useHoverClick<Key extends number | string = string>(
+  handleAction: (action: HoverAction, key?: Key) => void
+): (key?: Key) => MouseEventHandler {
+  const wasClicked = useRef(false);
+  const disableHover = useRef(false);
 
-export function useFocusEffect(onFocus: (isFocused: boolean) => void, dependencies?: DependencyList, minimumDelay: number = 0) {
-  const timestamp = useRef(new Date().getTime())
+  return useCallback(
+    (key) => (ev) => {
+      ev.stopPropagation();
+
+      switch (ev.type) {
+        case "mouseenter":
+          disableHover.current !== true && handleAction(HoverAction.Enter, key);
+          break;
+        case "mouseleave":
+          if (disableHover.current === true) break;
+          handleAction(HoverAction.Leave, key);
+          wasClicked.current = false;
+          break;
+        case "click":
+          disableHover.current = true;
+          setTimeout(
+            () => (disableHover.current = false),
+            hoverAfterClickDelay
+          );
+        default:
+          handleAction(
+            wasClicked.current ? HoverAction.Click : HoverAction.FirstClick,
+            key
+          );
+          wasClicked.current = true;
+      }
+    },
+    [handleAction]
+  );
+}
+
+export function useFocusEffect(
+  onFocus: (isFocused: boolean) => void,
+  dependencies?: DependencyList,
+  minimumDelay: number = 0
+) {
+  const timestamp = useRef(new Date().getTime());
 
   useEffect(() => {
     const handleEvent = (isFocused: boolean) => {
-      const now = new Date().getTime()
-      if (now - timestamp.current >= minimumDelay) onFocus(isFocused)
-      timestamp.current = now
-    }
-    
-    const handleFocus = () => handleEvent(true)
-    const handleBlur  = () => handleEvent(false)
+      const now = new Date().getTime();
+      if (now - timestamp.current >= minimumDelay) onFocus(isFocused);
+      timestamp.current = now;
+    };
 
-    window.addEventListener("focus", handleFocus)
-    window.addEventListener("blur",  handleBlur)
+    const handleFocus = () => handleEvent(true);
+    const handleBlur = () => handleEvent(false);
+
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("blur", handleBlur);
     return () => {
-      window.removeEventListener("focus", handleFocus)
-      window.removeEventListener("blur",  handleBlur)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, dependencies)
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("blur", handleBlur);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, dependencies);
 }
 
+export type IntersectionHandler = (
+  index: number,
+  entry: IntersectionObserverEntry
+) => void;
 
-export type IntersectionHandler = (index: number, entry: IntersectionObserverEntry) => void
-export type IntersectionChildProps<E extends HTMLElement = HTMLElement> = { ['data-index']: number, ref: Ref<E> }
-
-export function useIntersection(handleIntersect: IntersectionHandler, options: IntersectionObserverInit = {}, deps: any[] = []) {
-  const parentRef = useRef<HTMLElement>(null)
-  const childrenRef = useRef<HTMLElement[]>([])
+export function useIntersection(
+  handleIntersect: IntersectionHandler,
+  { root, rootMargin, threshold }: IntersectionObserverInit = {}
+) {
+  const parentRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    if (!parentRef.current) return;
+
     const observer = new IntersectionObserver(
-      (entries) => entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const index = (entry.target as HTMLElement).dataset.index
-          index && handleIntersect(parseInt(index), entry)
-        }
-      }),{
-        root: 'root' in options ? options.root : parentRef.current,
-        rootMargin: options.rootMargin,
-        threshold: options.threshold,
+      (entries) =>
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = (entry.target as HTMLElement).dataset.index;
+            index && handleIntersect(parseInt(index), entry);
+          }
+        }),
+      {
+        root: typeof root === "undefined" ? parentRef.current : root,
+        rootMargin,
+        threshold,
       }
     );
 
-    const children = [...childrenRef.current]
-    children.forEach((ref) => ref && observer.observe(ref))
-    return () => children.forEach((ref) => ref && observer.unobserve(ref))
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- deps should cover handleIntersect
-  }, [...deps, options.root, options.rootMargin, options.threshold])
+    const children = parentRef.current.children;
+    for (let i = 0; i < children.length; i++) {
+      observer.observe(children[i]);
+    }
 
-  return {
-    parentRef,
-    childProps: (index: number): IntersectionChildProps => ({
-      ['data-index']: index,
-      ref: (el: HTMLElement | null) => { if (el) childrenRef.current[index] = el },
-    })
-  }
+    return () => observer.disconnect();
+  }, [handleIntersect, root, rootMargin, threshold]);
+
+  return parentRef;
 }
 
-
-const simpleReducer = <T>(state: T, action: { type: keyof T, value: T[keyof T] }): T =>
-  ({ ...state, [action.type]: action.value })
+const simpleReducer = <T>(
+  state: T,
+  action: { type: keyof T; value: T[keyof T] }
+): T => ({ ...state, [action.type]: action.value });
 
 export function useSimpleReducer<T extends {}>(initialValue: T) {
-  const [ state, updateState ] = useReducer(simpleReducer<T>, { ...initialValue })
+  const [state, updateState] = useReducer(simpleReducer<T>, {
+    ...initialValue,
+  });
 
-  const updaters = useMemo(() => 
-    Object.keys(initialValue)
-      .reduce((updaters, type) => ({
-        ...updaters, [type]: (value: T[keyof T]) => updateState({ type, value })
-      }),
-      {} as { [K in keyof T]: (value: T[K]) => void }
-    ),
-  [initialValue])
-  
-  return [ state, updaters ] as [ T, typeof updaters ]
+  const updaters = useMemo(
+    () =>
+      Object.keys(initialValue).reduce(
+        (updaters, type) => ({
+          ...updaters,
+          [type]: (value: T[keyof T]) => updateState({ type, value }),
+        }),
+        {} as { [K in keyof T]: (value: T[K]) => void }
+      ),
+    [initialValue]
+  );
+
+  return [state, updaters] as [T, typeof updaters];
 }
 
-
 export function useTouchDevice() {
-  const [ isTouchDevice, setIsTouchDevice ] = useState(false)
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   useEffect(() => {
-    setIsTouchDevice(typeof window !== 'undefined' && ('ontouchstart' in window || window.navigator.maxTouchPoints > 0))
-  }, [])
-  return isTouchDevice
+    setIsTouchDevice(
+      typeof window !== "undefined" &&
+        ("ontouchstart" in window || window.navigator.maxTouchPoints > 0)
+    );
+  }, []);
+  return isTouchDevice;
 }

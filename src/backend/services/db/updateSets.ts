@@ -1,41 +1,72 @@
-import prisma from '../../libs/db'
-import fetchJson from '../../libs/fetchJson'
-import Batcher from '../../libs/Batcher'
-import { adaptSetDataToDb, flattenObjects, isBoosterSet, JsonSet } from '../../utils/db/set.utils'
-import { isMtgJsonKey, updateMtgJson } from './updateSettings'
+import prisma from "../../libs/db";
+import fetchJson from "../../libs/fetchJson";
+import Batcher from "../../libs/Batcher";
+import {
+  adaptSetDataToDb,
+  flattenObjects,
+  isBoosterSet,
+  JsonSet,
+} from "../../utils/db/set.utils";
+import { isMtgJsonKey, updateMtgJson } from "./updateSettings";
 
-
-export default async function updateSets(url: string, fullUpdate = false, enableLog = false, maxThreads = 1000, dbBatchSize = 5000) {
-
-  let existingSets: string[] | undefined
-  if (!fullUpdate) existingSets = await prisma.cardSet.findMany({ select: { code: true }})
-      .then((sets) => sets.map(({ code }) => code))
+export default async function updateSets(
+  url: string,
+  fullUpdate = false,
+  enableLog = false,
+  maxThreads = 1000,
+  dbBatchSize = 5000
+) {
+  let existingSets: string[] | undefined;
+  if (!fullUpdate)
+    existingSets = await prisma.cardSet
+      .findMany({ select: { code: true } })
+      .then((sets) => sets.map(({ code }) => code));
   else {
-    enableLog && console.log('Erasing All Sets')
-    await prisma.cardSet.deleteMany()
+    enableLog && console.log("Erasing All Sets");
+    await prisma.cardSet.deleteMany();
   }
 
-  enableLog && console.log('Updating Sets',existingSets ? `(${existingSets.length} exisiting)` : '')
-  enableLog && console.time('Sets')
+  enableLog &&
+    console.log(
+      "Updating Sets",
+      existingSets ? `(${existingSets.length} exisiting)` : ""
+    );
+  enableLog && console.time("Sets");
 
-  const setUpdate = new Batcher(dbBatchSize, async (data: ReturnType<typeof adaptSetDataToDb>[]) => {
-    const { set, boosters } = flattenObjects(data)
-    await prisma.$transaction([
-      prisma.cardSet.createMany({ data: set      }),
-      prisma.booster.createMany({ data: boosters }),
-    ])
-  })
-  
-  await fetchJson<JsonSet>(url, async (incomingData, key) => {
-    if (isMtgJsonKey(key)) return updateMtgJson("sets", key, incomingData, url)
-    
-    if ((existingSets && existingSets.includes(incomingData.code)) || !isBoosterSet(incomingData)) return
+  const setUpdate = new Batcher(
+    dbBatchSize,
+    async (data: ReturnType<typeof adaptSetDataToDb>[]) => {
+      const { set, boosters } = flattenObjects(data);
+      await prisma.$transaction([
+        prisma.cardSet.createMany({ data: set }),
+        prisma.booster.createMany({ data: boosters }),
+      ]);
+    }
+  );
 
-    await setUpdate.add(adaptSetDataToDb(incomingData))
+  await fetchJson<JsonSet>(
+    url,
+    async (incomingData, key) => {
+      if (isMtgJsonKey(key))
+        return updateMtgJson("sets", key, incomingData, url);
 
-  }, { jsonPath: /^meta|^data/, maxThreads })
-  
-  await setUpdate.finish()
-  enableLog && console.timeEnd('Sets')
-  enableLog && await prisma.cardSet.count().then((c) => console.log('Added',c-(existingSets?.length || 0),'/',c,'sets'))
+      if (
+        (existingSets && existingSets.includes(incomingData.code)) ||
+        !isBoosterSet(incomingData)
+      )
+        return;
+
+      await setUpdate.add(adaptSetDataToDb(incomingData));
+    },
+    { jsonPath: /^meta|^data/, maxThreads }
+  );
+
+  await setUpdate.finish();
+  enableLog && console.timeEnd("Sets");
+  enableLog &&
+    (await prisma.cardSet
+      .count()
+      .then((c) =>
+        console.log("Added", c - (existingSets?.length || 0), "/", c, "sets")
+      ));
 }
