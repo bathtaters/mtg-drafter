@@ -20,9 +20,11 @@ const formatError = (message: string): ErrorAlert => ({
 });
 
 export function getGameListeners(
+  gameUrl: string | undefined,
+  sessionId: string | undefined,
   {
-    game,
-    sessionId,
+    /* Only import 'useState' setters below,
+      other data will be stale. */
     updateLocal,
     updateGame,
     renamePlayer,
@@ -68,7 +70,7 @@ export function getGameListeners(
       setLoadingAll((v) => v + 1);
       debugSockets && console.debug("SOCKET", "updateRound", round);
       nextRound(round);
-      reloadData(game?.url, updateLocal, newError).finally(() => {
+      reloadData(gameUrl, updateLocal, newError).finally(() => {
         setLoadingAll((v) => v && v - 1);
         refreshLog?.();
       });
@@ -77,7 +79,7 @@ export function getGameListeners(
       setLoadingAll((v) => v + 1);
       debugSockets && console.debug("SOCKET", "updateTimer", pauseTime);
       pauseGame(pauseTime);
-      reloadData(game?.url, updateLocal, newError).finally(() => {
+      reloadData(gameUrl, updateLocal, newError).finally(() => {
         setLoadingAll((v) => v && v - 1);
         refreshLog?.();
       });
@@ -131,7 +133,7 @@ export function getGameListeners(
 
     onConnect && socket.on("connect", onConnect);
 
-    reloadData(game?.url, updateLocal, newError).finally(() => {
+    reloadData(gameUrl, updateLocal, newError).finally(() => {
       setLoadingAll(0);
       setLoadingPack(0);
     });

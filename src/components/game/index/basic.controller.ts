@@ -2,6 +2,7 @@ import type { ServerProps, ServerSuccess } from "types/game";
 import {
   useCallback,
   useEffect,
+  useMemo,
   useState,
   type Dispatch,
   type SetStateAction,
@@ -40,13 +41,39 @@ export default function useBasicGameController(
     setLogEnabled(hostModal && local.isHost);
   }, [local.isHost, hostModal, setLogEnabled]);
 
+  const loadGameListeners = useMemo(
+    () =>
+      getGameListeners(
+        local.game?.url,
+        local.sessionId,
+        local,
+        newError,
+        clearError,
+        gameLog.fetch,
+        setHostModal
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only using useState setters from local
+    [
+      local.game?.url,
+      local.sessionId,
+      newError,
+      clearError,
+      gameLog.fetch,
+      setHostModal,
+    ]
+  );
+
+  const handleSocketFail = useCallback(
+    ({ message }: { message: string }) =>
+      newError({ title: "Connection Error", message, button: "Refresh" }),
+    [newError]
+  );
+
   const socket = useSocket(
     gameURL(url),
     socketEndpoint(url),
-    getGameListeners(local, newError, clearError, gameLog.fetch, setHostModal),
-    [local.game?.id, local.player?.id, local.sessionId, gameLog.fetch],
-    ({ message }) =>
-      newError({ title: "Connection Error", message, button: "Refresh" })
+    loadGameListeners,
+    handleSocketFail
   );
 
   useFocusEffect(

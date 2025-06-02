@@ -31,16 +31,16 @@ export default function useCardImage(
       ...card.otherFaces.map(({ card, backImg: img }) =>
         img ? { ...card, img } : card
       ),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [card.uuid]
   );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const frontRotate = useMemo(
     () =>
       Object.entries(typeDirection).find(([type]) =>
         card.types.includes(type)
       )?.[1],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [card.uuid]
   );
   const sideCount = cardFaces.length;

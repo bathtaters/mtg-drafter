@@ -197,6 +197,7 @@ export default function useAdvancedFetch<
               ),
             debounceMs
           ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- filter required below for IntersectionObserver to work
     [
       cursor,
       total,

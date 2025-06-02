@@ -20,7 +20,6 @@ export default function useSocket<S extends Socket = Socket>(
   path: string,
   endpoint: string,
   onConnect: (socket: S) => ReturnType<EffectCallback>,
-  dependencies: DependencyList = [],
   onFail?: (error: { message: string; code?: number }) => void
 ) {
   const socket = useRef<S | null>(null);
@@ -100,13 +99,13 @@ export default function useSocket<S extends Socket = Socket>(
 
     destructor.current = onConnect(socket.current);
     updateIsConnected();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    ...dependencies,
     endpoint,
     path,
     disconnectFromSocket,
     updateIsConnected,
+    onConnect,
+    onFail,
   ]);
 
   const emitOrQueue = useCallback((...args: Parameters<S["emit"]>) => {
