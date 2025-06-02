@@ -99,7 +99,7 @@ export default function useAdvancedFetch<Entry, Params extends FetchParams = Fet
   }: AdvancedFetchOptions<Entry> = {},
 ) {
   const isFirstLoad = useRef(true)
-  const [ entries, setEntries ] = useState(Array.isArray(initialData) ? arrayToObject(initialData) : initialData)
+  const [ rawData, setRawData ] = useState(Array.isArray(initialData) ? arrayToObject(initialData) : initialData)
   const [ preview, setPreview ] = useState<Entry[] | undefined>(initialPreview)
   const [ total,   setTotal   ] = useState(initialTotal)
   const [ error,   setError   ] = useState<string>()
@@ -108,6 +108,8 @@ export default function useAdvancedFetch<Entry, Params extends FetchParams = Fet
 
 
   const forceFetch = useCallback(async ({ offset, size, isPreview, ...params }: Params = {} as Params) => {
+    // Ignore queries asking for no data, or preview requests beyond the first one
+    if (size === 0 || (isPreview && !isFirstLoad.current)) return []
 
     // Build query
     const queryString = objToQuery({ offset, size: size ?? minSize, ...params })
@@ -136,12 +138,13 @@ export default function useAdvancedFetch<Entry, Params extends FetchParams = Fet
     // Add data to cache
     const newData = [...res.data]
     if (isPreview) {
+      isFirstLoad.current = false
       setPreview((prev) => prev && newData)
       return newData
     }
 
     const resOffset = res.offset ?? offset ?? Math.max(0, total - newData.length)
-    setEntries((log) => {
+    setRawData((log) => {
       log = { ...log }
       for (let i = 0; i < newData.length; i++) log[i + resOffset] = newData[i]
       return log
@@ -152,30 +155,19 @@ export default function useAdvancedFetch<Entry, Params extends FetchParams = Fet
     return newData
   }, [handleFetch, minSize])
 
-  const hasError = !!error, noPreview = !preview // For deps arrays
+  const hasError = !!error
 
   const intersectFetch = useMemo(() => !enabled || hasError ? () => {} :
     debounceGroup<number>(
-      (offsets) => forceFetch(listToParams(offsets, total, minSize, maxSize, isFirstLoad.current) as Params),
+      (offsets) => forceFetch(listToParams(offsets, cursor, total, minSize, maxSize) as Params),
       debounceMs,
     ),
-    [total, enabled, hasError, forceFetch, minSize, maxSize, debounceMs]
+    [cursor, total, enabled, hasError, forceFetch, minSize, maxSize, debounceMs, filter]
   )
 
-  const nonPreviewFetch = useMemo(() => !enabled || hasError ? () => {} :
+  const fetch = useMemo(() => !enabled || hasError ? () => {} :
     debounce((params: Params = {} as Params) => forceFetch(params), debounceMs),
     [enabled, hasError, forceFetch, debounceMs]
-  )
-  
-  const previewFetch = useMemo(() => !enabled || hasError || noPreview ? () => {} :
-    debounce((params: Params = {} as Params) => forceFetch(params), debounceMs),
-    [enabled, hasError, noPreview, forceFetch, debounceMs]
-  )
-
-
-  const fetch = useCallback(
-    (params: Params = {} as Params) => params.isPreview ? previewFetch(params) : nonPreviewFetch(params),
-    [previewFetch, nonPreviewFetch]
   )
 
 
@@ -185,73 +177,39 @@ export default function useAdvancedFetch<Entry, Params extends FetchParams = Fet
     setPreview(initialPreview)
     setError(undefined)
     setCursor(0)
-    if (resetCache) setEntries(Array.isArray(initialData) ? arrayToObject(initialData) : initialData)
+    if (resetCache) setRawData(Array.isArray(initialData) ? arrayToObject(initialData) : initialData)
   }, [initialTotal, initialData, initialPreview])
-
-
-  // Get count of loaded + unfiltered
-  const displayCount = useMemo(() => Object.keys(entries).reduce(
-    (count, idx) => +(!filter || filter(entries[idx])) + count, 0),
-    [entries, filter],
-  )
-  
-  // Clear preview data if it is unused
-  const previewCount = preview?.length
-  useEffect(() => {
-    if (previewCount && displayCount && previewCount <= displayCount) {
-      isFirstLoad.current = false
-      setPreview(undefined)
-    }
-  }, [previewCount, displayCount])
 
   // Reset 'firstLoad' state whenever the filter changes
   useEffect(() => { isFirstLoad.current = true }, [filter])
   
-  // Main array of loaded/filtered data
-  const entryData = useMemo((): (EntryData<Entry> | null)[] | null => {
+  // Generate main array of loaded/filtered data
+  const entries = useMemo(() => {
       if (total == null) return null
+
+      // Get count of loaded + unfiltered
+      const displayCount = Object.keys(rawData).reduce((count, idx) => +(!filter || filter(rawData[idx])) + count, 0)
+        
+      // Clear preview data if it is unused
+      if (preview?.length && displayCount && preview.length <= displayCount) {
+        isFirstLoad.current = false
+        setPreview(undefined)
+      }
       
-      const data =  Array.from({ length: total }).map((_, idx) => {
+      let firstEntry = true
+      return Array.from({ length: total }).map((_, idx) => {
         const index = total - idx - 1 // in reverse order to maintain constant indexes if items are added
-
-        if (!entries[index]) {
-          const previewEntry = preview?.[idx - cursor + displayCount]
+        const isLoading = !rawData[index]
+        const entry = isLoading ? preview?.[idx - cursor + displayCount] : rawData[index]
+        const isFiltered = !isLoading && Boolean(filter && !filter(rawData[index]))
           
-          /* Not loaded... */
-          if (!previewEntry) return {
-            index,
-            isFirst: false,
-            isLoading: true,
-          }
-          
-          /* Preview... */
-          return {
-            index,
-            entry: previewEntry,
-            isFirst: false,
-            isLoading: true,
-          }
-        }
+        const isFirst = firstEntry && !isFiltered
+        if (isFirst) firstEntry = false // Flip after first entry
 
-        /* Filtered */
-        if (filter && !filter(entries[index])) return null
-
-        /* Regular entry */
-        return {
-          index,
-          entry: entries[index],
-          isFirst: false,
-          isLoading: false,
-        }
+        return { index, entry, isFirst, isLoading, isFiltered }
       })
-
-      // Set isFirst on the first non-null entry
-      const last = data.find((entry) => entry)
-      if (last) last.isFirst = true
-      
-      return data
     },
-    [total, entries, preview, cursor, displayCount, filter],
+    [rawData, total, preview, cursor, filter],
   )
 
   const fetchAll = async (extraParams: Omit<Params, 'offset'|'isPreview'> = {} as Params) => {
@@ -259,8 +217,8 @@ export default function useAdvancedFetch<Entry, Params extends FetchParams = Fet
     
     let list: Entry[] = []
     for (let idx = 0; idx < total; idx++) {
-      if (entries[idx]) {
-        list.push(entries[idx])
+      if (rawData[idx]) {
+        list.push(rawData[idx])
         continue
       }
 
@@ -275,9 +233,9 @@ export default function useAdvancedFetch<Entry, Params extends FetchParams = Fet
   }
 
   return {
-    entries: entryData,
-    total, fetchAll, reset, 
-    fetch, forceFetch, intersectFetch,
+    entries, total,
+    fetch, forceFetch, reset, 
+    fetchAll, intersectFetch,
     enabled, setEnabled,
     error,   setError,
   }
@@ -290,11 +248,15 @@ export default function useAdvancedFetch<Entry, Params extends FetchParams = Fet
 const arrayToObject = <T>(arr: T[]) => Object.fromEntries(arr.map((v,i) => [i,v]))
 
 /** Logic for which objects to load -- NOTE: indexList starts with most recently 'seen' index */
-const listToParams = (indexList: number[], total: number | undefined, minSize: number, maxSize: number, isReverseOrder?: boolean): Pick<FetchParams, 'offset'|'size'> => {
-  if (!indexList.length) return { offset: 0, size: 0 }
+const listToParams = (indexList: number[], cursor: number, total: number | undefined, minSize: number, maxSize: number): Pick<FetchParams, 'offset'|'size'> => {
+  if (!indexList.length || cursor === total) return { offset: 0, size: 0 }
+  cursor = total == null ? 0 : total - cursor - 1
 
-  let offset = indexList[0], end = indexList[0]
+  let offset = cursor ? Math.min(cursor, indexList[0]) : indexList[0]
+  let end = offset
   for (const num of indexList) {
+    if (cursor && num > cursor) continue // don't reload already loaded data
+
     // Find min/max, stopping early if max size is reached
     if (num < offset) {
       offset = num
@@ -307,6 +269,7 @@ const listToParams = (indexList: number[], total: number | undefined, minSize: n
         return { offset: end - maxSize, size: maxSize }
     }
   }
+  if (offset === cursor) return { offset: 0, size: 0 }
   
   let size = end - offset + 1
   // Resize range based on screen location & scroll direction
@@ -314,7 +277,7 @@ const listToParams = (indexList: number[], total: number | undefined, minSize: n
     if (end - minSize <= 0) offset = 0
     else if (total == null) offset = Math.max(end - minSize + 1, 0)
     else if (offset + minSize > total) offset = total - minSize
-    else if (indexList[0] < indexList[indexList.length - 1] || isReverseOrder) // AKA Moving down
+    else if (indexList[0] < indexList[indexList.length - 1]) // AKA Moving down
       offset = Math.max(end - minSize + 1, 0)
     // If Moving up, keep offset
     size = minSize
@@ -339,5 +302,5 @@ export type AdvancedFetchOptions<Entry> = {
 
 export type FetchParams = Record<string, any> & { offset?: number, size?: number, isPreview?: boolean }
 export type FetchResponse<Data> = { data?: Data[], total: number, offset?: number, error?: string } | { error: string }
-export type EntryData<Entry> = { index: number, entry?: Entry, isFirst: boolean, isLoading: boolean }
+export type EntryData<Entry> = { index: number, entry?: Entry, isFirst: boolean, isLoading: boolean, isFiltered: boolean }
 export type FetchHandler<Entry, Params extends FetchParams> = (queryString: string, params: Params) => Promise<FetchResponse<Entry> | undefined>
