@@ -22,15 +22,18 @@ const options /*: ParseArgsConfig['options']*/ = {
   version: { short: "v", type: "boolean" }, // (v)ersion | Ignore package version update
 } as const
 
+const getDbName = () => process.env.DATABASE_URL?.match?.(/[^:/]\/([A-Za-z0-9-_]+)\?/)?.[1] ?? "[Missing]"
+
 async function main() {
   const { values: clArgs } = parseArgs({ options })
 
   // ENV Args -- Can be set via ENV Vars or .env
   config()
   const args = {
+    dbName: getDbName(),
     ...clArgs,                                          // ENV VAR           | DESCRIPTION
     threads: +(process.env.JSON_THREAD_LIMIT ||  1000), // JSON_THREAD_LIMIT | Maximum number of threads to open when ingesting a JSON
-    batches: +(process.env.DB_BATCH_LIMIT    ||  5000), // DB_BATCH_LIMIT    | Maximum number of items to insert into the DB at once 
+    batches: +(process.env.DB_BATCH_LIMIT    ||  5000), // DB_BATCH_LIMIT    | Maximum number of items to insert into the DB at once
     upserts: +(process.env.DB_UPSERT_LIMIT   || 32000), // DB_UPSERT_LIMIT   | Maximum number of upserts to perform (Divided by number of Card fields, ~2000)
   }
 
