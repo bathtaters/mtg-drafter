@@ -17,6 +17,9 @@
 *.tar
 /deploy*.sh
 
+# IDE config
+.idea
+
 # misc
 .DS_Store
 *.pem
