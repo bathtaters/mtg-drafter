@@ -17,7 +17,7 @@ export default async function updateCards(
   enableLog = false,
   maxThreads = 1000,
   dbBatchSize = 5000,
-  upsertTxLimit = 32000
+  upsertTxLimit = 32000,
 ) {
   let existing: number | undefined;
   if (!fullUpdate) existing = await prisma.card.count();
@@ -33,7 +33,7 @@ export default async function updateCards(
   enableLog &&
     console.log(
       "Updating Cards",
-      typeof existing === "number" ? `(${existing} exisiting)` : ""
+      typeof existing === "number" ? `(${existing} exisiting)` : "",
     );
   enableLog && console.time("Cards");
 
@@ -41,14 +41,16 @@ export default async function updateCards(
     dbBatchSize,
     async (data: Prisma.CardCreateManyInput[]) => {
       await prisma.card.createMany({ data, skipDuplicates: !fullUpdate });
-    }
+    },
   );
   const faceUpdate = new Batcher(
     2 * dbBatchSize,
     async (data: Prisma.FaceInCardCreateManyInput[]) => {
       await prisma.faceInCard.createMany({ data, skipDuplicates: !fullUpdate });
-    }
+    },
   );
+
+  const pendingFaces: Prisma.FaceInCardCreateManyInput[] = [];
 
   await fetchJson<JsonCard>(
     url,
@@ -58,13 +60,17 @@ export default async function updateCards(
 
       await cardUpdate.add(adaptCardToDb(data));
       for (const face of adaptFacesToDb(data)) {
-        await faceUpdate.add(face);
+        pendingFaces.push(face); // Save for later due to potential FK issues
       }
     },
-    { jsonPath: /^meta|^data/, maxThreads }
+    { jsonPath: /^meta|^data/, maxThreads },
   );
 
   await cardUpdate.finish();
+
+  for (const face of pendingFaces) {
+    await faceUpdate.add(face);
+  }
   await faceUpdate.finish();
 
   // Remove incorrect back IDs
