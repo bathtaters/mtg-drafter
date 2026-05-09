@@ -111,7 +111,7 @@ jobs:
 
       - name: Prepare host work dir
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} 'mkdir -p ${{ env.REMOTE_DIR }} && chmod 700 ${{ env.REMOTE_DIR }}'
+          ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} 'mkdir -p ${{ env.REMOTE_DIR }}'
 
       - name: Copy image to host
         run: rsync -cvz ${{ env.PROC_NAME }}.tar ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{ env.REMOTE_DIR }}/
