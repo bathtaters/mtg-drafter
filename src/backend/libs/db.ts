@@ -1,4 +1,15 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+
+// Fail fast with a readable message if DATABASE_URL is set but malformed
+if (
+  process.env.DATABASE_URL &&
+  !/^postgres(ql)?:\/\//.test(process.env.DATABASE_URL)
+) {
+  throw new Error(
+    `DATABASE_URL must start with postgres:// or postgresql:// (got: ${JSON.stringify(process.env.DATABASE_URL.slice(0, 16))}...)`,
+  );
+}
+
 declare global {
   var db: PrismaClient | undefined;
 }

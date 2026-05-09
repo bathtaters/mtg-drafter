@@ -1,6 +1,7 @@
 import type { Game, Player } from "@prisma/client";
 import type { GameServer, GameSocket } from "backend/controllers/game.socket.d";
 import { isDbErr } from "backend/libs/db";
+import { metrics } from "backend/libs/metrics";
 import {
   nextRound,
   pauseGame,
@@ -105,6 +106,7 @@ export default function addGameListeners(
         );
 
       // Update Client(s)
+      metrics.picksMade.inc({ actor: "human" });
       io.emit("updatePick", player.id, player.pick, player.passingToId);
       callback(player.pick);
 
@@ -258,6 +260,7 @@ export async function handleBotPicks(
             : "Card was already picked or does not exist"
         );
 
+      metrics.picksMade.inc({ actor: "bot" });
       io.emit("updatePick", bot.id, bot.pick, bot.passingToId);
     }
   } catch (err: any) {

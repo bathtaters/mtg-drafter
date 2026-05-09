@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getSingleUpload } from "backend/libs/upload";
 import buildCubeList from "backend/services/setup/buildCubeList";
 import { fileSettings } from "assets/constants";
+import { withMetrics } from "backend/libs/metrics";
 
 export type ListResponse = Awaited<ReturnType<typeof buildCubeList>>;
 export type ErrResponse = { error: string };
@@ -13,7 +14,7 @@ export const config = {
 const splitLines = (file: string) =>
   file.split(/\s*(?:\r?\n|\r)\s*/g).filter(Boolean);
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ListResponse | ErrResponse>
 ) {
@@ -34,3 +35,5 @@ export default async function handler(
       .json({ error: err.message || err || "Unknown Error" });
   }
 }
+
+export default withMetrics("/api/setup/upload", handler);

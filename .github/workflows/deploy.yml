@@ -39,30 +39,25 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@main
-      
+
       - name: Install Node.js
         uses: actions/setup-node@main
         with:
-          node-version-file: '.nvmrc'
-      
+          node-version-file: ".nvmrc"
+
       - name: Install Podman
         run: |
           if ! command -v podman &> /dev/null; then
             sudo apt-get install -y podman
           fi
-      
+
       - name: Generate package-lock
         run: npm i --package-lock-only
-      
+
       - name: Get Node.js version
         id: node_version
         run: echo "NODE_VERSION=$(node --version | grep --color=never -o -E '[0-9]+(\.[0-9]+)*')" >> $GITHUB_OUTPUT
 
-      - name: Copy .env
-        run: |
-          echo 'DATABASE_URL="${{ secrets.DB_BASE_URL }}/${{ env.DB_NAME }}?${{ vars.DB_OPTIONS }}"' > .env.tmp
-          echo 'WATCH_SALT=${{ secrets.WATCH_SALT }}' >> .env.tmp
-      
       - name: Fix for podman cache
         # Fixes permissions error during cleanup
         run: |
@@ -77,9 +72,12 @@ jobs:
             ~/.local/share/containers
             ~/.config/containers
           key: ${{ runner.os }}-${{ github.workflow }}-${{ hashFiles('package.json') }}
-    
+
       - name: Build image
-        run: podman build --build-arg ENV_FILE=.env.tmp --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} -t ${{ env.PROC_NAME }} .
+        run: |
+          podman build \
+            --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} \
+            -t ${{ env.PROC_NAME }} .
 
       - name: Compress image
         run: podman save -o ${{ env.PROC_NAME }}.tar ${{ env.PROC_NAME }}
@@ -100,16 +98,20 @@ jobs:
         with:
           name: ${{ env.PROC_NAME }}-image
           path: .
-      
+
       - name: Install SSH key
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{ vars.REMOTE_HOST }} > ~/.ssh/known_hosts
 
+      - name: Prepare host work dir
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} 'mkdir -p ${{ env.REMOTE_DIR }} && chmod 700 ${{ env.REMOTE_DIR }}'
+
       - name: Copy image to host
         run: rsync -cvz ${{ env.PROC_NAME }}.tar ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }}:${{ env.REMOTE_DIR }}/
-        
+
       - name: Remove old container
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
@@ -117,17 +119,25 @@ jobs:
           podman rm -i ${{ env.PROC_NAME }}
           podman rmi -i ${{ env.PROC_NAME }}
           EOF
-      
+
+      - name: Write runtime env file on host
+        # Values must be UNQUOTED
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} 'set -e; umask 077; F=${{ env.REMOTE_DIR }}/${{ env.PROC_NAME }}.env; cat > "$F"; if grep -Eq "^[A-Z_]+=\"" "$F"; then echo "ERROR: env file has quoted values"; exit 1; fi' << 'ENVEOF'
+          DATABASE_URL=${{ secrets.DB_BASE_URL }}/${{ env.DB_NAME }}?${{ vars.DB_OPTIONS }}
+          WATCH_SALT=${{ secrets.WATCH_SALT }}
+          METRICS_TOKEN=${{ secrets.METRICS_TOKEN }}
+          ENVEOF
+
       - name: Deploy new container
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
+          set -e
           podman load -i ${{ env.REMOTE_DIR }}/${{ env.PROC_NAME }}.tar
-          podman run --memory 512m -d --name ${{ env.PROC_NAME }} -p ${{ env.REMOTE_PORT }}:3000 ${{ env.PROC_NAME }}
-          EOF
-      
-      - name: Cleanup images
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ vars.REMOTE_USER }}@${{ vars.REMOTE_HOST }} << 'EOF'
+          podman run --memory 512m -d --name ${{ env.PROC_NAME }} \
+            --env-file ${{ env.REMOTE_DIR }}/${{ env.PROC_NAME }}.env \
+            -p ${{ env.REMOTE_PORT }}:3000 ${{ env.PROC_NAME }}
+          rm -f ${{ env.REMOTE_DIR }}/${{ env.PROC_NAME }}.env
           rm -f ${{ env.REMOTE_DIR }}/${{ env.PROC_NAME }}.tar
           podman image prune -a -f
           EOF
