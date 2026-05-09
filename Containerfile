@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1
 #
-# build-arg: NODE_VERSION, WATCH_SALT, LISTEN_PORT
+# build-arg: NODE_VERSION, WATCH_SALT, DATABASE_URL, LISTEN_PORT
 #
-# WATCH_SALT is required at build, otherwise runtime secrets are injected via
-# `podman run --env-file ...`.
+# WATCH_SALT and DATABASE_URL are required at build
+# runtime secrets are injected via `podman run --env-file ...`.
 
 ARG NODE_VERSION=22.12.0
 FROM node:${NODE_VERSION}-alpine AS base
@@ -15,20 +15,23 @@ RUN npm install -g npm@latest
 FROM base AS deps
 # RUN apk add --no-cache libc6-compat
 WORKDIR /app
-COPY package.json package-lock.json* .
+COPY package.json package-lock.json* ./
 RUN npm ci
 
 ################################################################################
 # Build
 FROM base AS builder
 WORKDIR /app
+# Set ENV VARS for the builder
 ARG WATCH_SALT
-# Set WATCH_SALT for the builder (Required for next build)
+ARG DATABASE_URL
 ENV WATCH_SALT=${WATCH_SALT}
+ENV DATABASE_URL=${DATABASE_URL}
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN test -n "$WATCH_SALT" || { echo 'ERROR: WATCH_SALT build-arg is empty'; exit 1; } \
+ && test -n "$DATABASE_URL" || { echo 'ERROR: DATABASE_URL build-arg is empty'; exit 1; } \
  && npx prisma generate \
  && npx next build
 

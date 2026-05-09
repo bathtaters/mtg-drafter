@@ -74,9 +74,12 @@ jobs:
           key: ${{ runner.os }}-${{ github.workflow }}-${{ hashFiles('package.json') }}
 
       - name: Build image
+        env:
+          DATABASE_URL: ${{ secrets.DB_BASE_URL }}/${{ env.DB_NAME }}?${{ vars.DB_OPTIONS }}
         run: |
           podman build \
             --build-arg WATCH_SALT='${{ secrets.WATCH_SALT }}' \
+            --build-arg DATABASE_URL="$DATABASE_URL" \
             --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} \
             -t ${{ env.PROC_NAME }} .
 
