@@ -1,10 +1,9 @@
 # syntax=docker/dockerfile:1
 #
-# build-arg: NODE_VERSION, LISTEN_PORT
+# build-arg: NODE_VERSION, WATCH_SALT, LISTEN_PORT
 #
-# This image carries NO secrets. `prisma generate` and `next build` do
-# not connect to the database, so DATABASE_URL is not needed at build
-# time. Runtime secrets are injected via `podman run --env-file ...`.
+# WATCH_SALT is required at build, otherwise runtime secrets are injected via
+# `podman run --env-file ...`.
 
 ARG NODE_VERSION=22.12.0
 FROM node:${NODE_VERSION}-alpine AS base
@@ -23,10 +22,15 @@ RUN npm ci
 # Build
 FROM base AS builder
 WORKDIR /app
+ARG WATCH_SALT
+# Set WATCH_SALT for the builder (Required for next build)
+ENV WATCH_SALT=${WATCH_SALT}
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npx prisma generate && npx next build
+RUN test -n "$WATCH_SALT" || { echo 'ERROR: WATCH_SALT build-arg is empty'; exit 1; } \
+ && npx prisma generate \
+ && npx next build
 
 ################################################################################
 # Run

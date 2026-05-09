@@ -76,6 +76,7 @@ jobs:
       - name: Build image
         run: |
           podman build \
+            --build-arg WATCH_SALT='${{ secrets.WATCH_SALT }}' \
             --build-arg NODE_VERSION=${{ steps.node_version.outputs.NODE_VERSION }} \
             -t ${{ env.PROC_NAME }} .
 
