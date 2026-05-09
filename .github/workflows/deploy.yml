@@ -71,7 +71,7 @@ jobs:
           path: |
             ~/.local/share/containers
             ~/.config/containers
-          key: ${{ runner.os }}-${{ github.workflow }}-${{ hashFiles('package.json') }}
+          key: ${{ runner.os }}-${{ github.workflow }}-${{ hashFiles('package-lock.json', 'Containerfile') }}
 
       - name: Build image
         env:
