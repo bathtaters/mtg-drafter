@@ -19,16 +19,16 @@ it.todo("filterPackIds");
 
 describe("passingRight", () => {
   it("is right", () => {
-    expect(passingRight({ round: 2, roundCount: 10 })).toBe(true);
-    expect(passingRight({ round: 8, roundCount: 10 })).toBe(true);
-    expect(passingRight({ round: 2, roundCount: 4 })).toBe(true);
-    expect(passingRight({ round: 4, roundCount: 5 })).toBe(true);
+    expect(passingRight({ round: 1, roundCount: 10 })).toBe(true);
+    expect(passingRight({ round: 9, roundCount: 10 })).toBe(true);
+    expect(passingRight({ round: 1, roundCount: 3 })).toBe(true);
+    expect(passingRight({ round: 3, roundCount: 4 })).toBe(true);
   });
   it("is left", () => {
-    expect(passingRight({ round: 1, roundCount: 10 })).toBe(false);
-    expect(passingRight({ round: 9, roundCount: 10 })).toBe(false);
-    expect(passingRight({ round: 1, roundCount: 3 })).toBe(false);
-    expect(passingRight({ round: 3, roundCount: 4 })).toBe(false);
+    expect(passingRight({ round: 2, roundCount: 10 })).toBe(false);
+    expect(passingRight({ round: 8, roundCount: 10 })).toBe(false);
+    expect(passingRight({ round: 2, roundCount: 4 })).toBe(false);
+    expect(passingRight({ round: 4, roundCount: 5 })).toBe(false);
   });
   it("no direction", () => {
     expect(passingRight({})).toBeUndefined();
@@ -56,16 +56,16 @@ describe("getPlayerIdx", () => {
 
 describe("getNeighborIdx", () => {
   it("simple find", () => {
-    expect(getNeighborIdx({ round: 1, roundCount: 4 }, 4, 2)).toBe(3);
-    expect(getNeighborIdx({ round: 1, roundCount: 4 }, 4, 1)).toBe(2);
-    expect(getNeighborIdx({ round: 1, roundCount: 4 }, 4, 0)).toBe(1);
-    expect(getNeighborIdx({ round: 2, roundCount: 4 }, 4, 1)).toBe(0);
-    expect(getNeighborIdx({ round: 2, roundCount: 4 }, 4, 2)).toBe(1);
-    expect(getNeighborIdx({ round: 2, roundCount: 4 }, 4, 3)).toBe(2);
+    expect(getNeighborIdx({ round: 2, roundCount: 4 }, 4, 2)).toBe(3);
+    expect(getNeighborIdx({ round: 2, roundCount: 4 }, 4, 1)).toBe(2);
+    expect(getNeighborIdx({ round: 2, roundCount: 4 }, 4, 0)).toBe(1);
+    expect(getNeighborIdx({ round: 1, roundCount: 4 }, 4, 1)).toBe(0);
+    expect(getNeighborIdx({ round: 1, roundCount: 4 }, 4, 2)).toBe(1);
+    expect(getNeighborIdx({ round: 1, roundCount: 4 }, 4, 3)).toBe(2);
   });
   it("wrapped find", () => {
-    expect(getNeighborIdx({ round: 1, roundCount: 4 }, 4, 3)).toBe(0);
-    expect(getNeighborIdx({ round: 2, roundCount: 4 }, 4, 0)).toBe(3);
+    expect(getNeighborIdx({ round: 2, roundCount: 4 }, 4, 3)).toBe(0);
+    expect(getNeighborIdx({ round: 1, roundCount: 4 }, 4, 0)).toBe(3);
   });
   it("fails to find", () => {
     expect(getNeighborIdx(undefined, 4, 1)).toBe(-1);
@@ -88,28 +88,28 @@ describe("getPackIdx", () => {
   };
 
   it("pack 1 pick 1", testPack(1, 1, [0, 1, 2, 3]));
-  it("pack 1 pick 2", testPack(1, 2, [1, 2, 3, 0]));
+  it("pack 1 pick 2", testPack(1, 2, [3, 0, 1, 2]));
   it("pack 1 pick 3", testPack(1, 3, [2, 3, 0, 1]));
-  it("pack 1 pick 4", testPack(1, 4, [3, 0, 1, 2]));
+  it("pack 1 pick 4", testPack(1, 4, [1, 2, 3, 0]));
   it("pack 1 pick 5", testPack(1, 5, [0, 1, 2, 3]));
-  it("pack 1 pick 6", testPack(1, 6, [1, 2, 3, 0]));
+  it("pack 1 pick 6", testPack(1, 6, [3, 0, 1, 2]));
   it("pack 1 pick 7", testPack(1, 7, [2, 3, 0, 1]));
-  it("pack 1 pick 8", testPack(1, 8, [3, 0, 1, 2]));
+  it("pack 1 pick 8", testPack(1, 8, [1, 2, 3, 0]));
 
   it("pack 2 pick 1", testPack(2, 1, [4, 5, 6, 7]));
-  it("pack 2 pick 2", testPack(2, 2, [7, 4, 5, 6]));
+  it("pack 2 pick 2", testPack(2, 2, [5, 6, 7, 4]));
   it("pack 2 pick 3", testPack(2, 3, [6, 7, 4, 5]));
-  it("pack 2 pick 4", testPack(2, 4, [5, 6, 7, 4]));
+  it("pack 2 pick 4", testPack(2, 4, [7, 4, 5, 6]));
   it("pack 2 pick 5", testPack(2, 5, [4, 5, 6, 7]));
-  it("pack 2 pick 6", testPack(2, 6, [7, 4, 5, 6]));
+  it("pack 2 pick 6", testPack(2, 6, [5, 6, 7, 4]));
   it("pack 2 pick 7", testPack(2, 7, [6, 7, 4, 5]));
-  it("pack 2 pick 8", testPack(2, 8, [5, 6, 7, 4]));
+  it("pack 2 pick 8", testPack(2, 8, [7, 4, 5, 6]));
   it("pack 2 pick 9", testPack(2, 9, [4, 5, 6, 7]));
 
   it("pack 3 pick 1", testPack(3, 1, [8, 9, 10, 11]));
-  it("pack 3 pick 2", testPack(3, 2, [9, 10, 11, 8]));
+  it("pack 3 pick 2", testPack(3, 2, [11, 8, 9, 10]));
   it("pack 3 pick 3", testPack(3, 3, [10, 11, 8, 9]));
-  it("pack 3 pick 4", testPack(3, 4, [11, 8, 9, 10]));
+  it("pack 3 pick 4", testPack(3, 4, [9, 10, 11, 8]));
   it("pack 3 pick 5", testPack(3, 5, [8, 9, 10, 11]));
 });
 
@@ -138,16 +138,16 @@ describe("getHolding", () => {
   });
   it("random values", () => {
     expect(getHolding(setPicks([1, 2, 3, 2]), 15, firstRound)).toEqual([
-      2, 2, 0, 0,
+      2, 0, 0, 2,
     ]);
-    expect(getHolding(setPicks([2, 1, 3, 3]), 15, firstRound)).toEqual([
-      0, 3, 1, 0,
+    expect(getHolding(setPicks([3, 3, 1, 2]), 15, firstRound)).toEqual([
+      0, 1, 3, 0,
     ]);
     expect(getHolding(setPicks([4, 4, 5, 4]), 15, secondRound)).toEqual([
-      1, 2, 0, 1,
+      1, 1, 0, 2,
     ]);
     expect(getHolding(setPicks([14, 14, 14, 13]), 15, secondRound)).toEqual([
-      1, 1, 0, 2,
+      0, 1, 1, 2,
     ]);
   });
   it("finshed picking", () => {
@@ -176,16 +176,16 @@ describe("getHolding", () => {
   });
   it("before/after game", () => {
     expect(
-      getHolding(setPicks([1, 2, 3, 2]), 15, { ...firstRound, round: 0 })
+      getHolding(setPicks([1, 2, 3, 2]), 15, { ...firstRound, round: 0 }),
     ).toEqual([0, 0, 0, 0]);
     expect(
-      getHolding(setPicks([2, 1, 3, 3]), 15, { ...firstRound, round: 0 })
+      getHolding(setPicks([2, 1, 3, 3]), 15, { ...firstRound, round: 0 }),
     ).toEqual([0, 0, 0, 0]);
     expect(
-      getHolding(setPicks([4, 4, 5, 4]), 15, { ...firstRound, round: 4 })
+      getHolding(setPicks([4, 4, 5, 4]), 15, { ...firstRound, round: 4 }),
     ).toEqual([0, 0, 0, 0]);
     expect(
-      getHolding(setPicks([14, 14, 14, 13]), 15, { ...firstRound, round: 4 })
+      getHolding(setPicks([14, 14, 14, 13]), 15, { ...firstRound, round: 4 }),
     ).toEqual([0, 0, 0, 0]);
   });
 });
