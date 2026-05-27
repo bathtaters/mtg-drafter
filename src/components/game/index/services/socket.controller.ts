@@ -40,7 +40,7 @@ export function getGameListeners(
   newError: AlertsReturn["newError"],
   onConnect?: () => void,
   refreshLog?: () => void,
-  checkHostModal?: Dispatch<SetStateAction<boolean>>
+  checkHostModal?: Dispatch<SetStateAction<boolean>>,
 ) {
   return (socket: GameClient) => {
     if (!socket) return;
@@ -59,7 +59,7 @@ export function getGameListeners(
     const updatePick: GameServerToClient["updatePick"] = (
       playerId,
       pick,
-      passingToId
+      passingToId,
     ) => {
       debugSockets &&
         console.debug("SOCKET", "updatePick", playerId, pick, passingToId);
@@ -86,7 +86,7 @@ export function getGameListeners(
     };
     const updateSlot: GameServerToClient["updateSlot"] = (
       playerId,
-      sessionId
+      sessionId,
     ) => {
       debugSockets &&
         console.debug("SOCKET", "updateSlot", playerId, sessionId);
@@ -100,7 +100,7 @@ export function getGameListeners(
     const updateWatcher: GameServerToClient["updateWatcher"] = (
       sessionId,
       joined,
-      name
+      name,
     ) => {
       debugSockets &&
         console.debug("SOCKET", "updateWatcher", sessionId, joined);
@@ -112,7 +112,7 @@ export function getGameListeners(
       refreshLog?.();
     };
     const viewedCards: GameServerToClient["viewedCards"] = (
-      viewerSessionId
+      viewerSessionId,
     ) => {
       if (sessionId === viewerSessionId) setViewed(true);
       refreshLog?.();
@@ -159,7 +159,7 @@ export function getGameListeners(
 
 export function useGameEmitters(
   local: LocalRequired,
-  newError: (alert: ErrorAlert) => any
+  newError: (alert: ErrorAlert) => any,
 ) {
   const { emit, reconnect } = local.socket;
 
@@ -168,14 +168,14 @@ export function useGameEmitters(
       if (!playerId) playerId = local.player?.id;
       if (!playerId)
         return newError(
-          formatError("Error renaming player: Player not loaded")
+          formatError("Error renaming player: Player not loaded"),
         );
 
       name && local.renamePlayer(playerId, name);
 
       emit("setName", playerId, name, byHost);
     },
-    [emit, local.player?.id, local.renamePlayer, newError]
+    [emit, local.player?.id, local.renamePlayer, newError],
   );
 
   const setOptions: Socket.SetOptions = useCallback(
@@ -188,19 +188,18 @@ export function useGameEmitters(
       if (options?.hostId) delete options.hostId; // Don't force reload until sockets response
       options && local.updateGame((game) => game && { ...game, ...options });
     },
-    [emit, local.game?.id, local.updateGame, local.updateLocal, newError]
+    [emit, local.game?.id, local.updateGame, local.updateLocal, newError],
   );
 
   const nextRound: Socket.NextRound = useCallback(() => {
     if (!local.game?.id || !("round" in local.game))
       return newError(
-        formatError("Error fetching next round: Game not loaded")
+        formatError("Error fetching next round: Game not loaded"),
       );
 
     local.setLoadingPack((v) => v + 1);
 
     emit("nextRound", local.game.id, local.game.round + 1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     emit,
     local.game?.id,
@@ -217,16 +216,15 @@ export function useGameEmitters(
       local.setLoadingAll((v) => v + 1);
 
       emit("pauseTimer", local.game.id, resume);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
-    [emit, local.game?.id, local.setLoadingAll, newError]
+    [emit, local.game?.id, local.setLoadingAll, newError],
   );
 
   const pickCard: Socket.PickCard = useCallback(
     (gameCardOrPack) => {
       if (!local.player?.id)
         return newError(
-          formatError("Error picking card: Not connected to server")
+          formatError("Error picking card: Not connected to server"),
         );
 
       local.setLoadingPack((v) => v + 1);
@@ -238,7 +236,7 @@ export function useGameEmitters(
           local.game?.url,
           local.updateLocal,
           newError,
-          typeof pick !== "number" ? reconnect : undefined
+          typeof pick !== "number" ? reconnect : undefined,
         ).finally(() => local.setLoadingPack((v) => v && v - 1));
       });
     },
@@ -250,7 +248,7 @@ export function useGameEmitters(
       local.updateLocal,
       newError,
       reconnect,
-    ]
+    ],
   );
 
   const swapCard: Socket.SwapCard = useCallback(
@@ -263,7 +261,7 @@ export function useGameEmitters(
             local.game?.url,
             local.updateLocal,
             newError,
-            reconnect
+            reconnect,
           );
         local.swapCard(cardId, board);
       });
@@ -275,14 +273,14 @@ export function useGameEmitters(
       local.updateLocal,
       newError,
       reconnect,
-    ]
+    ],
   );
 
   const setLands: Socket.SetLands = useCallback(
     (lands) => {
       if (!local.player?.id)
         return newError(
-          formatError("Error saving lands: Not connected to server")
+          formatError("Error saving lands: Not connected to server"),
         );
 
       local.setLands(lands);
@@ -292,7 +290,7 @@ export function useGameEmitters(
             local.game?.url,
             local.updateLocal,
             newError,
-            reconnect
+            reconnect,
           );
         local.setLands(lands);
       });
@@ -305,7 +303,7 @@ export function useGameEmitters(
       local.updateLocal,
       newError,
       reconnect,
-    ]
+    ],
   );
 
   const setStatus: Socket.SetStatus = useCallback(
@@ -314,7 +312,7 @@ export function useGameEmitters(
 
       emit("setStatus", playerId, status, byHost, (player?: Player) => {
         reloadData(local.game?.url, local.updateLocal, newError).finally(() =>
-          local.setLoadingAll((v) => v && v - 1)
+          local.setLoadingAll((v) => v && v - 1),
         );
         if (!player) return;
 
@@ -323,7 +321,7 @@ export function useGameEmitters(
         local.setStatus(
           player.id,
           player.sessionId || null,
-          !!player.sessionId
+          !!player.sessionId,
         );
       });
     },
@@ -336,32 +334,32 @@ export function useGameEmitters(
       local.updatePlayer,
       local.updateLocal,
       newError,
-    ]
+    ],
   );
 
   const setWatchPw: Socket.SetWatchPw = useCallback(
     async (password) => {
       if (!local.game?.id)
         return newError(
-          formatError("Error setting Watch password: Game not loaded")
+          formatError("Error setting Watch password: Game not loaded"),
         );
 
       const encrypted = await hashText(password);
       emit("setWatchPw", local.game.id, encrypted);
     },
-    [emit, local.game?.id, newError]
+    [emit, local.game?.id, newError],
   );
 
   const dropWatcher: Socket.DropWatcher = useCallback(
     (sessionId) => {
       if (!local.game?.id)
         return newError(
-          formatError("Error setting Watch password: Game not loaded")
+          formatError("Error setting Watch password: Game not loaded"),
         );
 
       emit("dropWatcher", local.game.id, sessionId, true);
     },
-    [emit, local.game?.id, newError]
+    [emit, local.game?.id, newError],
   );
 
   const banSession: Socket.BanSession = useCallback(
@@ -371,7 +369,7 @@ export function useGameEmitters(
 
       emit("banSession", local.game.id, sessionId, unban, playerId);
     },
-    [emit, local.game?.id, newError]
+    [emit, local.game?.id, newError],
   );
 
   return {

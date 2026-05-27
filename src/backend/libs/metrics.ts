@@ -13,7 +13,6 @@ type Metrics = {
 };
 
 declare global {
-  // eslint-disable-next-line no-var
   var __metrics: Metrics | undefined;
 }
 
@@ -97,7 +96,7 @@ if (process.env.NODE_ENV !== "production") globalThis.__metrics = metrics;
 
 export function withMetrics(
   routeLabel: string,
-  handler: NextApiHandler
+  handler: NextApiHandler,
 ): NextApiHandler {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const method = req.method ?? "UNKNOWN";
