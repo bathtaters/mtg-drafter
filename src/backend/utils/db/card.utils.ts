@@ -3,10 +3,14 @@ import type { CardSet as JsonCard } from "../../../types/json";
 import type { Layout } from "types/scryfall";
 import { scryfallImageUrl } from "assets/urls";
 
+// Fix for Unfinity name-sticker cards (Prefer ___ to "Name Sticker")
+const replaceNameSticker = (name: string) =>
+  name.replace(/["']Name Sticker["']|Name Sticker/g, "_____");
+
 export const normalizeName = (
-  name: string // Standardize:
+  name: string, // Standardize:
 ) =>
-  name
+  replaceNameSticker(name)
     .replace(/\s\/\/\s.+$/, "") // - Multi-faced cards
     .trim()
     .replace(/\s\s+|-|&|and/g, " ") // - White-space/symbolic text
@@ -47,7 +51,7 @@ export const adaptCardToDb = ({
   manaValue,
   faceName,
 
-  name: name || "N/A",
+  name: replaceNameSticker(name || "N/A"),
   number: number || null,
   types: types || [],
 
