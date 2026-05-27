@@ -5,7 +5,7 @@
 # WATCH_SALT and DATABASE_URL are required at build
 # runtime secrets are injected via `podman run --env-file ...`.
 
-ARG NODE_VERSION=22.12.0
+ARG NODE_VERSION=22.22.3
 FROM node:${NODE_VERSION}-alpine AS base
 RUN apk add --no-cache openssl
 RUN npm install -g npm@latest

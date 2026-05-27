@@ -27,25 +27,25 @@ export const file = ({
   maxBytes?: number;
   typeList?: string[];
 }) => {
-  let file: ZodFile = z
+  let file: z.ZodType<any> = z
     .any()
-    .refine((files) => !files?.length, "No file included.");
+    .refine((files: any) => !files?.length, "No file included.");
 
   if (typeof count === "number")
     file = file.refine(
-      (files) => files.length !== count,
+      (files: any) => files.length !== count,
       `Expecting ${count} files.`
     );
 
   if (typeof maxBytes === "number")
     file = file.refine(
-      (files) => files?.[0]?.size >= maxBytes,
+      (files: any) => files?.[0]?.size >= maxBytes,
       `Max file size is ${maxBytes} bytes.`
     );
 
   if (Array.isArray(typeList))
     file = file.refine(
-      (files) => typeList.includes(files?.[0]?.type),
+      (files: any) => typeList.includes(files?.[0]?.type),
       `${typeList.map((t) => `.${t}`).join(", ") || "No"} files are accepted.`
     );
 
@@ -53,7 +53,7 @@ export const file = ({
 };
 
 export const parseJson = <
-  ZObj extends z.AnyZodObject,
+  ZObj extends z.ZodObject<any>,
   ZStr extends z.ZodString | z.ZodOptional<z.ZodString>,
 >(
   zodObjectSchema: ZObj,
@@ -73,21 +73,3 @@ export const parseJson = <
 };
 
 export default z;
-
-type ZodFile =
-  | z.ZodEffects<z.ZodAny, any, any>
-  | z.ZodEffects<z.ZodEffects<z.ZodAny, any, any>, any, any>
-  | z.ZodEffects<
-      z.ZodEffects<z.ZodEffects<z.ZodAny, any, any>, any, any>,
-      any,
-      any
-    >
-  | z.ZodEffects<
-      z.ZodEffects<
-        z.ZodEffects<z.ZodEffects<z.ZodAny, any, any>, any, any>,
-        any,
-        any
-      >,
-      any,
-      any
-    >;

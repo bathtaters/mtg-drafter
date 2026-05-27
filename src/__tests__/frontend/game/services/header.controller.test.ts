@@ -1,3 +1,3 @@
-import { getPlayerColor } from "components/game/GameHeader/header.controller";
+import { getPlayerColor } from "components/game/PlayerSidebar/playersidebar.controller";
 
 it.todo("getPlayerColor");

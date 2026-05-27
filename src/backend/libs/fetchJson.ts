@@ -15,7 +15,7 @@ import { streamObject } from "stream-json/streamers/StreamObject";
 export default function fetchJson<JSONEntry = any>(
   url: string,
   onData: FetchCB<JSONEntry>,
-  { jsonPath, isArray, limit, maxThreads = 500 }: FetchOptions = {}
+  { jsonPath, isArray, limit, maxThreads = 500 }: FetchOptions = {},
 ): Promise<number> {
   if (maxThreads < 0)
     throw new Error("maxThreads must be a non-negative integer");
@@ -29,12 +29,12 @@ export default function fetchJson<JSONEntry = any>(
           throw new Error(`Request Failed.\nStatus Code: ${res.statusCode}`);
         if (!contentType || !/^application\/json/.test(contentType))
           throw new Error(
-            `Invalid content-type.\nExpected JSON but received ${contentType || "[Content Type Missing]"}`
+            `Invalid content-type.\nExpected JSON but received ${contentType || "[Content Type Missing]"}`,
           );
 
         // Setup pipe
         res.setEncoding("utf8");
-        let jsonPipe = res.pipe(parser());
+        let jsonPipe = res.pipe(parser() as any);
 
         // Apply JSONPath filter if provided
         if (jsonPath) {
@@ -64,7 +64,7 @@ export default function fetchJson<JSONEntry = any>(
             if (++count === limit && limit) return jsonPipe.destroy();
             if (threads-- === maxThreads && maxThreads) jsonPipe.resume();
             if (isClosed && !threads) resolve(count);
-          }
+          },
         );
 
         // Handle close/error
@@ -81,7 +81,7 @@ export default function fetchJson<JSONEntry = any>(
           if (!threads) resolve(count);
         });
 
-        jsonPipe.on("error", (err) => reject(err));
+        jsonPipe.on("error", (err: any) => reject(err));
 
         // Handle more errors
       } catch (err) {
@@ -111,5 +111,5 @@ type FetchCB<JSONEntry = any> = (
   value: JSONEntry,
   key: number | string,
   count: number,
-  abortSignal: () => void
+  abortSignal: () => void,
 ) => Promise<any> | any;

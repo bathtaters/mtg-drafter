@@ -8,9 +8,9 @@ const logOptionsSchema = Object.keys(logOptions).reduce(
 );
 
 const logParams = {
-  offset: z.number({ coerce: true }).nonnegative().int().optional(),
-  size: z
-    .number({ coerce: true })
+  offset: z.coerce.number().nonnegative().int().optional(),
+  size: z.coerce
+    .number()
     .positive()
     .int()
     .max(logFetchOptions.maxSize)

@@ -1,3 +1,3 @@
-import { filterLogs } from "components/game/GameLog/log.utils";
+import { filterEntry } from "components/game/GameLog/log.utils";
 
 it.todo("filterLogs");
