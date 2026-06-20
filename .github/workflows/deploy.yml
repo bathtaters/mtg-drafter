@@ -140,7 +140,7 @@ jobs:
           podman load -i ${{ env.REMOTE_DIR }}/${{ env.PROC_NAME }}.tar
           podman run --memory 512m -d --name ${{ env.PROC_NAME }} \
             --env-file ${{ env.REMOTE_DIR }}/${{ env.PROC_NAME }}.env \
-            -p ${{ env.REMOTE_PORT }}:3000 ${{ env.PROC_NAME }}
+            -p 127.0.0.1:${{ env.REMOTE_PORT }}:3000 ${{ env.PROC_NAME }}
           rm -f ${{ env.REMOTE_DIR }}/${{ env.PROC_NAME }}.env
           rm -f ${{ env.REMOTE_DIR }}/${{ env.PROC_NAME }}.tar
           podman image prune -a -f
