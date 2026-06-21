@@ -1,33 +1,23 @@
 import type { NextApiResponse } from "next";
 import type { Socket } from "net";
 import { Server, ServerOptions } from "socket.io";
-import { debugSockets } from "assets/constants";
-import { metrics } from "./metrics";
+import { SOCKET_PATH } from "assets/constants";
 
-export function initSocketServer<S extends Server = Server, T = any>(
-  path: string,
+export function initSocketServer<S extends Server = Server>(
   res: SocketResponse,
-  initServer: (io: S) => T
-) {
-  if (res.socket.server.io && res.socket.server.io.path() === path)
-    return debugSockets
-      ? console.debug("Socket already open at", path)
-      : undefined;
+  initServer: (io: S) => void
+): S {
+  if (res.socket.server.io) return res.socket.server.io as S; // already initialised
 
-  const io = new Server(res.socket.server, { path });
+  const io = new Server(res.socket.server, {
+    path: SOCKET_PATH,
+    cleanupEmptyChildNamespaces: true, // drop abandoned per-game namespaces
+  });
   res.socket.server.io = io;
 
-  io.on("connect", (socket) => {
-    metrics.socketTotal.inc({ namespace: path });
-    metrics.socketActive.inc({ namespace: path });
-    socket.on("disconnect", () => {
-      metrics.socketActive.dec({ namespace: path });
-      if (debugSockets) console.debug("Socket closed at", path, socket.id);
-    });
-    if (debugSockets) console.debug("New socket opened at", path, socket.id);
-  });
+  initServer(io as S); // register dynamic namespace ONCE
 
-  return initServer(res.socket.server.io as S);
+  return io as S;
 }
 
 export interface SocketResponse extends NextApiResponse {

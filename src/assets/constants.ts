@@ -147,6 +147,8 @@ export const hoverAfterClickDelay = 4 * 1000; // How long to wait after clicking
 
 export const MAX_GAME_CONN = 20;
 
+export const SOCKET_PATH = "/api/socket";
+
 export const debugSockets = false;
 
 export const clientErrorsInConsole = true;

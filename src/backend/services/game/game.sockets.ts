@@ -1,5 +1,8 @@
 import type { Game, Player } from "@prisma/client";
-import type { GameServer, GameSocket } from "backend/controllers/game.socket.d";
+import type {
+  GameNamespace,
+  GameSocket,
+} from "backend/controllers/game.socket.d";
 import { isDbErr } from "backend/libs/db";
 import { metrics } from "backend/libs/metrics";
 import {
@@ -24,7 +27,7 @@ import { gameIsEnded } from "components/game/shared/game.utils";
 import { banMsg, noPwMsg, viewAuthError } from "assets/strings";
 
 export default function addGameListeners(
-  io: GameServer,
+  io: GameNamespace,
   socket: GameSocket,
   currentSessionId: Player["sessionId"]
 ) {
@@ -244,7 +247,7 @@ export default function addGameListeners(
 }
 
 export async function handleBotPicks(
-  io: GameServer,
+  io: GameNamespace,
   socket: GameSocket,
   gameId: Game["id"]
 ) {

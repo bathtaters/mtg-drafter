@@ -1,4 +1,7 @@
-import type { GameServer, GameSocket } from "backend/controllers/game.socket.d";
+import type {
+  GameNamespace,
+  GameSocket,
+} from "backend/controllers/game.socket.d";
 import type { BasicLands, Player } from "types/game";
 import { getExisitingSessionId } from "backend/libs/auth";
 import {
@@ -18,7 +21,7 @@ import { BOT, AUTOMATED } from "assets/constants";
 import { banMsg, viewedMsg } from "assets/strings";
 
 export default function addPlayerListeners(
-  io: GameServer,
+  io: GameNamespace,
   socket: GameSocket,
   currentSessionId: Player["sessionId"]
 ) {

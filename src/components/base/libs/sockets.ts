@@ -5,9 +5,8 @@ import {
   useRef,
   useCallback,
   EffectCallback,
-  DependencyList,
 } from "react";
-import { debugSockets } from "assets/constants";
+import { debugSockets, SOCKET_PATH } from "assets/constants";
 import { appendIfNotInList } from "../services/common.services";
 
 const options: Partial<SocketOptions & ManagerOptions> = {
@@ -20,7 +19,7 @@ export default function useSocket<S extends Socket = Socket>(
   path: string,
   endpoint: string,
   onConnect: (socket: S) => ReturnType<EffectCallback>,
-  onFail?: (error: { message: string; code?: number }) => void
+  onFail?: (error: { message: string; code?: number }) => void,
 ) {
   const socket = useRef<S | null>(null);
   const emitQueue = useRef([] as Parameters<S["emit"]>[]);
@@ -31,7 +30,7 @@ export default function useSocket<S extends Socket = Socket>(
     setConnected((c) => {
       if (debugSockets && c === !socket.current?.connected)
         console.debug(
-          `Socket connected at ${path} ${socket.current?.id || ""}`
+          `Socket connected at ${path} ${socket.current?.id || ""}`,
         );
       return !!socket.current?.connected;
     });
@@ -39,7 +38,7 @@ export default function useSocket<S extends Socket = Socket>(
     if (socket.current?.connected) {
       if (debugSockets && emitQueue.current.length)
         console.debug(
-          `Emptying emitter queue of ${emitQueue.current.length} items.`
+          `Emptying emitter queue of ${emitQueue.current.length} items.`,
         );
       while (emitQueue.current.length) {
         const args = emitQueue.current.shift();
@@ -64,13 +63,15 @@ export default function useSocket<S extends Socket = Socket>(
     const res = await fetch(endpoint);
     disconnectFromSocket();
 
-    socket.current = io({ path, ...options })
+    // `path` is the per-game namespace (e.g. /game/abc)
+    // SOCKET_PATH is the shared engine.io transport endpoint
+    socket.current = io(path, { path: SOCKET_PATH, ...options })
       .on("connect", updateIsConnected)
       .on("disconnect", updateIsConnected) as S;
 
     onFail &&
       socket.current.io.on("reconnect_failed", () =>
-        onFail({ message: "Unable to re-establish connection to server" })
+        onFail({ message: "Unable to re-establish connection to server" }),
       );
 
     socket.current.on("error", (error) => {
@@ -115,7 +116,7 @@ export default function useSocket<S extends Socket = Socket>(
     }
     if (appendIfNotInList(emitQueue.current, args) === -1 && debugSockets)
       console.debug(
-        `Cancelled duplicate emit: ${args.filter((a) => typeof a !== "function").join(", ")}`
+        `Cancelled duplicate emit: ${args.filter((a) => typeof a !== "function").join(", ")}`,
       );
   }, []);
 

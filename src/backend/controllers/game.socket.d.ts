@@ -1,4 +1,4 @@
-import type { Event, Server, Socket } from "socket.io";
+import type { Event, Server, Namespace, Socket } from "socket.io";
 import type { Socket as Client } from "socket.io-client";
 import type { GameCard, Pack, Ban } from "@prisma/client";
 import type {
@@ -105,6 +105,11 @@ export interface GameClientToServer {
 export interface GameServerToServer {}
 
 export type GameServer = Server<
+  GameClientToServer,
+  GameServerToClient,
+  GameServerToServer
+>;
+export type GameNamespace = Namespace<
   GameClientToServer,
   GameServerToClient,
   GameServerToServer
