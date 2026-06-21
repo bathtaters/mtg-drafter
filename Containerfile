@@ -30,10 +30,9 @@ ENV DATABASE_URL=${DATABASE_URL}
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN test -n "$WATCH_SALT" || { echo 'ERROR: WATCH_SALT build-arg is empty'; exit 1; } \
- && test -n "$DATABASE_URL" || { echo 'ERROR: DATABASE_URL build-arg is empty'; exit 1; } \
- && npx prisma generate \
- && npx next build
+RUN echo "$WATCH_SALT" | grep -qE '^[0-9a-f]{32,}$' || { echo 'ERROR: WATCH_SALT must be >=32 lowercase hex chars'; exit 1; }; \
+    test -n "$DATABASE_URL" || { echo 'ERROR: DATABASE_URL build-arg is empty'; exit 1; }; \
+    npx prisma generate && npx next build
 
 ################################################################################
 # Run

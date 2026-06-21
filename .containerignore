@@ -32,3 +32,4 @@ README.md
 *.tar
 deploy*.sh
 next-env.d.ts
+/cockroach-data
